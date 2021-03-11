@@ -1,30 +1,27 @@
 <template>
 	<view class="box">
 		<view class="box-head" :style="{paddingTop:barHeight+'px'}">
-			<view class="box-head-top">
-
-			</view>
+			<nav-title navTitle="技师注册"></nav-title>
 		</view>
 		<view class="box-content">
 
 		</view>
 		<view class="box-footer">
-			<technician-tabbar  @tabbarClick="tabbarClick" :activeIndex="activeIndex"></technician-tabbar>
+
 		</view>
 	</view>
 </template>
 
 <script>
-	import technicianTabbar from "../../components/technician-tabbar/technician-tabbar.vue"
+	import navTitle from "../../components/nav-title-balck/nav-title-balck.vue"
 	export default {
 		data() {
 			return {
 				barHeight: 0, //顶部电量导航栏高度
-				activeIndex: 1, //当前tabbar所在页面
 			};
 		},
 		components: {
-			technicianTabbar
+			navTitle
 		},
 		onReady() {
 			// 获取顶部电量状态栏高度
@@ -35,25 +32,7 @@
 			});
 		},
 		methods: {
-		// tabbar点击
-		tabbarClick(index) {
-			switch (index) {
-				case 0: //首页
-					uni.redirectTo({
-						url: "../../pages/technicianHome/technicianHome"
-					})
-					break;
-				case 1: //订单
-					
-					break;
-				case 2: //我的
-					uni.redirectTo({
-						url: "../../pages/technicianMine/technicianMine"
-					})
-					break;
-			}
-			
-		},
+
 		}
 	}
 </script>

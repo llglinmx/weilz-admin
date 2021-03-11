@@ -1,21 +1,19 @@
 <template>
 	<view class="box">
 		<view class="box-head" :style="{paddingTop:barHeight+'px'}">
-			<view class="box-head-top">
 
-			</view>
 		</view>
 		<view class="box-content">
-
+22222
 		</view>
 		<view class="box-footer">
-			<technician-tabbar  @tabbarClick="tabbarClick" :activeIndex="activeIndex"></technician-tabbar>
+			<merchant-tabbar @tabbarClick="tabbarClick" :activeIndex="activeIndex"></merchant-tabbar>
 		</view>
 	</view>
 </template>
 
 <script>
-	import technicianTabbar from "../../components/technician-tabbar/technician-tabbar.vue"
+	import merchantTabbar from "../../components/merchant-tabbar/merchant-tabbar.vue"
 	export default {
 		data() {
 			return {
@@ -24,7 +22,7 @@
 			};
 		},
 		components: {
-			technicianTabbar
+			merchantTabbar
 		},
 		onReady() {
 			// 获取顶部电量状态栏高度
@@ -35,25 +33,36 @@
 			});
 		},
 		methods: {
-		// tabbar点击
-		tabbarClick(index) {
-			switch (index) {
-				case 0: //首页
-					uni.redirectTo({
-						url: "../../pages/technicianHome/technicianHome"
-					})
-					break;
-				case 1: //订单
-					
-					break;
-				case 2: //我的
-					uni.redirectTo({
-						url: "../../pages/technicianMine/technicianMine"
-					})
-					break;
-			}
-			
-		},
+			// tabbar点击
+			tabbarClick(index) {
+				this.activeIndex = index
+				switch (index) {
+					case 0: //首页
+						uni.navigateTo({
+							url:"../merchantHome/merchantHome"
+						})
+						break;
+					case 1: //订单
+						
+						break;
+					case 2: //门店
+						uni.redirectTo({
+							url: "../merchantStore/merchantStore"
+						})
+						break;
+					case 3: //商城
+						uni.redirectTo({
+							url: "../merchantMall/merchantMall"
+						})
+						break;
+					case 4: //我的
+						uni.redirectTo({
+							url: "../merchantMine/merchantMine"
+						})
+						break;
+				}
+
+			},
 		}
 	}
 </script>

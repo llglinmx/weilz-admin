@@ -1,6 +1,11 @@
 {
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
 		{
+			"path": "pages/login/login",
+			"style": {
+				"navigationBarTitleText": "登录"
+			}
+		},{
 			"path": "pages/technicianHome/technicianHome",
 			"style": {
 				"navigationBarTitleText": "首页",
@@ -12,7 +17,6 @@
 			"path": "pages/technicianOrder/technicianOrder",
 			"style": {
 				"navigationBarTitleText": "订单",
-
 				"enablePullDownRefresh": false
 			}
 
@@ -30,58 +34,106 @@
 				"navigationBarTextStyle": "white", //状态栏字体颜色
 				"navigationBarTitleText": "uni-登录"
 			}
-		}, {
-			"path": "pagesMine/revenueStatistics/revenueStatistics",
+		},
+		 {
+			"path": "pages/registerRoles/registerRoles",
 			"style": {
 				"navigationBarTitleText": "",
 				"enablePullDownRefresh": false
 			}
-
-		}
-	],
-	"subPackages": [{
-			"root": "pagesIndex",
-			"pages": [{
-				"path": "login/login",
-				"style": {
-					"navigationBarTitleText": "登录"
-				}
-			}, {
-				"path": "registerRoles/registerRoles",
-				"style": {
-					"navigationBarTitleText": "",
-					"enablePullDownRefresh": false
-				}
-
-			}]
-		}, {
-			"root": "pagesIndexTwo",
-			"pages": [{
-				"path": "technicianRegistration/technicianRegistration",
-				"style": {
-					"navigationBarTitleText": "",
-					"enablePullDownRefresh": false
-				}
-
-			}, {
-				"path": "merchantRegistration/merchantRegistration",
-				"style": {
-					"navigationBarTitleText": "",
-					"enablePullDownRefresh": false
-				}
-
-			}]
 		},
 		{
-			"root": "pagesMine",
+			"path": "pages/technicianRegistration/technicianRegistration",
+			"style": {
+				"navigationBarTitleText": "",
+				"enablePullDownRefresh": false
+			}
+		}, {
+			"path": "pages/merchantRegistration/merchantRegistration",
+			"style": {
+				"navigationBarTitleText": "",
+				"enablePullDownRefresh": false
+			}
+		}
+	    ,{
+            "path" : "pages/merchantHome/merchantHome",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/merchantOrder/merchantOrder",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/merchantStore/merchantStore",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/merchantMall/merchantMall",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/merchantMine/merchantMine",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+    ],
+	"subPackages": [{
+			"root": "technicianHome",
+			"pages": []
+		},
+		{
+			"root": "technicianOrder",
+			"pages": []
+		},
+		{
+			"root": "technicianMine",
 			"pages": [{
 				"path": "revenueStatistics/revenueStatistics",
 				"style": {
-					"navigationBarTitleText": "",
+					"navigationBarTitleText": "收益统计",
+					"navigationBarTextStyle": "white", //状态栏字体颜色
 					"enablePullDownRefresh": false
 				}
-
 			}]
+		}, {
+			"root": "merchantHome",
+			"pages": []
+		}, {
+			"root": "merchantOrder",
+			"pages": []
+		}, {
+			"root": "merchantStore",
+			"pages": []
+		}, {
+			"root": "merchantMall",
+			"pages": []
+		}, {
+			"root": "merchantMine",
+			"pages": []
 		}
 	],
 	"globalStyle": {

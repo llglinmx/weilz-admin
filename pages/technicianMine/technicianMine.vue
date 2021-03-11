@@ -46,13 +46,13 @@
 			</view>
 		</view>
 		<view class="box-footer">
-			<technician-tbar @tabbarClick="tabbarClick" :activeIndex="activeIndex"></technician-tbar>
+			<technician-tabbar @tabbarClick="tabbarClick" :activeIndex="activeIndex"></technician-tabbar>
 		</view>
 	</view>
 </template>
 
 <script>
-	import technicianTbar from "../../components/technician-tabbar/technician-tabar.vue"
+	import technicianTabbar from "../../components/technician-tabbar/technician-tabbar.vue"
 	export default {
 		data() {
 			return {
@@ -125,7 +125,7 @@
 			};
 		},
 		components: {
-			technicianTbar
+			technicianTabbar
 		},
 		onReady() {
 			// 获取顶部电量状态栏高度
@@ -143,7 +143,7 @@
 					// 收益统计
 					case 0:
 						uni.navigateTo({
-							url: "../../pagesMine/revenueStatistics/revenueStatistics"
+							url: "../../technicianMine/revenueStatistics/revenueStatistics"
 						})
 						break;
 						// 日程安排
@@ -186,9 +186,7 @@
 						break;
 					case 2: //我的
 
-						uni.redirectTo({
-							url: "../../pages/technicianMine/technicianMine"
-						})
+
 						break;
 				}
 

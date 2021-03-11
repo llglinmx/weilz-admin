@@ -75,13 +75,13 @@
 			</view>
 		</view>
 		<view class="box-footer">
-			<technician-tbar @tabbarClick="tabbarClick" :activeIndex="activeIndex"></technician-tbar>
+			<technician-tabbar @tabbarClick="tabbarClick" :activeIndex="activeIndex"></technician-tabbar>
 		</view>
 	</view>
 </template>
 
 <script>
-	import technicianTbar from "../../components/technician-tabbar/technician-tabar.vue"
+	import technicianTabbar from "../../components/technician-tabbar/technician-tabbar.vue"
 	export default {
 		data() {
 			return {
@@ -115,7 +115,7 @@
 			});
 		},
 		components: {
-			technicianTbar
+			technicianTabbar
 		},
 		methods: {
 			// 取消订单
@@ -137,9 +137,7 @@
 				this.activeIndex=index
 				switch (index) {
 					case 0: //首页
-						uni.redirectTo({
-							url: "../../pages/technicianHome/technicianHome"
-						})
+						
 						break;
 					case 1: //订单
 						uni.redirectTo({
