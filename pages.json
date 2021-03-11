@@ -1,0 +1,94 @@
+{
+	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+		{
+			"path": "pages/technicianHome/technicianHome",
+			"style": {
+				"navigationBarTitleText": "首页",
+				"navigationBarTextStyle": "white", //状态栏字体颜色
+				"enablePullDownRefresh": false
+			}
+
+		}, {
+			"path": "pages/technicianOrder/technicianOrder",
+			"style": {
+				"navigationBarTitleText": "订单",
+
+				"enablePullDownRefresh": false
+			}
+
+		}, {
+			"path": "pages/technicianMine/technicianMine",
+			"style": {
+				"navigationBarTitleText": "我的",
+				"navigationBarTextStyle": "white", //状态栏字体颜色
+				"enablePullDownRefresh": false
+			}
+
+		}, {
+			"path": "pages/signUp/signUp",
+			"style": {
+				"navigationBarTextStyle": "white", //状态栏字体颜色
+				"navigationBarTitleText": "uni-登录"
+			}
+		}, {
+			"path": "pagesMine/revenueStatistics/revenueStatistics",
+			"style": {
+				"navigationBarTitleText": "",
+				"enablePullDownRefresh": false
+			}
+
+		}
+	],
+	"subPackages": [{
+			"root": "pagesIndex",
+			"pages": [{
+				"path": "login/login",
+				"style": {
+					"navigationBarTitleText": "登录"
+				}
+			}, {
+				"path": "registerRoles/registerRoles",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}]
+		}, {
+			"root": "pagesIndexTwo",
+			"pages": [{
+				"path": "technicianRegistration/technicianRegistration",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "merchantRegistration/merchantRegistration",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}]
+		},
+		{
+			"root": "pagesMine",
+			"pages": [{
+				"path": "revenueStatistics/revenueStatistics",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}]
+		}
+	],
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "uni-app",
+		"navigationBarBackgroundColor": "#F8F8F8",
+		"backgroundColor": "#F8F8F8",
+		"navigationStyle": "custom"
+	}
+}
