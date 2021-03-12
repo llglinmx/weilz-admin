@@ -1,11 +1,6 @@
 {
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
 		{
-			"path": "pages/login/login",
-			"style": {
-				"navigationBarTitleText": "登录"
-			}
-		},{
 			"path": "pages/technicianHome/technicianHome",
 			"style": {
 				"navigationBarTitleText": "首页",
@@ -13,6 +8,11 @@
 				"enablePullDownRefresh": false
 			}
 
+		}, {
+			"path": "pages/login/login",
+			"style": {
+				"navigationBarTitleText": "登录"
+			}
 		}, {
 			"path": "pages/technicianOrder/technicianOrder",
 			"style": {
@@ -35,7 +35,7 @@
 				"navigationBarTitleText": "uni-登录"
 			}
 		},
-		 {
+		{
 			"path": "pages/registerRoles/registerRoles",
 			"style": {
 				"navigationBarTitleText": "",
@@ -54,71 +54,119 @@
 				"navigationBarTitleText": "",
 				"enablePullDownRefresh": false
 			}
+		}, {
+			"path": "pages/merchantHome/merchantHome",
+			"style": {
+				"navigationBarTitleText": "",
+				"enablePullDownRefresh": false
+			}
+
+		}, {
+			"path": "pages/merchantOrder/merchantOrder",
+			"style": {
+				"navigationBarTitleText": "",
+				"enablePullDownRefresh": false
+			}
+
+		}, {
+			"path": "pages/merchantStore/merchantStore",
+			"style": {
+				"navigationBarTitleText": "",
+				"enablePullDownRefresh": false
+			}
+
+		}, {
+			"path": "pages/merchantMall/merchantMall",
+			"style": {
+				"navigationBarTitleText": "",
+				"enablePullDownRefresh": false
+			}
+
+		}, {
+			"path": "pages/merchantMine/merchantMine",
+			"style": {
+				"navigationBarTitleText": "",
+				"enablePullDownRefresh": false
+			}
+
 		}
-	    ,{
-            "path" : "pages/merchantHome/merchantHome",
-            "style" :                                                                                    
-            {
-                "navigationBarTitleText": "",
-                "enablePullDownRefresh": false
-            }
-            
-        }
-        ,{
-            "path" : "pages/merchantOrder/merchantOrder",
-            "style" :                                                                                    
-            {
-                "navigationBarTitleText": "",
-                "enablePullDownRefresh": false
-            }
-            
-        }
-        ,{
-            "path" : "pages/merchantStore/merchantStore",
-            "style" :                                                                                    
-            {
-                "navigationBarTitleText": "",
-                "enablePullDownRefresh": false
-            }
-            
-        }
-        ,{
-            "path" : "pages/merchantMall/merchantMall",
-            "style" :                                                                                    
-            {
-                "navigationBarTitleText": "",
-                "enablePullDownRefresh": false
-            }
-            
-        }
-        ,{
-            "path" : "pages/merchantMine/merchantMine",
-            "style" :                                                                                    
-            {
-                "navigationBarTitleText": "",
-                "enablePullDownRefresh": false
-            }
-            
-        }
-    ],
+	],
 	"subPackages": [{
 			"root": "technicianHome",
 			"pages": []
 		},
 		{
 			"root": "technicianOrder",
-			"pages": []
+			"pages": [{
+				"path": "toBeWrittenOff/toBeWrittenOff",
+				"style": {
+					"navigationBarTitleText": "待核销",
+					"navigationBarTextStyle": "white", //状态栏字体颜色
+					"enablePullDownRefresh": false
+				}
+
+			}]
 		},
 		{
 			"root": "technicianMine",
 			"pages": [{
-				"path": "revenueStatistics/revenueStatistics",
-				"style": {
-					"navigationBarTitleText": "收益统计",
-					"navigationBarTextStyle": "white", //状态栏字体颜色
-					"enablePullDownRefresh": false
+					"path": "revenueStatistics/revenueStatistics",
+					"style": {
+						"navigationBarTitleText": "收益统计",
+						"navigationBarTextStyle": "white", //状态栏字体颜色
+						"enablePullDownRefresh": false
+					}
+				},
+				{
+					"path": "systemMessage/systemMessage",
+					"style": {
+						"navigationBarTitleText": "系统消息",
+						"enablePullDownRefresh": false
+					}
+				}, {
+					"path": "evaluationManagement/evaluationManagement",
+					"style": {
+						"navigationBarTitleText": "评价管理",
+						"enablePullDownRefresh": false
+					}
+
+				}, {
+					"path": "incomeCommission/incomeCommission",
+					"style": {
+						"navigationBarTitleText": "收益统计",
+						"navigationBarTextStyle": "white", //状态栏字体颜色
+						"enablePullDownRefresh": false
+					}
+
 				}
-			}]
+			    ,{
+                    "path" : "technicianInformation/technicianInformation",
+                    "style" :                                                                                    
+                {
+                    "navigationBarTitleText": "",
+                    "enablePullDownRefresh": false
+                }
+                
+                }
+                ,{
+                    "path" : "recommend/recommend",
+                    "style" :                                                                                    
+                {
+                    "navigationBarTitleText": "",
+                    "enablePullDownRefresh": false
+                }
+                
+                }
+                ,{
+                    "path" : "recruitmentInformation/recruitmentInformation",
+                    "style" :                                                                                    
+                {
+                    "navigationBarTitleText": "",
+                    "enablePullDownRefresh": false
+                }
+                
+                }
+            ]
 		}, {
 			"root": "merchantHome",
 			"pages": []

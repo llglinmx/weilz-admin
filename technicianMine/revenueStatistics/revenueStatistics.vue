@@ -17,7 +17,7 @@
 			<view class="box-content-main">
 				<view class="box-content-main-list">
 					<view class="box-content-main-list-li" v-for="(item,index) in 100" :key="index">
-						<view class="box-content-main-list-li-text">2020第48周</view>
+						<view class="box-content-main-list-li-text">2021第{{index+1}}周</view>
 						<view class="box-content-main-list-li-text">32158.41</view>
 						<view class="box-content-main-list-li-text">{{index+99}}</view>
 					</view>

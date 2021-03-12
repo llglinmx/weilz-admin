@@ -1,5 +1,24 @@
 <script>
 	export default {
+		// 过滤器
+		filters: {
+			// 保留两位小数
+			numFilter(value) {
+				let val = ''
+				if (!isNaN(value) && value != '') {
+					if (value % 1 == 0 && value != 0) { //整数
+						val = value + ".00"
+					} else if (value == 0) {
+						val = ''
+					} else { //小数
+						val = parseFloat(value).toFixed(2)
+					}
+				} else {
+					val = ''
+				}
+				return val
+			}
+		},
 		onLaunch: function() {
 			console.log('App Launch')
 		},

@@ -2,7 +2,7 @@
 	<view class="box">
 		<view class="box-head" :style="{paddingTop:barHeight+'px'}">
 			<view class="box-head-top">
-				<text class="iconfont iconxiaoxi icon-font" style="font-size: 52rpx;color: #fff;margin-right: 20rpx;"></text>
+				<text class="iconfont iconxiaoxi icon-font" style="font-size: 52rpx;color: #fff;margin-right: 20rpx;" @click="msgClick"></text>
 				<text class="iconfont iconshezhi icon-font" style="font-size: 52rpx;color: #fff;"></text>
 			</view>
 			<view class="box-head-wrap">
@@ -136,6 +136,12 @@
 			});
 		},
 		methods: {
+			// 系统消息
+			msgClick() {
+				uni.navigateTo({
+					url: "../../technicianMine/systemMessage/systemMessage"
+				})
+			},
 			// 菜单点击
 			menuClick(index) {
 				// 
@@ -151,20 +157,33 @@
 						break;
 						// 客户评价
 					case 2:
-
+						uni.navigateTo({
+							url: "../../technicianMine/evaluationManagement/evaluationManagement"
+						})
 						break;
 						// 技师信息
 					case 3:
-
+						uni.navigateTo({
+							url: "../../technicianMine/technicianInformation/technicianInformation"
+						})
 						break;
 						// 收益提成
 					case 4:
+						uni.navigateTo({
+							url: "../../technicianMine/incomeCommission/incomeCommission"
+						})
 						break;
 						// 推荐消息
 					case 5:
+						uni.navigateTo({
+							url: "../../technicianMine/recommend/recommend"
+						})
 						break;
 						// 招聘信息
 					case 6:
+						uni.navigateTo({
+							url: "../../technicianMine/recruitmentInformation/recruitmentInformation"
+						})
 						break;
 				}
 			},
