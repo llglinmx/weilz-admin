@@ -154,6 +154,9 @@
 						break;
 						// 日程安排
 					case 1:
+						uni.navigateTo({
+							url: "../../technicianMine/schedule/schedule"
+						})
 						break;
 						// 客户评价
 					case 2:

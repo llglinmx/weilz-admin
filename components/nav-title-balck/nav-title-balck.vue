@@ -1,5 +1,5 @@
 <template>
-	<view class="nav-wrap" :style="{paddingTop:barHeight+'px'}">
+	<view class="nav-wrap">
 		<view class="nav-box">
 			<view class="nav-back" @click="Gback">
 				<text class="iconfont iconfanhui" style="color: #000;font-size: 36rpx;"></text>
@@ -13,7 +13,7 @@
 	export default {
 		data() {
 			return {
-				barHeight: 0,
+				
 			};
 		},
 		props: {
@@ -22,15 +22,7 @@
 				default: "导航栏"
 			}
 		},
-		onReady() {
-			// 获取顶部电量状态栏高度
-			uni.getSystemInfo({
-				success: (res) => {
-					this.barHeight = res.statusBarHeight
-				}
-			});
-		},
-
+		
 		methods: {
 			//返回
 			Gback() {

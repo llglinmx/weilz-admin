@@ -4,7 +4,7 @@
 
 		</view>
 		<view class="box-content">
-444444
+			444444
 		</view>
 		<view class="box-footer">
 			<merchant-tabbar @tabbarClick="tabbarClick" :activeIndex="activeIndex"></merchant-tabbar>
@@ -18,7 +18,7 @@
 		data() {
 			return {
 				barHeight: 0, //顶部电量导航栏高度
-				activeIndex:3, //当前tabbar所在页面
+				activeIndex: 3, //当前tabbar所在页面
 			};
 		},
 		components: {
@@ -38,8 +38,8 @@
 				this.activeIndex = index
 				switch (index) {
 					case 0: //首页
-						uni.navigateTo({
-							url:"../merchantHome/merchantHome"
+						uni.redirectTo({
+							url: "../merchantHome/merchantHome"
 						})
 						break;
 					case 1: //订单
@@ -53,7 +53,7 @@
 						})
 						break;
 					case 3: //商城
-						
+
 						break;
 					case 4: //我的
 						uni.redirectTo({

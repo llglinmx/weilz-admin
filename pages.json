@@ -1,6 +1,14 @@
 {
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
 		{
+			"path": "pages/merchantHome/merchantHome",
+			"style": {
+				"navigationBarTitleText": "商家首页",
+				"navigationBarTextStyle": "white", //状态栏字体颜色
+				"enablePullDownRefresh": false
+			}
+
+		}, {
 			"path": "pages/technicianHome/technicianHome",
 			"style": {
 				"navigationBarTitleText": "首页",
@@ -55,13 +63,6 @@
 				"enablePullDownRefresh": false
 			}
 		}, {
-			"path": "pages/merchantHome/merchantHome",
-			"style": {
-				"navigationBarTitleText": "",
-				"enablePullDownRefresh": false
-			}
-
-		}, {
 			"path": "pages/merchantOrder/merchantOrder",
 			"style": {
 				"navigationBarTitleText": "",
@@ -86,6 +87,7 @@
 			"path": "pages/merchantMine/merchantMine",
 			"style": {
 				"navigationBarTitleText": "",
+				"navigationBarTextStyle": "white", //状态栏字体颜色
 				"enablePullDownRefresh": false
 			}
 
@@ -138,9 +140,54 @@
 						"enablePullDownRefresh": false
 					}
 
+				}, {
+					"path": "technicianInformation/technicianInformation",
+					"style": {
+						"navigationBarTitleText": "",
+						"enablePullDownRefresh": false
+					}
+
+				}, {
+					"path": "recommend/recommend",
+					"style": {
+						"navigationBarTitleText": "",
+						"enablePullDownRefresh": false
+					}
+
+				}, {
+					"path": "recruitmentInformation/recruitmentInformation",
+					"style": {
+						"navigationBarTitleText": "",
+						"enablePullDownRefresh": false
+					}
+
+				}, {
+					"path": "schedule/schedule",
+					"style": {
+						"navigationBarTitleText": "",
+						"enablePullDownRefresh": false
+					}
+
 				}
-			    ,{
-                    "path" : "technicianInformation/technicianInformation",
+			]
+		}, {
+			"root": "merchantHome",
+			"pages": []
+		}, {
+			"root": "merchantOrder",
+			"pages": [{
+				"path": "toBeWrittenOff/toBeWrittenOff",
+				"style": {
+					"navigationBarTitleText": "待核销",
+					"navigationBarTextStyle": "white", //状态栏字体颜色
+					"enablePullDownRefresh": false
+				}
+
+			}]
+		}, {
+			"root": "merchantStore",
+			"pages": [{
+                    "path" : "storeManagement/storeManagement",
                     "style" :                                                                                    
                 {
                     "navigationBarTitleText": "",
@@ -149,7 +196,23 @@
                 
                 }
                 ,{
-                    "path" : "recommend/recommend",
+                    "path" : "storeQRCode/storeQRCode",
+                    "style" :                                                                                    
+                {
+                    "navigationBarTitleText": "",
+					"navigationBarTextStyle": "white", //状态栏字体颜色
+                    "enablePullDownRefresh": false
+                }
+                
+                }
+            ]
+		}, {
+			"root": "merchantMall",
+			"pages": []
+		}, {
+			"root": "merchantMine",
+			"pages": [{
+                    "path" : "systemMessage/systemMessage",
                     "style" :                                                                                    
                 {
                     "navigationBarTitleText": "",
@@ -158,7 +221,34 @@
                 
                 }
                 ,{
-                    "path" : "recruitmentInformation/recruitmentInformation",
+                    "path" : "purchaseOrder/purchaseOrder",
+                    "style" :                                                                                    
+                {
+                    "navigationBarTitleText": "",
+                    "enablePullDownRefresh": false
+                }
+                
+                }
+                ,{
+                    "path" : "customerManagement/customerManagement",
+                    "style" :                                                                                    
+                {
+                    "navigationBarTitleText": "",
+                    "enablePullDownRefresh": false
+                }
+                
+                }
+                ,{
+                    "path" : "customerDetails/customerDetails",
+                    "style" :                                                                                    
+                {
+                    "navigationBarTitleText": "",
+                    "enablePullDownRefresh": false
+                }
+                
+                }
+                ,{
+                    "path" : "customerEditer/customerEditer",
                     "style" :                                                                                    
                 {
                     "navigationBarTitleText": "",
@@ -167,21 +257,6 @@
                 
                 }
             ]
-		}, {
-			"root": "merchantHome",
-			"pages": []
-		}, {
-			"root": "merchantOrder",
-			"pages": []
-		}, {
-			"root": "merchantStore",
-			"pages": []
-		}, {
-			"root": "merchantMall",
-			"pages": []
-		}, {
-			"root": "merchantMine",
-			"pages": []
 		}
 	],
 	"globalStyle": {

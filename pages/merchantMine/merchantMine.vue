@@ -1,10 +1,28 @@
 <template>
 	<view class="box">
 		<view class="box-head" :style="{paddingTop:barHeight+'px'}">
-
+			<view class="box-head-top">
+				<text class="iconfont iconxiaoxi icon-font" style="color: #fff;font-size: 52rpx" @click="message"></text>
+				<text class="iconfont iconshezhi icon-font" style="color: #fff;font-size: 52rpx"></text>
+			</view>
 		</view>
 		<view class="box-content">
-55555
+			<view class="box-content-main">
+				<view class="shop-logo flex-center">
+					<image src="../../static/images/shop-logo.png" mode="aspectFill"></image>
+				</view>
+				<view class="shop-title">蓝池美容美体有限公司</view>
+				<view class="shop-score">
+					<text class="iconfont iconwujiaoxing icon-font" style="color: #FFCD4D;font-size: 28rpx;" v-for="item in 5"></text>
+					<text>5分</text>
+				</view>
+				<view class="shop-list">
+					<view class="shop-list-li flex-center" v-for="(item,index) in menuList" :key="index" @click="menuListClick(index)">
+						<image :src="item.image" mode="aspectFill"></image>
+						<text>{{item.title}}</text>
+					</view>
+				</view>
+			</view>
 		</view>
 		<view class="box-footer">
 			<merchant-tabbar @tabbarClick="tabbarClick" :activeIndex="activeIndex"></merchant-tabbar>
@@ -19,6 +37,31 @@
 			return {
 				barHeight: 0, //顶部电量导航栏高度
 				activeIndex: 4, //当前tabbar所在页面
+				menuList: [{
+						title: "进货订单",
+						image: "../../static/images/001.png"
+					},
+					{
+						title: "客户管理",
+						image: "../../static/images/001.png"
+					},
+					{
+						title: "视频教学",
+						image: "../../static/images/001.png"
+					},
+					{
+						title: "营销管理",
+						image: "../../static/images/001.png"
+					},
+					{
+						title: "统计信息",
+						image: "../../static/images/001.png"
+					},
+					{
+						title: "推荐",
+						image: "../../static/images/001.png"
+					},
+				]
 			};
 		},
 		components: {
@@ -33,13 +76,44 @@
 			});
 		},
 		methods: {
+			// 系统消息
+			message() {
+				uni.navigateTo({
+					url: "../../merchantMine/systemMessage/systemMessage"
+				})
+			},
+
+			// 列表点击
+			menuListClick(index) {
+				switch (index) {
+					case 0: //进货订单
+						uni.navigateTo({
+							url: "../../merchantMine/purchaseOrder/purchaseOrder"
+						})
+						break;
+					case 1: // 客户管理
+						uni.navigateTo({
+							url: "../../merchantMine/customerManagement/customerManagement"
+						})
+						break;
+					case 2: //视频教学
+						break;
+					case 3: // 营销管理
+						break;
+					case 4: // 统计信息
+						break;
+					case 5: //推荐
+						break;
+				}
+			},
+
 			// tabbar点击
 			tabbarClick(index) {
 				this.activeIndex = index
 				switch (index) {
 					case 0: //首页
-						uni.navigateTo({
-							url:"../merchantHome/merchantHome"
+						uni.redirectTo({
+							url: "../merchantHome/merchantHome"
 						})
 						break;
 					case 1: //订单
@@ -58,7 +132,7 @@
 						})
 						break;
 					case 4: //我的
-						
+
 						break;
 				}
 
@@ -72,15 +146,105 @@
 		display: flex;
 		flex-direction: column;
 		height: 100%;
-		background: #F7F7F7;
 
 		.box-head {
-			background-color: #fff;
+			background-color: #5DBDFE;
+
+			.box-head-top {
+				height: 88rpx;
+				padding: 0 40rpx;
+				box-sizing: border-box;
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+			}
 		}
 
 		.box-content {
 			flex: 1;
 			overflow-y: scroll;
+			background: #5DBDFE;
+
+			.box-content-main {
+				position: relative;
+				height: calc(100% - 134rpx);
+				margin-top: 134rpx;
+				background: #F7F7F7;
+				border-radius: 40rpx 40rpx 0rpx 0rpx;
+
+				.shop-logo {
+					position: absolute;
+					left: 0;
+					right: 0;
+					top: -125rpx;
+					margin: auto;
+					width: 250rpx;
+					height: 250rpx;
+					background: rgba(255, 255, 255, .2);
+					border-radius: 20rpx;
+
+					image {
+						width: 210rpx;
+						height: 210rpx;
+					}
+				}
+
+				.shop-title {
+					padding-top: 136rpx;
+					font-size: 36rpx;
+					font-weight: 500;
+					color: #000;
+					text-align: center;
+				}
+
+				.shop-score {
+					margin-top: 20rpx;
+					display: flex;
+					align-items: center;
+					justify-content: center;
+
+					text {
+						margin-right: 8rpx;
+						font-size: 24rpx;
+						color: #000;
+					}
+				}
+
+				.shop-list {
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					flex-wrap: wrap;
+					margin-top: 60rpx;
+
+					.shop-list-li {
+						width: 320rpx;
+						height: 200rpx;
+						margin-right: 30rpx;
+						margin-bottom: 30rpx;
+						flex-direction: column;
+						background: #FFFFFF;
+						border-radius: 20rpx;
+
+						image {
+							width: 72rpx;
+							height: 72rpx;
+						}
+
+						text {
+							margin-top: 20rpx;
+							line-height: 32rpx;
+							font-size: 28rpx;
+							color: #000;
+						}
+					}
+
+					.shop-list-li:nth-child(2n) {
+						margin-right: 0;
+					}
+				}
+
+			}
 		}
 
 		.box-footer {}
