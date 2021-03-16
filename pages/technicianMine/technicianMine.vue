@@ -60,23 +60,23 @@
 				activeIndex: 2, //当前tabbar所在页面
 				typeList: [{
 						text: '待核销',
-						image: '../../static/images/icon-1.jpg'
+						image: '../../static/images/technician-mine-icon1.png'
 					},
 					{
 						text: '已核销',
-						image: '../../static/images/icon-2.jpg'
+						image: '../../static/images/technician-mine-icon2.png'
 					},
 					{
 						text: '已退款',
-						image: '../../static/images/icon-3.jpg'
+					image: '../../static/images/technician-mine-icon3.png'
 					},
 					{
 						text: '已评价',
-						image: '../../static/images/icon-4.jpg'
+						image: '../../static/images/technician-mine-icon4.png'
 					},
 					{
 						text: '全部订单',
-						image: '../../static/images/icon-5.jpg'
+						image: '../../static/images/technician-mine-icon5.png'
 					},
 				],
 				menuList: [{

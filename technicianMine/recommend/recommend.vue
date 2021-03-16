@@ -365,6 +365,7 @@
 											}
 
 											.recommend-main-list-li-bottom {
+												margin-top: 10rpx;
 												font-size: 26rpx;
 												color: #333;
 											}

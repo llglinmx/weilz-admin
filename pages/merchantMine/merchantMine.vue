@@ -39,27 +39,27 @@
 				activeIndex: 4, //当前tabbar所在页面
 				menuList: [{
 						title: "进货订单",
-						image: "../../static/images/001.png"
+						image: "../../static/images/mine-icon1.png"
 					},
 					{
 						title: "客户管理",
-						image: "../../static/images/001.png"
+						image: "../../static/images/mine-icon2.png"
 					},
 					{
 						title: "视频教学",
-						image: "../../static/images/001.png"
+						image: "../../static/images/mine-icon3.png"
 					},
 					{
 						title: "营销管理",
-						image: "../../static/images/001.png"
+						image: "../../static/images/mine-icon4.png"
 					},
 					{
 						title: "统计信息",
-						image: "../../static/images/001.png"
+						image: "../../static/images/mine-icon5.png"
 					},
 					{
 						title: "推荐",
-						image: "../../static/images/001.png"
+						image: "../../static/images/mine-icon6.png"
 					},
 				]
 			};
@@ -99,10 +99,16 @@
 					case 2: //视频教学
 						break;
 					case 3: // 营销管理
+						uni.navigateTo({
+							url: "../../merchantMine/marketingManagement/marketingManagement"
+						})
 						break;
 					case 4: // 统计信息
 						break;
 					case 5: //推荐
+						uni.navigateTo({
+							url: "../../merchantMine/recommend/recommend"
+						})
 						break;
 				}
 			},

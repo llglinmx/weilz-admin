@@ -49,7 +49,7 @@
 		background: #F7F7F7;
 
 		.box-head {
-			background-color: #5DBDFE;
+			background-color: #409FFF;
 		}
 
 		.box-content {
@@ -59,8 +59,9 @@
 
 			.box-content-wrap {
 				height: 200rpx;
-				background: #5DBDFE;
-				border-radius: 0rpx 0rpx 0rpx 0rpx;
+				// background: #5DBDFE;
+				background: url(../../static/images/code-bg.png) no-repeat;
+				background-size: contain;
 			}
 
 			.box-content-main {

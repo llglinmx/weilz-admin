@@ -51,27 +51,27 @@
 				barHeight: 0, //顶部电量导航栏高度
 				menuList: [{
 						title: "门店二维码",
-						image: "../../static/images/userImage.png"
+						image: "../../static/images/store-code-ico.png"
 					},
 					{
 						title: "项目管理",
-						image: "../../static/images/userImage.png"
+						image: "../../static/images/store-project-ico.png"
 					},
 					{
 						title: "技师管理",
-						image: "../../static/images/userImage.png"
+						image: "../../static/images/store-technician-ico.png"
 					},
 					{
 						title: "排班表",
-						image: "../../static/images/userImage.png"
+						image: "../../static/images/store-scheduling-ico.png"
 					},
 					{
 						title: "技师招聘",
-						image: "../../static/images/userImage.png"
+						image: "../../static/images/store-recruit-ico.png"
 					},
 					{
 						title: "房间管理",
-						image: "../../static/images/userImage.png"
+						image: "../../static/images/store-room-ico.png"
 					},
 				]
 			};
@@ -96,7 +96,25 @@
 							url: "../storeQRCode/storeQRCode"
 						})
 						break;
-					case 1:
+					case 1: //项目管理
+						uni.navigateTo({
+							url: "../projectManagement/projectManagement"
+						})
+						break;
+					case 2: //技师管理
+						uni.navigateTo({
+							url: "../technicianManagement/technicianManagement"
+						})
+						break;
+					case 4: //技师招聘
+						uni.navigateTo({
+							url: "../technicianRecruit/technicianRecruit"
+						})
+						break;
+					case 5: //房间管理
+						uni.navigateTo({
+							url: "../roomManagement/roomManagement"
+						})
 						break;
 				}
 			},
