@@ -6,6 +6,27 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "9974760",
+      "name": "减",
+      "font_class": "jian",
+      "unicode": "e711",
+      "unicode_decimal": 59153
+    },
+    {
+      "icon_id": "9974761",
+      "name": "加",
+      "font_class": "jia",
+      "unicode": "e712",
+      "unicode_decimal": 59154
+    },
+    {
+      "icon_id": "729530",
+      "name": "3.1 收藏的店铺",
+      "font_class": "31shoucangdedianpu",
+      "unicode": "e650",
+      "unicode_decimal": 58960
+    },
+    {
       "icon_id": "8491689",
       "name": "我的2",
       "font_class": "wode3",

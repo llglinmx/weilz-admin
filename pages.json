@@ -187,139 +187,180 @@
 		}, {
 			"root": "merchantStore",
 			"pages": [{
-                    "path" : "storeManagement/storeManagement",
-                    "style" :                                                                                    
-                {
-                    "navigationBarTitleText": "",
-                    "enablePullDownRefresh": false
-                }
-                
-                }
-                ,{
-                    "path" : "storeQRCode/storeQRCode",
-                    "style" :                                                                                    
-                {
-                    "navigationBarTitleText": "",
+				"path": "storeManagement/storeManagement",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "storeQRCode/storeQRCode",
+				"style": {
+					"navigationBarTitleText": "",
 					"navigationBarTextStyle": "white", //状态栏字体颜色
-                    "enablePullDownRefresh": false
-                }
-                
-                }
-                ,{
-                    "path" : "projectManagement/projectManagement",
-                    "style" :                                                                                    
-                {
-                    "navigationBarTitleText": "",
-                    "enablePullDownRefresh": false
-                }
-                
-                }
-                ,{
-                    "path" : "technicianManagement/technicianManagement",
-                    "style" :                                                                                    
-                {
-                    "navigationBarTitleText": "",
-                    "enablePullDownRefresh": false
-                }
-                
-                }
-                ,{
-                    "path" : "technicianRecruit/technicianRecruit",
-                    "style" :                                                                                    
-                {
-                    "navigationBarTitleText": "",
-                    "enablePullDownRefresh": false
-                }
-                
-                }
-                ,{
-                    "path" : "roomManagement/roomManagement",
-                    "style" :                                                                                    
-                {
-                    "navigationBarTitleText": "",
-                    "enablePullDownRefresh": false
-                }
-                
-                }
-                ,{
-                    "path" : "addRoom/addRoom",
-                    "style" :                                                                                    
-                {
-                    "navigationBarTitleText": "",
-                    "enablePullDownRefresh": false
-                }
-                
-                }
-            ]
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "projectManagement/projectManagement",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "technicianManagement/technicianManagement",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "technicianRecruit/technicianRecruit",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "roomManagement/roomManagement",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "addRoom/addRoom",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}]
 		}, {
 			"root": "merchantMall",
 			"pages": []
 		}, {
 			"root": "merchantMine",
 			"pages": [{
-                    "path" : "systemMessage/systemMessage",
-                    "style" :                                                                                    
-                {
-                    "navigationBarTitleText": "",
-                    "enablePullDownRefresh": false
-                }
-                
-                }
-                ,{
-                    "path" : "purchaseOrder/purchaseOrder",
-                    "style" :                                                                                    
-                {
-                    "navigationBarTitleText": "",
-                    "enablePullDownRefresh": false
-                }
-                
-                }
-                ,{
-                    "path" : "customerManagement/customerManagement",
-                    "style" :                                                                                    
-                {
-                    "navigationBarTitleText": "",
-                    "enablePullDownRefresh": false
-                }
-                
-                }
-                ,{
-                    "path" : "customerDetails/customerDetails",
-                    "style" :                                                                                    
-                {
-                    "navigationBarTitleText": "",
-                    "enablePullDownRefresh": false
-                }
-                
-                }
-                ,{
-                    "path" : "customerEditer/customerEditer",
-                    "style" :                                                                                    
-                {
-                    "navigationBarTitleText": "",
-                    "enablePullDownRefresh": false
-                }
-                
-                }
-                ,{
-                    "path" : "recommend/recommend",
-                    "style" :                                                                                    
-                {
-                    "navigationBarTitleText": "",
-                    "enablePullDownRefresh": false
-                }
-                
-                }
-                ,{
-                    "path" : "marketingManagement/marketingManagement",
-                    "style" :                                                                                    
-                {
-                    "navigationBarTitleText": "",
-                    "enablePullDownRefresh": false
-                }
-                
-                }
-            ]
+				"path": "systemMessage/systemMessage",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "purchaseOrder/purchaseOrder",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "customerManagement/customerManagement",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "customerDetails/customerDetails",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "customerEditer/customerEditer",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "recommend/recommend",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "marketingManagement/marketingManagement",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "newCoupons/newCoupons",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "addPackageCard/addPackageCard",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "addGiftCard/addGiftCard",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "statisticsInfo/statisticsInfo",
+				"style": {
+					"navigationBarTitleText": "统计信息",
+					"navigationBarTextStyle": "white", //状态栏字体颜色
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "storeData/storeData",
+				"style": {
+					"navigationBarTitleText": "门店数据",
+					"navigationBarTextStyle": "white", //状态栏字体颜色
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "technicianDetails/technicianDetails",
+				"style": {
+					"navigationBarTitleText": "技师详情",
+					"navigationBarTextStyle": "white", //状态栏字体颜色
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "refundOrderDetails/refundOrderDetails",
+				"style": {
+					"navigationBarTitleText": "退款订单详情",
+					"navigationBarTextStyle": "white", //状态栏字体颜色
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "packageOrderDdetails/packageOrderDdetails",
+				"style": {
+					"navigationBarTitleText": "套餐订单详情",
+					"navigationBarTextStyle": "white", //状态栏字体颜色
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "serviceOrderDetails/serviceOrderDetails",
+				"style": {
+					"navigationBarTitleText": "服务订单详情",
+					"navigationBarTextStyle": "white", //状态栏字体颜色
+					"enablePullDownRefresh": false
+				}
+
+			}]
 		}
 	],
 	"globalStyle": {

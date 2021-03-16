@@ -14,7 +14,6 @@
 						</view>
 					</view>
 				</view>
-
 				<view class="box-content-list-li">
 					<view class="box-content-list-li-title">楼层</view>
 					<view class="box-content-list-li-info">
