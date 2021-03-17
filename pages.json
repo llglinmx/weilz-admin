@@ -236,6 +236,21 @@
 					"enablePullDownRefresh": false
 				}
 
+			}, {
+				"path": "applicationRecord/applicationRecord",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "positionDetails/positionDetails",
+				"style": {
+					"navigationBarTitleText": "职位详情",
+					"navigationBarTextStyle": "white", //状态栏字体颜色
+					"enablePullDownRefresh": false
+				}
+
 			}]
 		}, {
 			"root": "merchantMall",
@@ -357,6 +372,48 @@
 				"style": {
 					"navigationBarTitleText": "服务订单详情",
 					"navigationBarTextStyle": "white", //状态栏字体颜色
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "accountManagement/accountManagement",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "accountDetails/accountDetails",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "addSubAccount/addSubAccount",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "videoTeaching/videoTeaching",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "massageDetails/massageDetails",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "massage/massage",
+				"style": {
+					"navigationBarTitleText": "",
 					"enablePullDownRefresh": false
 				}
 

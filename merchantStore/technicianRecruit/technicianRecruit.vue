@@ -13,7 +13,8 @@
 						<swiper-item class="swiper-box-item-list">
 							<view class="box-content-main">
 								<view class="box-content-main-list">
-									<view class="box-content-main-list-li" v-for="(item,index) in 10" :key="index">
+									<view class="box-content-main-list-li" v-for="(item,index) in 10" :key="index"
+										@click="positionDetails">
 										<view class="box-content-main-list-li-top">
 											<view class="box-content-main-list-li-top-title">
 												<view class="list-li-top-title-text">全职按摩师</view>
@@ -34,15 +35,19 @@
 										</view>
 										<view class="box-content-main-list-li-bottom">
 											<view class="box-content-main-list-li-bottom-item flex-center">
-												<text class="iconfont iconshanchu-shangjia icon-font" style="color: #FF6666;font-size: 36rpx;margin-top: 4rpx;"></text>
+												<text class="iconfont iconshanchu-shangjia icon-font"
+													style="color: #FF6666;font-size: 36rpx;margin-top: 4rpx;"></text>
 												<text>删除</text>
 											</view>
-											<view class="box-content-main-list-li-bottom-item flex-center">
-												<text class="iconfont iconyingpinjilu-shangjia icon-font" style="color: #4EC494;font-size: 36rpx;margin-top: 4rpx;"></text>
+											<view class="box-content-main-list-li-bottom-item flex-center"
+												@click.stop="applicationRecord">
+												<text class="iconfont iconyingpinjilu-shangjia icon-font"
+													style="color: #4EC494;font-size: 36rpx;margin-top: 4rpx;"></text>
 												<text>应聘记录</text>
 											</view>
 											<view class="box-content-main-list-li-bottom-item flex-center">
-												<text class="iconfont iconbianji-shangjia icon-font" style="color: #5DBDFE;font-size: 36rpx;margin-top: 4rpx;"></text>
+												<text class="iconfont iconbianji-shangjia icon-font"
+													style="color: #5DBDFE;font-size: 36rpx;margin-top: 4rpx;"></text>
 												<text>编辑</text>
 											</view>
 										</view>
@@ -54,7 +59,8 @@
 							<view class="box-content-seek">
 								<view class="box-content-seek-screen">
 									<view class="box-content-seek-screen-wrap" @click="seeKClick">
-										<text class="iconfont iconshaixuan icon-font" style="color: #000;font-size: 36rpx;margin-top: 4rpx;"></text>
+										<text class="iconfont iconshaixuan icon-font"
+											style="color: #000;font-size: 36rpx;margin-top: 4rpx;"></text>
 										<text>筛选</text>
 									</view>
 								</view>
@@ -66,21 +72,27 @@
 										<view class="box-content-seek-list-li-info">
 											<view class="box-content-seek-list-li-info-top">
 												<view class="box-content-seek-list-li-info-top-text">
-													<view class="box-content-seek-list-li-info-top-text-title">刘晨轩</view>
+													<view class="box-content-seek-list-li-info-top-text-title">刘晨轩
+													</view>
 													<view class="box-content-seek-list-li-info-top-text-title-score">
-														<text class="iconfont iconwujiaoxing icon-font" style="color: #FFCD4D;font-size: 28rpx;" v-for="item in 5"></text>
+														<text class="iconfont iconwujiaoxing icon-font"
+															style="color: #FFCD4D;font-size: 28rpx;"
+															v-for="item in 5"></text>
 														<text>5分</text>
 													</view>
 												</view>
-												<view class="box-content-seek-list-li-info-top-btn flex-center">查看简历</view>
+												<view class="box-content-seek-list-li-info-top-btn flex-center">查看简历
+												</view>
 											</view>
-											<view class="box-content-seek-list-li-info-main-list" style="color: #636363;">
+											<view class="box-content-seek-list-li-info-main-list"
+												style="color: #636363;">
 												<view class="seek-list-li-info-main-list-li">22岁</view>
 												<view class="seek-list-li-info-main-list-li">高中</view>
 												<view class="seek-list-li-info-main-list-li">厦门</view>
 												<view class="seek-list-li-info-main-list-li">2年工龄</view>
 											</view>
-											<view class="box-content-seek-list-li-info-main-list" style="color: #999999;">
+											<view class="box-content-seek-list-li-info-main-list"
+												style="color: #999999;">
 												<view class="seek-list-li-info-main-list-li">
 													求职岗位：
 													<text style="color: #333333;">按摩师</text>
@@ -90,7 +102,8 @@
 													<text style="color: #333333;">8000</text>
 												</view>
 											</view>
-											<view class="box-content-seek-list-li-info-main-list" style="color: #999999;">
+											<view class="box-content-seek-list-li-info-main-list"
+												style="color: #999999;">
 												<view class="seek-list-li-info-main-list-li">
 													掌握技能：
 													<text style="color: #333333;">足底按摩/背部按摩/泰式古法按摩</text>
@@ -112,7 +125,8 @@
 		<popup-layer ref="popupRef" :direction="'left'" v-model="boolShow">
 			<view class="zidingyiBox">
 				<view class="popup-head" :style="{paddingTop:barHeight+'px'}">
-					<text  @click="seekBack"  class="iconfont iconfanhui icon-font" style="color: #333;font-size: 36rpx;margin-top: 4rpx;"></text>
+					<text @click="seekBack" class="iconfont iconfanhui icon-font"
+						style="color: #333;font-size: 36rpx;margin-top: 4rpx;"></text>
 					<text class="popup-head-text">筛选</text>
 				</view>
 				<view class="popup-content">
@@ -174,6 +188,18 @@
 			});
 		},
 		methods: {
+			// 应聘记录
+			applicationRecord() {
+				uni.navigateTo({
+					url: "../applicationRecord/applicationRecord"
+				})
+			},
+			// 职位详情
+			positionDetails() {
+				uni.navigateTo({
+					url: "../positionDetails/positionDetails"
+				})
+			},
 
 			// 发布新招聘
 			release() {
@@ -185,13 +211,13 @@
 
 			// 筛选点击
 			seeKClick() {
-				this.boolShow =true
+				this.boolShow = true
 				// this.$refs.popupRef.show() // 弹出
 			},
 			// 筛选关闭
 			seekBack() {
 				// this.$refs.popupRef.close() // 关闭
-				this.boolShow =false
+				this.boolShow = false
 			},
 
 			// tabs 点击
@@ -300,6 +326,10 @@
 												flex: 1;
 												font-size: 28rpx;
 												color: #333;
+
+												.icon-font {
+													margin-right: 10rpx;
+												}
 											}
 										}
 									}
@@ -520,7 +550,7 @@
 
 				.popup-footer-reset {
 					width: 198rpx;
-					height:68rpx;
+					height: 68rpx;
 					background: #F7F7F7;
 					border: 1px solid #666666;
 					border-radius: 10rpx;

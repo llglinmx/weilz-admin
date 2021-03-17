@@ -64,6 +64,10 @@
 						title: "推荐",
 						image: "../../static/images/mine-icon6.png"
 					},
+					{
+						title: "账号管理",
+						image: "../../static/images/mine-icon6.png"
+					},
 				]
 			};
 		},
@@ -100,6 +104,9 @@
 						})
 						break;
 					case 2: //视频教学
+						uni.navigateTo({
+							url: "../../merchantMine/videoTeaching/videoTeaching"
+						})
 						break;
 					case 3: // 营销管理
 						uni.navigateTo({
@@ -114,6 +121,11 @@
 					case 5: //推荐
 						uni.navigateTo({
 							url: "../../merchantMine/recommend/recommend"
+						})
+						break;
+					case 6: //账号管理
+						uni.navigateTo({
+							url: "../../merchantMine/accountManagement/accountManagement"
 						})
 						break;
 				}
@@ -225,7 +237,9 @@
 				.shop-list {
 					display: flex;
 					align-items: center;
-					justify-content: center;
+					// justify-content: center;
+					padding: 0 40rpx;
+					box-sizing: border-box;
 					flex-wrap: wrap;
 					margin-top: 60rpx;
 
