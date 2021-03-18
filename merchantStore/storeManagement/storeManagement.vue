@@ -4,20 +4,22 @@
 			<nav-title-balck navTitle="门店管理"></nav-title-balck>
 		</view>
 		<view class="box-content">
-			<view class="box-content-main">
+			<view class="box-content-main" @click="merchantDetails">
 				<view class="box-content-main-image">
 					<image src="../../static/images/001.png" mode="aspectFill"></image>
 				</view>
 				<view class="box-content-main-info">
 					<view class="box-content-main-info-title">罗约蓝池·温泉SPA</view>
 					<view class="box-content-main-info-score">
-						<text class="iconfont iconwujiaoxing icon-font" style="color: #FFCD4D;font-size: 28rpx;" v-for="item in 5"></text>
+						<text class="iconfont iconwujiaoxing icon-font" style="color: #FFCD4D;font-size: 28rpx;"
+							v-for="item in 5"></text>
 						<text>5分</text>
 					</view>
 					<view class="box-content-main-info-address">地址：中国 福建省 厦门市 集美区 杏滨路罗约酒店负一楼</view>
 				</view>
 				<view class="box-content-main-more">
-					<text class="iconfont icongengduo icon-font" style="color: #ccc;font-size: 32rpx;margin-top: 4rpx;"></text>
+					<text class="iconfont icongengduo icon-font"
+						style="color: #ccc;font-size: 32rpx;margin-top: 4rpx;"></text>
 				</view>
 			</view>
 
@@ -30,7 +32,8 @@
 						<view class="box-content-list-item-left-title">{{item.title}}</view>
 					</view>
 					<view class="box-content-list-item-more">
-						<text class="iconfont icongengduo icon-font" style="color: #ccc;font-size: 32rpx;margin-top: 4rpx;"></text>
+						<text class="iconfont icongengduo icon-font"
+							style="color: #ccc;font-size: 32rpx;margin-top: 4rpx;"></text>
 					</view>
 				</view>
 			</view>
@@ -88,6 +91,13 @@
 			});
 		},
 		methods: {
+			// 商家信息
+			merchantDetails() {
+				uni.navigateTo({
+					url: "../merchantInformation/merchantInformation"
+				})
+			},
+
 			// 菜单栏点击
 			menuListClick(index) {
 				switch (index) {
@@ -104,6 +114,11 @@
 					case 2: //技师管理
 						uni.navigateTo({
 							url: "../technicianManagement/technicianManagement"
+						})
+						break;
+					case 3: //排班表
+						uni.navigateTo({
+							url: "../schedule/schedule"
 						})
 						break;
 					case 4: //技师招聘

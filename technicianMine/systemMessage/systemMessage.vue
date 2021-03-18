@@ -1,29 +1,49 @@
 <template>
-	<view :style="{paddingTop:barHeight+'px'}">
-		<system-message />
+	<view class="box">
+		<view class="box-head" :style="{paddingTop:barHeight+'px'}">
+			<nav-title-balck navTitle="系统消息"></nav-title-balck>
+		</view>
+		<view class="box-content">
+			<view class="box-content-list" v-for="(item,index) in 5" :key="index">
+				<view class="box-content-list-time flex-center">2020-04-0{{index+1}} 00:00:00</view>
+				<view class="box-content-list-main">
+					<view class="box-content-list-main-top">
+						<view class="box-content-list-main-top-title">版本更新提醒</view>
+						<view class="box-content-list-main-top-text">
+							weiiz 1.0版本更新上线了，全新地图找店方式，立即更新体验吧！
+						</view>
+					</view>
+					<view class="box-content-list-main-bottom">
+						<view class="list-main-bottom-title">点击查看</view>
+						<view class="list-main-bottom-more">
+							<text class="iconfont icongengduo icon-font" style="color: #999;font-size: 28rpx;"></text>
+						</view>
+					</view>
+				</view>
+			</view>
+		</view>
 	</view>
 </template>
 
 <script>
-	import systemMessage from "../../components/system-message/system-message.vue"
+	import navTitleBalck from "../../components/nav-title-balck/nav-title-balck.vue"
 	export default {
 		data() {
 			return {
-				barHeight: 0, //顶部电量导航栏高度
+	barHeight: 0, //顶部电量导航栏高度
 			};
 		},
 		components: {
-			systemMessage
+			navTitleBalck
 		},
-		onReady() {
+onReady() {
 			// 获取顶部电量状态栏高度
 			uni.getSystemInfo({
 				success: (res) => {
 					this.barHeight = res.statusBarHeight
 				}
 			});
-		},
-		
+		},	barHeight: 0, //顶部电量导航栏高度
 		methods: {
 
 		}
@@ -47,9 +67,10 @@
 			flex: 1;
 			overflow-y: scroll;
 
-.box-content-list:last-child{
-	margin-bottom: 40rpx;
-}
+			.box-content-list:last-child {
+				margin-bottom: 40rpx;
+			}
+
 			.box-content-list {
 				display: flex;
 				align-items: center;
@@ -82,7 +103,8 @@
 							font-size: 32rpx;
 							color: #000;
 						}
-						.box-content-list-main-top-title::after{
+
+						.box-content-list-main-top-title::after {
 							position: absolute;
 							top: 0;
 							bottom: 0;

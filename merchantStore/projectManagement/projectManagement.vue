@@ -7,7 +7,11 @@
 				</view>
 				<view class="box-head-title">项目管理</view>
 				<view class="box-head-ico flex-center">
-					<text class="iconfont iconsousuo1 icon-font" style="color: #5DBDFE;font-size: 52rpx;margin-top: 4rpx;"></text>
+					<text class="iconfont iconsousuo1 icon-font"
+						style="color: #5DBDFE;font-size: 52rpx;margin-top: 4rpx;"
+						:style="{display:!isChoice?'block':'none'}" @click="searchCilck"></text>
+					<text class="iconfont iconcuowu" style="color: #5DBDFE;font-size: 60rpx;"
+						:style="{display:isChoice?'block':'none'}" @click="cancelChoice"></text>
 				</view>
 			</view>
 			<view class="box-head-tabs">
@@ -15,19 +19,34 @@
 			</view>
 		</view>
 		<view class="box-content">
+			<view class="box-content-search"
+				:style="{height:isSearch?'auto':'0',padding:isSearch?'30rpx 40rpx':'0 40rpx'}">
+				<view class="box-content-search-box">
+					<input type="text" placeholder="请输入需要搜索的内容" />
+					<text class="iconfont iconsousuo1 icon-font"
+						style="color: #999;font-size: 48rpx;margin-top: 4rpx;"></text>
+				</view>
+			</view>
+
 			<view class="box-content-wrap">
 				<view class="box-content-wrap-item">
 					<swiper class="swiper-box" :current="defaultIndex" @change="tabChange">
 						<swiper-item class="swiper-box-item-list">
 							<view class="box-content-main">
-								<view class="box-content-main-list">
-									<view class="box-content-main-list-li" :class="item.isOpen?'box-content-main-list-li-active':''" v-for="(item,index) in dataList"
-									 :key="index">
-										<view class="box-content-main-list-li-top" :class="!item.isOpen?'box-content-main-list-li-top-active':''">
-											<view class="box-content-main-list-li-top-check">
-												<text class="iconfont iconxuanzhong icon-font" style="color: #5DBDFE;font-size: 40rpx;" v-if="item.isCheck"
-												 @click="checkClick(index,true)"></text>
-												<text class="iconfont iconweixuanzhong1 icon-font" style="color: #ccc;font-size: 40rpx;" v-else @click="checkClick(index,false)"></text>
+								<view class="box-content-main-list" :style="{marginBottom:isChoice?'40rpx':'0'}">
+									<view class="box-content-main-list-li"
+										:class="!item.isOpen?'box-content-main-list-li-active':''"
+										v-for="(item,index) in dataList" @longtap="longtap" :key="index">
+										<view class="box-content-main-list-li-top"
+											:class="item.isOpen?'box-content-main-list-li-top-active':''">
+											<view class="box-content-main-list-li-top-check flex-center"
+												:style="{width:isChoice?'50rpx':'0'}">
+												<text class="iconfont iconxuanzhong icon-font"
+													style="color: #5DBDFE;font-size: 40rpx;" v-if="item.isCheck"
+													@click="checkClick(index,true)"></text>
+												<text class="iconfont iconweixuanzhong1 icon-font"
+													style="color: #ccc;font-size: 40rpx;" v-else
+													@click="checkClick(index,false)"></text>
 											</view>
 											<view class="box-content-main-list-li-top-image">
 												<image src="../../static/images/001.png" mode="aspectFill"></image>
@@ -41,26 +60,34 @@
 												<view class="box-content-main-list-li-top-info-stock">库存：200</view>
 												<view class="box-content-main-list-li-top-info-price">
 													<view class="list-li-top-info-present-price">￥285.00</view>
-													<view class="list-li-top-info-switch flex-center">
-														<text class="iconfont iconzhankai icon-font open" :class="!item.isOpen?'open-active':''" style="color:#5DBDFE;font-size: 48rpx;"
-														 @click="switchClick(index,true)"></text>
-														<text class="iconfont iconshouqi icon-font close" :class="!item.isOpen?'close-active':''" style="color: #ccc;font-size: 48rpx;"
-														 @click="switchClick(index,false)"></text>
+													<view class="list-li-top-info-switch flex-center" v-if="!isChoice">
+														<text class="iconfont iconzhankai icon-font open"
+															:class="item.isOpen?'open-active':''"
+															style="color:#5DBDFE;font-size: 48rpx;"
+															@click="switchClick(index,true)"></text>
+														<text class="iconfont iconshouqi icon-font close"
+															:class="item.isOpen?'close-active':''"
+															style="color: #ccc;font-size: 48rpx;"
+															@click="switchClick(index,false)"></text>
 													</view>
 												</view>
 											</view>
 										</view>
-										<view class="box-content-main-list-li-bottom" :class="!item.isOpen?'box-content-main-list-li-bottom-active':''">
-											<view class="box-content-main-list-li-bottom-item">
-												<text class="iconfont iconshanchu-shangjia icon-font" style="color: #FF6666;font-size: 36rpx;margin-top: 4rpx;"></text>
+										<view class="box-content-main-list-li-bottom"
+											:class="item.isOpen?'box-content-main-list-li-bottom-active':''">
+											<view class="box-content-main-list-li-bottom-item" @click="projectDelete(index)">
+												<text class="iconfont iconshanchu-shangjia icon-font"
+													style="color: #FF6666;font-size: 36rpx;margin-top: 4rpx;"></text>
 												<text>删除</text>
 											</view>
 											<view class="box-content-main-list-li-bottom-item">
-												<text class="iconfont iconxiajia-shangjia icon-font" style="color: #4EC494;font-size: 36rpx;margin-top: 4rpx;"></text>
+												<text class="iconfont iconxiajia-shangjia icon-font"
+													style="color: #4EC494;font-size: 36rpx;margin-top: 4rpx;"></text>
 												<text>下架</text>
 											</view>
 											<view class="box-content-main-list-li-bottom-item">
-												<text class="iconfont iconbianji-shangjia icon-font" style="color: #5DBDFE;font-size: 36rpx;margin-top: 4rpx;"></text>
+												<text class="iconfont iconbianji-shangjia icon-font"
+													style="color: #5DBDFE;font-size: 36rpx;margin-top: 4rpx;"></text>
 												<text>编辑</text>
 											</view>
 										</view>
@@ -79,10 +106,12 @@
 				</view>
 			</view>
 		</view>
-		<view class="box-footer">
+		<view class="box-footer" :style="{height:isChoice?'108rpx':'0'}">
 			<view class="box-footer-all-check">
-				<text class="iconfont iconxuanzhong icon-font" style="color: #5DBDFE;font-size: 40rpx;" @click="selectAll" v-if="isSelectAll"></text>
-				<text class="iconfont iconweixuanzhong1 icon-font" style="color: #ccc;font-size: 40rpx;" @click="selectAll" v-if="!isSelectAll"></text>
+				<text class="iconfont iconxuanzhong icon-font" style="color: #5DBDFE;font-size: 40rpx;"
+					@click="selectAll" v-if="isSelectAll"></text>
+				<text class="iconfont iconweixuanzhong1 icon-font" style="color: #ccc;font-size: 40rpx;"
+					@click="selectAll" v-if="!isSelectAll"></text>
 				<text>全选</text>
 			</view>
 			<view class="box-footer-btn">
@@ -90,12 +119,16 @@
 				<view class="btn-off-the-shelf flex-center">下架</view>
 			</view>
 		</view>
+		<view class="box-footer-btn" :style="{height:!isChoice?'140rpx':'0'}">
+			<btn-sky-blue style="width: 100%;" btnName="添加项目" @btnClick="addProject" />
+		</view>
 	</view>
 </template>
 
 <script>
 	import navTitleBalck from "../../components/nav-title-balck/nav-title-balck.vue"
 	import merchantTabs from "../../components/merchant-tabs/merchant-tabs.vue"
+	import btnSkyBlue from "../../components/btn-sky-blue/btn-sky-blue.vue"
 	export default {
 		data() {
 			return {
@@ -103,24 +136,26 @@
 				defaultIndex: 0, //当前滑动的页面
 				tabsList: ["出售中 0", "仓库中 0", "已售罄 0"],
 				isSelectAll: false, //是否全选
+				isChoice: false, //是否多选
+				isSearch: false, //是否搜索
 				dataList: [{
-						isOpen: true,
+						isOpen: false,
 						isCheck: false
 					},
 					{
 						isOpen: false,
-						isCheck: true
-					},
-					{
-						isOpen: true,
 						isCheck: false
 					},
 					{
 						isOpen: false,
-						isCheck: true
+						isCheck: false
 					},
 					{
-						isOpen: true,
+						isOpen: false,
+						isCheck: false
+					},
+					{
+						isOpen: false,
 						isCheck: false
 					},
 					{
@@ -132,7 +167,8 @@
 		},
 		components: {
 			navTitleBalck,
-			merchantTabs
+			merchantTabs,
+			btnSkyBlue
 		},
 		onReady() {
 			// 获取顶部电量状态栏高度
@@ -149,6 +185,20 @@
 					delta: 1
 				})
 			},
+			// 列表长按事件
+			longtap() {
+				this.isChoice = true;
+				
+				if (this.isSearch) { //如果有显示搜索框则隐藏搜索
+					this.isSearch = false
+				}
+				
+			},
+			// 取消多选界面显示
+			cancelChoice() {
+				this.isChoice = false;
+			},
+
 			// 全选
 			selectAll() {
 				// 循环列表 修改属性
@@ -165,7 +215,29 @@
 
 			// 展开 收起
 			switchClick(index, bool) {
-				this.dataList[index].isOpen = bool ? false : true;
+				if (this.isSearch) { //如果有显示搜索框 点击则隐藏搜索
+					this.isSearch = false
+				}
+
+				this.dataList[index].isOpen = bool ? true : false;
+			},
+			// 删除单个项目
+			projectDelete(index){
+				this.dataList.splice(index,1)
+			},
+			
+			
+			// 搜索按钮
+			searchCilck() {
+				this.isSearch = true;
+			},
+
+
+			// 添加项目
+			addProject() {
+				uni.navigateTo({
+					url: "../addProject/addProject"
+				})
 			},
 
 
@@ -221,6 +293,33 @@
 			flex: 1;
 			overflow-y: scroll;
 
+			.box-content-search {
+				padding: 0 40rpx;
+				box-sizing: border-box;
+				background: #fff;
+				overflow: hidden;
+				transition: 0.3s;
+
+				.box-content-search-box {
+					display: flex;
+					height: 68rpx;
+					padding: 0 20rpx;
+					background: #F7F7F7;
+					opacity: 1;
+					border-radius: 34rpx;
+					box-sizing: border-box;
+
+					input {
+						padding-left: 10rpx;
+						height: 100%;
+						flex: 1;
+						font-size: 28rpx;
+						box-sizing: border-box;
+					}
+				}
+			}
+
+
 			.box-content-wrap {
 				height: 100%;
 				overflow-y: scroll;
@@ -266,7 +365,10 @@
 											padding-bottom: 30rpx;
 											transition: 0.3s;
 
-											.box-content-main-list-li-top-check {}
+											.box-content-main-list-li-top-check {
+												transition: 0.3s;
+												overflow: hidden;
+											}
 
 											.box-content-main-list-li-top-image {
 												display: flex;
@@ -395,13 +497,14 @@
 		}
 
 		.box-footer {
-			height: 108rpx;
 			padding: 0 20rpx;
 			box-sizing: border-box;
 			display: flex;
 			align-items: center;
 			justify-content: space-between;
 			background: #fff;
+			overflow: hidden;
+			transform: 0.3s;
 
 			.box-footer-all-check {
 				display: flex;
@@ -441,6 +544,15 @@
 					font-size: 32rpx;
 				}
 			}
+		}
+
+		.box-footer-btn {
+			display: flex;
+			align-items: center;
+			padding: 0 40rpx;
+			box-sizing: border-box;
+			overflow: hidden;
+			transition: 0.3s;
 		}
 	}
 </style>

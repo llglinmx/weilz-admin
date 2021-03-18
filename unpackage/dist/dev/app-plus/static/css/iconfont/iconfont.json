@@ -6,6 +6,13 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "9601058",
+      "name": "时钟",
+      "font_class": "shizhong",
+      "unicode": "e651",
+      "unicode_decimal": 58961
+    },
+    {
       "icon_id": "18781927",
       "name": "播放",
       "font_class": "bofang",

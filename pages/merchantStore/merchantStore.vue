@@ -3,8 +3,10 @@
 		<view class="box-head" :style="{paddingTop:barHeight+'px'}">
 			<view class="box-head-search">
 				<view class="box-head-search-box">
-					<view class="box-head-search-box-icon" :class="isSearch?'box-head-search-box-icon-active':'box-head-search-box-icon-no-active'">
-						<text class="iconfont iconsousuo1 icon-font" style="color: #999;font-size: 40rpx;margin-top: 4rpx;"></text>
+					<view class="box-head-search-box-icon"
+						:class="isSearch?'box-head-search-box-icon-active':'box-head-search-box-icon-no-active'">
+						<text class="iconfont iconsousuo1 icon-font"
+							style="color: #999;font-size: 40rpx;margin-top: 4rpx;"></text>
 						<input type="text" value="" @focus="focus" @blur="blur" placeholder="搜索门店" />
 					</view>
 				</view>
@@ -18,12 +20,18 @@
 					<text>状态</text>
 					<text class="iconfont iconxiangxiajiantou icon-font" style="color: #ccc;font-size: 28rpx"></text>
 				</view>
+				<view class="box-head-tab-item flex-center" @click="addStore">
+					<text>添加门店</text>
+					<text class="iconfont iconjia icon-font"
+						style="color: #ccc;font-size: 28rpx;margin-top: 4rpx;"></text>
+				</view>
 			</view>
 		</view>
 		<view class="box-content">
 			<view class="box-content-main">
 				<view class="box-content-main-list">
-					<view class="box-content-main-list-li" v-for="(item,index) in dataList" :key="index" @click="storeDetails">
+					<view class="box-content-main-list-li" v-for="(item,index) in dataList" :key="index"
+						@click="storeDetails">
 						<view class="box-content-main-list-li-image">
 							<image :src="item.image" mode=""></image>
 						</view>
@@ -35,8 +43,11 @@
 							<view class="main-list-li-info-more">
 								<text v-if="item.isFlag" style="color:#5DBDFE">营业中</text>
 								<text v-if="!item.isFlag" style="color:#FF967D">休息中</text>
-								<text class="iconfont icongengduo icon-font" style="color: #5DBDFE;font-size: 30rpx;margin-top: 4rpx;" v-if="item.isFlag"></text>
-								<text class="iconfont icongengduo icon-font" style="color: #FF967D;font-size: 30rpx;margin-top: 4rpx;" v-if="!item.isFlag"></text>
+								<text class="iconfont icongengduo icon-font"
+									style="color: #5DBDFE;font-size: 30rpx;margin-top: 4rpx;" v-if="item.isFlag"></text>
+								<text class="iconfont icongengduo icon-font"
+									style="color: #FF967D;font-size: 30rpx;margin-top: 4rpx;"
+									v-if="!item.isFlag"></text>
 							</view>
 						</view>
 					</view>
@@ -119,6 +130,13 @@
 					url: "../../merchantStore/storeManagement/storeManagement"
 				})
 			},
+			// 添加门店
+			addStore() {
+				uni.navigateTo({
+					url: "../../merchantStore/addStore/addStore"
+				})
+			},
+
 
 			// tabbar点击
 			tabbarClick(index) {

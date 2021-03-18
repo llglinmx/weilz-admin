@@ -7,7 +7,8 @@
 				</view>
 				<view class="box-head-title">技师管理</view>
 				<view class="box-head-ico flex-center">
-					<text class="iconfont iconsousuo1 icon-font" style="color: #5DBDFE;font-size: 52rpx;margin-top: 4rpx;"></text>
+					<text class="iconfont iconsousuo1 icon-font"
+						style="color: #5DBDFE;font-size: 52rpx;margin-top: 4rpx;"></text>
 				</view>
 			</view>
 			<view class="box-head-tabs">
@@ -21,18 +22,22 @@
 						<swiper-item class="swiper-box-item-list">
 							<view class="box-content-main">
 								<view class="box-content-main-list">
-									<view class="box-content-main-list-li" v-for="(item,index) in dataList" :key="index">
+									<view class="box-content-main-list-li" v-for="(item,index) in dataList"
+										:key="index">
 										<view class="box-content-main-list-li-top">
 											<view class="box-content-main-list-li-top-image">
 												<image src="../../static/images/001.png" mode="aspectFill"></image>
 											</view>
 											<view class="box-content-main-list-li-top-info">
 												<view class="box-content-main-list-li-top-info-title">
-													<view class="box-content-main-list-li-top-info-title-text">张小小</view>
-													<view class="box-content-main-list-li-top-info-title-msg">【金牌技师】</view>
+													<view class="box-content-main-list-li-top-info-title-text">张小小
+													</view>
+													<view class="box-content-main-list-li-top-info-title-msg">【金牌技师】
+													</view>
 												</view>
 												<view class="box-content-main-list-li-top-info-msg">工龄：2年</view>
-												<view class="box-content-main-list-li-top-info-msg">手机号：13825411234</view>
+												<view class="box-content-main-list-li-top-info-msg">手机号：13825411234
+												</view>
 												<view class="box-content-main-list-li-top-info-wrap">
 													<view class="list-li-top-info-wrap-item">60分钟</view>
 													<view class="list-li-top-info-wrap-item">背部按摩</view>
@@ -41,12 +46,14 @@
 										</view>
 										<view class="box-content-main-list-li-bottom">
 											<view class="box-content-main-list-li-bottom-item">
-												<text class="iconfont iconshanchu-shangjia icon-font" style="color: #FF6666;font-size: 36rpx;margin-top: 4rpx;"></text>
+												<text class="iconfont iconshanchu-shangjia icon-font"
+													style="color: #FF6666;font-size: 36rpx;margin-top: 4rpx;"></text>
 												<text>删除</text>
 											</view>
 
 											<view class="box-content-main-list-li-bottom-item">
-												<text class="iconfont iconbianji-shangjia icon-font" style="color: #5DBDFE;font-size: 36rpx;margin-top: 4rpx;"></text>
+												<text class="iconfont iconbianji-shangjia icon-font"
+													style="color: #5DBDFE;font-size: 36rpx;margin-top: 4rpx;"></text>
 												<text>编辑</text>
 											</view>
 										</view>
@@ -58,7 +65,8 @@
 						<swiper-item class="swiper-box-item-list">
 							<view class="box-content-main">
 								<view class="box-content-main-list">
-									<view class="box-content-main-list-li" v-for="(item,index) in dataList" :key="index">
+									<view class="box-content-main-list-li" v-for="(item,index) in dataList"
+										:key="index">
 										<view class="box-content-main-list-li-top">
 											<view class="box-content-main-list-li-top-image">
 												<image src="../../static/images/001.png" mode="aspectFill"></image>
@@ -66,11 +74,14 @@
 											</view>
 											<view class="box-content-main-list-li-top-info">
 												<view class="box-content-main-list-li-top-info-title">
-													<view class="box-content-main-list-li-top-info-title-text">张小小</view>
-													<view class="box-content-main-list-li-top-info-title-msg">【金牌技师】</view>
+													<view class="box-content-main-list-li-top-info-title-text">张小小
+													</view>
+													<view class="box-content-main-list-li-top-info-title-msg">【金牌技师】
+													</view>
 												</view>
 												<view class="box-content-main-list-li-top-info-msg">工龄：2年</view>
-												<view class="box-content-main-list-li-top-info-msg">手机号：13825411234</view>
+												<view class="box-content-main-list-li-top-info-msg">手机号：13825411234
+												</view>
 												<view class="box-content-main-list-li-top-info-wrap">
 													<view class="list-li-top-info-wrap-item">60分钟</view>
 													<view class="list-li-top-info-wrap-item">背部按摩</view>
@@ -79,12 +90,14 @@
 										</view>
 										<view class="box-content-main-list-li-bottom">
 											<view class="box-content-main-list-li-bottom-item">
-												<text class="iconfont iconshanchu-shangjia icon-font" style="color: #FF6666;font-size: 36rpx;margin-top: 4rpx;"></text>
+												<text class="iconfont iconshanchu-shangjia icon-font"
+													style="color: #FF6666;font-size: 36rpx;margin-top: 4rpx;"></text>
 												<text>删除</text>
 											</view>
 
 											<view class="box-content-main-list-li-bottom-item">
-												<text class="iconfont iconbianji-shangjia icon-font" style="color: #5DBDFE;font-size: 36rpx;margin-top: 4rpx;"></text>
+												<text class="iconfont iconbianji-shangjia icon-font"
+													style="color: #5DBDFE;font-size: 36rpx;margin-top: 4rpx;"></text>
 												<text>编辑</text>
 											</view>
 										</view>
@@ -99,7 +112,7 @@
 		</view>
 		<view class="box-footer">
 			<view class="btn-1" v-if="defaultIndex==0">
-				<btn-sky-blue btnName="新增技师"/>
+				<btn-sky-blue btnName="新增技师" @btnClick="addTechnician" />
 			</view>
 			<view class="btn-2" v-if="defaultIndex==1">
 				<btn-sky-blue btnName="新增临时技师" />
@@ -163,6 +176,12 @@
 			Gback() {
 				uni.navigateBack({
 					delta: 1
+				})
+			},
+			// 新增技师
+			addTechnician() {
+				uni.navigateTo({
+					url: "../newTechnician/newTechnician"
 				})
 			},
 
@@ -382,7 +401,7 @@
 			position: relative;
 			padding: 30rpx 40rpx;
 			box-sizing: border-box;
-			overflow: hidden;	
+			overflow: hidden;
 		}
 
 	}

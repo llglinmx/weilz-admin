@@ -15,7 +15,7 @@
 			<view class="box-content-list">
 				<view class="box-content-list-li" @click="roles('business')">
 					<view class="box-content-list-li-icon flex-center">
-						<image src="../../static/images/userImage.png" mode="aspectFill"></image>
+						<image src="../../static/images/role-icon1.png" mode="aspectFill"></image>
 					</view>
 					<view class="box-content-list-li-info">
 						<view class="box-content-list-li-info-title">我是商家</view>
@@ -27,7 +27,7 @@
 				</view>
 				<view class="box-content-list-li" @click="roles('technician')">
 					<view class="box-content-list-li-icon flex-center">
-						<image src="../../static/images/userImage.png" mode="aspectFill"></image>
+						<image src="../../static/images/role-icon2.png" mode="aspectFill"></image>
 					</view>
 					<view class="box-content-list-li-info">
 						<view class="box-content-list-li-info-title">我是技师</view>

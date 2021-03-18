@@ -203,9 +203,8 @@
 
 			// 发布新招聘
 			release() {
-				uni.showToast({
-					title: "发布新招聘",
-					icon: "none"
+				uni.navigateTo({
+					url: "../releaseRecruitment/releaseRecruitment"
 				})
 			},
 

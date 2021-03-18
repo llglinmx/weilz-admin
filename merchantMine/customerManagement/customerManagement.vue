@@ -15,16 +15,19 @@
 			<view class="box-content-search">
 				<view class="box-content-search-box">
 					<view class="box-content-search-box-ico" :class="isSearch?'box-content-search-box-ico-active':''">
-						<text class="iconfont iconsousuo1 icon-font" style="color: #999;font-size: 40rpx;margin-top: 4rpx;"></text>
+						<text class="iconfont iconsousuo1 icon-font"
+							style="color: #999;font-size: 40rpx;margin-top: 4rpx;"></text>
 					</view>
-					<view class="box-content-search-box-input" :class="isSearch?'box-content-search-box-input-active':''">
+					<view class="box-content-search-box-input"
+						:class="isSearch?'box-content-search-box-input-active':''">
 						<input type="text" @focus="focus" @blur="blur" placeholder="搜索用户名称" />
 					</view>
 				</view>
 			</view>
 			<view class="box-content-main">
 				<view class="box-content-main-list">
-					<view class="box-content-main-list-li" v-for="(item,index) in 20" :key="index" @click="customerDetail">
+					<view class="box-content-main-list-li" v-for="(item,index) in 20" :key="index"
+						@click="customerDetail">
 						<view class="box-content-main-list-li-image">
 							<image src="../../static/images/userImage.png" mode="aspectFill"></image>
 						</view>
@@ -33,7 +36,7 @@
 								<view class="box-content-main-list-li-info-left-top">
 									<view class="main-list-li-info-left-top-title">张女士</view>
 									<view class="main-list-li-info-left-top-text">
-										<image src="../../static/images/icon-5.jpg" mode=""></image>
+										<image src="../../static/images/grade-yellow.png" mode=""></image>
 										<text>钻石会员</text>
 									</view>
 								</view>
@@ -43,7 +46,8 @@
 								</view>
 							</view>
 							<view class="box-content-main-list-li-info-more">
-								<text class="iconfont icongengduo icon-font" style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
+								<text class="iconfont icongengduo icon-font"
+									style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
 							</view>
 						</view>
 					</view>
@@ -92,11 +96,11 @@
 			blur() {
 				this.isSearch = false
 			},
-			
+
 			// 客户详情
-			customerDetail(){
+			customerDetail() {
 				uni.navigateTo({
-					url:"../customerDetails/customerDetails"
+					url: "../customerDetails/customerDetails"
 				})
 			},
 		}
@@ -250,7 +254,7 @@
 										align-items: center;
 
 										image {
-											width: 34rpx;
+											width: 30rpx;
 											height: 34rpx;
 										}
 
