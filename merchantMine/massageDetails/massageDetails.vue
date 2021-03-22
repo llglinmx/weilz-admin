@@ -92,7 +92,7 @@
 				isPlay: false, //是否播放
 				isShow: false, //第一次加载
 				videoplay: {},
-				videoSrc: 'https://apd-f16f3b10fdad4d40fb4dc4d10a1a1610.v.smtcdns.com/mv.music.tc.qq.com/AiHG5HgyqkstJ34V6lGEoNs8_pgaYNEnoT2sDsYU9L_s/2293FC83E06A9F6321BBB377718C4FB99AC3D4CE996D935325FDA230DB86670A1A0B9105023DA0AB4F437D6B733F6E9EZZqqmusic_default/qmmv_0b6b64aacaaakuahkokp4vqfj5yaah3qaaka.f9844.mp4?fname=qmmv_0b6b64aacaaakuahkokp4vqfj5yaah3qaaka.f9844.mp4'
+				videoSrc: 'https://apd-fe51a49b31e9f4791de3aba0ff95cffc.v.smtcdns.com/mv.music.tc.qq.com/AxT5QoAujYLHOC1WH3hU_xXc45YtxPaUmykltbJmjd4o/B77963B571B681CFB421F6B863E38CCB77EA5F62A793301E47FA920536D48C17A85A80B335FAFD41239B574F68585EA3ZZqqmusic_default/qmmv_0b6btyaaaaaacqamncymgjpfjhqaacpaaaca.f9844.mp4?fname=qmmv_0b6btyaaaaaacqamncymgjpfjhqaacpaaaca.f9844.mp4'
 			};
 		},
 		components: {

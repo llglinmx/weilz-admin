@@ -36,17 +36,15 @@
 								<view class="box-content-main-list" :style="{marginBottom:isChoice?'40rpx':'0'}">
 									<view class="box-content-main-list-li"
 										:class="!item.isOpen?'box-content-main-list-li-active':''"
-										v-for="(item,index) in dataList" @longtap="longtap" :key="index">
+										v-for="(item,index) in dataList" @longtap="longtap" @click=" isChoice && checkClick(index)" :key="index">
 										<view class="box-content-main-list-li-top"
 											:class="item.isOpen?'box-content-main-list-li-top-active':''">
 											<view class="box-content-main-list-li-top-check flex-center"
 												:style="{width:isChoice?'50rpx':'0'}">
 												<text class="iconfont iconxuanzhong icon-font"
-													style="color: #5DBDFE;font-size: 40rpx;" v-if="item.isCheck"
-													@click="checkClick(index,true)"></text>
+													style="color: #5DBDFE;font-size: 40rpx;" v-if="item.isCheck"></text>
 												<text class="iconfont iconweixuanzhong1 icon-font"
-													style="color: #ccc;font-size: 40rpx;" v-else
-													@click="checkClick(index,false)"></text>
+													style="color: #ccc;font-size: 40rpx;" v-else ></text>
 											</view>
 											<view class="box-content-main-list-li-top-image">
 												<image src="../../static/images/001.png" mode="aspectFill"></image>
@@ -64,11 +62,11 @@
 														<text class="iconfont iconzhankai icon-font open"
 															:class="item.isOpen?'open-active':''"
 															style="color:#5DBDFE;font-size: 48rpx;"
-															@click="switchClick(index,true)"></text>
+															@click.stop="switchClick(index,true)"></text>
 														<text class="iconfont iconshouqi icon-font close"
 															:class="item.isOpen?'close-active':''"
 															style="color: #ccc;font-size: 48rpx;"
-															@click="switchClick(index,false)"></text>
+															@click.stop="switchClick(index,false)"></text>
 													</view>
 												</view>
 											</view>
@@ -209,8 +207,8 @@
 			},
 
 			// 选中 未选中
-			checkClick(index, bool) {
-				this.dataList[index].isCheck = bool ? false : true;
+			checkClick(index) {
+				this.dataList[index].isCheck = !this.dataList[index].isCheck;
 			},
 
 			// 展开 收起

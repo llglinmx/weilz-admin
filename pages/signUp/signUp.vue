@@ -24,13 +24,13 @@
 			// 登录
 			login() {
 				uni.navigateTo({
-					url: "../../pagesIndex/login/login"
+					url: "../login/login"
 				})
 			},
 			// 点击注册 跳转到 注册页面
 			register() {
 				uni.navigateTo({
-					url: "../../pagesIndex/registerRoles/registerRoles"
+					url: "../registerRoles/registerRoles"
 				})
 			},
 		}

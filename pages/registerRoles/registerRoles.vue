@@ -85,13 +85,13 @@
 					// 商家
 					case "business":
 						uni.navigateTo({
-							url: "../../pagesIndexTwo/merchantRegistration/merchantRegistration"
+							url: "../merchantRegistration/merchantRegistration"
 						})
 						break;
 						// 技师
 					case "technician":
 						uni.navigateTo({
-							url: "../../pagesIndexTwo/technicianRegistration/technicianRegistration"
+							url: "../technicianRegistration/technicianRegistration"
 						})
 						break;
 				}

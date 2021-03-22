@@ -25,6 +25,8 @@
 				</view>
 			</view>
 			<view class="box-content-main">
+				<mescroll-uni ref="mescrollRef" @down="downCallback" @up="upCallback" :down="downOption" :up="upOption"
+					:height="mesHeight">
 				<view class="box-content-main-list">
 					<view class="box-content-main-list-li" v-for="(item,index) in 20" :key="index"
 						@click="customerDetail">
@@ -52,6 +54,7 @@
 						</view>
 					</view>
 				</view>
+				</mescroll-uni>
 			</view>
 		</view>
 		<view class="box-footer">
@@ -62,15 +65,37 @@
 
 <script>
 	import navTitleBalck from "../../components/nav-title-balck/nav-title-balck.vue"
+	import MescrollMixin from "../../components/mescroll-uni/mescroll-mixins.js";
+	import MescrollUni from "@/components/mescroll-uni/mescroll-uni.vue"
 	export default {
+		mixins: [MescrollMixin], // 使用mixin
 		data() {
 			return {
 				barHeight: 0, //顶部电量导航栏高度
 				isSearch: false, //是否有点击输入框搜索
+				mesHeight: 0,
+				downOption: { // 下拉刷新配置
+					auto: false,
+				},
+				upOption: { // 上拉加载配置
+					noMoreSize: 5,
+					textLoading: "正在加载更多数据",
+					textNoMore: "——  已经到底了  ——",
+					isBounce: true,
+					auto: false,
+				},
+				PageNumber: 1, // 请求页数，
+				PageLimt: 10, // 请求条数
 			};
 		},
 		components: {
-			navTitleBalck
+			navTitleBalck,
+			MescrollUni
+		},
+		onShow() {
+			const sys = uni.getSystemInfoSync();
+			var Heigh = sys.windowHeight
+			this.mesHeight = (Heigh -110) * 2
 		},
 		onReady() {
 			// 获取顶部电量状态栏高度
@@ -102,6 +127,32 @@
 				uni.navigateTo({
 					url: "../customerDetails/customerDetails"
 				})
+			},
+			
+			
+			
+			/*下拉刷新的回调*/
+			downCallback() {
+				this.PageNumber = 1
+				setTimeout(() => {
+					this.mescroll.endSuccess() // 请求成功 隐藏加载状态
+			
+					// this.mescroll.showNoMore()
+			
+				}, 1500)
+			},
+			
+			/*上拉加载的回调*/
+			upCallback(page) {
+				this.PageNumber++
+				console.log(this.PageNumber)
+				setTimeout(() => {
+					this.mescroll.endSuccess() // 请求成功 隐藏加载状态
+					// if (this.PageNumber > 3) {
+					this.mescroll.showNoMore()
+					// }
+				}, 1500)
+				console.log("上拉加载")
 			},
 		}
 	}
@@ -209,7 +260,7 @@
 					background: #fff;
 					padding-left: 40rpx;
 					box-sizing: border-box;
-					margin-bottom: 40rpx;
+					// margin-bottom: 40rpx;
 
 					.box-content-main-list-li {
 						display: flex;

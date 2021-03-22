@@ -6,6 +6,27 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "689302",
+      "name": "物流 卡车",
+      "font_class": "wuliuqiache",
+      "unicode": "e820",
+      "unicode_decimal": 59424
+    },
+    {
+      "icon_id": "15570865",
+      "name": "订单",
+      "font_class": "dingdan1",
+      "unicode": "e604",
+      "unicode_decimal": 58884
+    },
+    {
+      "icon_id": "18923797",
+      "name": "用户",
+      "font_class": "70BasicIcons-all-05",
+      "unicode": "e621",
+      "unicode_decimal": 58913
+    },
+    {
       "icon_id": "9601058",
       "name": "时钟",
       "font_class": "shizhong",

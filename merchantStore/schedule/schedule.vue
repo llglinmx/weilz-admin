@@ -13,7 +13,7 @@
 						<swiper-item class="swiper-box-item-list">
 							<view class="box-content-main">
 								<view class="box-content-main-calendar">
-
+									<scheduling-calendar />
 								</view>
 								<view class="box-content-main-wrap-text">
 									<view class="box-content-main-wrap-text-left">
@@ -44,7 +44,7 @@
 							</view>
 							<view class="box-content-main">
 								<view class="box-content-main-calendar">
-
+									<scheduling-calendar @calendarTap="personalSchedulingInfo" />
 								</view>
 								<view class="box-content-main-appointment-info">
 									<view class="box-content-main-appointment-info-top">
@@ -93,6 +93,7 @@
 <script>
 	import merchantTabs from "../../components/merchant-tabs/merchant-tabs.vue"
 	import navTitleBalck from "../../components/nav-title-balck/nav-title-balck.vue"
+	import schedulingCalendar from "../../components/scheduling-calendar/scheduling-calendar.vue"
 	export default {
 		data() {
 			return {
@@ -103,7 +104,8 @@
 		},
 		components: {
 			merchantTabs,
-			navTitleBalck
+			navTitleBalck,
+			schedulingCalendar
 		},
 		onReady() {
 			// 获取顶部电量状态栏高度
@@ -121,6 +123,18 @@
 				})
 			},
 
+			// 员工 排班表  点击日期
+			personalSchedulingInfo(e) {
+				var str = {
+					year: e.year,
+					month: e.month,
+					day: e.day
+				}
+				uni.navigateTo({
+					url: "../personalSchedulingInfo/personalSchedulingInfo?data=" +JSON.stringify(str)
+				})
+
+			},
 
 			// tabs 点击
 			tabClick(e) {

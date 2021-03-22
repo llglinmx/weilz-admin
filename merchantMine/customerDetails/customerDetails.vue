@@ -11,7 +11,7 @@
 							张女士
 						</view>
 						<view class="box-content-user-info-top-leval">
-							<image src="../../static/images/icon-3.jpg" mode="aspectFill"></image>
+							<image src="../../static/images/grade-yellow.png" mode="aspectFill"></image>
 							<text>钻石会员</text>
 						</view>
 					</view>

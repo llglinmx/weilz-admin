@@ -13,16 +13,18 @@
 			<view class="box-content-title">欢迎登录</view>
 			<view class="box-content-list">
 				<view class="box-content-list-li">
-					<input type="number" @input="accountChange" v-model.trim="accountNumber" placeholder="手机号/邮箱" confirm-type="done" />
+					<input type="number" @input="accountChange" v-model.trim="accountNumber" placeholder="手机号/邮箱"
+						confirm-type="done" />
 				</view>
 				<view class="box-content-list-li">
-					<input type="text" @input="passwordChange" password="true" v-model.trim="password" placeholder="请输入密码"
-					 confirm-type="done" />
+					<input type="text" @input="passwordChange" password="true" v-model.trim="password"
+						placeholder="请输入密码" confirm-type="done" />
 					<text class="iconfont iconxianshimima icon-font" style="color: #ccc;"></text>
 				</view>
 				<view class="box-content-list-msg">忘记密码</view>
 			</view>
-			<view class="box-content-btn flex-center" @click="confirmLogin" :class="isAll?'btn-active':''">同意协议并登录</view>
+			<view class="box-content-btn flex-center" @click="confirmLogin" :class="isAll?'btn-active':''">同意协议并登录
+			</view>
 			<view class="box-content-text">
 				登录代表你已同意
 				<text>《用户协议》</text>
@@ -61,9 +63,17 @@
 				}
 			});
 		},
+
 		onShow() {
-			this.accountNumber =''
+			this.accountNumber = ''
 		},
+
+		onLoad() {
+			uni.setStorageSync('token',
+				'weiizeyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6IjY4MTYxNjIyMDMzMDM4MTIifQ.As6qwI8ig2_FgqUKft2CmD6DF-Lz-LW6_GnYEUt7z0Q'
+			);
+		},
+
 		methods: {
 			// 监听输入账号
 			accountChange() {
@@ -107,6 +117,24 @@
 
 				// }
 			},
+			// 登录
+			login() {
+				var data={
+					code: "8421"
+					code_id: "code_68872"
+					username: this.accountNumber
+					password: this.password
+				}
+				this.apiget('login', {}).then(res => {
+					if (res.status == 200) {
+						console.log(res.data.member)
+						
+						
+					}
+				});
+			},
+
+
 			// 点击注册 跳转到 注册页面
 			register() {
 				uni.navigateTo({

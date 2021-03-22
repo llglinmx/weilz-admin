@@ -2,22 +2,33 @@
 	<view class="uni-steps">
 		<view :class="[direction==='column'?'uni-steps__column':'uni-steps__row']">
 			<view :class="[direction==='column'?'uni-steps__column-text-container':'uni-steps__row-text-container']">
-				<view v-for="(item,index) in options" :key="index" :class="[direction==='column'?'uni-steps__column-text':'uni-steps__row-text']">
-					<text :style="{color:index<=active?activeColor:deactiveColor}" :class="[direction==='column'?'uni-steps__column-title':'uni-steps__row-title']">{{item.title}}</text>
-					<text :style="{color:index<=active?activeColor:deactiveColor}" :class="[direction==='column'?'uni-steps__column-desc':'uni-steps__row-desc']">{{item.desc}}</text>
+				<view v-for="(item,index) in options" :key="index"
+					:class="[direction==='column'?'uni-steps__column-text':'uni-steps__row-text']">
+					<text :style="{color:index<=active?activeColor:deactiveColor}"
+						:class="[direction==='column'?'uni-steps__column-title':'uni-steps__row-title']">{{item.title}}</text>
+					<text :style="{color:index<=active?activeColor:deactiveColor}"
+						:class="[direction==='column'?'uni-steps__column-desc':'uni-steps__row-desc']">{{item.desc}}</text>
 				</view>
 			</view>
 			<view :class="[direction==='column'?'uni-steps__column-container':'uni-steps__row-container']">
-				<view :class="[direction==='column'?'uni-steps__column-line-item':'uni-steps__row-line-item']" v-for="(item,index) in options"
-				 :key="index">
-					<view :class="[direction==='column'?'uni-steps__column-line':'uni-steps__row-line',direction==='column'?'uni-steps__column-line--before':'uni-steps__row-line--before']"
-					 :style="{backgroundColor:index<=active&&index!==0?activeColor:index===0?'transparent':deactiveColor}"></view>
-					<view :class="[direction==='column'?'uni-steps__column-check':'uni-steps__row-check']" v-if="index === active">
-						<uni-icons :color="activeColor" type="checkbox-filled" size="14"></uni-icons>
+				<view :class="[direction==='column'?'uni-steps__column-line-item':'uni-steps__row-line-item']"
+					v-for="(item,index) in options" :key="index">
+					<view
+						:class="[direction==='column'?'uni-steps__column-line':'uni-steps__row-line',direction==='column'?'uni-steps__column-line--before':'uni-steps__row-line--before']"
+						:style="{backgroundColor:index<=active&&index!==0?activeColor:index===0?'transparent':deactiveColor}">
 					</view>
-					<view :class="[direction==='column'?'uni-steps__column-circle':'uni-steps__row-circle']" v-else :style="{backgroundColor:index<active?activeColor:deactiveColor}"></view>
-					<view :class="[direction==='column'?'uni-steps__column-line':'uni-steps__row-line',direction==='column'?'uni-steps__column-line--after':'uni-steps__row-line--after']"
-					 :style="{backgroundColor:index<active&&index!==options.length-1?activeColor:index===options.length-1?'transparent':deactiveColor}"></view>
+					<view :class="[direction==='column'?'uni-steps__column-check':'uni-steps__row-check']"
+						v-if="index === active">
+						<text class="iconfont iconxuanzhong icon-font" style="font-size: 46rpx;color:#5DBDFE;"></text>
+					</view>
+					<view class="flex-center"
+						:class="[direction==='column'?'uni-steps__column-circle':'uni-steps__row-circle']" v-else>
+						<text class="dot-ico" :style="{backgroundColor:index<active?activeColor:deactiveColor}"></text>
+					</view>
+					<view
+						:class="[direction==='column'?'uni-steps__column-line':'uni-steps__row-line',direction==='column'?'uni-steps__column-line--after':'uni-steps__row-line--after']"
+						:style="{backgroundColor:index<active&&index!==options.length-1?activeColor:index===options.length-1?'transparent':deactiveColor}">
+					</view>
 				</view>
 			</view>
 		</view>
@@ -25,7 +36,6 @@
 </template>
 
 <script>
-
 	/**
 	 * Steps 步骤条
 	 * @description 评分组件
@@ -39,7 +49,6 @@
 	 */
 
 	export default {
-		name: 'UniSteps',
 		props: {
 			direction: {
 				// 排列方向 row column
@@ -159,6 +168,7 @@
 	}
 
 	.uni-steps__row-container {
+		margin-top: 30rpx;
 		/* #ifndef APP-NVUE */
 		display: flex;
 		/* #endif */
@@ -198,7 +208,7 @@
 	.uni-steps__row-line {
 		flex: 1;
 		height: 1px;
-		background-color: $uni-text-color-grey;
+		background-color:#e6e6e6;
 	}
 
 	.uni-steps__column-line {
@@ -225,11 +235,25 @@
 	}
 
 	.uni-steps__row-circle {
-		width: 5px;
-		height: 5px;
-		border-radius: 100px;
-		background-color: $uni-text-color-grey;
-		margin: 0px 3px;
+		// width: 5px;
+		// height: 5px;
+		// border-radius: 100px;
+		// background-color: $uni-text-color-grey;
+		// margin: 0px 3px;
+		width: 48rpx;
+		height: 48rpx;
+		background: #fff;
+		box-shadow: 0rpx 1rpx 20rpx rgba(0, 0, 0, 0.1);
+		border-radius: 50%;
+
+		.dot-ico {
+			display: block;
+			width: 24rpx;
+			height: 24rpx;
+			background: #5DBDFE;
+			border-radius: 50%;
+		}
+
 	}
 
 	.uni-steps__column-circle {

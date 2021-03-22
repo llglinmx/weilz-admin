@@ -7,8 +7,19 @@
 				"navigationBarTextStyle": "white", //状态栏字体颜色
 				"enablePullDownRefresh": false
 			}
-
-		}, {
+		
+		},{
+			"path": "pages/signUp/signUp",
+			"style": {
+				"navigationBarTextStyle": "white", //状态栏字体颜色
+				"navigationBarTitleText": "uni-登录"
+			}
+		},{
+			"path": "pages/login/login",
+			"style": {
+				"navigationBarTitleText": "登录"
+			}
+		},  {
 			"path": "pages/technicianHome/technicianHome",
 			"style": {
 				"navigationBarTitleText": "首页",
@@ -16,12 +27,7 @@
 				"enablePullDownRefresh": false
 			}
 
-		}, {
-			"path": "pages/login/login",
-			"style": {
-				"navigationBarTitleText": "登录"
-			}
-		}, {
+		},{
 			"path": "pages/technicianOrder/technicianOrder",
 			"style": {
 				"navigationBarTitleText": "订单",
@@ -36,13 +42,7 @@
 				"enablePullDownRefresh": false
 			}
 
-		}, {
-			"path": "pages/signUp/signUp",
-			"style": {
-				"navigationBarTextStyle": "white", //状态栏字体颜色
-				"navigationBarTitleText": "uni-登录"
-			}
-		},
+		}, 
 		{
 			"path": "pages/registerRoles/registerRoles",
 			"style": {
@@ -183,6 +183,14 @@
 					"enablePullDownRefresh": false
 				}
 
+			}, {
+				"path": "orderDetails/orderDetails",
+				"style": {
+					"navigationBarTitleText": "订单详情",
+					"navigationBarTextStyle": "white", //状态栏字体颜色
+					"enablePullDownRefresh": false
+				}
+
 			}]
 		}, {
 			"root": "merchantStore",
@@ -251,62 +259,57 @@
 					"enablePullDownRefresh": false
 				}
 
+			}, {
+				"path": "releaseRecruitment/releaseRecruitment",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "newTechnician/newTechnician",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "schedule/schedule",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "addSchedule/addSchedule",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "addProject/addProject",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "merchantInformation/merchantInformation",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "addStore/addStore",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
 			}    ,{
-                    "path" : "releaseRecruitment/releaseRecruitment",
-                    "style" :                                                                                    
-                {
-                    "navigationBarTitleText": "",
-                    "enablePullDownRefresh": false
-                }
-                
-                }
-                ,{
-                    "path" : "newTechnician/newTechnician",
-                    "style" :                                                                                    
-                {
-                    "navigationBarTitleText": "",
-                    "enablePullDownRefresh": false
-                }
-                
-                }
-                ,{
-                    "path" : "schedule/schedule",
-                    "style" :                                                                                    
-                {
-                    "navigationBarTitleText": "",
-                    "enablePullDownRefresh": false
-                }
-                
-                }
-                ,{
-                    "path" : "addSchedule/addSchedule",
-                    "style" :                                                                                    
-                {
-                    "navigationBarTitleText": "",
-                    "enablePullDownRefresh": false
-                }
-                
-                }
-                ,{
-                    "path" : "addProject/addProject",
-                    "style" :                                                                                    
-                {
-                    "navigationBarTitleText": "",
-                    "enablePullDownRefresh": false
-                }
-                
-                }
-                ,{
-                    "path" : "merchantInformation/merchantInformation",
-                    "style" :                                                                                    
-                {
-                    "navigationBarTitleText": "",
-                    "enablePullDownRefresh": false
-                }
-                
-                }
-                ,{
-                    "path" : "addStore/addStore",
+                    "path" : "personalSchedulingInfo/personalSchedulingInfo",
                     "style" :                                                                                    
                 {
                     "navigationBarTitleText": "",
@@ -477,6 +480,22 @@
 				"path": "massage/massage",
 				"style": {
 					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "logisticsDetails/logisticsDetails",
+				"style": {
+					"navigationBarTitleText": "物流详情",
+					"navigationBarTextStyle": "white", //状态栏字体颜色
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "deliveryFromSeller/deliveryFromSeller",
+				"style": {
+					"navigationBarTitleText": "卖家发货",
+					"navigationBarTextStyle": "white", //状态栏字体颜色
 					"enablePullDownRefresh": false
 				}
 

@@ -29,21 +29,23 @@
 						<swiper-item class="swiper-box-item-list">
 							<view class="box-content-main">
 								<view class="box-content-main-list">
-									<view class="box-content-main-list-li" v-for="(item,index) in dataList"
-										:key="index">
+									<view class="box-content-main-list-li" v-for="(item,index) in couponList"
+										:key="item.id">
 										<view class="box-content-main-list-li-top">
 											<view class="box-content-main-list-li-top-left">
 												<image src="../../static/images/business-blue-ico.png"
 													mode="aspectFill"></image>
-												<text>罗约蓝池·温泉SPA</text>
+												<text>{{item.store_name}}</text>
 											</view>
 											<view class="box-content-main-list-li-top-right">
-												<view class="main-list-li-top-left-msg flex-center">已审核</view>
+												<view class="main-list-li-top-left-msg flex-center" v-if='item.pass_check=="-1"'>审核中</view>
+												<view class="main-list-li-top-left-msg flex-center" v-if='item.pass_check=="1"'>已审核</view>
+												<view class="main-list-li-top-left-msg flex-center" v-if='item.pass_check=="2"'>未通过</view>
 											</view>
 										</view>
 										<view class="box-content-main-list-li-center">
 											<view class="box-content-main-list-li-center-top">
-												<view class="main-list-li-center-top-title">元旦限定优惠券</view>
+												<view class="main-list-li-center-top-title">{{item.name}}</view>
 												<view class="main-list-li-center-top-price">￥20</view>
 											</view>
 											<view class="box-content-main-list-li-center-text">满200元可用</view>
@@ -245,8 +247,11 @@
 		data() {
 			return {
 				barHeight: 0, //顶部电量导航栏高度
-				defaultIndex: 3, //当前滑动的页面
+				defaultIndex: 0, //当前滑动的页面
 				tabsList: ["优惠券", "兑换券", "套餐卡", "礼品卡", "储值卡"],
+				PageNumber: 1, // 请求页数，
+				PageLimt: 10, // 请求条数
+				couponList: [],
 				dataList: [{
 						isOpen: true,
 						isCheck: false
@@ -287,6 +292,11 @@
 				}
 			});
 		},
+		onLoad(){
+			this.getCoupon()
+		},
+		
+		
 		methods: {
 			//返回
 			Gback() {
@@ -316,6 +326,21 @@
 				}
 			},
 
+
+			// 优惠券列表
+			getCoupon() {
+				var vuedata = {
+					page_index: this.PageNumber, // 请求页数，
+					each_page: this.PageLimt, // 请求条数
+				}
+				this.apiget('api/v1/store/coupon/index', vuedata).then(res => {
+					if (res.status == 200) {
+						this.couponList = res.data.data
+						// console.log(res.data.data)
+
+					}
+				});
+			},
 
 
 

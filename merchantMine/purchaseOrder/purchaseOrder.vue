@@ -7,7 +7,8 @@
 				</view>
 				<view class="box-head-title">我的进货订单</view>
 				<view class="box-head-ico flex-center">
-					<text class="iconfont iconsousuo1 icon-font" style="color: #5DBDFE;font-size: 52rpx;margin-top: 4rpx;"></text>
+					<text class="iconfont iconsousuo1 icon-font"
+						style="color: #5DBDFE;font-size: 52rpx;margin-top: 4rpx;"></text>
 				</view>
 			</view>
 			<view class="box-head-tabs">
@@ -21,10 +22,13 @@
 						<swiper-item class="swiper-box-item-list">
 							<view class="box-content-order">
 								<view class="box-content-order-list">
-									<view class="box-content-order-list-li" v-for="(item,index) in 10" :key="index">
+									<view class="box-content-order-list-li" v-for="(item,index) in 10" :key="index"
+										@click="index==2 && shippingDetails(index)">
 										<view class="box-content-order-list-li-top">
 											<view class="order-list-li-top-title">
-												<image src="../../static/images/icon-5.jpg" mode=""></image>
+												<text class="iconfont iconshangjia icon-font"
+													style="color: #5DBDFE;font-size: 28rpx;margin-top: 4rpx;"></text>
+												<!-- <image src="../../static/images/icon-5.jpg" mode=""></image> -->
 												<text>罗约蓝池·温泉SPA</text>
 											</view>
 											<view class="order-list-li-top-msg">待付款</view>
@@ -52,15 +56,22 @@
 										<view class="box-content-order-list-li-footer">
 											<view class="box-content-order-list-li-footer-text">
 												<view class="box-content-order-list-li-footer-text-msg">实付款：</view>
-												<view class="box-content-order-list-li-footer-text-price">￥<text>332.70</text></view>
+												<view class="box-content-order-list-li-footer-text-price">
+													￥<text>332.70</text></view>
 											</view>
 											<view class="box-content-order-list-li-footer-btn">
-												<view class="order-list-li-footer-all-btn btn-blue flex-center" v-if="index==3">评价订单</view>
-												<view class="order-list-li-footer-all-btn btn-hollow flex-center" v-if="index==2">查看物流</view>
-												<view class="order-list-li-footer-all-btn btn-blue flex-center" v-if="index==2">确认收货</view>
-												<view class="order-list-li-footer-all-btn btn-hollow flex-center" v-if="index==0">取消订单</view>
-												<view class="order-list-li-footer-all-btn btn-fill flex-center" v-if="index==0">去付款</view>
-												<view class="order-list-li-footer-all-btn btn-hollow flex-center" v-if="index!=0&&index!=2&&index!=3">删除订单</view>
+												<view class="order-list-li-footer-all-btn btn-blue flex-center"
+													v-if="index==3">评价订单</view>
+												<view class="order-list-li-footer-all-btn btn-hollow flex-center"
+													v-if="index==2" @click.stop="viewLogistics">查看物流</view>
+												<view class="order-list-li-footer-all-btn btn-blue flex-center"
+													v-if="index==2">确认收货</view>
+												<view class="order-list-li-footer-all-btn btn-hollow flex-center"
+													v-if="index==0">取消订单</view>
+												<view class="order-list-li-footer-all-btn btn-fill flex-center"
+													v-if="index==0">去付款</view>
+												<view class="order-list-li-footer-all-btn btn-hollow flex-center"
+													v-if="index!=0&&index!=2&&index!=3">删除订单</view>
 											</view>
 										</view>
 									</view>
@@ -120,6 +131,18 @@
 			Gback() {
 				uni.navigateBack({
 					delta: 1
+				})
+			},
+			// 查看物流
+			viewLogistics() {
+				uni.navigateTo({
+					url: "../logisticsDetails/logisticsDetails"
+				})
+			},
+			// 发货详情
+			shippingDetails(index) {
+				uni.navigateTo({
+					url: "../deliveryFromSeller/deliveryFromSeller"
 				})
 			},
 
@@ -213,13 +236,8 @@
 												align-items: center;
 												color: #000;
 
-												image {
-													width: 28rpx;
-													height: 28rpx;
-												}
-
 												text {
-													margin-left: 8rpx;
+													margin-right: 8rpx;
 												}
 											}
 

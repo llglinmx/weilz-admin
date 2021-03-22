@@ -17,24 +17,30 @@
 					<text>筛选</text>
 				</view>
 			</view>
-
-			<view class="box-content-list">
-				<view class="box-content-list-li" v-for="(item,index) in dataList" :key="index" @click="massageDetails">
-					<view class="box-content-list-li-image">
-						<image src="../../static/images/am-ico.png" mode="aspectFill"></image>
-					</view>
-					<view class="box-content-list-li-wrap">
-						<view class="box-content-list-li-wrap-left">
-							<view class="box-content-list-li-wrap-left-title">{{item.title}}</view>
-							<view class="box-content-list-li-wrap-left-text">{{item.text}}</view>
+			<view class="box-content-wrap-main">
+				<mescroll-uni ref="mescrollRef" @down="downCallback" @up="upCallback" :down="downOption" :up="upOption"
+					:height="mesHeight">
+					<view class="box-content-list">
+						<view class="box-content-list-li" v-for="(item,index) in dataList" :key="index"
+							@click="massageDetails">
+							<view class="box-content-list-li-image">
+								<image src="../../static/images/am-ico.png" mode="aspectFill"></image>
+							</view>
+							<view class="box-content-list-li-wrap">
+								<view class="box-content-list-li-wrap-left">
+									<view class="box-content-list-li-wrap-left-title">{{item.title}}</view>
+									<view class="box-content-list-li-wrap-left-text">{{item.text}}</view>
+								</view>
+								<view class="box-content-list-li-wrap-collect" @click.stop="collectClick(index)">
+									<text class="iconfont iconshoucang-tianchong" style="color:#5DBDFE;font-size: 52rpx"
+										v-if="item.isCheck"></text>
+									<text class="iconfont iconshoucang" style="color:#ccc;font-size: 52rpx"
+										v-else></text>
+								</view>
+							</view>
 						</view>
-						<view class="box-content-list-li-wrap-collect" @click.stop="collectClick(index)">
-							<text class="iconfont iconshoucang-tianchong" style="color:#5DBDFE;font-size: 52rpx"
-								v-if="item.isCheck"></text>
-							<text class="iconfont iconshoucang" style="color:#ccc;font-size: 52rpx" v-else></text>
-						</view>
 					</view>
-				</view>
+				</mescroll-uni>
 			</view>
 		</view>
 		<view class="box-footer">
@@ -45,11 +51,27 @@
 
 <script>
 	import navTitleBalck from "../../components/nav-title-balck/nav-title-balck.vue"
+	import MescrollMixin from "../../components/mescroll-uni/mescroll-mixins.js";
+	import MescrollUni from "@/components/mescroll-uni/mescroll-uni.vue"
 	export default {
+		mixins: [MescrollMixin], // 使用mixin
 		data() {
 			return {
 				barHeight: 0, //顶部电量导航栏高度
 				isSearch: false, //是否搜索
+				mesHeight: 0,
+				downOption: { // 下拉刷新配置
+					auto: false,
+				},
+				upOption: { // 上拉加载配置
+					noMoreSize: 5,
+					textLoading: "正在加载更多数据",
+					textNoMore: "——  已经到底了  ——",
+					isBounce: true,
+					auto: false,
+				},
+				PageNumber: 1, // 请求页数，
+				PageLimt: 10, // 请求条数
 				dataList: [{
 						title: "推拿培训 肩部疼痛",
 						text: '肩部疼痛在线调理视频',
@@ -84,7 +106,13 @@
 			};
 		},
 		components: {
-			navTitleBalck
+			navTitleBalck,
+			MescrollUni
+		},
+		onShow() {
+			const sys = uni.getSystemInfoSync();
+			var Heigh = sys.windowHeight
+			this.mesHeight = (Heigh - 96) * 2
 		},
 		onReady() {
 			// 获取顶部电量状态栏高度
@@ -110,6 +138,32 @@
 					url: "../massageDetails/massageDetails"
 				})
 			},
+
+
+			/*下拉刷新的回调*/
+			downCallback() {
+				this.PageNumber = 1
+				setTimeout(() => {
+					this.mescroll.endSuccess() // 请求成功 隐藏加载状态
+
+					// this.mescroll.showNoMore()
+
+				}, 1500)
+			},
+
+			/*上拉加载的回调*/
+			upCallback(page) {
+				this.PageNumber++
+				console.log(this.PageNumber)
+				setTimeout(() => {
+					this.mescroll.endSuccess() // 请求成功 隐藏加载状态
+					// if (this.PageNumber > 3) {
+					this.mescroll.showNoMore()
+					// }
+				}, 1500)
+				console.log("上拉加载")
+			},
+
 
 			// 收藏点击
 			collectClick(index) {
@@ -193,45 +247,49 @@
 				}
 			}
 
-			.box-content-list {
+			.box-content-wrap-main {
 				flex: 1;
 				overflow-y: scroll;
-				padding: 0 40rpx;
-				box-sizing: border-box;
-				margin-bottom: 40rpx;
 
-				.box-content-list-li:first-child {
-					margin-top: 0rpx;
-				}
+				.box-content-list {
 
-				.box-content-list-li {
-					margin-top: 40rpx;
+					padding: 0 40rpx;
+					box-sizing: border-box;
+					margin-bottom: 40rpx;
 
-					.box-content-list-li-image {
-						image {
-							width: 100%;
-							height: 420rpx;
-						}
+					.box-content-list-li:first-child {
+						margin-top: 0rpx;
 					}
 
-					.box-content-list-li-wrap {
-						display: flex;
-						align-items: center;
-						justify-content: space-between;
+					.box-content-list-li {
+						margin-top: 40rpx;
 
-						.box-content-list-li-wrap-left {
-							.box-content-list-li-wrap-left-title {
-								font-size: 34rpx;
-								color: #000;
-							}
-
-							.box-content-list-li-wrap-left-text {
-								font-size: 26rpx;
-								color: #B3B3B3;
+						.box-content-list-li-image {
+							image {
+								width: 100%;
+								height: 420rpx;
 							}
 						}
 
-						.box-content-list-li-wrap-collect {}
+						.box-content-list-li-wrap {
+							display: flex;
+							align-items: center;
+							justify-content: space-between;
+
+							.box-content-list-li-wrap-left {
+								.box-content-list-li-wrap-left-title {
+									font-size: 34rpx;
+									color: #000;
+								}
+
+								.box-content-list-li-wrap-left-text {
+									font-size: 26rpx;
+									color: #B3B3B3;
+								}
+							}
+
+							.box-content-list-li-wrap-collect {}
+						}
 					}
 				}
 			}

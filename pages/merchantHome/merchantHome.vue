@@ -20,61 +20,66 @@
 			</view>
 		</view>
 		<view class="box-content">
-			<view class="box-content-order-list">
-				<view class="order-list-li" v-for="(item,index) in 10" :key="index">
-					<view class="order-list-li-top">
-						<view class="order-list-li-top-title">订单号DU199110074026</view>
-						<view class="order-list-li-top-msg">待核销</view>
-					</view>
-					<view class="order-list-li-info">
-						<view class="order-list-li-info-wrap">
-							<view class="order-list-li-info-wrap-item">
-								<view class="order-list-li-info-wrap-item-title">顾客</view>
-								<view class="order-list-li-info-wrap-item-msg">
-									<text>庄女士</text>
-									<text>13812345678</text>
-								</view>
-							</view>
-							<view class="order-list-li-info-wrap-item">
-								<view class="order-list-li-info-wrap-item-title">服务</view>
-								<view class="order-list-li-info-wrap-item-msg">
-									<text>泰式按摩</text>
-								</view>
-							</view>
-							<view class="order-list-li-info-wrap-item">
-								<view class="order-list-li-info-wrap-item-title">门店</view>
-								<view class="order-list-li-info-wrap-item-msg">
-									<text>罗约蓝池·温泉SPA</text>
-								</view>
-							</view>
-							<view class="order-list-li-info-wrap-item">
-								<view class="order-list-li-info-wrap-item-title">时间</view>
-								<view class="order-list-li-info-wrap-item-msg">
-									<text>2020/10/12 15:00-16:00</text>
-								</view>
-							</view>
-							<view class="order-list-li-info-wrap-item">
-								<view class="order-list-li-info-wrap-item-title">技师</view>
-								<view class="order-list-li-info-wrap-item-msg">
-									<text>王二麻子</text>
-								</view>
-							</view>
+			<mescroll-uni ref="mescrollRef" @down="downCallback" @up="upCallback" :down="downOption" :up="upOption"
+				:height="mesHeight">
+				<view class="box-content-order-list">
+					<view class="order-list-li" v-for="(item,index) in 10" :key="index">
+						<view class="order-list-li-top">
+							<view class="order-list-li-top-title">订单号DU199110074026</view>
+							<view class="order-list-li-top-msg">待核销</view>
 						</view>
-						<view class="order-list-li-info-footer">
-							<view class="order-list-li-info-footer-price">
-								<view class="order-list-li-info-footer-price-msg">实付款：</view>
-								<view class="order-list-li-info-footer-present-price">
-									￥<text>332.70</text>
+						<view class="order-list-li-info">
+							<view class="order-list-li-info-wrap">
+								<view class="order-list-li-info-wrap-item">
+									<view class="order-list-li-info-wrap-item-title">顾客</view>
+									<view class="order-list-li-info-wrap-item-msg">
+										<text>庄女士</text>
+										<text>13812345678</text>
+									</view>
+								</view>
+								<view class="order-list-li-info-wrap-item">
+									<view class="order-list-li-info-wrap-item-title">服务</view>
+									<view class="order-list-li-info-wrap-item-msg">
+										<text>泰式按摩</text>
+									</view>
+								</view>
+								<view class="order-list-li-info-wrap-item">
+									<view class="order-list-li-info-wrap-item-title">门店</view>
+									<view class="order-list-li-info-wrap-item-msg">
+										<text>罗约蓝池·温泉SPA</text>
+									</view>
+								</view>
+								<view class="order-list-li-info-wrap-item">
+									<view class="order-list-li-info-wrap-item-title">时间</view>
+									<view class="order-list-li-info-wrap-item-msg">
+										<text>2020/10/12 15:00-16:00</text>
+									</view>
+								</view>
+								<view class="order-list-li-info-wrap-item">
+									<view class="order-list-li-info-wrap-item-title">技师</view>
+									<view class="order-list-li-info-wrap-item-msg">
+										<text>王二麻子</text>
+									</view>
 								</view>
 							</view>
-							<view class="order-list-li-info-footer-all-btn">
-								<view class="order-list-li-info-footer-btn flex-center" @click="cancelOrder">取消订单</view>
-								<view class="order-list-li-info-footer-btn flex-center" @click="confirmWriteOff">确认核销</view>
+							<view class="order-list-li-info-footer">
+								<view class="order-list-li-info-footer-price">
+									<view class="order-list-li-info-footer-price-msg">实付款：</view>
+									<view class="order-list-li-info-footer-present-price">
+										￥<text>332.70</text>
+									</view>
+								</view>
+								<view class="order-list-li-info-footer-all-btn">
+									<view class="order-list-li-info-footer-btn flex-center" @click="cancelOrder">取消订单
+									</view>
+									<view class="order-list-li-info-footer-btn flex-center" @click="confirmWriteOff">
+										确认核销</view>
+								</view>
 							</view>
 						</view>
 					</view>
 				</view>
-			</view>
+			</mescroll-uni>
 		</view>
 		<view class="box-footer">
 			<merchant-tabbar @tabbarClick="tabbarClick" :activeIndex="activeIndex"></merchant-tabbar>
@@ -84,11 +89,27 @@
 
 <script>
 	import merchantTabbar from "../../components/merchant-tabbar/merchant-tabbar.vue"
+	import MescrollMixin from "../../components/mescroll-uni/mescroll-mixins.js";
+	import MescrollUni from "@/components/mescroll-uni/mescroll-uni.vue"
 	export default {
+		mixins: [MescrollMixin], // 使用mixin
 		data() {
 			return {
 				barHeight: 0, //顶部电量导航栏高度,
 				activeIndex: 0, //当前tabbar所在页面
+				mesHeight: 0,
+				downOption: { // 下拉刷新配置
+					auto: false,
+				},
+				upOption: { // 上拉加载配置
+					noMoreSize: 5,
+					textLoading: "正在加载更多数据",
+					textNoMore: "——  已经到底了  ——",
+					isBounce: true,
+					auto: false,
+				},
+				PageNumber: 1, // 请求页数，
+				PageLimt: 10, // 请求条数
 				options: [{
 						title: "待付款",
 						number: "20"
@@ -113,7 +134,13 @@
 			};
 		},
 		components: {
-			merchantTabbar
+			merchantTabbar,
+			MescrollUni
+		},
+		onShow() {
+			const sys = uni.getSystemInfoSync();
+			var Heigh = sys.windowHeight
+			this.mesHeight = (Heigh - 160) * 2
 		},
 		onReady() {
 			// 获取顶部电量状态栏高度
@@ -138,6 +165,30 @@
 					title: "确认核销",
 					icon: "none"
 				})
+			},
+
+			/*下拉刷新的回调*/
+			downCallback() {
+				this.PageNumber = 1
+				setTimeout(() => {
+					this.mescroll.endSuccess() // 请求成功 隐藏加载状态
+
+					// this.mescroll.showNoMore()
+
+				}, 1500)
+			},
+
+			/*上拉加载的回调*/
+			upCallback(page) {
+				this.PageNumber++
+				console.log(this.PageNumber)
+				setTimeout(() => {
+					this.mescroll.endSuccess() // 请求成功 隐藏加载状态
+					// if (this.PageNumber > 3) {
+					this.mescroll.showNoMore()
+					// }
+				}, 1500)
+				console.log("上拉加载")
 			},
 
 			// tabbar点击
@@ -258,7 +309,7 @@
 			background: #F7F7F7;
 
 			.box-content-order-list {
-				margin-bottom: 40rpx;
+				// margin-bottom: 40rpx;
 
 				.order-list-li {
 					margin-top: 20rpx;

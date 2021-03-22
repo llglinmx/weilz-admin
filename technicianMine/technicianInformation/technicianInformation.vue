@@ -2,7 +2,7 @@
 	<view class="box">
 		<view class="box-head" :style="{paddingTop:barHeight+'px'}">
 			<view class="box-head-nav">
-				<view class="box-head-nav-back">
+				<view class="box-head-nav-back" @click="Gback">
 					<text class="iconfont iconfanhui" style="color: #000;font-size: 36rpx;margin-top: 8rpx;"></text>
 				</view>
 				<view class="box-head-nav-title">技师信息</view>
@@ -15,7 +15,8 @@
 					<view class="box-content-wrap-info-user-image">
 						<image src="../../static/images/001.png" mode="aspectFill"></image>
 						<view class="box-content-wrap-info-user-image-toast">
-							<text class="iconfont icontupian icon-font" style="color: #fff;font-size: 24rpx;margin-top: 4rpx;"></text>
+							<text class="iconfont icontupian icon-font"
+								style="color: #fff;font-size: 24rpx;margin-top: 4rpx;"></text>
 							<text style="margin-left: 8rpx;">4</text>
 						</view>
 					</view>
@@ -25,7 +26,8 @@
 							<view class="info-user-main-text-msg">【金牌技师】</view>
 						</view>
 						<view class="info-user-main-score">
-							<text class="iconfont iconwujiaoxing icon-font" style="color: #FFCD4D;font-size: 28rpx;" v-for="item in 5"></text>
+							<text class="iconfont iconwujiaoxing icon-font" style="color: #FFCD4D;font-size: 28rpx;"
+								v-for="item in 5"></text>
 							<text>5分</text>
 						</view>
 						<view class="info-user-main-user-info">
@@ -52,7 +54,8 @@
 						<text style="font-weight: 500;color: #000;margin-left: 20rpx;">罗约蓝池·温泉SPA</text>
 					</view>
 					<view class="box-content-store-list-more">
-						<text class="iconfont icongengduo icon-font" style="color: #B3B3B3;font-size: 28rpx;margin-top: 4rpx;"></text>
+						<text class="iconfont icongengduo icon-font"
+							style="color: #B3B3B3;font-size: 28rpx;margin-top: 4rpx;"></text>
 					</view>
 				</view>
 				<view class="box-content-store-list">
@@ -61,7 +64,8 @@
 						<text style="color: #333;margin-left: 20rpx;">中国 福建省 厦门市 集美区 杏滨路罗约酒店负一楼</text>
 					</view>
 					<view class="box-content-store-list-more">
-						<text class="iconfont icongengduo icon-font" style="color: #B3B3B3;font-size: 28rpx;margin-top: 4rpx;"></text>
+						<text class="iconfont icongengduo icon-font"
+							style="color: #B3B3B3;font-size: 28rpx;margin-top: 4rpx;"></text>
 					</view>
 				</view>
 			</view>
@@ -69,7 +73,8 @@
 			<view class="box-content-types-of-services">
 				<view class="box-content-types-of-services-title">服务种类</view>
 				<view class="box-content-types-of-services-list">
-					<view class="box-content-types-of-services-list-li" v-for="(item,index) in 10" :key="index">背部按摩</view>
+					<view class="box-content-types-of-services-list-li" v-for="(item,index) in 10" :key="index">背部按摩
+					</view>
 				</view>
 			</view>
 
@@ -89,13 +94,15 @@
 				<view class="box-content-type-list-li">
 					<view class="box-content-type-list-li-text">体检报告</view>
 					<view class="box-content-type-list-li-more">
-						<text class="iconfont icongengduo icon-font" style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
+						<text class="iconfont icongengduo icon-font"
+							style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
 					</view>
 				</view>
 				<view class="box-content-type-list-li">
 					<view class="box-content-type-list-li-text">银行卡信息</view>
 					<view class="box-content-type-list-li-more">
-						<text class="iconfont icongengduo icon-font" style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
+						<text class="iconfont icongengduo icon-font"
+							style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
 					</view>
 				</view>
 			</view>
@@ -124,7 +131,12 @@
 			});
 		},
 		methods: {
-
+			//返回
+			Gback() {
+				uni.navigateBack({
+					delta: 1
+				})
+			},
 		}
 	}
 </script>
@@ -396,7 +408,7 @@
 
 			.box-content-type-list {
 				margin-top: 20rpx;
-				margin-bottom: 40rpx;
+				margin-bottom: 20rpx;
 				padding-left: 40rpx;
 				box-sizing: border-box;
 				background: #fff;
@@ -416,7 +428,8 @@
 
 					.box-content-type-list-li-more {}
 				}
-				.box-content-type-list-li:last-child{
+
+				.box-content-type-list-li:last-child {
 					border-bottom: 0;
 				}
 			}

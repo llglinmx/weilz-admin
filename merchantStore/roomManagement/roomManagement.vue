@@ -71,7 +71,7 @@
 
 <script>
 	import navTitleBalck from "../../components/nav-title-balck/nav-title-balck.vue"
-	import UniPopup from "../../uni_modules/uni-popup/components/uni-popup/uni-popup.vue"
+	import UniPopup from "../../components/uni-popup/uni-popup.vue"
 	export default {
 		data() {
 			return {

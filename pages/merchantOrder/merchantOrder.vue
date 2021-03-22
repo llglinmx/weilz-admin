@@ -4,8 +4,10 @@
 			<view class="box-head-nav"></view>
 			<view class="box-head-search">
 				<view class="box-head-search-box">
-					<view class="box-head-search-box-icon" :class="isSearch?'box-head-search-box-icon-active':'box-head-search-box-icon-no-active'">
-						<text class="iconfont iconsousuo1 icon-font" style="color: #999;font-size: 40rpx;margin-top: 4rpx;"></text>
+					<view class="box-head-search-box-icon"
+						:class="isSearch?'box-head-search-box-icon-active':'box-head-search-box-icon-no-active'">
+						<text class="iconfont iconsousuo1 icon-font"
+							style="color: #999;font-size: 40rpx;margin-top: 4rpx;"></text>
 						<input type="text" value="" @focus="focus" @blur="blur" placeholder="搜索订单号、预约信息" />
 					</view>
 				</view>
@@ -21,7 +23,8 @@
 						<swiper-item class="swiper-box-item-list">
 							<view class="box-content-order">
 								<view class="box-content-order-list">
-									<view class="box-content-order-list-li" v-for="(item,index) in 10" :key="index" @click="writeOffDetails">
+									<view class="box-content-order-list-li" v-for="(item,index) in 10" :key="index"
+										>
 										<view class="box-content-order-list-li-top">
 											<view class="order-list-li-top-title">订单号DU199110074026</view>
 											<view class="order-list-li-top-msg">待核销</view>
@@ -38,7 +41,8 @@
 													</view>
 													<view class="order-list-li-wrap-item-info-box">
 														<view class="order-list-li-wrap-item-info-box-list">
-															<view class="order-list-li-wrap-item-info-box-list-li" v-for="(s,k) in 2">泰式按摩</view>
+															<view class="order-list-li-wrap-item-info-box-list-li"
+																v-for="(s,k) in 2">泰式按摩</view>
 														</view>
 														<view class="order-list-li-wrap-item-info-box-number">x1</view>
 													</view>
@@ -49,20 +53,23 @@
 											<view class="order-list-li-appointment-info-title">预约信息</view>
 											<view class="order-list-li-appointment-info-wrap">
 												<view class="order-list-li-appointment-info-wrap-item">
-													<view class="order-list-li-appointment-info-wrap-item-title">预 约 人：</view>
+													<view class="order-list-li-appointment-info-wrap-item-title">预 约 人：
+													</view>
 													<view class="order-list-li-appointment-info-wrap-item-text">
 														<text>庄女士</text>
 														<text>13812345678</text>
 													</view>
 												</view>
 												<view class="order-list-li-appointment-info-wrap-item">
-													<view class="order-list-li-appointment-info-wrap-item-title">预约门店： </view>
+													<view class="order-list-li-appointment-info-wrap-item-title">预约门店：
+													</view>
 													<view class="order-list-li-appointment-info-wrap-item-text">
 														<text> 罗约蓝池·温泉SPA</text>
 													</view>
 												</view>
 												<view class="order-list-li-appointment-info-wrap-item">
-													<view class="order-list-li-appointment-info-wrap-item-title">买家留言：</view>
+													<view class="order-list-li-appointment-info-wrap-item-title">买家留言：
+													</view>
 													<view class="order-list-li-appointment-info-wrap-item-text">
 														<text>暂无留言</text>
 													</view>
@@ -73,11 +80,16 @@
 										<view class="box-content-order-list-li-footer">
 											<view class="box-content-order-list-li-footer-text">
 												<view class="box-content-order-list-li-footer-text-msg">实付款：</view>
-												<view class="box-content-order-list-li-footer-text-price">￥<text>332.70</text></view>
+												<view class="box-content-order-list-li-footer-text-price">
+													￥<text>332.70</text></view>
 											</view>
 											<view class="box-content-order-list-li-footer-btn">
-												<view class="order-list-li-footer-all-btn btn-hollow flex-center">取消订单</view>
-												<view class="order-list-li-footer-all-btn btn-fill flex-center">确认核销</view>
+												<view class="order-list-li-footer-all-btn btn-hollow flex-center"
+													v-if="index==0" @click="orderDetails">查看详情</view>
+												<view class="order-list-li-footer-all-btn btn-hollow flex-center"
+													v-if="index!==0">取消订单</view>
+												<view class="order-list-li-footer-all-btn btn-fill flex-center"
+													v-if="index!==0" @click="writeOffDetails">确认核销</view>
 											</view>
 										</view>
 									</view>
@@ -104,7 +116,8 @@
 													</view>
 													<view class="order-list-li-wrap-item-info-box">
 														<view class="order-list-li-wrap-item-info-box-list">
-															<view class="order-list-li-wrap-item-info-box-list-li" v-for="(s,k) in 2">泰式按摩</view>
+															<view class="order-list-li-wrap-item-info-box-list-li"
+																v-for="(s,k) in 2">泰式按摩</view>
 														</view>
 														<view class="order-list-li-wrap-item-info-box-number">x1</view>
 													</view>
@@ -115,20 +128,23 @@
 											<view class="order-list-li-appointment-info-title">预约信息</view>
 											<view class="order-list-li-appointment-info-wrap">
 												<view class="order-list-li-appointment-info-wrap-item">
-													<view class="order-list-li-appointment-info-wrap-item-title">预 约 人：</view>
+													<view class="order-list-li-appointment-info-wrap-item-title">预 约 人：
+													</view>
 													<view class="order-list-li-appointment-info-wrap-item-text">
 														<text>庄女士</text>
 														<text>13812345678</text>
 													</view>
 												</view>
 												<view class="order-list-li-appointment-info-wrap-item">
-													<view class="order-list-li-appointment-info-wrap-item-title">预约门店： </view>
+													<view class="order-list-li-appointment-info-wrap-item-title">预约门店：
+													</view>
 													<view class="order-list-li-appointment-info-wrap-item-text">
 														<text> 罗约蓝池·温泉SPA</text>
 													</view>
 												</view>
 												<view class="order-list-li-appointment-info-wrap-item">
-													<view class="order-list-li-appointment-info-wrap-item-title">买家留言：</view>
+													<view class="order-list-li-appointment-info-wrap-item-title">买家留言：
+													</view>
 													<view class="order-list-li-appointment-info-wrap-item-text">
 														<text>暂无留言</text>
 													</view>
@@ -139,11 +155,14 @@
 										<view class="box-content-order-list-li-footer">
 											<view class="box-content-order-list-li-footer-text">
 												<view class="box-content-order-list-li-footer-text-msg">实付款：</view>
-												<view class="box-content-order-list-li-footer-text-price">￥<text>332.70</text></view>
+												<view class="box-content-order-list-li-footer-text-price">
+													￥<text>332.70</text></view>
 											</view>
 											<view class="box-content-order-list-li-footer-btn">
-												<view class="order-list-li-footer-all-btn btn-hollow flex-center">取消订单</view>
-												<view class="order-list-li-footer-all-btn btn-fill flex-center">确认核销</view>
+												<view class="order-list-li-footer-all-btn btn-hollow flex-center">取消订单
+												</view>
+												<view class="order-list-li-footer-all-btn btn-fill flex-center">确认核销
+												</view>
 											</view>
 										</view>
 									</view>
@@ -170,7 +189,8 @@
 													</view>
 													<view class="order-list-li-wrap-item-info-box">
 														<view class="order-list-li-wrap-item-info-box-list">
-															<view class="order-list-li-wrap-item-info-box-list-li" v-for="(s,k) in 2">泰式按摩</view>
+															<view class="order-list-li-wrap-item-info-box-list-li"
+																v-for="(s,k) in 2">泰式按摩</view>
 														</view>
 														<view class="order-list-li-wrap-item-info-box-number">x1</view>
 													</view>
@@ -181,20 +201,23 @@
 											<view class="order-list-li-appointment-info-title">预约信息</view>
 											<view class="order-list-li-appointment-info-wrap">
 												<view class="order-list-li-appointment-info-wrap-item">
-													<view class="order-list-li-appointment-info-wrap-item-title">预 约 人：</view>
+													<view class="order-list-li-appointment-info-wrap-item-title">预 约 人：
+													</view>
 													<view class="order-list-li-appointment-info-wrap-item-text">
 														<text>庄女士</text>
 														<text>13812345678</text>
 													</view>
 												</view>
 												<view class="order-list-li-appointment-info-wrap-item">
-													<view class="order-list-li-appointment-info-wrap-item-title">预约门店： </view>
+													<view class="order-list-li-appointment-info-wrap-item-title">预约门店：
+													</view>
 													<view class="order-list-li-appointment-info-wrap-item-text">
 														<text> 罗约蓝池·温泉SPA</text>
 													</view>
 												</view>
 												<view class="order-list-li-appointment-info-wrap-item">
-													<view class="order-list-li-appointment-info-wrap-item-title">买家留言：</view>
+													<view class="order-list-li-appointment-info-wrap-item-title">买家留言：
+													</view>
 													<view class="order-list-li-appointment-info-wrap-item-text">
 														<text>暂无留言</text>
 													</view>
@@ -205,11 +228,14 @@
 										<view class="box-content-order-list-li-footer">
 											<view class="box-content-order-list-li-footer-text">
 												<view class="box-content-order-list-li-footer-text-msg">实付款：</view>
-												<view class="box-content-order-list-li-footer-text-price">￥<text>332.70</text></view>
+												<view class="box-content-order-list-li-footer-text-price">
+													￥<text>332.70</text></view>
 											</view>
 											<view class="box-content-order-list-li-footer-btn">
-												<view class="order-list-li-footer-all-btn btn-hollow flex-center">取消订单</view>
-												<view class="order-list-li-footer-all-btn btn-fill flex-center">确认核销</view>
+												<view class="order-list-li-footer-all-btn btn-hollow flex-center">取消订单
+												</view>
+												<view class="order-list-li-footer-all-btn btn-fill flex-center">确认核销
+												</view>
 											</view>
 										</view>
 									</view>
@@ -236,7 +262,8 @@
 													</view>
 													<view class="order-list-li-wrap-item-info-box">
 														<view class="order-list-li-wrap-item-info-box-list">
-															<view class="order-list-li-wrap-item-info-box-list-li" v-for="(s,k) in 2">泰式按摩</view>
+															<view class="order-list-li-wrap-item-info-box-list-li"
+																v-for="(s,k) in 2">泰式按摩</view>
 														</view>
 														<view class="order-list-li-wrap-item-info-box-number">x1</view>
 													</view>
@@ -247,20 +274,23 @@
 											<view class="order-list-li-appointment-info-title">预约信息</view>
 											<view class="order-list-li-appointment-info-wrap">
 												<view class="order-list-li-appointment-info-wrap-item">
-													<view class="order-list-li-appointment-info-wrap-item-title">预 约 人：</view>
+													<view class="order-list-li-appointment-info-wrap-item-title">预 约 人：
+													</view>
 													<view class="order-list-li-appointment-info-wrap-item-text">
 														<text>庄女士</text>
 														<text>13812345678</text>
 													</view>
 												</view>
 												<view class="order-list-li-appointment-info-wrap-item">
-													<view class="order-list-li-appointment-info-wrap-item-title">预约门店： </view>
+													<view class="order-list-li-appointment-info-wrap-item-title">预约门店：
+													</view>
 													<view class="order-list-li-appointment-info-wrap-item-text">
 														<text> 罗约蓝池·温泉SPA</text>
 													</view>
 												</view>
 												<view class="order-list-li-appointment-info-wrap-item">
-													<view class="order-list-li-appointment-info-wrap-item-title">买家留言：</view>
+													<view class="order-list-li-appointment-info-wrap-item-title">买家留言：
+													</view>
 													<view class="order-list-li-appointment-info-wrap-item-text">
 														<text>暂无留言</text>
 													</view>
@@ -271,11 +301,14 @@
 										<view class="box-content-order-list-li-footer">
 											<view class="box-content-order-list-li-footer-text">
 												<view class="box-content-order-list-li-footer-text-msg">实付款：</view>
-												<view class="box-content-order-list-li-footer-text-price">￥<text>332.70</text></view>
+												<view class="box-content-order-list-li-footer-text-price">
+													￥<text>332.70</text></view>
 											</view>
 											<view class="box-content-order-list-li-footer-btn">
-												<view class="order-list-li-footer-all-btn btn-hollow flex-center">取消订单</view>
-												<view class="order-list-li-footer-all-btn btn-fill flex-center">确认核销</view>
+												<view class="order-list-li-footer-all-btn btn-hollow flex-center">取消订单
+												</view>
+												<view class="order-list-li-footer-all-btn btn-fill flex-center">确认核销
+												</view>
 											</view>
 										</view>
 									</view>
@@ -302,7 +335,8 @@
 													</view>
 													<view class="order-list-li-wrap-item-info-box">
 														<view class="order-list-li-wrap-item-info-box-list">
-															<view class="order-list-li-wrap-item-info-box-list-li" v-for="(s,k) in 2">泰式按摩</view>
+															<view class="order-list-li-wrap-item-info-box-list-li"
+																v-for="(s,k) in 2">泰式按摩</view>
 														</view>
 														<view class="order-list-li-wrap-item-info-box-number">x1</view>
 													</view>
@@ -313,20 +347,23 @@
 											<view class="order-list-li-appointment-info-title">预约信息</view>
 											<view class="order-list-li-appointment-info-wrap">
 												<view class="order-list-li-appointment-info-wrap-item">
-													<view class="order-list-li-appointment-info-wrap-item-title">预 约 人：</view>
+													<view class="order-list-li-appointment-info-wrap-item-title">预 约 人：
+													</view>
 													<view class="order-list-li-appointment-info-wrap-item-text">
 														<text>庄女士</text>
 														<text>13812345678</text>
 													</view>
 												</view>
 												<view class="order-list-li-appointment-info-wrap-item">
-													<view class="order-list-li-appointment-info-wrap-item-title">预约门店： </view>
+													<view class="order-list-li-appointment-info-wrap-item-title">预约门店：
+													</view>
 													<view class="order-list-li-appointment-info-wrap-item-text">
 														<text> 罗约蓝池·温泉SPA</text>
 													</view>
 												</view>
 												<view class="order-list-li-appointment-info-wrap-item">
-													<view class="order-list-li-appointment-info-wrap-item-title">买家留言：</view>
+													<view class="order-list-li-appointment-info-wrap-item-title">买家留言：
+													</view>
 													<view class="order-list-li-appointment-info-wrap-item-text">
 														<text>暂无留言</text>
 													</view>
@@ -337,11 +374,14 @@
 										<view class="box-content-order-list-li-footer">
 											<view class="box-content-order-list-li-footer-text">
 												<view class="box-content-order-list-li-footer-text-msg">实付款：</view>
-												<view class="box-content-order-list-li-footer-text-price">￥<text>332.70</text></view>
+												<view class="box-content-order-list-li-footer-text-price">
+													￥<text>332.70</text></view>
 											</view>
 											<view class="box-content-order-list-li-footer-btn">
-												<view class="order-list-li-footer-all-btn btn-hollow flex-center">取消订单</view>
-												<view class="order-list-li-footer-all-btn btn-fill flex-center">确认核销</view>
+												<view class="order-list-li-footer-all-btn btn-hollow flex-center">取消订单
+												</view>
+												<view class="order-list-li-footer-all-btn btn-fill flex-center">确认核销
+												</view>
 											</view>
 										</view>
 									</view>
@@ -402,6 +442,13 @@
 					url: "../../merchantOrder/toBeWrittenOff/toBeWrittenOff"
 				})
 			},
+			// 查看详情
+			orderDetails() {
+				uni.navigateTo({
+					url: "../../merchantOrder/orderDetails/orderDetails"
+				})
+			},
+
 
 			// tabs 点击
 			tabClick(e) {
