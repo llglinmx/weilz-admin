@@ -4,7 +4,7 @@
 			<view class="box-head-top">
 				<text class="iconfont iconxiaoxi icon-font" style="color: #fff;font-size: 52rpx"
 					@click="message"></text>
-				<text class="iconfont iconshezhi icon-font" style="color: #fff;font-size: 52rpx"></text>
+				<text class="iconfont iconshezhi icon-font" style="color: #fff;font-size: 52rpx" @click="setClick"></text>
 			</view>
 		</view>
 		<view class="box-content">
@@ -89,7 +89,13 @@
 					url: "../../merchantMine/systemMessage/systemMessage"
 				})
 			},
-
+			// 设置
+			setClick() {
+				console.log(11)
+				uni.navigateTo({
+					url: "../../merchantMine/set/set"
+				})
+			},
 			// 列表点击
 			menuListClick(index) {
 				switch (index) {

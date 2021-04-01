@@ -22,27 +22,25 @@
 					</view>
 					<view class="box-content-wrap-info-user-main">
 						<view class="info-user-main-text">
-							<view class="info-user-main-text-title">王二麻子</view>
-							<view class="info-user-main-text-msg">【金牌技师】</view>
+							<view class="info-user-main-text-title">{{userInfo.name}}</view>
+							<view class="info-user-main-text-msg">【{{userInfo.level_name}}】</view>
 						</view>
 						<view class="info-user-main-score">
-							<text class="iconfont iconwujiaoxing icon-font" style="color: #FFCD4D;font-size: 28rpx;"
-								v-for="item in 5"></text>
-							<text>5分</text>
+							<score :comment="userInfo.comment"></score>
 						</view>
 						<view class="info-user-main-user-info">
 							<text>女</text>
 							<text>年龄</text>
-							<text>2年工龄</text>
+							<text>{{userInfo.service_times}}年工龄</text>
 						</view>
-						<view class="info-user-main-text">手机号码：13312584596</view>
-						<view class="info-user-main-text">邮箱地址：1007@163.com</view>
+						<view class="info-user-main-text">手机号码:{{userInfo.mobile}}</view>
+						<view class="info-user-main-text">邮箱:{{userInfo.mail}}</view>
 					</view>
 				</view>
 				<view class="box-content-wrap-info-text">
-					语言技能：中文、韩文、英文
+					语言技能：{{userInfo.Language_skills}}
 				</view>
-				<view class="box-content-wrap-info-text">兴趣爱好：书法</view>
+				<view class="box-content-wrap-info-text">兴趣爱好：{{userInfo.hobby}}</view>
 				<view class="box-content-wrap-info-text">执照ID：<text style="color: #26BF82;">查看图片</text></view>
 			</view>
 
@@ -117,6 +115,18 @@
 		data() {
 			return {
 				barHeight: 0, //顶部电量导航栏高度
+				userInfo:{
+					name:'',
+					level_name:'',
+					comment:'',
+					sex:1,
+					hobby:'',
+					Language_skills:'',
+					mail:'',
+					mobile:'',
+					service_times:'',
+					photo:[],
+				},
 			};
 		},
 		components: {
@@ -130,7 +140,21 @@
 				}
 			});
 		},
+		onLoad() {
+			this.getInfo()
+		},
 		methods: {
+			
+			// 获取个人信息
+			getInfo() {
+				let vuedata = {}
+				this.apiget('api/v1/engineer/info', vuedata).then(res => {
+					if (res.status == 200) {
+						this.userInfo = res.data.engineer
+					}
+				});
+			},
+			
 			//返回
 			Gback() {
 				uni.navigateBack({

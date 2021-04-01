@@ -2,44 +2,48 @@
 	<view class="box">
 		<view class="box-head" :style="{paddingTop:barHeight+'px'}">
 			<view class="box-head-top">
-				<text class="iconfont iconxiaoxi icon-font" style="font-size: 52rpx;color: #fff;margin-right: 20rpx;" @click="msgClick"></text>
-				<text class="iconfont iconshezhi icon-font" style="font-size: 52rpx;color: #fff;"></text>
+				<text class="iconfont iconxiaoxi icon-font" style="font-size: 52rpx;color: #fff;margin-right: 20rpx;"
+					@click="msgClick"></text>
+				<text class="iconfont iconshezhi icon-font" style="font-size: 52rpx;color: #fff;" @click="set"></text>
 			</view>
 			<view class="box-head-wrap">
 				<view class="box-head-wrap-user-info">
 					<view class="box-head-wrap-user-info-image flex-center">
-						<image src="../../static/images/userImage.png" mode="aspectFill"></image>
+						<image :src="userInfo.simg" mode="aspectFill"></image>
 					</view>
 					<view class="box-head-wrap-user-info-main">
 						<view class="user-info-main-title">
-							<view class="user-info-main-title-text">王二麻子</view>
-							<view class="user-info-main-title-msg">高级技师</view>
+							<view class="user-info-main-title-text">{{userInfo.name}}</view>
+							<view class="user-info-main-title-msg">{{userInfo.level_name}}</view>
 						</view>
-						<view class="user-info-main-store">所属门店：印象诗意·悠然SPA</view>
+						<view class="user-info-main-store">所属门店：{{userInfo.store_name}}</view>
 					</view>
 				</view>
 				<view class="box-head-wrap-state flex-center">上班中</view>
 			</view>
 		</view>
 		<view class="box-content">
-			<view class="box-content-list">
+			<!-- <view class="box-content-list">
 				<view class="box-content-list-li" v-for="(item,index) in typeList" :key="index">
 					<view class="box-content-list-li-image">
 						<image :src="item.image" mode="aspectFill"></image>
 					</view>
 					<view class="box-content-list-li-text">{{item.text}}</view>
 				</view>
-			</view>
+			</view> -->
 
 			<view class="box-content-main">
 				<view class="box-content-main-list">
-					<view class="box-content-main-list-li" v-for="(item,index) in menuList" :key="index" @click="menuClick(index)">
+					<view class="box-content-main-list-li" v-for="(item,index) in menuList" :key="index"
+						@click="menuClick(index)">
 						<view class="box-content-main-list-li-info">
-							<text :class="item.style" class="iconfont icon-font" :style="{fontSize:item.size+'rpx',color:item.color}"></text>
+							<text :class="item.style" class="iconfont icon-font"
+								:style="{fontSize:item.size+'rpx',color:item.color}"></text>
 							<text class="list-li-info-text">{{item.text}}</text>
 						</view>
 						<view class="box-content-main-list-li-more">
-							<text class="iconfont icongengduo icon-font" style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
+							<text class="iconfont icongengduo icon-font"
+								style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
 						</view>
 					</view>
 				</view>
@@ -68,7 +72,7 @@
 					},
 					{
 						text: '已退款',
-					image: '../../static/images/technician-mine-icon3.png'
+						image: '../../static/images/technician-mine-icon3.png'
 					},
 					{
 						text: '已评价',
@@ -122,6 +126,12 @@
 						color: "#FFDB3A"
 					},
 				],
+				userInfo: {
+					level_name: '',
+					name: '',
+					simg: '',
+					store_name: ''
+				}
 			};
 		},
 		components: {
@@ -135,13 +145,37 @@
 				}
 			});
 		},
+		onLoad() {
+			this.getInfo()
+		},
 		methods: {
+
+			// 获取个人信息
+			getInfo() {
+				let vuedata = {}
+				this.apiget('api/v1/engineer/info', vuedata).then(res => {
+					if (res.status == 200) {
+						this.userInfo = res.data.engineer
+					}
+				});
+			},
+
+
+
 			// 系统消息
 			msgClick() {
 				uni.navigateTo({
 					url: "../../technicianMine/systemMessage/systemMessage"
 				})
 			},
+
+			// 设置
+			set() {
+				uni.navigateTo({
+					url: "../../technicianMine/set/set"
+				})
+			},
+
 			// 菜单点击
 			menuClick(index) {
 				// 
@@ -256,6 +290,7 @@
 						image {
 							width: 112rpx;
 							height: 112rpx;
+							border-radius: 50%;
 						}
 					}
 

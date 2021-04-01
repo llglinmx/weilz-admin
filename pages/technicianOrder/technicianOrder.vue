@@ -4,8 +4,10 @@
 			<view class="box-head-nav"></view>
 			<view class="box-head-search">
 				<view class="box-head-search-box">
-					<view class="box-head-search-box-icon" :class="isSearch?'box-head-search-box-icon-active':'box-head-search-box-icon-no-active'">
-						<text class="iconfont iconsousuo1 icon-font" style="color: #999;font-size: 40rpx;margin-top: 4rpx;"></text>
+					<view class="box-head-search-box-icon"
+						:class="isSearch?'box-head-search-box-icon-active':'box-head-search-box-icon-no-active'">
+						<text class="iconfont iconsousuo1 icon-font"
+							style="color: #999;font-size: 40rpx;margin-top: 4rpx;"></text>
 						<input type="text" value="" @focus="focus" @blur="blur" placeholder="搜索订单号、预约信息" />
 					</view>
 				</view>
@@ -18,336 +20,11 @@
 			<view class="box-content-wrap">
 				<view class="box-content-wrap-item">
 					<swiper class="swiper-box" :current="defaultIndex" @change="tabChange">
-						<swiper-item class="swiper-box-item-list">
-							<view class="box-content-order">
-								<view class="box-content-order-list">
-									<view class="box-content-order-list-li" v-for="(item,index) in 10" :key="index" @click="writeOffDetails">
-										<view class="box-content-order-list-li-top">
-											<view class="order-list-li-top-title">订单号DU199110074026</view>
-											<view class="order-list-li-top-msg">待核销</view>
-										</view>
-										<view class="box-content-order-list-li-wrap">
-											<view class="order-list-li-wrap-item" v-for="(i,j) in 3">
-												<view class="order-list-li-wrap-item-image">
-													<image src="../../static/images/001.png" mode="aspectFill"></image>
-												</view>
-												<view class="order-list-li-wrap-item-info">
-													<view class="order-list-li-wrap-item-info-top">
-														<view class="wrap-item-info-top-text">泰式古法按摩</view>
-														<view class="wrap-item-info-top-msg">￥298.00</view>
-													</view>
-													<view class="order-list-li-wrap-item-info-box">
-														<view class="order-list-li-wrap-item-info-box-list">
-															<view class="order-list-li-wrap-item-info-box-list-li" v-for="(s,k) in 2">泰式按摩</view>
-														</view>
-														<view class="order-list-li-wrap-item-info-box-number">x1</view>
-													</view>
-												</view>
-											</view>
-										</view>
-										<view class="box-content-order-list-li-appointment-info">
-											<view class="order-list-li-appointment-info-title">预约信息</view>
-											<view class="order-list-li-appointment-info-wrap">
-												<view class="order-list-li-appointment-info-wrap-item">
-													<view class="order-list-li-appointment-info-wrap-item-title">预 约 人：</view>
-													<view class="order-list-li-appointment-info-wrap-item-text">
-														<text>庄女士</text>
-														<text>13812345678</text>
-													</view>
-												</view>
-												<view class="order-list-li-appointment-info-wrap-item">
-													<view class="order-list-li-appointment-info-wrap-item-title">预约门店： </view>
-													<view class="order-list-li-appointment-info-wrap-item-text">
-														<text> 罗约蓝池·温泉SPA</text>
-													</view>
-												</view>
-												<view class="order-list-li-appointment-info-wrap-item">
-													<view class="order-list-li-appointment-info-wrap-item-title">买家留言：</view>
-													<view class="order-list-li-appointment-info-wrap-item-text">
-														<text>暂无留言</text>
-													</view>
-												</view>
-
-											</view>
-										</view>
-										<view class="box-content-order-list-li-footer">
-											<view class="box-content-order-list-li-footer-text">
-												<view class="box-content-order-list-li-footer-text-msg">实付款：</view>
-												<view class="box-content-order-list-li-footer-text-price">￥<text>332.70</text></view>
-											</view>
-											<view class="box-content-order-list-li-footer-btn">
-												<view class="order-list-li-footer-all-btn btn-hollow flex-center">取消订单</view>
-												<view class="order-list-li-footer-all-btn btn-fill flex-center">确认核销</view>
-											</view>
-										</view>
-									</view>
-								</view>
-							</view>
+						<swiper-item class="swiper-box-item-list" v-for="(item,index) in tabsList" :key="index">
+							<scroll-tab-swiper-item :search='searchVal' :tabIndex="index" :orderType='status' :currentIndex="defaultIndex">
+							</scroll-tab-swiper-item>
 						</swiper-item>
-						<swiper-item class="swiper-box-item-list">
-							<view class="box-content-order">
-								<view class="box-content-order-list">
-									<view class="box-content-order-list-li" v-for="(item,index) in 10" :key="index">
-										<view class="box-content-order-list-li-top">
-											<view class="order-list-li-top-title">订单号DU199110074026</view>
-											<view class="order-list-li-top-msg">待核销</view>
-										</view>
-										<view class="box-content-order-list-li-wrap">
-											<view class="order-list-li-wrap-item" v-for="(i,j) in 3">
-												<view class="order-list-li-wrap-item-image">
-													<image src="../../static/images/001.png" mode="aspectFill"></image>
-												</view>
-												<view class="order-list-li-wrap-item-info">
-													<view class="order-list-li-wrap-item-info-top">
-														<view class="wrap-item-info-top-text">泰式古法按摩</view>
-														<view class="wrap-item-info-top-msg">￥298.00</view>
-													</view>
-													<view class="order-list-li-wrap-item-info-box">
-														<view class="order-list-li-wrap-item-info-box-list">
-															<view class="order-list-li-wrap-item-info-box-list-li" v-for="(s,k) in 2">泰式按摩</view>
-														</view>
-														<view class="order-list-li-wrap-item-info-box-number">x1</view>
-													</view>
-												</view>
-											</view>
-										</view>
-										<view class="box-content-order-list-li-appointment-info">
-											<view class="order-list-li-appointment-info-title">预约信息</view>
-											<view class="order-list-li-appointment-info-wrap">
-												<view class="order-list-li-appointment-info-wrap-item">
-													<view class="order-list-li-appointment-info-wrap-item-title">预 约 人：</view>
-													<view class="order-list-li-appointment-info-wrap-item-text">
-														<text>庄女士</text>
-														<text>13812345678</text>
-													</view>
-												</view>
-												<view class="order-list-li-appointment-info-wrap-item">
-													<view class="order-list-li-appointment-info-wrap-item-title">预约门店： </view>
-													<view class="order-list-li-appointment-info-wrap-item-text">
-														<text> 罗约蓝池·温泉SPA</text>
-													</view>
-												</view>
-												<view class="order-list-li-appointment-info-wrap-item">
-													<view class="order-list-li-appointment-info-wrap-item-title">买家留言：</view>
-													<view class="order-list-li-appointment-info-wrap-item-text">
-														<text>暂无留言</text>
-													</view>
-												</view>
 
-											</view>
-										</view>
-										<view class="box-content-order-list-li-footer">
-											<view class="box-content-order-list-li-footer-text">
-												<view class="box-content-order-list-li-footer-text-msg">实付款：</view>
-												<view class="box-content-order-list-li-footer-text-price">￥<text>332.70</text></view>
-											</view>
-											<view class="box-content-order-list-li-footer-btn">
-												<view class="order-list-li-footer-all-btn btn-hollow flex-center">取消订单</view>
-												<view class="order-list-li-footer-all-btn btn-fill flex-center">确认核销</view>
-											</view>
-										</view>
-									</view>
-								</view>
-							</view>
-						</swiper-item>
-						<swiper-item class="swiper-box-item-list">
-							<view class="box-content-order">
-								<view class="box-content-order-list">
-									<view class="box-content-order-list-li" v-for="(item,index) in 10" :key="index">
-										<view class="box-content-order-list-li-top">
-											<view class="order-list-li-top-title">订单号DU199110074026</view>
-											<view class="order-list-li-top-msg">待核销</view>
-										</view>
-										<view class="box-content-order-list-li-wrap">
-											<view class="order-list-li-wrap-item" v-for="(i,j) in 3">
-												<view class="order-list-li-wrap-item-image">
-													<image src="../../static/images/001.png" mode="aspectFill"></image>
-												</view>
-												<view class="order-list-li-wrap-item-info">
-													<view class="order-list-li-wrap-item-info-top">
-														<view class="wrap-item-info-top-text">泰式古法按摩</view>
-														<view class="wrap-item-info-top-msg">￥298.00</view>
-													</view>
-													<view class="order-list-li-wrap-item-info-box">
-														<view class="order-list-li-wrap-item-info-box-list">
-															<view class="order-list-li-wrap-item-info-box-list-li" v-for="(s,k) in 2">泰式按摩</view>
-														</view>
-														<view class="order-list-li-wrap-item-info-box-number">x1</view>
-													</view>
-												</view>
-											</view>
-										</view>
-										<view class="box-content-order-list-li-appointment-info">
-											<view class="order-list-li-appointment-info-title">预约信息</view>
-											<view class="order-list-li-appointment-info-wrap">
-												<view class="order-list-li-appointment-info-wrap-item">
-													<view class="order-list-li-appointment-info-wrap-item-title">预 约 人：</view>
-													<view class="order-list-li-appointment-info-wrap-item-text">
-														<text>庄女士</text>
-														<text>13812345678</text>
-													</view>
-												</view>
-												<view class="order-list-li-appointment-info-wrap-item">
-													<view class="order-list-li-appointment-info-wrap-item-title">预约门店： </view>
-													<view class="order-list-li-appointment-info-wrap-item-text">
-														<text> 罗约蓝池·温泉SPA</text>
-													</view>
-												</view>
-												<view class="order-list-li-appointment-info-wrap-item">
-													<view class="order-list-li-appointment-info-wrap-item-title">买家留言：</view>
-													<view class="order-list-li-appointment-info-wrap-item-text">
-														<text>暂无留言</text>
-													</view>
-												</view>
-
-											</view>
-										</view>
-										<view class="box-content-order-list-li-footer">
-											<view class="box-content-order-list-li-footer-text">
-												<view class="box-content-order-list-li-footer-text-msg">实付款：</view>
-												<view class="box-content-order-list-li-footer-text-price">￥<text>332.70</text></view>
-											</view>
-											<view class="box-content-order-list-li-footer-btn">
-												<view class="order-list-li-footer-all-btn btn-hollow flex-center">取消订单</view>
-												<view class="order-list-li-footer-all-btn btn-fill flex-center">确认核销</view>
-											</view>
-										</view>
-									</view>
-								</view>
-							</view>
-						</swiper-item>
-						<swiper-item class="swiper-box-item-list">
-							<view class="box-content-order">
-								<view class="box-content-order-list">
-									<view class="box-content-order-list-li" v-for="(item,index) in 10" :key="index">
-										<view class="box-content-order-list-li-top">
-											<view class="order-list-li-top-title">订单号DU199110074026</view>
-											<view class="order-list-li-top-msg">待核销</view>
-										</view>
-										<view class="box-content-order-list-li-wrap">
-											<view class="order-list-li-wrap-item" v-for="(i,j) in 3">
-												<view class="order-list-li-wrap-item-image">
-													<image src="../../static/images/001.png" mode="aspectFill"></image>
-												</view>
-												<view class="order-list-li-wrap-item-info">
-													<view class="order-list-li-wrap-item-info-top">
-														<view class="wrap-item-info-top-text">泰式古法按摩</view>
-														<view class="wrap-item-info-top-msg">￥298.00</view>
-													</view>
-													<view class="order-list-li-wrap-item-info-box">
-														<view class="order-list-li-wrap-item-info-box-list">
-															<view class="order-list-li-wrap-item-info-box-list-li" v-for="(s,k) in 2">泰式按摩</view>
-														</view>
-														<view class="order-list-li-wrap-item-info-box-number">x1</view>
-													</view>
-												</view>
-											</view>
-										</view>
-										<view class="box-content-order-list-li-appointment-info">
-											<view class="order-list-li-appointment-info-title">预约信息</view>
-											<view class="order-list-li-appointment-info-wrap">
-												<view class="order-list-li-appointment-info-wrap-item">
-													<view class="order-list-li-appointment-info-wrap-item-title">预 约 人：</view>
-													<view class="order-list-li-appointment-info-wrap-item-text">
-														<text>庄女士</text>
-														<text>13812345678</text>
-													</view>
-												</view>
-												<view class="order-list-li-appointment-info-wrap-item">
-													<view class="order-list-li-appointment-info-wrap-item-title">预约门店： </view>
-													<view class="order-list-li-appointment-info-wrap-item-text">
-														<text> 罗约蓝池·温泉SPA</text>
-													</view>
-												</view>
-												<view class="order-list-li-appointment-info-wrap-item">
-													<view class="order-list-li-appointment-info-wrap-item-title">买家留言：</view>
-													<view class="order-list-li-appointment-info-wrap-item-text">
-														<text>暂无留言</text>
-													</view>
-												</view>
-
-											</view>
-										</view>
-										<view class="box-content-order-list-li-footer">
-											<view class="box-content-order-list-li-footer-text">
-												<view class="box-content-order-list-li-footer-text-msg">实付款：</view>
-												<view class="box-content-order-list-li-footer-text-price">￥<text>332.70</text></view>
-											</view>
-											<view class="box-content-order-list-li-footer-btn">
-												<view class="order-list-li-footer-all-btn btn-hollow flex-center">取消订单</view>
-												<view class="order-list-li-footer-all-btn btn-fill flex-center">确认核销</view>
-											</view>
-										</view>
-									</view>
-								</view>
-							</view>
-						</swiper-item>
-						<swiper-item class="swiper-box-item-list">
-							<view class="box-content-order">
-								<view class="box-content-order-list">
-									<view class="box-content-order-list-li" v-for="(item,index) in 10" :key="index">
-										<view class="box-content-order-list-li-top">
-											<view class="order-list-li-top-title">订单号DU199110074026</view>
-											<view class="order-list-li-top-msg">待核销</view>
-										</view>
-										<view class="box-content-order-list-li-wrap">
-											<view class="order-list-li-wrap-item" v-for="(i,j) in 3">
-												<view class="order-list-li-wrap-item-image">
-													<image src="../../static/images/001.png" mode="aspectFill"></image>
-												</view>
-												<view class="order-list-li-wrap-item-info">
-													<view class="order-list-li-wrap-item-info-top">
-														<view class="wrap-item-info-top-text">泰式古法按摩</view>
-														<view class="wrap-item-info-top-msg">￥298.00</view>
-													</view>
-													<view class="order-list-li-wrap-item-info-box">
-														<view class="order-list-li-wrap-item-info-box-list">
-															<view class="order-list-li-wrap-item-info-box-list-li" v-for="(s,k) in 2">泰式按摩</view>
-														</view>
-														<view class="order-list-li-wrap-item-info-box-number">x1</view>
-													</view>
-												</view>
-											</view>
-										</view>
-										<view class="box-content-order-list-li-appointment-info">
-											<view class="order-list-li-appointment-info-title">预约信息</view>
-											<view class="order-list-li-appointment-info-wrap">
-												<view class="order-list-li-appointment-info-wrap-item">
-													<view class="order-list-li-appointment-info-wrap-item-title">预 约 人：</view>
-													<view class="order-list-li-appointment-info-wrap-item-text">
-														<text>庄女士</text>
-														<text>13812345678</text>
-													</view>
-												</view>
-												<view class="order-list-li-appointment-info-wrap-item">
-													<view class="order-list-li-appointment-info-wrap-item-title">预约门店： </view>
-													<view class="order-list-li-appointment-info-wrap-item-text">
-														<text> 罗约蓝池·温泉SPA</text>
-													</view>
-												</view>
-												<view class="order-list-li-appointment-info-wrap-item">
-													<view class="order-list-li-appointment-info-wrap-item-title">买家留言：</view>
-													<view class="order-list-li-appointment-info-wrap-item-text">
-														<text>暂无留言</text>
-													</view>
-												</view>
-
-											</view>
-										</view>
-										<view class="box-content-order-list-li-footer">
-											<view class="box-content-order-list-li-footer-text">
-												<view class="box-content-order-list-li-footer-text-msg">实付款：</view>
-												<view class="box-content-order-list-li-footer-text-price">￥<text>332.70</text></view>
-											</view>
-											<view class="box-content-order-list-li-footer-btn">
-												<view class="order-list-li-footer-all-btn btn-hollow flex-center">取消订单</view>
-												<view class="order-list-li-footer-all-btn btn-fill flex-center">确认核销</view>
-											</view>
-										</view>
-									</view>
-								</view>
-							</view>
-						</swiper-item>
 					</swiper>
 				</view>
 			</view>
@@ -360,6 +37,7 @@
 
 <script>
 	import tabs from "../../components/tabs/tabs.vue"
+	import scrollTabSwiperItem from '../../components/scroll-tab-swiper-item/scroll-tab-swiper-item.vue'
 	export default {
 		data() {
 			return {
@@ -368,10 +46,13 @@
 				defaultIndex: 0, //当前滑动的页面
 				tabsList: ["全部订单", "待核销", "已核销", "已退款", "已评价"],
 				isSearch: false, //是否搜索
+				status: '', //订单类型
+				searchVal:'',
 			};
 		},
 		components: {
-			tabs
+			tabs,
+			scrollTabSwiperItem
 		},
 		onReady() {
 			// 获取顶部电量状态栏高度
@@ -407,7 +88,29 @@
 			tabChange(e) {
 				this.$refs.boxTabs.tabToIndex(e.detail.current)
 				this.defaultIndex = e.detail.current
+				this.changeIndex(this.defaultIndex)
 			},
+
+			changeIndex(index) {
+				switch (index) {
+					case 0:
+						this.status = ''
+						break;
+					case 1:
+						this.status = '1'
+						break;
+					case 2:
+						this.status = '2'
+						break;
+					case 3:
+						this.status = '3'
+						break;
+					case 4:
+						this.status = '4'
+						break;
+				}
+			},
+
 
 			// tabbar点击
 			tabbarClick(index) {
@@ -509,200 +212,6 @@
 						.swiper-box-item-list {
 							height: 100%;
 							overflow-y: scroll;
-
-							.box-content-order {
-								.box-content-order-list {
-									margin-bottom: 20rpx;
-
-									.box-content-order-list-li {
-										margin-top: 20rpx;
-										padding: 0 40rpx;
-										box-sizing: border-box;
-										background: #fff;
-
-										.box-content-order-list-li-top {
-											display: flex;
-											align-items: center;
-											justify-content: space-between;
-											padding: 30rpx 0;
-											font-size: 28rpx;
-
-											.order-list-li-top-title {
-												color: #000;
-											}
-
-											.order-list-li-top-msg {
-												color: #26BF82;
-											}
-										}
-
-										.box-content-order-list-li-wrap {
-											padding-bottom: 20rpx;
-
-											.order-list-li-wrap-item {
-												display: flex;
-												margin-bottom: 20rpx;
-
-												.order-list-li-wrap-item-image {
-													display: flex;
-													align-items: center;
-
-													image {
-														width: 132rpx;
-														height: 132rpx;
-													}
-												}
-
-												.order-list-li-wrap-item-info {
-													flex: 1;
-													margin-left: 20rpx;
-
-													.order-list-li-wrap-item-info-top {
-														display: flex;
-														align-items: center;
-														justify-content: space-between;
-														color: #000;
-
-														.wrap-item-info-top-text {
-															font-size: 30rpx;
-															font-weight: 500;
-														}
-
-														.wrap-item-info-top-msg {
-															font-size: 28rpx;
-														}
-													}
-
-													.order-list-li-wrap-item-info-box {
-														display: flex;
-														justify-content: space-between;
-														align-items: center;
-														margin-top: 10rpx;
-
-														.order-list-li-wrap-item-info-box-list {
-															display: flex;
-															flex-wrap: wrap;
-
-															.order-list-li-wrap-item-info-box-list-li {
-																padding: 6rpx 10rpx;
-																margin-left: 8rpx;
-																background: #F5F5F5;
-																border-radius: 3rpx;
-																font-size: 22rpx;
-																color: #666;
-															}
-														}
-
-														.order-list-li-wrap-item-info-box-number {
-															font-size: 28rpx;
-															color: #999;
-														}
-
-													}
-												}
-											}
-										}
-
-										.box-content-order-list-li-appointment-info {
-											padding: 30rpx 0;
-											border-top: 1rpx solid #ededed;
-											border-bottom: 1rpx solid #ededed;
-
-											.order-list-li-appointment-info-title {
-												font-size: 30rpx;
-												line-height: 32rpx;
-												color: #000;
-											}
-
-											.order-list-li-appointment-info-wrap {
-												margin-top: 30rpx;
-
-												.order-list-li-appointment-info-wrap-item {
-													display: flex;
-													align-items: center;
-													margin-bottom: 10rpx;
-													font-size: 26rpx;
-
-													.order-list-li-appointment-info-wrap-item-title {
-														color: #999;
-													}
-
-													.order-list-li-appointment-info-wrap-item-text {
-														display: flex;
-														align-items: center;
-														color: #000;
-
-														text {
-															margin-right: 40rpx;
-															display: block;
-														}
-
-														text:last-child {
-															margin-right: 0;
-														}
-													}
-												}
-											}
-										}
-
-										.box-content-order-list-li-footer {
-											display: flex;
-											align-items: center;
-											justify-content: space-between;
-											height: 100rpx;
-
-											.box-content-order-list-li-footer-text {
-												display: flex;
-												align-items: baseline;
-
-												.box-content-order-list-li-footer-text-msg {
-													font-size: 24rpx;
-													color: #999;
-												}
-
-												.box-content-order-list-li-footer-text-price {
-													font-size: 24rpx;
-													color: #FF4D4D;
-
-													text {
-														font-size: 32rpx;
-														font-weight: 500;
-													}
-												}
-											}
-
-											.box-content-order-list-li-footer-btn {
-												display: flex;
-												align-items: center;
-
-												.order-list-li-footer-all-btn {
-													margin-right: 20rpx;
-													border-radius: 32rpx;
-													font-size: 28rpx;
-												}
-
-												.order-list-li-footer-all-btn:last-child {
-													margin-right: 0;
-												}
-
-												.btn-hollow {
-													width: 174rpx;
-													height: 58rpx;
-													border: 1rpx solid #666666;
-													color: #666;
-												}
-
-												.btn-fill {
-													width: 176rpx;
-													height: 60rpx;
-													background: #26BF82;
-													color: #fff;
-												}
-											}
-										}
-									}
-								}
-							}
 
 
 						}

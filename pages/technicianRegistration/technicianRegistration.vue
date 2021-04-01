@@ -33,12 +33,16 @@
 					<view class="box-content-wrap-li">
 						<input type="number" v-model.trim="code" @input="codeChange" placeholder="请输入验证码"
 							confirm-type="done" />
-						<text>发送验证码</text>
+						<text @click="getSmCode" v-if="isSemsText">发送验证码</text>
+						<text v-if="!isSemsText">{{countdown}}s 后可重新发送</text>
 					</view>
 					<view class="box-content-wrap-li">
-						<input type="text" v-model.trim="password" @input="passwordChange" password="true"
+						<input type="text" v-model.trim="password" :password="!isShowPassword" @input="passwordChange"
 							placeholder="密码长度8-20位" confirm-type="done" />
-						<text class="iconfont iconyincangmima" style="color: #ccc;margin-left: 10rpx;"></text>
+						<text class="iconfont iconxianshimima icon-font" style="color: #ccc;" @click="showPass"
+							v-if="isShowPassword"></text>
+						<text class="iconfont iconyincangmima icon-font" style="color: #ccc;" @click="showPass"
+							v-if="!isShowPassword"></text>
 					</view>
 					<view class="box-content-wrap-li">
 						<input type="text" v-model.trim="confirmPasswordVal" @input="confirmPass" password="true"
@@ -175,11 +179,22 @@
 				}, {
 					title: '银行卡信息'
 				}],
+
 				phone: "", //手机号
 				password: "", //密码
-				confirmPasswordVal: "", //确认密码
 				email: "", //邮箱
-				code: '', //验证码
+				getCodeVal: '', //获取到的验证码
+				confirmPasswordVal: "", //确认密码
+				code: '',
+				codeVal: '',
+				codeId: '',
+				areaCode: '86',
+				smsCodeId: '',
+				isAll: false, //用于判断是否都有输入
+				countdown: '',
+				isSemsText: true, //验证码倒计时
+				isShowPassword: false, //是否显示密码
+				setCountdown: null,
 			};
 		},
 		components: {
@@ -197,6 +212,9 @@
 				}
 			});
 		},
+		onLoad() {
+			// this.getCode()
+		},
 		methods: {
 			//返回
 			Gback() {
@@ -208,6 +226,134 @@
 					this.$refs.popup.open()
 				}
 			},
+
+
+			// 确认注册
+			confirmRegister() {
+				if (!this.isAll) {
+					uni.showToast({
+						title: "请检查输入是否完整",
+						icon: "none"
+					})
+				} else {
+					var reg = /^1[3|4|5|7|8][0-9]{9}$/; //验证规则
+					if (reg.test(this.phone)) {
+						if (this.password.length >= 8 && this.password.length < 14) {
+							console.log(this.getCodeVal)
+							console.log(this.getCodeVal.length == 5 && this.getCodeVal != '')
+							if (this.getCodeVal.length == 5 && this.getCodeVal != '') {
+
+								console.log("技师注册")
+								return false
+							}
+							uni.showToast({
+								title: "验证码不正确，请重新输入",
+								icon: "none"
+							})
+							return false
+						}
+						uni.showToast({
+							title: "密码长度为8-12位",
+							icon: "none"
+						})
+
+						return false
+					}
+					uni.showToast({
+						title: "请输入正确的手机号",
+						icon: "none"
+					})
+				}
+			},
+
+
+			// 获取验证码
+			getCode() {
+				var data = {}
+				this.apiget('code/index', data).then(res => {
+					if (res.status == 200) {
+						this.codeVal = res.data.code
+						this.codeId = res.data.code_id
+					}
+				});
+			},
+
+			// var data = {
+			// 	email: this.email,
+			// 	mobile: this.phone,
+			// 	password: this.password,
+			// 	confirm_password: this.confirmPasswordVal,
+			// 	code: this.codeVal,
+			// 	code_id: this.codeId,
+			// 	sms_code: this.getCodeVal,
+			// 	sms_code_id: this.smsCodeId,
+			// 	areaCode: this.areaCode
+			// }
+
+			// 获取短信验证码
+			getSmCode() {
+				var reg = /^1[3|4|5|7|8][0-9]{9}$/; //验证规则
+				var vuedata = {
+					mobile: this.phone,
+					code: this.codeVal,
+					code_id: this.codeId,
+					type: 'register'
+				}
+				if (this.phone != '') {
+					if (reg.test(this.phone)) {
+						this.countDown();
+						return false
+						this.apipost('send_sms', vuedata).then(res => {
+							if (res.status == 200) {
+								this.smsCodeId = res.data.sms_code_id
+								uni.showToast({
+									title: "验证码发送成功",
+									icon: "none"
+								})
+								this.countDown();
+							} else {
+								uni.showToast({
+									title: res.message,
+									icon: "none"
+								})
+							}
+						});
+						return false
+					}
+					uni.showToast({
+						title: "请输入正确的手机号",
+						icon: "none"
+					})
+					return false
+				}
+				uni.showToast({
+					title: "请输入手机号",
+					icon: "none"
+				})
+
+			},
+
+			// 倒计时
+			countDown() {
+				this.isSemsText = false
+				clearInterval(this.setCountdown);
+				var num = 60
+				this.countdown = num
+				this.setCountdown = setInterval(() => {
+					num--;
+					this.countdown = num < 10 ? '0' + num : num; //小于 10 则前面拼接一个0
+					if (num <= 0) {
+						clearInterval(this.setCountdown);
+						this.isSemsText = true;
+					}
+				}, 1000);
+			},
+			// 点击显示 隐藏密码
+			showPass() {
+				this.isShowPassword = !this.isShowPassword
+			},
+
+
 			// 弹窗点击取消
 			close(done) {
 				// TODO 做一些其他的事情，before-close 为true的情况下，手动执行 done 才会关闭对话框
@@ -221,6 +367,7 @@
 				})
 				done()
 			},
+
 
 			// 下一步按钮
 			nextStep() {

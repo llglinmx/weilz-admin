@@ -4,9 +4,9 @@
 			<view class="box-head-top">
 				<view class="box-head-top-user-info">
 					<view class="box-head-top-user-info-image flex-center">
-						<image src="../../static/images/userImage.png" mode="aspectFill"></image>
+						<image :src="userInfo.simg" mode="aspectFill"></image>
 					</view>
-					<view class="box-head-top-user-info-name">王二麻子</view>
+					<view class="box-head-top-user-info-name">{{userInfo.name}}</view>
 				</view>
 				<view class="box-head-top-user-info-language" @click="clickLanguage">
 					<text class="iconfont iconyuyan icon-font" style="color: #fff;font-size: 28rpx;"></text>
@@ -22,11 +22,12 @@
 				</view>
 			</view>
 		</view>
-		<view class="box-content">
-			<mescroll-uni ref="mescrollRef" @down="downCallback" @up="upCallback" :down="downOption" :up="upOption"
-				:height="mesHeight">
+		<view class="box-content" :style="{display:isData?'block':'none'}">
+			<z-paging ref="paging1" @query="queryList" :list.sync="dataList" loading-more-no-more-text="已经到底了"
+				:refresher-angle-enable-change-continued="false" :touchmove-propagation-enabled="true"
+				:use-custom-refresher="true" style="height: 100%;">
 				<view class="box-content-order-list">
-					<view class="order-list-li" v-for="(item,index) in 10" :key="index">
+					<view class="order-list-li" v-for="(item,index) in dataList" :key="index">
 						<view class="order-list-li-top">
 							<view class="order-list-li-top-title">订单号DU199110074026</view>
 							<view class="order-list-li-top-msg">待核销</view>
@@ -77,7 +78,11 @@
 						</view>
 					</view>
 				</view>
-			</mescroll-uni>
+			</z-paging>
+		</view>
+		<view class="box-content" :style="{display:!isData?'block':'none'}">
+			<loading v-if="isLoad" />
+			<no-data v-if="!isLoad" />
 		</view>
 		<view class="box-footer">
 			<technician-tabbar @tabbarClick="tabbarClick" :activeIndex="activeIndex"></technician-tabbar>
@@ -112,46 +117,40 @@
 <script>
 	import technicianTabbar from "../../components/technician-tabbar/technician-tabbar.vue"
 	import UniPopup from "../../components/uni-popup/uni-popup.vue"
-	import MescrollMixin from "../../components/mescroll-uni/mescroll-mixins.js";
-	import MescrollUni from "@/components/mescroll-uni/mescroll-uni.vue"
+	import loading from '../../components/loading/loading.vue'
+	import noData from '../../components/no-data/no-data.vue'
+	import zPaging from '../../components/z-paging/components/z-paging/z-paging.vue'
 	export default {
-		mixins: [MescrollMixin], // 使用mixin
 		data() {
 			return {
 				barHeight: 0, //顶部电量导航栏高度,
 				activeIndex: 0, //当前tabbar所在页面
 				textList: ['中文', "英语", "俄语", "法语", "德语"],
 				selectIndex: 0, //当前选择的语言
-				mesHeight: 0,
-				downOption: { // 下拉刷新配置
-					auto: false,
-				},
-				upOption: { // 上拉加载配置
-					noMoreSize: 5,
-					textLoading: "正在加载更多数据",
-					textNoMore: "——  已经到底了  ——",
-					isBounce: true,
-					auto: false,
-				},
-				PageNumber: 1, // 请求页数，
-				PageLimt: 10, // 请求条数
+				dataList: [],
 				options: [{
 						title: "待核销",
-						number: "20"
+						number: "0"
 					},
 					{
 						title: "已核销",
-						number: "2"
+						number: "0"
 					},
 					{
 						title: "已退款",
-						number: "1"
+						number: "0"
 					},
 					{
 						title: "已评价",
-						number: "50"
+						number: "0"
 					},
-				]
+				],
+				userInfo: {
+					name: '',
+					simg: ''
+				},
+				isData: false,
+				isLoad: true,
 			}
 		},
 		onReady() {
@@ -170,14 +169,61 @@
 		onLoad() {
 			this.languageList();
 			this.orderList();
+			this.getInfo()
 		},
 		components: {
 			technicianTabbar,
-			MescrollUni,
-			UniPopup
+			UniPopup,
+			loading,
+			noData,
+			zPaging,
 		},
 		methods: {
 
+			// 获取个人信息
+			getInfo() {
+				let vuedata = {}
+				this.apiget('api/v1/engineer/info', vuedata).then(res => {
+					if (res.status == 200) {
+						this.userInfo = res.data.engineer
+						
+						this.options[0].number = res.data.engineer.not_verification_order
+					}
+				});
+			},
+
+			// 上拉 下拉
+			queryList(pageNo, pageSize) {
+				this.orderList(pageNo, pageSize)
+			},
+
+
+			// 订单列表
+			orderList(num, size) {
+				var vuedata = {
+					status:1,
+					page_index: num, // 请求页数，
+					each_page: size, // 请求条数
+				}
+				this.apiget('api/v1/engineer/order', vuedata).then(res => {
+					if (res.status == 200) {
+						if (res.data.member.length != 0) {
+							this.isData = true
+							let list = res.data.member
+							this.$refs.paging1.complete(list);
+							console.log(res)
+							return false;
+						}
+						this.isData = false
+						this.isLoad = false
+
+					}
+				});
+			},
+			
+			
+			
+			
 			// 打开切换语言
 			clickLanguage() {
 				this.$refs.popup.open()
@@ -230,40 +276,6 @@
 					title: "确认核销",
 					icon: "none"
 				})
-			},
-
-			// 订单列表
-			orderList() {
-				this.apiget('api/v1/engineer/order', {}).then(res => {
-					if (res.status == 200) {
-						console.log(res)
-					}
-				});
-			},
-
-
-			/*下拉刷新的回调*/
-			downCallback() {
-				this.PageNumber = 1
-				setTimeout(() => {
-					this.mescroll.endSuccess() // 请求成功 隐藏加载状态
-
-					// this.mescroll.showNoMore()
-
-				}, 1500)
-			},
-
-			/*上拉加载的回调*/
-			upCallback(page) {
-				this.PageNumber++
-				console.log(this.PageNumber)
-				setTimeout(() => {
-					this.mescroll.endSuccess() // 请求成功 隐藏加载状态
-					// if (this.PageNumber > 3) {
-					this.mescroll.showNoMore()
-					// }
-				}, 1500)
-				console.log("上拉加载")
 			},
 
 
@@ -324,6 +336,7 @@
 						image {
 							width: 70rpx;
 							height: 70rpx;
+							border-radius: 50%;
 						}
 					}
 
@@ -383,13 +396,14 @@
 
 		.box-content {
 			flex: 1;
-			padding: 0 20rpx;
-			box-sizing: border-box;
+
 			overflow-y: scroll;
 			background: #F7F7F7;
 
 			.box-content-order-list {
 				// margin-bottom: 40rpx;
+				padding: 0 20rpx;
+				box-sizing: border-box;
 
 				.order-list-li {
 					margin-top: 20rpx;

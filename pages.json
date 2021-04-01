@@ -1,25 +1,6 @@
 {
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
 		{
-			"path": "pages/merchantHome/merchantHome",
-			"style": {
-				"navigationBarTitleText": "商家首页",
-				"navigationBarTextStyle": "white", //状态栏字体颜色
-				"enablePullDownRefresh": false
-			}
-		
-		},{
-			"path": "pages/signUp/signUp",
-			"style": {
-				"navigationBarTextStyle": "white", //状态栏字体颜色
-				"navigationBarTitleText": "uni-登录"
-			}
-		},{
-			"path": "pages/login/login",
-			"style": {
-				"navigationBarTitleText": "登录"
-			}
-		},  {
 			"path": "pages/technicianHome/technicianHome",
 			"style": {
 				"navigationBarTitleText": "首页",
@@ -27,7 +8,26 @@
 				"enablePullDownRefresh": false
 			}
 
-		},{
+		}, {
+			"path": "pages/signUp/signUp",
+			"style": {
+				"navigationBarTextStyle": "white", //状态栏字体颜色
+				"navigationBarTitleText": "登录中心"
+			}
+		}, {
+			"path": "pages/login/login",
+			"style": {
+				"navigationBarTitleText": "登录"
+			}
+		}, {
+			"path": "pages/merchantHome/merchantHome",
+			"style": {
+				"navigationBarTitleText": "商家首页",
+				"navigationBarTextStyle": "white", //状态栏字体颜色
+				"enablePullDownRefresh": false
+			}
+
+		}, {
 			"path": "pages/technicianOrder/technicianOrder",
 			"style": {
 				"navigationBarTitleText": "订单",
@@ -42,7 +42,7 @@
 				"enablePullDownRefresh": false
 			}
 
-		}, 
+		},
 		{
 			"path": "pages/registerRoles/registerRoles",
 			"style": {
@@ -163,6 +163,13 @@
 
 				}, {
 					"path": "schedule/schedule",
+					"style": {
+						"navigationBarTitleText": "",
+						"enablePullDownRefresh": false
+					}
+
+				}, {
+					"path": "set/set",
 					"style": {
 						"navigationBarTitleText": "",
 						"enablePullDownRefresh": false
@@ -308,16 +315,14 @@
 					"enablePullDownRefresh": false
 				}
 
-			}    ,{
-                    "path" : "personalSchedulingInfo/personalSchedulingInfo",
-                    "style" :                                                                                    
-                {
-                    "navigationBarTitleText": "",
-                    "enablePullDownRefresh": false
-                }
-                
-                }
-            ]
+			}, {
+				"path": "personalSchedulingInfo/personalSchedulingInfo",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}]
 		}, {
 			"root": "merchantMall",
 			"pages": []
@@ -496,6 +501,13 @@
 				"style": {
 					"navigationBarTitleText": "卖家发货",
 					"navigationBarTextStyle": "white", //状态栏字体颜色
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "set/set",
+				"style": {
+					"navigationBarTitleText": "设置",
 					"enablePullDownRefresh": false
 				}
 

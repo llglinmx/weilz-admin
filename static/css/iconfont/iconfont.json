@@ -6,6 +6,20 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "5060796",
+      "name": "地图",
+      "font_class": "map",
+      "unicode": "e616",
+      "unicode_decimal": 58902
+    },
+    {
+      "icon_id": "1617810",
+      "name": "1108加载中",
+      "font_class": "jiazaizhong",
+      "unicode": "e6ac",
+      "unicode_decimal": 59052
+    },
+    {
       "icon_id": "689302",
       "name": "物流 卡车",
       "font_class": "wuliuqiache",

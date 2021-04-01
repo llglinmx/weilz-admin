@@ -10,16 +10,26 @@
 			</view>
 		</view>
 		<view class="box-content">
-			<view class="box-content-title">欢迎登录</view>
+			<view class="box-content-title">{{title}}</view>
 			<view class="box-content-list">
 				<view class="box-content-list-li">
-					<input type="number" @input="accountChange" v-model.trim="accountNumber" placeholder="手机号/邮箱"
-						confirm-type="done" />
+					<input type="number" @input="accountChange" :focus="isFocus" v-model.trim="accountNumber"
+						placeholder="手机号/邮箱" confirm-type="done" />
 				</view>
 				<view class="box-content-list-li">
-					<input type="text" @input="passwordChange" password="true" v-model.trim="password"
+					<input type="number" @input="passwordChange" :password="!isShowPassword" v-model.trim="password"
 						placeholder="请输入密码" confirm-type="done" />
-					<text class="iconfont iconxianshimima icon-font" style="color: #ccc;"></text>
+					<text class="iconfont iconxianshimima icon-font" style="color: #ccc;" @click="showPass"
+						v-if="!isShowPassword"></text>
+					<text class="iconfont iconyincangmima icon-font" style="color: #ccc;" @click="showPass"
+						v-if="isShowPassword"></text>
+				</view>
+				<view class="box-content-list-li" style="padding:20rpx 0;">
+					<input type="number" @input="verificationCode" v-model.trim="codeVal" placeholder="请输入右侧验证码"
+						confirm-type="done" />
+					<view class="code-box" @click="getCode">
+						<image :src="codeImage" mode="aspectFill"></image>
+					</view>
 				</view>
 				<view class="box-content-list-msg">忘记密码</view>
 			</view>
@@ -30,10 +40,6 @@
 				<text>《用户协议》</text>
 				<text>《隐私保护政策》</text>
 			</view>
-
-		</view>
-		<view class="box-footer">
-
 		</view>
 	</view>
 </template>
@@ -47,6 +53,13 @@
 				password: "", //密码
 				isAll: false, //用于判断是否都有输入
 				isType: 0, //0为技师登录 1为商家登录
+				code: '', //用于验证码比较
+				codeId: '', //验证码id
+				codeImage: '', //验证码图片
+				codeVal: '', // 验证码
+				isShowPassword: false, //是否显示密码
+				isFocus: true, //自动获取焦点
+				title: '商家登录'
 			};
 		},
 		components: {
@@ -68,17 +81,20 @@
 			this.accountNumber = ''
 		},
 
-		onLoad() {
-			uni.setStorageSync('token',
-				'weiizeyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6IjY4MTYxNjIyMDMzMDM4MTIifQ.As6qwI8ig2_FgqUKft2CmD6DF-Lz-LW6_GnYEUt7z0Q'
-			);
+		onLoad(options) {
+			this.isType = options.type == 'technician' ? 0 : 1
+			if (options.type == 'technician') {
+				this.title = "技师登录"
+			} else if (options.type == 'business') {
+				this.title = "商家登录"
+			}
+			this.getCode()
 		},
 
 		methods: {
 			// 监听输入账号
 			accountChange() {
-				console.log(this.accountNumber != '' && this.password != '')
-				if (this.accountNumber != '' && this.password != '') {
+				if (this.accountNumber != '' && this.password != '' && this.codeVal != '') {
 					this.isAll = true
 				} else {
 					this.isAll = false
@@ -87,8 +103,16 @@
 
 			//监听输入密码
 			passwordChange() {
-				console.log(this.accountNumber != '' && this.password != '')
-				if (this.accountNumber != '' && this.password != '') {
+				if (this.accountNumber != '' && this.password != '' && this.codeVal != '') {
+					this.isAll = true
+				} else {
+					this.isAll = false
+				}
+			},
+
+			// 验证码款
+			verificationCode() {
+				if (this.accountNumber != '' && this.password != '' && this.codeVal != '') {
 					this.isAll = true
 				} else {
 					this.isAll = false
@@ -97,42 +121,110 @@
 
 			// 确认登录
 			confirmLogin() {
-				this.isType = this.accountNumber
-				if (this.isType == 0) {
-					uni.navigateTo({
-						url: "../technicianHome/technicianHome"
+				var reg = /^1[3|4|5|7|8][0-9]{9}$/; //验证规则
+				this.isFocus = false
+				if (!this.isAll) {
+					uni.showToast({
+						title: "请检查输入是否完整",
+						icon: "none"
 					})
-				} else if (this.isType == 1) {
-					uni.navigateTo({
-						url: "../merchantHome/merchantHome"
-					})
+				} else {
+					if (!reg.test(this.accountNumber)) { // 判断手机号是否正确
+						uni.showToast({
+							title: "请输入正确的手机号",
+							icon: "none"
+						})
+						this.$nextTick(function() {
+							this.isFocus = true
+						});
+					} else {
+						if (this.codeVal == this.code) { //判断输入的验证码是否一致
+							if (this.isType == 0) {
+								this.technicianLogin(); //登录
+							} else {
+								this.businessLogin()
+							}
+
+						} else {
+							uni.showToast({
+								title: "验证码错误，请重新输入",
+								icon: "none"
+							})
+						}
+						// uni.navigateTo({
+						// 	url: "../../pagesIndexTwo/binDingPhone/binDingPhone"
+						// })
+					}
+
 				}
 
-				// if (!this.isAll) {
-				// 	uni.showToast({
-				// 		title: "请检查输入是否完整",
-				// 		icon: "none"
-				// 	})
-				// } else {
-
-				// }
 			},
-			// 登录
-			login() {
-				var data={
-					code: "8421"
-					code_id: "code_68872"
-					username: this.accountNumber
-					password: this.password
+			// 技师登录
+			technicianLogin() {
+				var vuedata = {
+					code: this.codeVal,
+					code_id: this.codeId,
+					username: this.accountNumber,
+					password: this.password,
 				}
-				this.apiget('login', {}).then(res => {
+				console.log(vuedata)
+				this.apipost('engineerlogin', vuedata).then(res => {
+					console.log(res.data.member)
 					if (res.status == 200) {
-						console.log(res.data.member)
-						
-						
+						uni.setStorageSync('UToken', res.data.member.token);
+						uni.showToast({
+							title: "登录成功",
+							icon: 'none'
+						})
+
+						setTimeout(function() {
+							uni.reLaunch({
+								url: "../technicianHome/technicianHome"
+							})
+						}, 1000)
+
+					} else {
+						uni.showToast({
+							title: res.message,
+							icon: "none"
+						})
 					}
 				});
 			},
+
+			// 商家登录
+			businessLogin() {
+				var vuedata = {
+					code: this.codeVal,
+					code_id: this.codeId,
+					username: this.accountNumber,
+					password: this.password,
+				}
+				console.log(vuedata)
+				this.apipost('storelogin', vuedata).then(res => {
+					if (res.status == 200) {
+						uni.setStorageSync('UToken', res.data.member.token);
+
+						uni.showToast({
+							title: "登录成功",
+							icon: 'none'
+						})
+
+						setTimeout(function() {
+							uni.reLaunch({
+								url: "../merchantHome/merchantHome"
+							})
+						}, 1000)
+
+					} else {
+						uni.showToast({
+							title: res.message,
+							icon: "none"
+						})
+					}
+				});
+			},
+
 
 
 			// 点击注册 跳转到 注册页面
@@ -143,10 +235,32 @@
 			},
 			//返回
 			Gback() {
-				uni.navigateBack({
-					delta: 1
+				uni.reLaunch({
+					url: "../signUp/signUp"
 				})
-			}
+				// uni.navigateBack({
+				// 	delta: 1
+				// })
+			},
+
+
+			// 获取验证码
+			getCode() {
+				var data = {}
+				this.apiget('code/index', data).then(res => {
+					if (res.status == 200) {
+						this.code = res.data.code
+						this.codeId = res.data.code_id
+						this.codeImage = res.data.codeimg
+					}
+				});
+			},
+
+			// 点击显示 隐藏密码
+			showPass() {
+				this.isShowPassword = !this.isShowPassword
+			},
+
 		}
 	}
 </script>
@@ -216,11 +330,26 @@
 					justify-content: space-between;
 					padding: 28rpx 0;
 					border-bottom: 1rpx solid #ededed;
+					display: flex;
+					align-items: center;
 
 					input {
+						height: 100%;
+						margin-right: 20rpx;
+						flex: 1;
 						font-size: 32rpx;
 					}
 
+					.code-box {
+						display: flex;
+						width: 200rpx;
+						height: 80rpx;
+
+						image {
+							width: 100%;
+							height: 100%;
+						}
+					}
 
 				}
 			}
