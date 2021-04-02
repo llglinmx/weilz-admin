@@ -71,7 +71,12 @@
 				this.apiget('pc/category/category_type', vuedata).then(res => {
 					if (res.status == 200) {
 						this.tabsList = res.data.reverse()
-						this.navTitle = this.tabsList[0].name + '推荐'
+						this.tabsList.map(item => {
+							item.name = item.name+'推荐'
+						})
+
+
+						this.navTitle = this.tabsList[0].name
 						this.typeId = this.tabsList[0].id
 					}
 				});
@@ -92,10 +97,9 @@
 
 				this.$refs.boxTabs.tabToIndex(e.detail.current)
 				this.defaultIndex = e.detail.current
-				this.navTitle = this.tabsList[this.defaultIndex].name + '推荐';
+				this.navTitle = this.tabsList[this.defaultIndex].name
 
 				this.typeId = this.tabsList[this.defaultIndex].id
-				console.log(this.typeId)
 			},
 		}
 	}

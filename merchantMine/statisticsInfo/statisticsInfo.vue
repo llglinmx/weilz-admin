@@ -39,7 +39,8 @@
 								</view>
 
 								<view class="box-content-statistical-chart">
-
+									<mpvue-echarts :echarts="echarts" :onInit="lineInit" canvasId="line"
+										ref="lineChart"></mpvue-echarts>
 								</view>
 								<view class="box-content-data">
 									<view class="box-content-data-title">
@@ -125,16 +126,82 @@
 
 <script>
 	import navTitleBalck from "../../components/nav-title-balck/nav-title-balck.vue"
+
+	import * as echarts from '@/components/echarts/echarts.simple.min.js';
+	import mpvueEcharts from '@/components/mpvue-echarts/src/echarts.vue';
+
 	export default {
 		data() {
 			return {
 				barHeight: 0, //顶部电量导航栏高度
 				defaultIndex: 0, //默认当前显示界面
 				tabs: ["门店统计", "技师统计"],
-			};
+				updateStatus: false,
+				echarts: echarts,
+				line: {
+					title: {
+						text: 'ECharts 入门示例',
+						subtext: '纯属虚构',
+						x: 'center'
+					},
+					textStyle: {
+						color: '#999', //配置文字颜色
+						fontSize: '18',
+					},
+					// color: ['#5DBDFE', '#FF8366', '#FFDB3A'],
+					legend: {
+						data: ['订单数', '销售额', '新增用户'],
+						show: true,
+						bottom: '5%'
+					},
+					tooltip: {
+						trigger: 'none',
+						show: false,
+					},
+					xAxis: {
+						type: 'category',
+						data: ['10-12', '10-13', '10-14', '10-15', '10-16', '10-17', '10-18'],
+						boundaryGap: false, //x轴两边不留空白
+
+					},
+					yAxis: {
+						type: 'value',
+					},
+					calculable: false,
+					grid: {
+						top: '10%',
+						left: '0',
+						right: '5%',
+						bottom: '0',
+						containLabel: true,
+
+					},
+
+					series: [{
+							type: 'line',
+							smooth: true,
+							data: [0.25, 0.28, 0.23, 0.08, 0.15, 0.42, 0.7],
+							color: ['#5DBDFE'], //折线条的颜色
+						},
+						{
+							type: 'line',
+							smooth: true,
+							data: [0.19, 0.4, 0.39, 0.21, 0.29, 0.59, 0.83],
+							color: ['#FF8366'], //折线条的颜色
+						},
+						{
+							type: 'line',
+							smooth: true,
+							data: [0.35, 0.58, 0.56, 0.38, 0.42, 0.76, 1],
+							color: ['#FFDB3A'], //折线条的颜色
+						}
+					]
+				}
+			}
 		},
 		components: {
-			navTitleBalck
+			navTitleBalck,
+			mpvueEcharts
 		},
 		onReady() {
 			// 获取顶部电量状态栏高度
@@ -144,7 +211,25 @@
 				}
 			});
 		},
+		onLoad() {
+
+		},
 		methods: {
+
+			lineInit(canvas, width, height) {
+				let lineChart = echarts.init(canvas, null, {
+					width: width,
+					height: height
+				})
+				canvas.setChart(lineChart)
+
+				lineChart.setOption(this.line)
+
+				return lineChart
+			},
+
+
+
 			//返回
 			Gback() {
 				uni.navigateBack({
@@ -172,6 +257,7 @@
 			tabChange(e) {
 				this.defaultIndex = e.detail.current
 			},
+
 		}
 	}
 </script>

@@ -36,7 +36,7 @@
 						<view class="box-content-main-list-li" v-for="(item,index) in dataList" :key="index"
 							@click="storeDetails">
 							<view class="box-content-main-list-li-image">
-								<image :src="item.simg" mode="aspectFill"></image>
+								<image :src="item.bimg" mode="aspectFill"></image>
 							</view>
 							<view class="box-content-main-list-li-info">
 								<view class="main-list-li-info-content">

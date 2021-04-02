@@ -29,7 +29,7 @@
 				<view class="box-content-order-list">
 					<view class="order-list-li" v-for="(item,index) in dataList" :key="index">
 						<view class="order-list-li-top">
-							<view class="order-list-li-top-title">订单号DU199110074026</view>
+							<view class="order-list-li-top-title">订单号{{item.out_trade_no}}</view>
 							<view class="order-list-li-top-msg">待核销</view>
 						</view>
 						<view class="order-list-li-info">
@@ -37,8 +37,8 @@
 								<view class="order-list-li-info-wrap-item">
 									<view class="order-list-li-info-wrap-item-title">顾客</view>
 									<view class="order-list-li-info-wrap-item-msg">
-										<text>庄女士</text>
-										<text>13812345678</text>
+										<text>{{item.name}}</text>
+										<text>{{item.mobile}}</text>
 									</view>
 								</view>
 								<view class="order-list-li-info-wrap-item">
@@ -50,7 +50,7 @@
 								<view class="order-list-li-info-wrap-item">
 									<view class="order-list-li-info-wrap-item-title">门店</view>
 									<view class="order-list-li-info-wrap-item-msg">
-										<text>罗约蓝池·温泉SPA</text>
+										<text>{{item.store_name}}</text>
 									</view>
 								</view>
 								<view class="order-list-li-info-wrap-item">

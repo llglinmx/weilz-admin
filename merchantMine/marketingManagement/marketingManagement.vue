@@ -27,194 +27,230 @@
 				<view class="box-content-wrap-item">
 					<swiper class="swiper-box" :current="defaultIndex" @change="tabChange">
 						<swiper-item class="swiper-box-item-list">
-							<view class="box-content-main">
-								<view class="box-content-main-list">
-									<view class="box-content-main-list-li" v-for="(item,index) in couponList"
-										:key="item.id">
-										<view class="box-content-main-list-li-top">
-											<view class="box-content-main-list-li-top-left">
-												<image src="../../static/images/business-blue-ico.png"
-													mode="aspectFill"></image>
-												<text>{{item.store_name}}</text>
-											</view>
-											<view class="box-content-main-list-li-top-right">
-												<view class="main-list-li-top-left-msg flex-center" v-if='item.pass_check=="-1"'>审核中</view>
-												<view class="main-list-li-top-left-msg flex-center" v-if='item.pass_check=="1"'>已审核</view>
-												<view class="main-list-li-top-left-msg flex-center" v-if='item.pass_check=="2"'>未通过</view>
-											</view>
-										</view>
-										<view class="box-content-main-list-li-center">
-											<view class="box-content-main-list-li-center-top">
-												<view class="main-list-li-center-top-title">{{item.name}}</view>
-												<view class="main-list-li-center-top-price">￥20</view>
-											</view>
-											<view class="box-content-main-list-li-center-text">满200元可用</view>
-											<view class="box-content-main-list-li-center-list">
-												<view class="main-list-li-center-list-li">
-													<text class="title">发放数量</text>
-													<text class="text">10000</text>
+							<view class="box-content-main" :style="{display:isCouponData?'block':'none'}">
+								<z-paging ref="paging1" @query="couponQueryList" :list.sync="couponList"
+									loading-more-no-more-text="已经到底了" :refresher-angle-enable-change-continued="false"
+									:touchmove-propagation-enabled="true" :use-custom-refresher="true"
+									style="height: 100%;">
+									<view class="box-content-main-list">
+										<view class="box-content-main-list-li" v-for="(item,index) in couponList"
+											:key="item.id">
+											<view class="box-content-main-list-li-top">
+												<view class="box-content-main-list-li-top-left">
+													<text class="iconfont iconshangjia"
+														style="font-size: 28rpx;color: #5DBDFE;"></text>
+													<text>{{item.store_name}}</text>
 												</view>
-												<view class="main-list-li-center-list-li">
-													<text class="title">领取数量</text>
-													<text class="text">99</text>
-												</view>
-												<view class="main-list-li-center-list-li">
-													<text class="title">已使用</text>
-													<text class="text">255</text>
+												<view class="box-content-main-list-li-top-right">
+													<view class="main-list-li-top-left-msg flex-center"
+														v-if='item.pass_check=="-1"'>审核中</view>
+													<view class="main-list-li-top-left-msg flex-center"
+														v-if='item.pass_check=="1"'>已审核</view>
+													<view class="main-list-li-top-left-msg flex-center"
+														v-if='item.pass_check=="2"'>未通过</view>
 												</view>
 											</view>
-											<view class="box-content-main-list-li-center-msg">发放时间：待发放</view>
-											<view class="box-content-main-list-li-center-msg">活动时间：2021.
-												01.01-2021.01.10</view>
-										</view>
-										<view class="box-content-main-list-li-bottom">
-											<view class="box-content-main-list-li-bottom-item">
-												<text class="iconfont iconshanchu-shangjia icon-font"
-													style="color: #FF6666;font-size: 36rpx;margin-top: 4rpx;"></text>
-												<text>删除</text>
+											<view class="box-content-main-list-li-center">
+												<view class="box-content-main-list-li-center-top">
+													<view class="main-list-li-center-top-title">{{item.name}}</view>
+													<view class="main-list-li-center-top-price">￥20</view>
+												</view>
+												<view class="box-content-main-list-li-center-text">满200元可用</view>
+												<view class="box-content-main-list-li-center-list">
+													<view class="main-list-li-center-list-li">
+														<text class="title">发放数量</text>
+														<text class="text">10000</text>
+													</view>
+													<view class="main-list-li-center-list-li">
+														<text class="title">已领取</text>
+														<text class="text">99</text>
+													</view>
+													<view class="main-list-li-center-list-li">
+														<text class="title">剩余</text>
+														<text class="text">{{item.quantity}}</text>
+													</view>
+												</view>
+												<view class="box-content-main-list-li-center-msg">发放时间：待发放</view>
+												<view class="box-content-main-list-li-center-msg">
+													活动时间：2021.01.01-2021.01.10</view>
 											</view>
+											<view class="box-content-main-list-li-bottom">
+												<view class="box-content-main-list-li-bottom-item"
+													@click="deleteClick(item.id,index)">
+													<text class="iconfont iconshanchu-shangjia icon-font"
+														style="color: #FF6666;font-size: 36rpx;margin-top: 4rpx;"></text>
+													<text>删除</text>
+												</view>
 
-											<view class="box-content-main-list-li-bottom-item">
-												<text class="iconfont iconbianji-shangjia icon-font"
-													style="color: #5DBDFE;font-size: 36rpx;margin-top: 4rpx;"></text>
-												<text>编辑</text>
+												<view class="box-content-main-list-li-bottom-item">
+													<text class="iconfont iconbianji-shangjia icon-font"
+														style="color: #5DBDFE;font-size: 36rpx;margin-top: 4rpx;"></text>
+													<text>编辑</text>
+												</view>
 											</view>
 										</view>
 									</view>
-								</view>
+								</z-paging>
+							</view>
+							<view class="box-content-main" :style="{display:!isCouponData?'block':'none'}">
+								<loading v-if="isCouponLoad" />
+								<no-data v-if="!isCouponLoad" />
 							</view>
 
 						</swiper-item>
 						<swiper-item class="swiper-box-item-list"></swiper-item>
 						<swiper-item class="swiper-box-item-list">
-							<view class="box-content-main">
-								<view class="box-content-main-list">
-									<view class="box-content-main-list-li" v-for="(item,index) in dataList"
-										:key="index">
-										<view class="box-content-main-list-li-top">
-											<view class="box-content-main-list-li-top-left">
-												<image src="../../static/images/business-blue-ico.png"
-													mode="aspectFill"></image>
-												<text>罗约蓝池·温泉SPA</text>
-											</view>
-											<view class="box-content-main-list-li-top-right">出售中</view>
-										</view>
-										<view class="box-content-main-list-li-center">
-											<view class="list-li-center-wrap">
-												<view class="list-li-center-wrap-image">
-													<image src="../../static/images/bg-001.png" mode="aspectFill">
-													</image>
+							<view class="box-content-main" :style="{display:isCardData?'block':'none'}">
+								<z-paging ref="paging3" @query="cardQueryList" :list.sync="cardList"
+									loading-more-no-more-text="已经到底了" :refresher-angle-enable-change-continued="false"
+									:touchmove-propagation-enabled="true" :use-custom-refresher="true"
+									:mounted-auto-call-reload="false" style="height: 100%;">
+									<view class="box-content-main-list">
+										<view class="box-content-main-list-li" v-for="(item,index) in cardList"
+											:key="item.id">
+											<view class="box-content-main-list-li-top">
+												<view class="box-content-main-list-li-top-left">
+													<text class="iconfont iconshangjia"
+														style="font-size: 28rpx;color: #5DBDFE;margin-top: 4rpx;"></text>
+													<text>集美店</text>
 												</view>
-												<view class="list-li-center-wrrap-info">
-													<view class="list-li-center-wrrap-info-title">超值SPA套餐</view>
-													<view class="list-li-center-wrrap-info-price">￥489.00</view>
-													<view class="list-li-center-wrrap-info-text">库存：10000</view>
+												<view class="box-content-main-list-li-top-right">出售中</view>
+											</view>
+											<view class="box-content-main-list-li-center">
+												<view class="list-li-center-wrap">
+													<view class="list-li-center-wrap-image">
+														<image :src="item.simg" mode="aspectFill"></image>
+													</view>
+													<view class="list-li-center-wrrap-info">
+														<view class="list-li-center-wrrap-info-title">{{item.name}}
+														</view>
+														<view class="list-li-center-wrrap-info-price">￥{{item.price}}
+														</view>
+														<view class="list-li-center-wrrap-info-text">库存：10000</view>
+													</view>
+												</view>
+												<view class="list-li-center-text">
+													<text>背部按摩</text>
+													<text>x3</text>
+												</view>
+												<view class="list-li-center-text">
+													<text>足底按摩</text>
+													<text>x2</text>
 												</view>
 											</view>
-											<view class="list-li-center-text">
-												<text>背部按摩</text>
-												<text>x3</text>
-											</view>
-											<view class="list-li-center-text">
-												<text>足底按摩</text>
-												<text>x2</text>
-											</view>
-										</view>
-										<view class="box-content-main-list-li-bottom">
-											<view class="box-content-main-list-li-bottom-item">
-												<text class="iconfont iconxiajia-shangjia icon-font"
-													style="color: #4EC494;font-size: 36rpx;margin-top: 4rpx;"></text>
-												<text>下架</text>
-											</view>
-											<view class="box-content-main-list-li-bottom-item">
-												<text class="iconfont iconshanchu-shangjia icon-font"
-													style="color: #FF6666;font-size: 36rpx;margin-top: 4rpx;"></text>
-												<text>删除</text>
-											</view>
+											<view class="box-content-main-list-li-bottom">
+												<view class="box-content-main-list-li-bottom-item">
+													<text class="iconfont iconxiajia-shangjia icon-font"
+														style="color: #4EC494;font-size: 36rpx;margin-top: 4rpx;"></text>
+													<text>下架</text>
+												</view>
+												<view class="box-content-main-list-li-bottom-item"
+													@click="deleteClick(item.id,index)">
+													<text class="iconfont iconshanchu-shangjia icon-font"
+														style="color: #FF6666;font-size: 36rpx;margin-top: 4rpx;"></text>
+													<text>删除</text>
+												</view>
 
-											<view class="box-content-main-list-li-bottom-item">
-												<text class="iconfont iconbianji-shangjia icon-font"
-													style="color: #5DBDFE;font-size: 36rpx;margin-top: 4rpx;"></text>
-												<text>编辑</text>
+												<view class="box-content-main-list-li-bottom-item">
+													<text class="iconfont iconbianji-shangjia icon-font"
+														style="color: #5DBDFE;font-size: 36rpx;margin-top: 4rpx;"></text>
+													<text>编辑</text>
+												</view>
 											</view>
 										</view>
 									</view>
-								</view>
+								</z-paging>
+							</view>
+							<view class="box-content-main" :style="{display:!isCardData?'block':'none'}">
+								<loading v-if="isCardLoad" />
+								<no-data v-if="!isCardLoad" />
 							</view>
 						</swiper-item>
 						<swiper-item class="swiper-box-item-list">
-							<view class="box-content-main">
-								<view class="box-content-main-list">
-									<view class="box-content-main-list-li" v-for="(item,index) in dataList"
-										:key="index">
-										<view class="box-content-main-list-li-top">
-											<view class="box-content-main-list-li-top-left">
-												<image src="../../static/images/business-blue-ico.png"
-													mode="aspectFill"></image>
-												<text>罗约蓝池·温泉SPA</text>
-											</view>
-											<view class="box-content-main-list-li-top-right">出售中</view>
-										</view>
-										<view class="box-content-main-list-li-center">
-											<view class="list-li-center-wrap">
-												<view class="list-li-center-wrap-image">
-													<image src="../../static/images/bg-001.png" mode="aspectFill">
-													</image>
+							<view class="box-content-main" :style="{display:isGiftData?'block':'none'}">
+								<z-paging ref="paging4" @query="giftQueryList" :list.sync="giftList"
+									loading-more-no-more-text="已经到底了" :refresher-angle-enable-change-continued="false"
+									:touchmove-propagation-enabled="true" :use-custom-refresher="true"
+									:mounted-auto-call-reload="false" style="height: 100%;">
+									<view class="box-content-main-list">
+										<view class="box-content-main-list-li" v-for="(item,index) in giftList"
+											:key="item.id">
+											<view class="box-content-main-list-li-top">
+												<view class="box-content-main-list-li-top-left">
+													<text class="iconfont iconshangjia"
+														style="font-size: 28rpx;color: #5DBDFE;margin-top: 4rpx;"></text>
+													<text>罗约蓝池·温泉SPA</text>
 												</view>
-												<view class="list-li-center-wrrap-info">
-													<view class="list-li-center-wrrap-info-title">超值SPA套餐</view>
-													<view class="list-li-center-wrrap-info-price">￥489.00</view>
-													<view class="list-li-center-wrrap-info-box">
-														<view class="list-li-center-wrrap-info-box-text">库存：10000</view>
-														<view class="list-li-center-wrrap-info-box-open"
-															@click="openClose(index)">
-															<text>{{item.isOpen?'收起':'展开'}}</text>
-															<text :class="item.isOpen?'icon-font-open':''"
-																class="iconfont iconxiangxiajiantou icon-font"
-																style="color: #ccc;font-size: 28rpx;margin-top: 4rpx;"></text>
+												<view class="box-content-main-list-li-top-right">出售中</view>
+											</view>
+											<view class="box-content-main-list-li-center">
+												<view class="list-li-center-wrap">
+													<view class="list-li-center-wrap-image">
+														<image :src="item.simg" mode="aspectFill">
+														</image>
+													</view>
+													<view class="list-li-center-wrrap-info">
+														<view class="list-li-center-wrrap-info-title">{{item.name}}
+														</view>
+														<view class="list-li-center-wrrap-info-price">￥{{item.price}}
+														</view>
+														<view class="list-li-center-wrrap-info-box">
+															<view class="list-li-center-wrrap-info-box-text">
+																库存：{{item.kucun}}</view>
+															<view class="list-li-center-wrrap-info-box-open"
+																@click="openClose(index)">
+																<text>{{item.isOpen?'收起':'展开'}}</text>
+																<text :class="item.isOpen?'icon-font-open':''"
+																	class="iconfont iconxiangxiajiantou icon-font"
+																	style="color: #ccc;font-size: 28rpx;margin-top: 4rpx;"></text>
+															</view>
 														</view>
 													</view>
 												</view>
-											</view>
 
-											<view class="list-li-center-list"
-												:class="item.isOpen?'list-li-center-list-active':''">
-												<view class="list-li-center-list-item" v-for="(j,k) in 5">
-													<view class="list-li-center-list-item-left">
-														<image src="../../static/images/business-blue-ico.png"
-															mode="aspectFill"></image>
-														<text>罗约蓝池·温泉SPA</text>
-													</view>
-													<view class="list-li-center-list-item-right">
-														<text>背部按摩</text>
-														<text>x1</text>
+												<view class="list-li-center-list"
+													:class="item.isOpen?'list-li-center-list-active':''">
+													<view class="list-li-center-list-item" v-for="(j,k) in 5">
+														<view class="list-li-center-list-item-left">
+															<text class="iconfont iconshangjia"
+																style="font-size: 28rpx;color: #5DBDFE;margin-top: 4rpx;"></text>
+															<text>罗约蓝池·温泉SPA</text>
+														</view>
+														<view class="list-li-center-list-item-right">
+															<text>背部按摩</text>
+															<text>x1</text>
+														</view>
 													</view>
 												</view>
-											</view>
 
-										</view>
-										<view class="box-content-main-list-li-bottom">
-											<view class="box-content-main-list-li-bottom-item">
-												<text class="iconfont iconxiajia-shangjia icon-font"
-													style="color: #4EC494;font-size: 36rpx;margin-top: 4rpx;"></text>
-												<text>下架</text>
 											</view>
-											<view class="box-content-main-list-li-bottom-item">
-												<text class="iconfont iconshanchu-shangjia icon-font"
-													style="color: #FF6666;font-size: 36rpx;margin-top: 4rpx;"></text>
-												<text>删除</text>
-											</view>
+											<view class="box-content-main-list-li-bottom">
+												<view class="box-content-main-list-li-bottom-item">
+													<text class="iconfont iconxiajia-shangjia icon-font"
+														style="color: #4EC494;font-size: 36rpx;margin-top: 4rpx;"></text>
+													<text>下架</text>
+												</view>
+												<view class="box-content-main-list-li-bottom-item"
+													@click="deleteClick(item.id,index)">
+													<text class="iconfont iconshanchu-shangjia icon-font"
+														style="color: #FF6666;font-size: 36rpx;margin-top: 4rpx;"></text>
+													<text>删除</text>
+												</view>
 
-											<view class="box-content-main-list-li-bottom-item">
-												<text class="iconfont iconbianji-shangjia icon-font"
-													style="color: #5DBDFE;font-size: 36rpx;"></text>
-												<text>编辑</text>
+												<view class="box-content-main-list-li-bottom-item">
+													<text class="iconfont iconbianji-shangjia icon-font"
+														style="color: #5DBDFE;font-size: 36rpx;"></text>
+													<text>编辑</text>
+												</view>
 											</view>
 										</view>
 									</view>
-								</view>
+								</z-paging>
 							</view>
-
+							<view class="box-content-main" :style="{display:!isGiftData?'block':'none'}">
+								<loading v-if="isGiftLoad" />
+								<no-data v-if="!isGiftLoad" />
+							</view>
 						</swiper-item>
 						<swiper-item class="swiper-box-item-list"></swiper-item>
 
@@ -236,6 +272,11 @@
 				<btn-sky-blue btnName="添加礼品卡" @btnClick="addBtn('gift')" />
 			</view>
 		</view>
+
+		<uni-popup ref="popup" type="dialog">
+			<uni-popup-dialog type="warn" mode='base' title="警告" content="你确定要删除此项吗？" :duration="2000"
+				:before-close="true" @close="close" @confirm="confirm"></uni-popup-dialog>
+		</uni-popup>
 	</view>
 </template>
 
@@ -243,46 +284,42 @@
 	import navTitleBalck from "../../components/nav-title-balck/nav-title-balck.vue"
 	import merchantTabs from "../../components/merchant-tabs/merchant-tabs.vue"
 	import btnSkyBlue from "../../components/btn-sky-blue/btn-sky-blue.vue"
+	import loading from '../../components/loading-merchant/loading-merchant.vue'
+	import noData from '../../components/no-data/no-data.vue'
+	import zPaging from '../../components/z-paging/components/z-paging/z-paging.vue'
+	import UniPopup from "../../components/uni-popup/uni-popup.vue"
+	import UniPopupDialog from "../../components/uni-popup/uni-popup-dialog.vue"
 	export default {
 		data() {
 			return {
 				barHeight: 0, //顶部电量导航栏高度
 				defaultIndex: 0, //当前滑动的页面
 				tabsList: ["优惠券", "兑换券", "套餐卡", "礼品卡", "储值卡"],
+				couponList: [],
+				cardList: [],
+				giftList: [],
 				PageNumber: 1, // 请求页数，
 				PageLimt: 10, // 请求条数
-				couponList: [],
-				dataList: [{
-						isOpen: true,
-						isCheck: false
-					},
-					{
-						isOpen: false,
-						isCheck: true
-					},
-					{
-						isOpen: true,
-						isCheck: false
-					},
-					{
-						isOpen: false,
-						isCheck: true
-					},
-					{
-						isOpen: true,
-						isCheck: false
-					},
-					{
-						isOpen: false,
-						isCheck: false
-					},
-				]
+
+				isCouponData: false,
+				isCouponLoad: true,
+				isCardData: false,
+				isCardLoad: true,
+				isGiftData: false,
+				isGiftLoad: true,
+				id: '',
+				deleteIndex: -1,
 			};
 		},
 		components: {
 			navTitleBalck,
 			merchantTabs,
-			btnSkyBlue
+			btnSkyBlue,
+			loading,
+			noData,
+			zPaging,
+			UniPopup,
+			UniPopupDialog
 		},
 		onReady() {
 			// 获取顶部电量状态栏高度
@@ -292,12 +329,210 @@
 				}
 			});
 		},
-		onLoad(){
-			this.getCoupon()
+		onLoad() {
+
 		},
-		
-		
+
+
 		methods: {
+
+			// 优惠券上拉 下拉
+			couponQueryList(pageNo, pageSize) {
+				this.getCoupon(pageNo, pageSize)
+			},
+
+			// 优惠券列表
+			getCoupon(num, size) {
+				var vuedata = {
+					page_index: num, // 请求页数，
+					each_page: size, // 请求条数
+				}
+				this.apiget('api/v1/store/coupon/index', vuedata).then(res => {
+					if (res.status == 200) {
+						if (res.data.data.length != 0) {
+							this.isCouponData = true
+							let list = res.data.data
+							this.$refs.paging1.complete(list);
+							return false;
+						}
+						this.isCouponData = false
+						this.isCouponLoad = false
+					}
+				});
+			},
+
+			// 套餐卡上拉 下拉
+			cardQueryList(pageNo, pageSize) {
+				this.getCard(pageNo, pageSize)
+			},
+
+			// 套餐卡列表
+			getCard(num, size) {
+				var vuedata = {
+					page_index: num, // 请求页数，
+					each_page: size, // 请求条数
+				}
+				this.apiget('api/v1/store/card/index', vuedata).then(res => {
+					if (res.status == 200) {
+						if (res.data.data.length != 0) {
+							this.isCardData = true
+							let list = res.data.data
+							this.$refs.paging3.complete(list);
+							return false;
+						}
+						this.isCardData = false
+						this.isCardLoad = false
+					}
+				});
+			},
+
+			// 礼品卡上拉 下拉
+			giftQueryList(pageNo, pageSize) {
+				this.getGift(pageNo, pageSize)
+			},
+
+			// 礼品卡列表
+			getGift(num, size) {
+				var vuedata = {
+					page_index: num, // 请求页数，
+					each_page: size, // 请求条数
+				}
+				this.apiget('api/v1/store/gift/index', vuedata).then(res => {
+					if (res.status == 200) {
+						if (res.data.data.length != 0) {
+							this.isGiftData = true
+							let list = res.data.data
+
+							list.map(item => {
+								item.isOpen = false
+							})
+
+							this.$refs.paging4.complete(list);
+							return false;
+						}
+						this.isGiftData = false
+						this.isGiftLoads = false
+					}
+				});
+			},
+
+			// 礼品卡展开 收起
+			openClose(index) {
+				this.giftList[index].isOpen = !this.giftList[index].isOpen
+			},
+
+			//点击打开删除确认弹窗
+			deleteClick(id, index) {
+				this.id = id
+				this.deleteIndex = index
+				this.$refs.popup.open()
+			},
+
+
+			// 弹窗点击取消
+			close(done) {
+				// TODO 做一些其他的事情，before-close 为true的情况下，手动执行 done 才会关闭对话框
+				// ...
+				done()
+			},
+			// 弹窗点击确认
+			confirm(done, value) {
+				switch (this.defaultIndex) {
+					case 0:
+						this.deleteCoupon(done)
+						break;
+					case 1:
+						break;
+					case 2:
+						this.deleteCard(done)
+						break;
+					case 3:
+						this.deleteGift(done)
+						break;
+					case 4:
+						break;
+				}
+
+
+			},
+
+			// 优惠券删除
+			deleteCoupon(done) {
+				this.apidelte('api/v1/store/coupon/del/' + this.id, {}).then(res => {
+					if (res.status == 200) {
+						this.couponList.splice(this.deleteIndex, 1)
+						uni.showToast({
+							title: "优惠券删除成功",
+							icon: "none"
+						})
+					}
+					done()
+				});
+			},
+
+			// 礼品卡删除
+			deleteCard(done) {
+				this.apidelte('api/v1/store/card/del/' + this.id, {}).then(res => {
+					if (res.status == 200) {
+						this.cardList.splice(this.deleteIndex, 1)
+						uni.showToast({
+							title: "套餐卡删除成功",
+							icon: "none"
+						})
+					}
+					done()
+				});
+			},
+
+			// 礼品卡删除
+			deleteGift(done) {
+				this.apidelte('api/v1/store/gift/del/' + this.id, {}).then(res => {
+					if (res.status == 200) {
+						this.giftList.splice(this.deleteIndex, 1)
+						uni.showToast({
+							title: "礼品卡删除成功",
+							icon: "none"
+						})
+					}
+					done()
+				});
+			},
+
+
+
+
+			// tabs 点击
+			tabClick(e) {
+				this.defaultIndex = e
+			},
+			// 滑动切换列表
+			tabChange(e) {
+				this.$refs.boxTabs.tabToIndex(e.detail.current)
+				this.defaultIndex = e.detail.current
+				this.changeIndex(this.defaultIndex)
+			},
+
+			changeIndex(index) {
+				switch (index) {
+					case 0:
+						this.getCoupon(1, 20)
+						break;
+					case 1:
+
+						break;
+					case 2:
+						this.getCard(1, 20)
+						break;
+					case 3:
+						this.getGift(1, 20)
+						break;
+					case 4:
+
+						break;
+				}
+			},
+
+
 			//返回
 			Gback() {
 				uni.navigateBack({
@@ -327,37 +562,6 @@
 			},
 
 
-			// 优惠券列表
-			getCoupon() {
-				var vuedata = {
-					page_index: this.PageNumber, // 请求页数，
-					each_page: this.PageLimt, // 请求条数
-				}
-				this.apiget('api/v1/store/coupon/index', vuedata).then(res => {
-					if (res.status == 200) {
-						this.couponList = res.data.data
-						// console.log(res.data.data)
-
-					}
-				});
-			},
-
-
-
-			// 礼品卡展开 收起
-			openClose(index) {
-				this.dataList[index].isOpen = !this.dataList[index].isOpen
-			},
-
-			// tabs 点击
-			tabClick(e) {
-				this.defaultIndex = e
-			},
-			// 滑动切换列表
-			tabChange(e) {
-				this.$refs.boxTabs.tabToIndex(e.detail.current)
-				this.defaultIndex = e.detail.current
-			},
 		}
 	}
 </script>
@@ -436,11 +640,12 @@
 							overflow-y: scroll;
 
 							.box-content-main {
-								padding: 0 20rpx;
-								box-sizing: border-box;
+								height: 100%;
+
 
 								.box-content-main-list {
-									// margin-bottom: 40rpx;
+									padding: 0 20rpx;
+									box-sizing: border-box;
 
 									.box-content-main-list-li-active {
 										padding-bottom: 0 !important;
@@ -468,13 +673,8 @@
 												display: flex;
 												align-items: center;
 
-												image {
-													width: 28rpx;
-													height: 28rpx;
-												}
-
 												text {
-													margin-left: 10rpx;
+													margin-right: 10rpx;
 													font-size: 28rpx;
 													color: #000;
 												}
@@ -560,6 +760,7 @@
 													image {
 														width: 210rpx;
 														height: 140rpx;
+														border-radius: 10rpx;
 													}
 												}
 

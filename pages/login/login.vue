@@ -82,13 +82,31 @@
 		},
 
 		onLoad(options) {
+
 			this.isType = options.type == 'technician' ? 0 : 1
+
 			if (options.type == 'technician') {
 				this.title = "技师登录"
 			} else if (options.type == 'business') {
 				this.title = "商家登录"
+			} else {
+				// // 判断之前登录的为技师还是商家  便于下次进入直接进入对应得界面 如果loginType为空就表示没有登录过 则跳转到选择登录类型界面
+				var loginType = uni.getStorageSync("isLoginType")
+				var path = uni.getStorageSync("path")
+
+				if (loginType != '') {
+					this.title = loginType == 'technician' ? "技师登录" : "商家登录"
+					uni.reLaunch({
+						url: path
+					})
+				} else {
+					uni.reLaunch({
+						url: '../signUp/signUp'
+					})
+					return false;
+				}
 			}
-			this.getCode()
+			this.getCode() //获取验证码
 		},
 
 		methods: {
@@ -167,21 +185,19 @@
 					username: this.accountNumber,
 					password: this.password,
 				}
-				console.log(vuedata)
 				this.apipost('engineerlogin', vuedata).then(res => {
-					console.log(res.data.member)
 					if (res.status == 200) {
 						uni.setStorageSync('UToken', res.data.member.token);
+						uni.setStorageSync('isLoginType', 'technician');
+						uni.setStorageSync('path', '../technicianHome/technicianHome');
+
 						uni.showToast({
 							title: "登录成功",
 							icon: 'none'
 						})
-
-						setTimeout(function() {
-							uni.reLaunch({
-								url: "../technicianHome/technicianHome"
-							})
-						}, 1000)
+						uni.reLaunch({
+							url: "../technicianHome/technicianHome"
+						})
 
 					} else {
 						uni.showToast({
@@ -200,21 +216,20 @@
 					username: this.accountNumber,
 					password: this.password,
 				}
-				console.log(vuedata)
 				this.apipost('storelogin', vuedata).then(res => {
 					if (res.status == 200) {
 						uni.setStorageSync('UToken', res.data.member.token);
+						uni.setStorageSync('isLoginType', 'business');
+						uni.setStorageSync('path', '../merchantHome/merchantHome');
 
 						uni.showToast({
 							title: "登录成功",
 							icon: 'none'
 						})
 
-						setTimeout(function() {
-							uni.reLaunch({
-								url: "../merchantHome/merchantHome"
-							})
-						}, 1000)
+						uni.reLaunch({
+							url: "../merchantHome/merchantHome"
+						})
 
 					} else {
 						uni.showToast({

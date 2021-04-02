@@ -19,79 +19,9 @@
 			<view class="box-content-wrap">
 				<view class="box-content-wrap-item">
 					<swiper class="swiper-box" :current="defaultIndex" @change="tabChange">
-						<swiper-item class="swiper-box-item-list">
-							<view class="box-content-order">
-								<view class="box-content-order-list">
-									<view class="box-content-order-list-li" v-for="(item,index) in 10" :key="index"
-										@click="index==2 && shippingDetails(index)">
-										<view class="box-content-order-list-li-top">
-											<view class="order-list-li-top-title">
-												<text class="iconfont iconshangjia icon-font"
-													style="color: #5DBDFE;font-size: 28rpx;margin-top: 4rpx;"></text>
-												<!-- <image src="../../static/images/icon-5.jpg" mode=""></image> -->
-												<text>罗约蓝池·温泉SPA</text>
-											</view>
-											<view class="order-list-li-top-msg">待付款</view>
-										</view>
-										<view class="box-content-order-list-li-wrap">
-											<view class="order-list-li-wrap-item" v-for="(i,j) in 3">
-												<view class="order-list-li-wrap-item-image">
-													<image src="../../static/images/001.png" mode="aspectFill"></image>
-												</view>
-												<view class="order-list-li-wrap-item-info">
-													<view class="order-list-li-wrap-item-info-top">
-														<view class="wrap-item-info-top-text">淡雅茉莉香薰蜡烛</view>
-														<view class="wrap-item-info-top-msg">￥298.00</view>
-													</view>
-													<view class="order-list-li-wrap-item-info-box">
-														<view class="order-list-li-wrap-item-info-box-list">
-															规格：500g
-														</view>
-														<view class="order-list-li-wrap-item-info-box-number">x1</view>
-													</view>
-												</view>
-											</view>
-										</view>
-
-										<view class="box-content-order-list-li-footer">
-											<view class="box-content-order-list-li-footer-text">
-												<view class="box-content-order-list-li-footer-text-msg">实付款：</view>
-												<view class="box-content-order-list-li-footer-text-price">
-													￥<text>332.70</text></view>
-											</view>
-											<view class="box-content-order-list-li-footer-btn">
-												<view class="order-list-li-footer-all-btn btn-blue flex-center"
-													v-if="index==3">评价订单</view>
-												<view class="order-list-li-footer-all-btn btn-hollow flex-center"
-													v-if="index==2" @click.stop="viewLogistics">查看物流</view>
-												<view class="order-list-li-footer-all-btn btn-blue flex-center"
-													v-if="index==2">确认收货</view>
-												<view class="order-list-li-footer-all-btn btn-hollow flex-center"
-													v-if="index==0">取消订单</view>
-												<view class="order-list-li-footer-all-btn btn-fill flex-center"
-													v-if="index==0">去付款</view>
-												<view class="order-list-li-footer-all-btn btn-hollow flex-center"
-													v-if="index!=0&&index!=2&&index!=3">删除订单</view>
-											</view>
-										</view>
-									</view>
-								</view>
-							</view>
-						</swiper-item>
-						<swiper-item class="swiper-box-item-list">
-							2
-						</swiper-item>
-						<swiper-item class="swiper-box-item-list">
-							3
-						</swiper-item>
-						<swiper-item class="swiper-box-item-list">
-							4
-						</swiper-item>
-						<swiper-item class="swiper-box-item-list">
-							5
-						</swiper-item>
-						<swiper-item class="swiper-box-item-list">
-							6
+						<swiper-item class="swiper-box-item-list" v-for="(item,index) in tabsList" :key="index">
+							<scroll-purchase-order-swiper-item :tabIndex="index" :currentIndex="defaultIndex">
+							</scroll-purchase-order-swiper-item>
 						</swiper-item>
 					</swiper>
 				</view>
@@ -106,6 +36,7 @@
 <script>
 	import navTitleBalck from "../../components/nav-title-balck/nav-title-balck.vue"
 	import merchantTabs from "../../components/merchant-tabs/merchant-tabs.vue"
+	import scrollPurchaseOrderSwiperItem from "../../components/scroll-order-swiper-item/scroll-order-swiper-item.vue"
 	export default {
 		data() {
 			return {
@@ -116,7 +47,8 @@
 		},
 		components: {
 			navTitleBalck,
-			merchantTabs
+			merchantTabs,
+			scrollPurchaseOrderSwiperItem
 		},
 		onReady() {
 			// 获取顶部电量状态栏高度
@@ -131,18 +63,6 @@
 			Gback() {
 				uni.navigateBack({
 					delta: 1
-				})
-			},
-			// 查看物流
-			viewLogistics() {
-				uni.navigateTo({
-					url: "../logisticsDetails/logisticsDetails"
-				})
-			},
-			// 发货详情
-			shippingDetails(index) {
-				uni.navigateTo({
-					url: "../deliveryFromSeller/deliveryFromSeller"
 				})
 			},
 
@@ -214,165 +134,6 @@
 							overflow-y: scroll;
 
 
-							.box-content-order {
-								.box-content-order-list {
-									margin-bottom: 20rpx;
-
-									.box-content-order-list-li {
-										margin-top: 20rpx;
-										padding: 0 40rpx;
-										box-sizing: border-box;
-										background: #fff;
-
-										.box-content-order-list-li-top {
-											display: flex;
-											align-items: center;
-											justify-content: space-between;
-											padding: 30rpx 0;
-											font-size: 28rpx;
-
-											.order-list-li-top-title {
-												display: flex;
-												align-items: center;
-												color: #000;
-
-												text {
-													margin-right: 8rpx;
-												}
-											}
-
-											.order-list-li-top-msg {
-												color: #5DBDFE;
-											}
-										}
-
-										.box-content-order-list-li-wrap {
-											// padding-bottom: 20rpx;
-
-											.order-list-li-wrap-item {
-												display: flex;
-												margin-bottom: 20rpx;
-
-												.order-list-li-wrap-item-image {
-													display: flex;
-													align-items: center;
-
-													image {
-														width: 132rpx;
-														height: 132rpx;
-													}
-												}
-
-												.order-list-li-wrap-item-info {
-													flex: 1;
-													margin-left: 20rpx;
-
-													.order-list-li-wrap-item-info-top {
-														display: flex;
-														align-items: center;
-														justify-content: space-between;
-														color: #000;
-
-														.wrap-item-info-top-text {
-															font-size: 30rpx;
-															font-weight: 500;
-														}
-
-														.wrap-item-info-top-msg {
-															font-size: 28rpx;
-														}
-													}
-
-													.order-list-li-wrap-item-info-box {
-														display: flex;
-														justify-content: space-between;
-														align-items: center;
-														margin-top: 10rpx;
-
-														.order-list-li-wrap-item-info-box-list {
-															display: flex;
-															align-items: center;
-															color: #666;
-															font-size: 24rpx;
-														}
-
-														.order-list-li-wrap-item-info-box-number {
-															font-size: 28rpx;
-															color: #999;
-														}
-
-													}
-												}
-											}
-										}
-
-
-
-										.box-content-order-list-li-footer {
-											display: flex;
-											align-items: center;
-											justify-content: space-between;
-											height: 100rpx;
-
-											.box-content-order-list-li-footer-text {
-												display: flex;
-												align-items: baseline;
-
-												.box-content-order-list-li-footer-text-msg {
-													font-size: 24rpx;
-													color: #999;
-												}
-
-												.box-content-order-list-li-footer-text-price {
-													font-size: 24rpx;
-													color: #FF4D4D;
-
-													text {
-														font-size: 32rpx;
-														font-weight: 500;
-													}
-												}
-											}
-
-											.box-content-order-list-li-footer-btn {
-												display: flex;
-												align-items: center;
-
-												.order-list-li-footer-all-btn {
-													margin-right: 20rpx;
-													border-radius: 32rpx;
-													font-size: 28rpx;
-												}
-
-												.order-list-li-footer-all-btn:last-child {
-													margin-right: 0;
-												}
-
-												.btn-hollow {
-													width: 174rpx;
-													height: 58rpx;
-													border: 1rpx solid #666666;
-													color: #666;
-												}
-
-												.btn-blue {
-													width: 174rpx;
-													height: 58rpx;
-													border: 1rpx solid #5DBDFE;
-													color: #5DBDFE;
-												}
-
-												.btn-fill {
-													width: 176rpx;
-													height: 60rpx;
-													background: #5DBDFE;
-													color: #fff;
-												}
-											}
-										}
-									}
-								}
-							}
 						}
 					}
 				}

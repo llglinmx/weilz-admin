@@ -12,7 +12,7 @@
 			</view>
 		</view>
 		<view class="box-content">
-			<view class="box-content-search">
+			<view class="box-content-search" :style="{display:isData?'block':'none'}">
 				<view class="box-content-search-box">
 					<view class="box-content-search-box-ico" :class="isSearch?'box-content-search-box-ico-active':''">
 						<text class="iconfont iconsousuo1 icon-font"
@@ -24,37 +24,42 @@
 					</view>
 				</view>
 			</view>
-			<view class="box-content-main">
-				<mescroll-uni ref="mescrollRef" @down="downCallback" @up="upCallback" :down="downOption" :up="upOption"
-					:height="mesHeight">
-				<view class="box-content-main-list">
-					<view class="box-content-main-list-li" v-for="(item,index) in 20" :key="index"
-						@click="customerDetail">
-						<view class="box-content-main-list-li-image">
-							<image src="../../static/images/userImage.png" mode="aspectFill"></image>
-						</view>
-						<view class="box-content-main-list-li-info">
-							<view class="box-content-main-list-li-info-left">
-								<view class="box-content-main-list-li-info-left-top">
-									<view class="main-list-li-info-left-top-title">张女士</view>
-									<view class="main-list-li-info-left-top-text">
-										<image src="../../static/images/grade-yellow.png" mode=""></image>
-										<text>钻石会员</text>
+			<view class="box-content-main" :style="{display:isData?'block':'none'}">
+				<z-paging ref="paging1" @query="queryList" :list.sync="dataList" loading-more-no-more-text="已经到底了"
+					:refresher-angle-enable-change-continued="false" :touchmove-propagation-enabled="true"
+					:use-custom-refresher="true" style="height: 100%;">
+					<view class="box-content-main-list">
+						<view class="box-content-main-list-li" v-for="(item,index) in dataList" :key="item.id"
+							@click="customerDetail">
+							<view class="box-content-main-list-li-image">
+								<image src="../../static/images/userImage.png" mode="aspectFill"></image>
+							</view>
+							<view class="box-content-main-list-li-info">
+								<view class="box-content-main-list-li-info-left">
+									<view class="box-content-main-list-li-info-left-top">
+										<view class="main-list-li-info-left-top-title">张女士</view>
+										<view class="main-list-li-info-left-top-text">
+											<image src="../../static/images/grade-yellow.png" mode=""></image>
+											<text>钻石会员</text>
+										</view>
+									</view>
+									<view class="box-content-main-list-li-info-left-bottom">
+										<text>消费 259.00元</text>
+										<text>上次到店 2020-12-20 18:40</text>
 									</view>
 								</view>
-								<view class="box-content-main-list-li-info-left-bottom">
-									<text>消费 259.00元</text>
-									<text>上次到店 2020-12-20 18:40</text>
+								<view class="box-content-main-list-li-info-more">
+									<text class="iconfont icongengduo icon-font"
+										style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
 								</view>
-							</view>
-							<view class="box-content-main-list-li-info-more">
-								<text class="iconfont icongengduo icon-font"
-									style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
 							</view>
 						</view>
 					</view>
-				</view>
-				</mescroll-uni>
+				</z-paging>
+			</view>
+			<view class="box-content-main" :style="{display:!isData?'block':'none'}">
+				<loading v-if="isLoad" />
+				<no-data v-if="!isLoad" />
 			</view>
 		</view>
 		<view class="box-footer">
@@ -65,38 +70,26 @@
 
 <script>
 	import navTitleBalck from "../../components/nav-title-balck/nav-title-balck.vue"
-	import MescrollMixin from "../../components/mescroll-uni/mescroll-mixins.js";
-	import MescrollUni from "@/components/mescroll-uni/mescroll-uni.vue"
+	import loading from '../../components/loading-merchant/loading-merchant.vue'
+	import noData from '../../components/no-data/no-data.vue'
+	import zPaging from '../../components/z-paging/components/z-paging/z-paging.vue'
 	export default {
-		mixins: [MescrollMixin], // 使用mixin
 		data() {
 			return {
 				barHeight: 0, //顶部电量导航栏高度
 				isSearch: false, //是否有点击输入框搜索
-				mesHeight: 0,
-				downOption: { // 下拉刷新配置
-					auto: false,
-				},
-				upOption: { // 上拉加载配置
-					noMoreSize: 5,
-					textLoading: "正在加载更多数据",
-					textNoMore: "——  已经到底了  ——",
-					isBounce: true,
-					auto: false,
-				},
-				PageNumber: 1, // 请求页数，
-				PageLimt: 10, // 请求条数
+				isData: false,
+				isLoad: true,
+				dataList: []
 			};
 		},
 		components: {
 			navTitleBalck,
-			MescrollUni
+			loading,
+			noData,
+			zPaging,
 		},
-		onShow() {
-			const sys = uni.getSystemInfoSync();
-			var Heigh = sys.windowHeight
-			this.mesHeight = (Heigh -110) * 2
-		},
+
 		onReady() {
 			// 获取顶部电量状态栏高度
 			uni.getSystemInfo({
@@ -106,6 +99,34 @@
 			});
 		},
 		methods: {
+			// 上拉 下拉
+			queryList(pageNo, pageSize) {
+				this.getCustomer(pageNo, pageSize)
+			},
+
+			// 订单列表
+			getCustomer(num, size) {
+				var vuedata = {
+					page_index: num, // 请求页数，
+					each_page: size, // 请求条数
+				}
+				this.apiget('api/v1/store/user_list/index', vuedata).then(res => {
+					if (res.status == 200) {
+						if (res.data.member.length != 0) {
+							this.isData = true
+							let list = res.data.member
+							this.$refs.paging1.complete(list);
+							return false;
+						}
+						this.isData = false
+						this.isLoad = false
+
+					}
+				});
+			},
+
+
+
 			// 返回
 			Gback() {
 				uni.navigateBack({
@@ -128,20 +149,20 @@
 					url: "../customerDetails/customerDetails"
 				})
 			},
-			
-			
-			
+
+
+
 			/*下拉刷新的回调*/
 			downCallback() {
 				this.PageNumber = 1
 				setTimeout(() => {
 					this.mescroll.endSuccess() // 请求成功 隐藏加载状态
-			
+
 					// this.mescroll.showNoMore()
-			
+
 				}, 1500)
 			},
-			
+
 			/*上拉加载的回调*/
 			upCallback(page) {
 				this.PageNumber++

@@ -63,9 +63,9 @@
 						});
 						setTimeout(function() {
 							uni.reLaunch({
-								url: "../../pages/login/login?type='business'"
+								url: "../../pages/login/login?type=business"
 							})
-						}, 1000);
+						}, 500);
 					}
 					done()
 				});

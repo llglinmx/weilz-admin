@@ -19,65 +19,67 @@
 				</view>
 			</view>
 		</view>
-		<view class="box-content">
-			<view class="box-content-order-list">
-				<view class="order-list-li" v-for="(item,index) in 10" :key="index">
-					<view class="order-list-li-top">
-						<view class="order-list-li-top-title">订单号DU199110074026</view>
-						<view class="order-list-li-top-msg">待核销</view>
-					</view>
-					<view class="order-list-li-info">
-						<view class="order-list-li-info-wrap">
-							<view class="order-list-li-info-wrap-item">
-								<view class="order-list-li-info-wrap-item-title">顾客</view>
-								<view class="order-list-li-info-wrap-item-msg">
-									<text>庄女士</text>
-									<text>13812345678</text>
-								</view>
-							</view>
-							<view class="order-list-li-info-wrap-item">
-								<view class="order-list-li-info-wrap-item-title">服务</view>
-								<view class="order-list-li-info-wrap-item-msg">
-									<text>泰式按摩</text>
-								</view>
-							</view>
-							<view class="order-list-li-info-wrap-item">
-								<view class="order-list-li-info-wrap-item-title">门店</view>
-								<view class="order-list-li-info-wrap-item-msg">
-									<text>罗约蓝池·温泉SPA</text>
-								</view>
-							</view>
-							<view class="order-list-li-info-wrap-item">
-								<view class="order-list-li-info-wrap-item-title">时间</view>
-								<view class="order-list-li-info-wrap-item-msg">
-									<text>2020/10/12 15:00-16:00</text>
-								</view>
-							</view>
-							<view class="order-list-li-info-wrap-item">
-								<view class="order-list-li-info-wrap-item-title">技师</view>
-								<view class="order-list-li-info-wrap-item-msg">
-									<text>王二麻子</text>
-								</view>
-							</view>
+		<view class="box-content" :style="{display:isData?'block':'none'}">
+			<z-paging ref="paging1" @query="queryList" :list.sync="dataList" loading-more-no-more-text="已经到底了"
+				:refresher-angle-enable-change-continued="false" :touchmove-propagation-enabled="true"
+				:use-custom-refresher="true" style="height: 100%;">
+				<view class="box-content-order-list">
+					<view class="order-list-li" v-for="(item,index) in dataList" :key="index">
+						<view class="order-list-li-top">
+							<view class="order-list-li-top-title">订单号DU199110074026</view>
+							<view class="order-list-li-top-msg">待核销</view>
 						</view>
-						<view class="order-list-li-info-footer">
-							<view class="order-list-li-info-footer-price">
-								<view class="order-list-li-info-footer-price-msg">实付款：</view>
-								<view class="order-list-li-info-footer-present-price">
-									￥<text>332.70</text>
+						<view class="order-list-li-info">
+							<view class="order-list-li-info-wrap">
+								<view class="order-list-li-info-wrap-item">
+									<view class="order-list-li-info-wrap-item-title">顾客</view>
+									<view class="order-list-li-info-wrap-item-msg">
+										<text>庄女士</text>
+										<text>13812345678</text>
+									</view>
+								</view>
+								<view class="order-list-li-info-wrap-item">
+									<view class="order-list-li-info-wrap-item-title">服务</view>
+									<view class="order-list-li-info-wrap-item-msg">
+										<text>泰式按摩</text>
+									</view>
+								</view>
+								<view class="order-list-li-info-wrap-item">
+									<view class="order-list-li-info-wrap-item-title">门店</view>
+									<view class="order-list-li-info-wrap-item-msg">
+										<text>罗约蓝池·温泉SPA</text>
+									</view>
+								</view>
+								<view class="order-list-li-info-wrap-item">
+									<view class="order-list-li-info-wrap-item-title">时间</view>
+									<view class="order-list-li-info-wrap-item-msg">
+										<text>2020/10/12 15:00-16:00</text>
+
+									</view>
 								</view>
 							</view>
-							<view class="order-list-li-info-footer-all-btn">
-								<view class="order-list-li-info-footer-btn flex-center" @click="cancelOrder">取消订单
+							<view class="order-list-li-info-footer">
+								<view class="order-list-li-info-footer-price">
+									<view class="order-list-li-info-footer-price-msg">实付款：</view>
+									<view class="order-list-li-info-footer-present-price">
+										￥<text>332.70</text>
+									</view>
 								</view>
-								<view class="order-list-li-info-footer-btn flex-center" @click="confirmWriteOff">
-									确认核销</view>
+								<view class="order-list-li-info-footer-all-btn">
+									<view class="order-list-li-info-footer-btn flex-center" @click="cancelOrder">取消订单
+									</view>
+									<view class="order-list-li-info-footer-btn flex-center" @click="confirmWriteOff">
+										确认核销</view>
+								</view>
 							</view>
 						</view>
 					</view>
 				</view>
-			</view>
-
+			</z-paging>
+		</view>
+		<view class="box-content" :style="{display:!isData?'block':'none'}">
+			<loading v-if="isLoad" />
+			<no-data v-if="!isLoad" />
 		</view>
 		<view class="box-footer">
 			<merchant-tabbar @tabbarClick="tabbarClick" :activeIndex="activeIndex"></merchant-tabbar>
@@ -87,37 +89,46 @@
 
 <script>
 	import merchantTabbar from "../../components/merchant-tabbar/merchant-tabbar.vue"
-
+	import loading from '../../components/loading-merchant/loading-merchant.vue'
+	import noData from '../../components/no-data/no-data.vue'
+	import zPaging from '../../components/z-paging/components/z-paging/z-paging.vue'
 	export default {
 		data() {
 			return {
 				barHeight: 0, //顶部电量导航栏高度,
 				activeIndex: 0, //当前tabbar所在页面
+				dataList: [],
 				options: [{
 						title: "待付款",
-						number: "20"
+						number: "0"
 					},
 					{
 						title: "待核销",
-						number: "20"
+						number: "0"
 					},
 					{
 						title: "已核销",
-						number: "2"
+						number: "0"
 					}, {
 						title: "申请退款",
-						number: "50"
+						number: "0"
 					},
 					{
 						title: "已退款",
-						number: "1"
+						number: "0"
 					}
 
-				]
+				],
+				isData: false,
+				isLoad: true,
 			};
 		},
 		components: {
 			merchantTabbar,
+			loading,
+			noData,
+			zPaging,
+			
 		},
 		onShow() {
 
@@ -131,21 +142,9 @@
 			});
 		},
 		onLoad() {
-			this.getInfo()
+
 		},
 		methods: {
-
-
-
-			// 获取商家信息
-			getInfo() {
-				let vuedata = {}
-				this.apiget('api/v1/store/admin_info', vuedata).then(res => {
-					if (res.status == 200) {
-						console.log(res.data)
-					}
-				});
-			},
 
 			// 上拉 下拉
 			queryList(pageNo, pageSize) {
@@ -166,7 +165,6 @@
 							this.isData = true
 							let list = res.data.member
 							this.$refs.paging1.complete(list);
-							console.log(res)
 							return false;
 						}
 						this.isData = false

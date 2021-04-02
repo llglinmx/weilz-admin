@@ -3,7 +3,7 @@
 		<view class="box-head" :style="{paddingTop:barHeight+'px'}">
 			<nav-title-balck navTitle="账号管理"></nav-title-balck>
 		</view>
-		<view class="box-content">
+		<view class="box-content" :style="{display:isData?'block':'none'}">
 			<view class="box-content-search">
 				<view class="box-content-search-box">
 					<view class="box-content-search-box-ico" :class="isSearch?'box-content-search-box-ico-active':''">
@@ -17,25 +17,34 @@
 				</view>
 			</view>
 			<view class="box-content-main">
-				<view class="box-content-main-list">
-					<view class="box-content-main-list-li" v-for="(item,index) in dataList" :key="index"
-						@click="accountDetail">
-						<view class="box-content-main-list-li-image flex-center">
-							<text class="iconfont iconmendian1 icon-font" style="color:#5DBDFE;font-size: 52rpx"></text>
-						</view>
-						<view class="box-content-main-list-li-info">
-							<view class="box-content-main-list-li-info-left">
-								<view class="list-li-info-left-title">{{item.title}}</view>
-								<view class="list-li-info-left-text">{{item.account}}</view>
+				<z-paging ref="paging1" @query="queryList" :list.sync="dataList" loading-more-no-more-text="已经到底了"
+					:refresher-angle-enable-change-continued="false" :touchmove-propagation-enabled="true"
+					:use-custom-refresher="true" style="height: 100%;">
+					<view class="box-content-main-list">
+						<view class="box-content-main-list-li" v-for="(item,index) in dataList" :key="item.id"
+							@click="accountDetail">
+							<view class="box-content-main-list-li-image flex-center">
+								<text class="iconfont iconmendian1 icon-font"
+									style="color:#5DBDFE;font-size: 52rpx"></text>
 							</view>
-							<view class="box-content-main-list-li-info-more">
-								<text class="iconfont icongengduo icon-font"
-									style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
+							<view class="box-content-main-list-li-info">
+								<view class="box-content-main-list-li-info-left">
+									<view class="list-li-info-left-title">{{item.name}}</view>
+									<view class="list-li-info-left-text">账号：{{item.account}}</view>
+								</view>
+								<view class="box-content-main-list-li-info-more">
+									<text class="iconfont icongengduo icon-font"
+										style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
+								</view>
 							</view>
 						</view>
 					</view>
-				</view>
+				</z-paging>
 			</view>
+		</view>
+		<view class="box-content" :style="{display:!isData?'block':'none'}">
+			<loading v-if="isLoad" />
+			<no-data v-if="!isLoad" />
 		</view>
 		<view class="box-footer">
 			<btn-sky-blue btnName="添加子账号" @btnClick="addBtn" />
@@ -46,41 +55,25 @@
 <script>
 	import navTitleBalck from "../../components/nav-title-balck/nav-title-balck.vue"
 	import btnSkyBlue from "../../components/btn-sky-blue/btn-sky-blue.vue"
+	import loading from '../../components/loading-merchant/loading-merchant.vue'
+	import noData from '../../components/no-data/no-data.vue'
+	import zPaging from '../../components/z-paging/components/z-paging/z-paging.vue'
 	export default {
 		data() {
 			return {
 				barHeight: 0, //顶部电量导航栏高度
 				isSearch: false, //是否有点击输入框搜索
-				dataList: [{
-						title: "中山路店",
-						account: 'MD002101'
-					},
-					{
-						title: "莲坂店",
-						account: 'MD002101'
-					},
-					{
-						title: "瑞景店",
-						account: 'MD002101'
-					},
-					{
-						title: "仙岳路店",
-						account: 'MD002101'
-					},
-					{
-						title: "思北路口店",
-						account: 'MD002101'
-					},
-					{
-						title: "SM广场店",
-						account: 'MD002101'
-					},
-				]
+				dataList: [],
+				isData: false,
+				isLoad: true,
 			};
 		},
 		components: {
 			navTitleBalck,
-			btnSkyBlue
+			btnSkyBlue,
+			loading,
+			noData,
+			zPaging,
 		},
 		onReady() {
 			// 获取顶部电量状态栏高度
@@ -90,7 +83,37 @@
 				}
 			});
 		},
+		onLoad() {
+
+		},
 		methods: {
+			// 上拉 下拉
+			queryList(pageNo, pageSize) {
+				this.storeList(pageNo, pageSize)
+			},
+
+			// 获取列表
+			storeList(num, size) {
+				var vuedata = {
+					page_index: num, // 请求页数，
+					each_page: size, // 请求条数
+				}
+				this.apiget('api/v1/store/admin/store', vuedata).then(res => {
+					if (res.status == 200) {
+
+						if (res.data.store.length != 0) {
+							this.isData = true
+							let list = res.data.store
+							this.$refs.paging1.complete(list);
+						} else {
+							this.isData = false
+							this.isLoad = false
+						}
+					}
+				});
+			},
+
+
 			// 获得焦点
 			focus() {
 				this.isSearch = true
@@ -184,6 +207,7 @@
 			}
 
 			.box-content-main {
+				
 				.box-content-main-list {
 					background: #fff;
 					padding: 30rpx 0;

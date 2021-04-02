@@ -152,7 +152,24 @@
 				}
 			});
 		},
+		onLoad() {
+			this.getData()
+		},
 		methods: {
+
+			// 获取视频首页信息
+			getData() {
+				let vuedata = {
+					type:1
+				}
+				this.apiget('api/v1/store/Video_tutorial', vuedata).then(res => {
+					if (res.status == 200) {
+						console.log(res.data)
+					}
+				});
+			},
+
+
 
 			// input框 获得焦点事件
 			focus() {

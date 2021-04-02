@@ -22,6 +22,7 @@ const httpClient = {
 				success: function(res) {
 					uni.hideLoading()
 					// console.log("接口获取原始数据：-------------------",res.data)
+					// console.log('状态码为：'+res.statusCode)
 					if (res.statusCode == 402 || res.statusCode == 400) {
 						uni.showToast({
 							icon: 'none',
@@ -32,7 +33,7 @@ const httpClient = {
 							uni.reLaunch({
 								url: '/pages/signUp/signUp'
 							});
-						}, 1500);
+						}, 500);
 					} else {
 						if (res.data.error != null) {
 							uni.showToast({
