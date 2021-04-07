@@ -160,39 +160,37 @@
 					},
 					xAxis: {
 						type: 'category',
-						data: ['10-12', '10-13', '10-14', '10-15', '10-16', '10-17', '10-18'],
 						boundaryGap: false, //x轴两边不留空白
-
 					},
 					yAxis: {
 						type: 'value',
 					},
 					calculable: false,
 					grid: {
-						top: '10%',
+						top: '5%',
 						left: '0',
 						right: '5%',
 						bottom: '0',
 						containLabel: true,
-
+						height:"90%"
 					},
 
 					series: [{
 							type: 'line',
 							smooth: true,
-							data: [0.25, 0.28, 0.23, 0.08, 0.15, 0.42, 0.7],
+							data: [125, 200, 362, 369, 358, 159, 258],
 							color: ['#5DBDFE'], //折线条的颜色
 						},
 						{
 							type: 'line',
 							smooth: true,
-							data: [0.19, 0.4, 0.39, 0.21, 0.29, 0.59, 0.83],
+							data: [500, 632, 360, 258, 852, 254,369],
 							color: ['#FF8366'], //折线条的颜色
 						},
 						{
 							type: 'line',
 							smooth: true,
-							data: [0.35, 0.58, 0.56, 0.38, 0.42, 0.76, 1],
+							data: [300, 35, 584, 365, 752, 853, 654],
 							color: ['#FFDB3A'], //折线条的颜色
 						}
 					]

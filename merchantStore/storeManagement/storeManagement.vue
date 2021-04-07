@@ -6,16 +6,14 @@
 		<view class="box-content">
 			<view class="box-content-main" @click="merchantDetails">
 				<view class="box-content-main-image">
-					<image src="../../static/images/001.png" mode="aspectFill"></image>
+					<image :src="infoData.simg" mode="aspectFill"></image>
 				</view>
 				<view class="box-content-main-info">
-					<view class="box-content-main-info-title">罗约蓝池·温泉SPA</view>
+					<view class="box-content-main-info-title">{{infoData.name}}</view>
 					<view class="box-content-main-info-score">
-						<text class="iconfont iconwujiaoxing icon-font" style="color: #FFCD4D;font-size: 28rpx;"
-							v-for="item in 5"></text>
-						<text>5分</text>
+						<score :comment="infoData.comment" />
 					</view>
-					<view class="box-content-main-info-address">地址：中国 福建省 厦门市 集美区 杏滨路罗约酒店负一楼</view>
+					<view class="box-content-main-info-address">地址：{{infoData.address}}</view>
 				</view>
 				<view class="box-content-main-more">
 					<text class="iconfont icongengduo icon-font"
@@ -48,10 +46,12 @@
 
 <script>
 	import navTitleBalck from "../../components/nav-title-balck/nav-title-balck.vue"
+	import score from '../../components/score/score.vue'
 	export default {
 		data() {
 			return {
 				barHeight: 0, //顶部电量导航栏高度
+				id: '',
 				menuList: [{
 						title: "门店二维码",
 						image: "../../static/images/store-code-ico.png"
@@ -76,11 +76,18 @@
 						title: "房间管理",
 						image: "../../static/images/store-room-ico.png"
 					},
-				]
+				],
+				infoData: {
+					name: '',
+					simg: '',
+					address: '',
+					comment: '0'
+				}
 			};
 		},
 		components: {
-			navTitleBalck
+			navTitleBalck,
+			score
 		},
 		onReady() {
 			// 获取顶部电量状态栏高度
@@ -90,11 +97,15 @@
 				}
 			});
 		},
+		onLoad(options) {
+			this.id = options.id
+			this.getInfo(options.id)
+		},
 		methods: {
 			// 商家信息
 			merchantDetails() {
 				uni.navigateTo({
-					url: "../merchantInformation/merchantInformation"
+					url: "../merchantInformation/merchantInformation?id=" + this.id
 				})
 			},
 
@@ -122,8 +133,9 @@
 						})
 						break;
 					case 4: //技师招聘
+						this.$store.commit("upAdd", false)
 						uni.navigateTo({
-							url: "../technicianRecruit/technicianRecruit"
+							url: "../technicianRecruit/technicianRecruit?id=" + this.id
 						})
 						break;
 					case 5: //房间管理
@@ -132,6 +144,14 @@
 						})
 						break;
 				}
+			},
+
+			getInfo(id) {
+				this.apiget('api/v1/store/store_information/' + id, {}).then(res => {
+					if (res.status == 200) {
+						this.infoData = res.data.member
+					}
+				});
 			},
 		}
 	}
@@ -167,6 +187,7 @@
 					image {
 						width: 132rpx;
 						height: 132rpx;
+						border-radius: 10rpx;
 					}
 				}
 

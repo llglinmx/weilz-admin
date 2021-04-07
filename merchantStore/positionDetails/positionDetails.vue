@@ -6,8 +6,8 @@
 		<view class="box-content">
 			<view class="box-content-details">
 				<view class="box-content-details-top">
-					<view class="box-content-details-top-title">全职按摩师</view>
-					<view class="box-content-details-top-text">6000+抽成/月</view>
+					<view class="box-content-details-top-title">{{infoData.position}}</view>
+					<view class="box-content-details-top-text">{{infoData.salary}}/月</view>
 				</view>
 				<view class="box-content-details-list">
 					<view class="box-content-details-list-li">五险一金</view>
@@ -19,13 +19,20 @@
 						职位类别：<text>按摩师</text>
 					</view>
 					<view class="box-content-details-wrap-item">
-						学历要求：<text>不限</text>
+						学历要求：
+						<text v-if="infoData.education==1">不限</text>
+						<text v-if="infoData.education==2">高中</text>
+						<text v-if="infoData.education==3">技校</text>
+						<text v-if="infoData.education==4">中专</text>
+						<text v-if="infoData.education==5">大专</text>
+						<text v-if="infoData.education==6">本科</text>
+						<text v-if="infoData.education==7">应届生</text>
 					</view>
 					<view class="box-content-details-wrap-item">
-						招聘人数：<text>20人</text>
+						招聘人数：<text>{{infoData.recruits_number}}人</text>
 					</view>
 					<view class="box-content-details-wrap-item">
-						工龄要求：<text>不限</text>
+						工龄要求：<text>{{infoData.service_year}}</text>
 					</view>
 					<view class="box-content-details-wrap-item">
 						工作地点：<text>厦门</text>
@@ -34,20 +41,19 @@
 			</view>
 			<view class="box-content-text">
 				<view class="box-content-text-title">职位描述</view>
-				<view class="box-content-text-msg">人性化管理，高提成，高奖金，两个班次，客源稳定，挣钱看过来，生手免费培训，专业老师教学。</view>
+				<view class="box-content-text-msg">{{infoData.position_information}}</view>
 			</view>
 			<view class="box-content-introduce">
 				<view class="box-content-introduce-title">门店介绍</view>
 				<view class="box-content-introduce-text">
-					门店名称：<text>罗约蓝池·温泉SPA</text>
+					门店名称：<text>{{infoData.store_info.name}}</text>
 				</view>
 				<view class="box-content-introduce-address">
 					<view class="box-content-introduce-address-icon">
 						<text class="iconfont icondingwei1 icon-font" style="color: #26BF82;font-size: 40rpx"></text>
 					</view>
 					<view class="box-content-introduce-address-text">
-						中国 福建省 厦门市 集美区
-						杏滨路罗约酒店负一楼
+						{{infoData.store_info.address}}
 					</view>
 					<view class="box-content-introduce-address-more">
 						<text class="iconfont icongengduo icon-font"
@@ -55,29 +61,47 @@
 					</view>
 				</view>
 				<view class="box-content-introduce-text">门店介绍</view>
-				<view class="box-content-introduce-msg">
-					水疗（SPA）这种休闲美容方式的历史很久远。在15世纪欧洲的比利时有一个被称之为SPAU的小山谷，山谷中有一个富含矿物质的热温泉旅游、疗养区，当时有许多贵族到这里来度假疗养这就是SPA最初的形式。18世纪后开始在欧洲贵族中风行开来，成为贵族们休闲度假、强身健体的首选，20世纪末在欧美民间社会又重新掀起了SPA热潮，并于21世纪初传入亚洲各国。
-				</view>
+				<view class="box-content-introduce-msg" v-html="infoData.store_info.content"></view>
 			</view>
 		</view>
 		<view class="box-footer">
-			<view class="box-footer-btn-del flex-center">删除</view>
+			<view class="box-footer-btn-del flex-center" @click="deleteRecruitment">删除</view>
 			<view class="box-footer-btn-edit flex-center" @click="modify">修改</view>
 		</view>
+		<uni-popup ref="popup" type="dialog">
+			<uni-popup-dialog type="warn" mode='base' title="警告" content="你确定要删除此条招聘信息吗？" :duration="2000"
+				:before-close="true" @close="close" @confirm="confirm"></uni-popup-dialog>
+		</uni-popup>
 	</view>
 </template>
 
 <script>
 	import navTitleWhite from "../../components/nav-title-white/nav-title-white.vue"
+	import UniPopup from "../../components/uni-popup/uni-popup.vue"
+	import UniPopupDialog from "../../components/uni-popup/uni-popup-dialog.vue"
 	export default {
 		data() {
 			return {
 				barHeight: 0, //顶部电量导航栏高度
-
+				id: '',
+				infoData: {
+					position: '',
+					salary: '',
+					recruits_number: 1,
+					position_information: '',
+					service_year: '',
+					education: '',
+					place_work: '',
+					store_info: {
+						name: ''
+					}
+				}
 			};
 		},
 		components: {
-			navTitleWhite
+			navTitleWhite,
+			UniPopup,
+			UniPopupDialog
 		},
 		onReady() {
 			// 获取顶部电量状态栏高度
@@ -87,10 +111,58 @@
 				}
 			});
 		},
+		onLoad(options) {
+			this.id = options.id
+			this.getInfo(options.id)
+		},
+		onShow() {
+			// 用于判断是否有发布招聘
+			if (this.$store.state.isAdd) {
+				this.getInfo(this.id)
+			}
+		},
 		methods: {
+
+			getInfo(id) {
+				this.apiget('api/v1/store/recruitment/' + id, {}).then(res => {
+					if (res.status == 200) {
+						this.infoData = res.data.data
+					}
+				});
+			},
+
 			// 修改资料
 			modify() {
-
+				// 编辑按钮
+				uni.navigateTo({
+					url: "../releaseRecruitment/releaseRecruitment?id=" + this.id
+				})
+			},
+			// 删除
+			deleteRecruitment() {
+				this.$refs.popup.open()
+			},
+			// 弹窗点击取消
+			close(done) {
+				done()
+			},
+			// 弹窗点击确认
+			confirm(done, value) {
+				this.apidelte('api/v1/store/recruitment/del/' + this.id, {}).then(res => {
+					if (res.status == 200) {
+						this.$store.commit("upAdd", true)
+						uni.showToast({
+							title: "删除成功",
+							icon: "none"
+						})
+						setTimeout(() => {
+							uni.navigateBack({
+								delta: 1
+							})
+						}, 500)
+					}
+					done()
+				});
 			},
 		}
 	}
@@ -155,6 +227,8 @@
 					flex-wrap: wrap;
 
 					.box-content-details-wrap-item {
+						display: flex;
+						align-items: center;
 						width: 260rpx;
 						margin-bottom: 20rpx;
 						font-size: 28rpx;

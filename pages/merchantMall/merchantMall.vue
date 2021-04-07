@@ -4,7 +4,7 @@
 
 		</view>
 		<view class="box-content">
-			444444
+			商城页面
 		</view>
 		<view class="box-footer">
 			<merchant-tabbar @tabbarClick="tabbarClick" :activeIndex="activeIndex"></merchant-tabbar>

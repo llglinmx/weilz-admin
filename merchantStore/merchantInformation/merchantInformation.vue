@@ -19,14 +19,12 @@
 			</view>
 			<view class="box-content-info">
 				<view class="box-content-info-image">
-					<image src="../../static/images/shop-icon.png" mode="aspectFill"></image>
+					<image :src="infoData.simg" mode="aspectFill"></image>
 				</view>
 				<view class="box-content-info-main">
-					<view class="box-content-info-main-title">印象诗意·悠然SPA</view>
+					<view class="box-content-info-main-title">{{infoData.name}}</view>
 					<view class="box-content-info-main-score">
-						<text class="iconfont iconwujiaoxing icon-font" style="color: #FFCD4D;font-size: 28rpx;"
-							v-for="item in 5"></text>
-						<text>5分</text>
+						<score :comment="infoData.comment" />
 					</view>
 					<view class="box-content-info-main-list">
 						<view class="box-content-info-main-list-li">面部按摩</view>
@@ -38,20 +36,20 @@
 			<view class="box-content-list">
 				<view class="box-content-list-li">
 					<view class="box-content-list-li-title">营业时间</view>
-					<view class="box-content-list-li-text">周一至周日 9:00-20:00</view>
+					<view class="box-content-list-li-text">{{infoData.plan_date}}</view>
 				</view>
 				<view class="box-content-list-li">
 					<view class="box-content-list-li-title">电话号码</view>
-					<view class="box-content-list-li-text">0592-6060448</view>
+					<view class="box-content-list-li-text">{{infoData.mobile}}</view>
 				</view>
 				<view class="box-content-list-li">
 					<view class="box-content-list-li-title">税号</view>
-					<view class="box-content-list-li-text">123456789</view>
+					<view class="box-content-list-li-text">{{infoData.duty_paragraph}}</view>
 				</view>
 				<view class="box-content-list-li">
 					<view class="box-content-list-li-title">地址</view>
 					<view class="box-content-list-li-text">
-						<text style="color: #333;">中国 福建省 厦门市 集美区杏滨路罗约酒店负一楼</text>
+						<text style="color: #333;">{{infoData.address}}</text>
 						<text class="iconfont icondingwei1 icon-font"
 							style="color: #26BF82;font-size: 48rpx;margin-top: 4rpx;"></text>
 
@@ -61,13 +59,13 @@
 
 			<view class="box-content-introduce">
 				<view class="box-content-introduce-title">商家介绍</view>
-				<view class="box-content-introduce-text">
-					水疗（SPA）这种休闲美容方式的历史很久远。在15世纪欧洲的比利时有一个被称之为SPAU的小山谷，山谷中有一个富含矿物质的热温泉旅游、疗养区，当时有许多贵族到这里来度假疗养这就是SPA最初的形式。18世纪后开始在欧洲贵族中风行开来，成为贵族们休闲度假、强身健体的首选，20世纪末在欧美民间社会又重新掀起了SPA热潮，并于21世纪初传入亚洲各国。
+				<view class="box-content-introduce-text" v-html="infoData.content">
+
 				</view>
 			</view>
 		</view>
 		<view class="box-footer">
-			<btn-sky-blue btnName="确认添加" @btnClick="modify" />
+			<btn-sky-blue btnName="修改" @btnClick="modify" />
 		</view>
 	</view>
 </template>
@@ -75,6 +73,7 @@
 <script>
 	import navTitleBalck from "../../components/nav-title-balck/nav-title-balck.vue"
 	import btnSkyBlue from "../../components/btn-sky-blue/btn-sky-blue.vue"
+	import score from '../../components/score/score.vue'
 	export default {
 		data() {
 			return {
@@ -96,12 +95,23 @@
 				interval: 5000,
 				duration: 500,
 				circular: true,
-
+				id: '',
+				infoData: {
+					name: '',
+					simg: '',
+					address: '',
+					comment: '0',
+					content: '',
+					plan_date: '',
+					mobile: '',
+					duty_paragraph: ''
+				}
 			};
 		},
 		components: {
 			navTitleBalck,
-			btnSkyBlue
+			btnSkyBlue,
+			score
 		},
 		onReady() {
 			// 获取顶部电量状态栏高度
@@ -111,9 +121,21 @@
 				}
 			});
 		},
+		onLoad(options) {
+			this.id = options.id
+			this.getInfo(options.id)
+		},
 		methods: {
 			// 修改
 			modify() {},
+			// 获取详情
+			getInfo(id) {
+				this.apiget('api/v1/store/store_information/' + id, {}).then(res => {
+					if (res.status == 200) {
+						this.infoData = res.data.member
+					}
+				});
+			},
 		}
 	}
 </script>
@@ -185,6 +207,7 @@
 					image {
 						width: 126rpx;
 						height: 126rpx;
+						border-radius: 10rpx;
 					}
 				}
 

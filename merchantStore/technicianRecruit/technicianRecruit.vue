@@ -11,48 +11,65 @@
 				<view class="box-content-wrap-item">
 					<swiper class="swiper-box" :current="defaultIndex" @change="tabChange">
 						<swiper-item class="swiper-box-item-list">
-							<view class="box-content-main">
-								<view class="box-content-main-list">
-									<view class="box-content-main-list-li" v-for="(item,index) in 10" :key="index"
-										@click="positionDetails">
-										<view class="box-content-main-list-li-top">
-											<view class="box-content-main-list-li-top-title">
-												<view class="list-li-top-title-text">全职按摩师</view>
-												<view class="list-li-top-title-msg">6000+抽成/月</view>
+							<view class="box-content-main" :style="{display:isData?'block':'none'}">
+								<z-paging ref="paging1" @query="queryList" :list.sync="recruitmentList"
+									loading-more-no-more-text="已经到底了" :refresher-angle-enable-change-continued="false"
+									:touchmove-propagation-enabled="true" :use-custom-refresher="true"
+									style="height: 100%;">
+									<view class="box-content-main-list">
+										<view class="box-content-main-list-li" v-for="(item,index) in recruitmentList"
+											:key="item.id" @click="positionDetails(item.id)">
+											<view class="box-content-main-list-li-top">
+												<view class="box-content-main-list-li-top-title">
+													<view class="list-li-top-title-text">{{item.position}}</view>
+													<view class="list-li-top-title-msg">{{item.salary}}/月</view>
+												</view>
+												<view class="box-content-main-list-li-top-list">
+													<view class="box-content-main-list-li-top-list-title">职位类别：</view>
+													<view class="box-content-main-list-li-top-list-text">
+														{{item.class_info}}
+													</view>
+												</view>
+												<view class="box-content-main-list-li-top-list">
+													<view class="box-content-main-list-li-top-list-title">门店名称：</view>
+													<view class="box-content-main-list-li-top-list-text">
+														{{item.store_info}}
+													</view>
+												</view>
+												<view class="box-content-main-list-li-top-list">
+													<view class="box-content-main-list-li-top-list-title">工作地点：</view>
+													<view class="box-content-main-list-li-top-list-text">
+														{{item.place_work}}
+													</view>
+												</view>
 											</view>
-											<view class="box-content-main-list-li-top-list">
-												<view class="box-content-main-list-li-top-list-title">职位类别：</view>
-												<view class="box-content-main-list-li-top-list-text">按摩师</view>
-											</view>
-											<view class="box-content-main-list-li-top-list">
-												<view class="box-content-main-list-li-top-list-title">门店名称：</view>
-												<view class="box-content-main-list-li-top-list-text">罗约蓝池·温泉SPA</view>
-											</view>
-											<view class="box-content-main-list-li-top-list">
-												<view class="box-content-main-list-li-top-list-title">工作地点：</view>
-												<view class="box-content-main-list-li-top-list-text">厦门</view>
-											</view>
-										</view>
-										<view class="box-content-main-list-li-bottom">
-											<view class="box-content-main-list-li-bottom-item flex-center">
-												<text class="iconfont iconshanchu-shangjia icon-font"
-													style="color: #FF6666;font-size: 36rpx;margin-top: 4rpx;"></text>
-												<text>删除</text>
-											</view>
-											<view class="box-content-main-list-li-bottom-item flex-center"
-												@click.stop="applicationRecord">
-												<text class="iconfont iconyingpinjilu-shangjia icon-font"
-													style="color: #4EC494;font-size: 36rpx;margin-top: 4rpx;"></text>
-												<text>应聘记录</text>
-											</view>
-											<view class="box-content-main-list-li-bottom-item flex-center">
-												<text class="iconfont iconbianji-shangjia icon-font"
-													style="color: #5DBDFE;font-size: 36rpx;margin-top: 4rpx;"></text>
-												<text>编辑</text>
+											<view class="box-content-main-list-li-bottom">
+												<view class="box-content-main-list-li-bottom-item flex-center"
+													@click.stop="deleteRecruitment(item.id)">
+													<text class="iconfont iconshanchu-shangjia icon-font"
+														style="color: #FF6666;font-size: 36rpx;margin-top: 4rpx;"></text>
+													<text>删除</text>
+												</view>
+												<view class="box-content-main-list-li-bottom-item flex-center"
+													@click.stop="applicationRecord(item.id)">
+													<text class="iconfont iconyingpinjilu-shangjia icon-font"
+														style="color: #4EC494;font-size: 36rpx;margin-top: 4rpx;"></text>
+													<text>应聘记录</text>
+												</view>
+												<view class="box-content-main-list-li-bottom-item flex-center"
+													@click.stop="edit(item.id)">
+													<text class="iconfont iconbianji-shangjia icon-font"
+														style="color: #5DBDFE;font-size: 36rpx;margin-top: 4rpx;"></text>
+													<text>编辑</text>
+												</view>
 											</view>
 										</view>
 									</view>
-								</view>
+								</z-paging>
+							</view>
+							<view class="box-content-main" :style="{display:!isData?'block':'none'}">
+								<loading v-if="isLoad" />
+								<no-data v-if="!isLoad" />
 							</view>
 						</swiper-item>
 						<swiper-item class="swiper-box-item-list">
@@ -65,53 +82,67 @@
 									</view>
 								</view>
 								<view class="box-content-seek-list">
-									<view class="box-content-seek-list-li" v-for="(item,index) in 20" :key="index">
-										<view class="box-content-seek-list-li-image">
-											<image src="../../static/images/userImage.png" mode="aspectFill"></image>
-										</view>
-										<view class="box-content-seek-list-li-info">
-											<view class="box-content-seek-list-li-info-top">
-												<view class="box-content-seek-list-li-info-top-text">
-													<view class="box-content-seek-list-li-info-top-text-title">刘晨轩
+									<z-paging ref="paging2" @query="seekQueryList" :list.sync="technicianList"
+										loading-more-no-more-text="已经到底了"
+										:refresher-angle-enable-change-continued="false"
+										:touchmove-propagation-enabled="true" :use-custom-refresher="true"
+										:mounted-auto-call-reload="false" style="height: 100%;">
+										<view class="box-content-seek-list-box">
+											<view class="box-content-seek-list-li"
+												v-for="(item,index) in technicianList" :key="item.id">
+												<view class="box-content-seek-list-li-image">
+													<image :src="item.simg" mode="aspectFill">
+													</image>
+												</view>
+												<view class="box-content-seek-list-li-info">
+													<view class="box-content-seek-list-li-info-top">
+														<view class="box-content-seek-list-li-info-top-text">
+															<view class="box-content-seek-list-li-info-top-text-title">
+																{{item.name}}
+															</view>
+															<view
+																class="box-content-seek-list-li-info-top-text-title-score">
+																<score :comment="item.comment"></score>
+															</view>
+														</view>
+														<view class="box-content-seek-list-li-info-top-btn flex-center">
+															查看简历
+														</view>
 													</view>
-													<view class="box-content-seek-list-li-info-top-text-title-score">
-														<text class="iconfont iconwujiaoxing icon-font"
-															style="color: #FFCD4D;font-size: 28rpx;"
-															v-for="item in 5"></text>
-														<text>5分</text>
+													<view class="box-content-seek-list-li-info-main-list"
+														style="color: #636363;">
+														<view class="seek-list-li-info-main-list-li">{{item.age}}岁
+														</view>
+														<view class="seek-list-li-info-main-list-li">{{item.education}}
+														</view>
+														<view class="seek-list-li-info-main-list-li">厦门</view>
+														<view class="seek-list-li-info-main-list-li">
+															{{item.service_year}}年工龄
+														</view>
+													</view>
+													<view class="box-content-seek-list-li-info-main-list"
+														style="color: #999999;">
+														<view class="seek-list-li-info-main-list-li">
+															求职岗位：
+															<text style="color: #333333;">{{item.job_search}}</text>
+														</view>
+														<view class="seek-list-li-info-main-list-li">
+															期望薪资：
+															<text
+																style="color: #333333;">{{item.salary_expectation}}</text>
+														</view>
+													</view>
+													<view class="box-content-seek-list-li-info-main-list"
+														style="color: #999999;">
+														<view class="seek-list-li-info-main-list-li">
+															掌握技能：
+															<text style="color: #333333;">{{item.skill}}</text>
+														</view>
 													</view>
 												</view>
-												<view class="box-content-seek-list-li-info-top-btn flex-center">查看简历
-												</view>
-											</view>
-											<view class="box-content-seek-list-li-info-main-list"
-												style="color: #636363;">
-												<view class="seek-list-li-info-main-list-li">22岁</view>
-												<view class="seek-list-li-info-main-list-li">高中</view>
-												<view class="seek-list-li-info-main-list-li">厦门</view>
-												<view class="seek-list-li-info-main-list-li">2年工龄</view>
-											</view>
-											<view class="box-content-seek-list-li-info-main-list"
-												style="color: #999999;">
-												<view class="seek-list-li-info-main-list-li">
-													求职岗位：
-													<text style="color: #333333;">按摩师</text>
-												</view>
-												<view class="seek-list-li-info-main-list-li">
-													期望薪资：
-													<text style="color: #333333;">8000</text>
-												</view>
-											</view>
-											<view class="box-content-seek-list-li-info-main-list"
-												style="color: #999999;">
-												<view class="seek-list-li-info-main-list-li">
-													掌握技能：
-													<text style="color: #333333;">足底按摩/背部按摩/泰式古法按摩</text>
-												</view>
-
 											</view>
 										</view>
-									</view>
+									</z-paging>
 								</view>
 							</view>
 						</swiper-item>
@@ -119,7 +150,8 @@
 				</view>
 			</view>
 		</view>
-		<view class="box-footer" :class="defaultIndex==1?'box-footer-active':''">
+		<view class="box-footer" :style="{display:!isLoad?'block':'none'}"
+			:class="defaultIndex==1?'box-footer-active':''">
 			<btn-sky-blue btnName="发布新招聘" @btnClick="release" />
 		</view>
 		<popup-layer ref="popupRef" :direction="'left'" v-model="boolShow">
@@ -133,16 +165,22 @@
 					<view class="popup-content-main" v-for="(item,index) in seekList" :key="index">
 						<view class="popup-content-main-title">{{item.title}}</view>
 						<view class="popup-content-main-list">
-							<view class="popup-content-main-list-li flex-center" v-for="(j,k) in item.data">{{j}}</view>
+							<view class="popup-content-main-list-li flex-center"
+								:class="j.isCheck?'popup-content-main-list-li-active':''" @click="checkBtn(index,k)"
+								v-for="(j,k) in item.data">{{j.title}}</view>
 						</view>
 					</view>
 				</view>
 				<view class="popup-footer">
-					<view class="popup-footer-reset flex-center">重置</view>
-					<view class="popup-footer-confirm flex-center">确认</view>
+					<view class="popup-footer-reset flex-center" @click="reset">重置</view>
+					<view class="popup-footer-confirm flex-center" @click="determine">确认</view>
 				</view>
 			</view>
 		</popup-layer>
+		<uni-popup ref="popup" type="dialog">
+			<uni-popup-dialog type="warn" mode='base' title="警告" content="你确定要删除此条招聘信息吗？" :duration="2000"
+				:before-close="true" @close="close" @confirm="confirm"></uni-popup-dialog>
+		</uni-popup>
 	</view>
 </template>
 
@@ -151,6 +189,12 @@
 	import navTitleBalck from "../../components/nav-title-balck/nav-title-balck.vue"
 	import btnSkyBlue from "../../components/btn-sky-blue/btn-sky-blue.vue"
 	import popupLayer from '../../components/popup-layer/popup-layer.vue';
+	import loading from '../../components/loading-merchant/loading-merchant.vue'
+	import noData from '../../components/no-data/no-data.vue'
+	import zPaging from '../../components/z-paging/components/z-paging/z-paging.vue'
+	import score from '../../components/score/score.vue'
+	import UniPopup from "../../components/uni-popup/uni-popup.vue"
+	import UniPopupDialog from "../../components/uni-popup/uni-popup-dialog.vue"
 	export default {
 		data() {
 			return {
@@ -160,24 +204,101 @@
 				boolShow: false, //筛选弹出层
 				seekList: [{
 						title: "岗位",
-						data: ['不限', '按摩师', '足疗师', '针灸推拿']
+						data: [{
+								isCheck: true,
+								title: '不限'
+							},
+							{
+								isCheck: false,
+								title: '按摩师'
+							},
+							{
+								isCheck: false,
+								title: '足疗师'
+							},
+							{
+								isCheck: false,
+								title: '针灸推拿'
+							},
+						]
 					},
 					{
 						title: "学历要求",
-						data: ['不限', '初中及以下', '中专/中技', '高中', '大专', '本科']
+						data: [{
+								isCheck: true,
+								title: '不限'
+							},
+							{
+								isCheck: false,
+								title: '初中及以下'
+							},
+							{
+								isCheck: false,
+								title: '中专/中技'
+							},
+							{
+								isCheck: false,
+								title: '高中'
+							},
+							{
+								isCheck: false,
+								title: '大专'
+							},
+							{
+								isCheck: false,
+								title: '本科'
+							},
+						]
 					},
 					{
 						title: "工龄",
-						data: ['不限', '学徒', '1-2年', '3-4年', '5-6年', '6年以上']
+						data: [{
+								isCheck: true,
+								title: '不限'
+							},
+							{
+								isCheck: false,
+								title: '学徒'
+							},
+							{
+								isCheck: false,
+								title: '1-2年'
+							},
+							{
+								isCheck: false,
+								title: '3-4年'
+							}, {
+								isCheck: false,
+								title: '5-6年'
+							},
+							{
+								isCheck: false,
+								title: '6年以上'
+							},
+						]
 					},
-				]
+				],
+				checkArr: [],
+				skid: '',
+				recruitmentList: [],
+				isData: false,
+				isLoad: true,
+				technicianList: [],
+				isDataTec: false,
+				isLoadTec: true,
 			};
 		},
 		components: {
 			merchantTabs,
 			navTitleBalck,
 			btnSkyBlue,
-			popupLayer
+			popupLayer,
+			loading,
+			noData,
+			zPaging,
+			score,
+			UniPopup,
+			UniPopupDialog
 		},
 		onReady() {
 			// 获取顶部电量状态栏高度
@@ -187,22 +308,143 @@
 				}
 			});
 		},
+		onLoad(options) {
+			this.id = options.id
+		},
+		onShow() {
+			// 用于判断是否有发布招聘
+			if (this.$store.state.isAdd) {
+				this.getRecruitmentInfo(1, 10)
+			}
+		},
 		methods: {
-			// 应聘记录
-			applicationRecord() {
-				uni.navigateTo({
-					url: "../applicationRecord/applicationRecord"
+
+			// 上拉 下拉
+			queryList(pageNo, pageSize) {
+				this.getRecruitmentInfo(pageNo, pageSize)
+			},
+
+			getRecruitmentInfo(num, size) {
+				var vuedata = {
+					page_index: num, // 请求页数，
+					each_page: size, // 请求条数
+					store: this.id
+				}
+				this.apiget('api/v1/store/recruitment', vuedata).then(res => {
+					if (res.status == 200) {
+						if (res.data.data.length != 0) {
+							this.isData = true
+							let list = res.data.data
+							this.$refs.paging1.complete(list);
+						} else {
+							this.isData = false
+						}
+						this.isLoad = false
+					}
+				});
+			},
+
+			// 找技师上拉 下拉
+			seekQueryList(pageNo, pageSize) {
+				this.getSeekTechnician(pageNo, pageSize)
+			},
+			getSeekTechnician(num, size) {
+				var vuedata = {
+					page_index: num, // 请求页数，
+					each_page: size, // 请求条数
+				}
+				this.apiget('api/v1/store/recruitment/accept', vuedata).then(res => {
+					if (res.status == 200) {
+						if (res.data.data.length != 0) {
+							this.isDataTec = true
+							let list = res.data.data
+							this.$refs.paging2.complete(list);
+						} else {
+							this.isDataTec = false
+							this.isLoadTec = false
+						}
+					}
+				});
+			},
+
+			// 筛选点击
+			checkBtn(index, idx) {
+				// index 第一级下标 idx 第二级下标
+				this.checkArr = []
+				this.seekList[index].data.map(item => {
+					item.isCheck = false
+				})
+				this.seekList[index].data[idx].isCheck = true
+
+				this.seekList.forEach(item => {
+					item.data.forEach(res => {
+						if (res.isCheck) {
+							this.checkArr.push(res.title)
+						}
+					})
 				})
 			},
-			// 职位详情
-			positionDetails() {
+
+			// 重置按钮
+			reset() {
+				this.seekList.forEach(item => {
+					item.data.forEach(res => {
+						res.isCheck = false
+					})
+					item.data[0].isCheck = true
+				})
+			},
+			// 确定按钮
+			determine() {
+				console.log(this.checkArr)
+				this.boolShow = false
+			},
+
+			// 应聘记录
+			applicationRecord(id) {
 				uni.navigateTo({
-					url: "../positionDetails/positionDetails"
+					url: "../applicationRecord/applicationRecord?id=" + id
+				})
+			},
+			// 删除
+			deleteRecruitment(id) {
+				this.skid = id
+				this.$refs.popup.open()
+			},
+			// 编辑按钮
+			edit(id) {
+				uni.navigateTo({
+					url: "../releaseRecruitment/releaseRecruitment?id=" + id
+				})
+			},
+			// 弹窗点击取消
+			close(done) {
+				done()
+			},
+			// 弹窗点击确认
+			confirm(done, value) {
+				this.apidelte('api/v1/store/recruitment/del/' + this.skid, {}).then(res => {
+					if (res.status == 200) {
+						uni.showToast({
+							title: "删除成功",
+							icon: "none"
+						})
+						this.getRecruitmentInfo(1, 10)
+					}
+					done()
+				});
+			},
+
+			// 职位详情
+			positionDetails(id) {
+				uni.navigateTo({
+					url: "../positionDetails/positionDetails?id=" + id
 				})
 			},
 
 			// 发布新招聘
 			release() {
+				this.$store.commit("upAdd", false)
 				uni.navigateTo({
 					url: "../releaseRecruitment/releaseRecruitment"
 				})
@@ -227,6 +469,15 @@
 			tabChange(e) {
 				this.$refs.boxTabs.tabToIndex(e.detail.current)
 				this.defaultIndex = e.detail.current
+
+				switch (this.defaultIndex) {
+					case 0:
+						this.getRecruitmentInfo(1, 10)
+						break;
+					case 1:
+						this.seekQueryList(1, 10)
+						break;
+				}
 			},
 		}
 	}
@@ -267,6 +518,8 @@
 							overflow-y: scroll;
 
 							.box-content-main {
+								height: 100%;
+
 								.box-content-main-list {
 									padding: 0 20rpx;
 									box-sizing: border-box;
@@ -369,6 +622,10 @@
 									box-sizing: border-box;
 									background: #fff;
 
+									.box-content-seek-list-li:last-child {
+										margin-bottom: 0;
+									}
+
 									.box-content-seek-list-li {
 										display: flex;
 										margin-bottom: 40rpx;
@@ -377,6 +634,7 @@
 											image {
 												width: 98rpx;
 												height: 98rpx;
+												border-radius: 50%;
 											}
 										}
 
@@ -524,6 +782,7 @@
 							border-radius: 40rpx;
 							font-size: 26rpx;
 							color: #333;
+							transition: 0.3s;
 						}
 
 						.popup-content-main-list-li:nth-child(2n) {
@@ -531,8 +790,8 @@
 						}
 
 						.popup-content-main-list-li-active {
-							color: #fff;
-							background: #5DBDFE;
+							color: #fff !important;
+							background: #5DBDFE !important;
 						}
 					}
 				}

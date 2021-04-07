@@ -112,7 +112,7 @@
 				}
 				this.apiget('api/v1/store/user_list/index', vuedata).then(res => {
 					if (res.status == 200) {
-						if (res.data.member.length != 0) {
+						if (res.data.length != 0) {
 							this.isData = true
 							let list = res.data.member
 							this.$refs.paging1.complete(list);

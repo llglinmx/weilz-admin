@@ -39,7 +39,7 @@
 												<view class="box-content-main-list-li-top-left">
 													<text class="iconfont iconshangjia"
 														style="font-size: 28rpx;color: #5DBDFE;"></text>
-													<text>{{item.store_name}}</text>
+													<text>{{item.store_info.name}}</text>
 												</view>
 												<view class="box-content-main-list-li-top-right">
 													<view class="main-list-li-top-left-msg flex-center"
@@ -53,26 +53,30 @@
 											<view class="box-content-main-list-li-center">
 												<view class="box-content-main-list-li-center-top">
 													<view class="main-list-li-center-top-title">{{item.name}}</view>
-													<view class="main-list-li-center-top-price">￥20</view>
+													<view class="main-list-li-center-top-price">￥{{item.reduce_cost}}
+													</view>
 												</view>
-												<view class="box-content-main-list-li-center-text">满200元可用</view>
+												<view class="box-content-main-list-li-center-text">
+													满{{item.least_cost}}元可用</view>
 												<view class="box-content-main-list-li-center-list">
 													<view class="main-list-li-center-list-li">
 														<text class="title">发放数量</text>
-														<text class="text">10000</text>
+														<text
+															class="text">{{Number(item.received_num)+Number(item.quantity)}}</text>
 													</view>
 													<view class="main-list-li-center-list-li">
 														<text class="title">已领取</text>
-														<text class="text">99</text>
+														<text class="text">{{item.received_num}}</text>
 													</view>
 													<view class="main-list-li-center-list-li">
 														<text class="title">剩余</text>
 														<text class="text">{{item.quantity}}</text>
 													</view>
 												</view>
-												<view class="box-content-main-list-li-center-msg">发放时间：待发放</view>
 												<view class="box-content-main-list-li-center-msg">
-													活动时间：2021.01.01-2021.01.10</view>
+													发放时间：{{releaseTime(item.createtime)}}</view>
+												<view class="box-content-main-list-li-center-msg">
+													活动时间：{{item.createtime}}-{{item.end_time}}</view>
 											</view>
 											<view class="box-content-main-list-li-bottom">
 												<view class="box-content-main-list-li-bottom-item"
@@ -560,7 +564,17 @@
 						break;
 				}
 			},
-
+			// 判断优惠券是否开启
+			releaseTime(time) {
+				var date = new Date();
+				var date1 = new Date(time);
+				var dateTime = date1.toISOString().slice(0, 10)
+				return date<date1?'待发放':dateTime
+			},
+			
+			dateTime(time){
+				return time.toISOString().slice(0, 10)
+			}
 
 		}
 	}

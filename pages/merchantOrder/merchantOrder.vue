@@ -21,7 +21,8 @@
 				<view class="box-content-wrap-item">
 					<swiper class="swiper-box" :current="defaultIndex" @change="tabChange">
 						<swiper-item class="swiper-box-item-list" v-for="(item,index) in tabsList" :key="index">
-							<scroll-order-swiper-item :tabIndex="index" :currentIndex="defaultIndex">
+							<scroll-order-swiper-item :search="search" :orderType="orderType" :tabIndex="index"
+								:currentIndex="defaultIndex">
 							</scroll-order-swiper-item>
 						</swiper-item>
 					</swiper>
@@ -46,6 +47,8 @@
 				defaultIndex: 0, //当前滑动的页面
 				tabsList: ["订单管理", "预约订单", "打赏记录", "积分兑换", "买单记录"],
 				isSearch: false, //是否搜索
+				orderType: '', //类型
+				search: '',
 			};
 		},
 		components: {
@@ -74,8 +77,6 @@
 			},
 
 
-		
-
 			// tabs 点击
 			tabClick(e) {
 				this.defaultIndex = e
@@ -84,6 +85,26 @@
 			tabChange(e) {
 				this.$refs.boxTabs.tabToIndex(e.detail.current)
 				this.defaultIndex = e.detail.current
+				this.changeIndex(this.defaultIndex)
+			},
+			changeIndex(index) {
+				switch (index) {
+					case 0:
+						this.orderType = ''
+						break;
+					case 1:
+						this.orderType = 5
+						break;
+					case 2:
+						this.orderType = 2
+						break;
+					case 3:
+						this.orderType = 4
+						break;
+					case 4:
+						this.orderType = 6
+						break;
+				}
 			},
 
 

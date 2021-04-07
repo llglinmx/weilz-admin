@@ -4,7 +4,8 @@
 			<view class="box-head-top">
 				<text class="iconfont iconxiaoxi icon-font" style="color: #fff;font-size: 52rpx"
 					@click="message"></text>
-				<text class="iconfont iconshezhi icon-font" style="color: #fff;font-size: 52rpx" @click="setClick"></text>
+				<text class="iconfont iconshezhi icon-font" style="color: #fff;font-size: 52rpx"
+					@click="setClick"></text>
 			</view>
 		</view>
 		<view class="box-content">
@@ -82,7 +83,21 @@
 				}
 			});
 		},
+		onLoad() {
+			this.getInfo()
+		},
 		methods: {
+			getInfo() {
+				this.apiget('api/v1/store/admin_info', {}).then(res => {
+					if (res.status == 200) {
+						console.log(res.data)
+					}
+				});
+			},
+
+
+
+
 			// 系统消息
 			message() {
 				uni.navigateTo({

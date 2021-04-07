@@ -34,7 +34,7 @@
 					:use-custom-refresher="true" style="height: 100%;">
 					<view class="box-content-main-list">
 						<view class="box-content-main-list-li" v-for="(item,index) in dataList" :key="index"
-							@click="storeDetails">
+							@click="storeDetails(item.id)">
 							<view class="box-content-main-list-li-image">
 								<image :src="item.bimg" mode="aspectFill"></image>
 							</view>
@@ -71,7 +71,7 @@
 
 <script>
 	import merchantTabbar from "../../components/merchant-tabbar/merchant-tabbar.vue"
-	import loading from '../../components/loading/loading.vue'
+	import loading from '../../components/loading-merchant/loading-merchant.vue'
 	import noData from '../../components/no-data/no-data.vue'
 	import zPaging from '../../components/z-paging/components/z-paging/z-paging.vue'
 	export default {
@@ -115,9 +115,9 @@
 			},
 
 			// 门店详情
-			storeDetails() {
+			storeDetails(id) {
 				uni.navigateTo({
-					url: "../../merchantStore/storeManagement/storeManagement"
+					url: "../../merchantStore/storeManagement/storeManagement?id=" + id
 				})
 			},
 			// 添加门店

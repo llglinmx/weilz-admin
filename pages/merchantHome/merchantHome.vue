@@ -26,28 +26,29 @@
 				<view class="box-content-order-list">
 					<view class="order-list-li" v-for="(item,index) in dataList" :key="index">
 						<view class="order-list-li-top">
-							<view class="order-list-li-top-title">订单号DU199110074026</view>
-							<view class="order-list-li-top-msg">待核销</view>
+							<view class="order-list-li-top-title">订单号{{item.out_trade_no}}</view>
+							<view class="order-list-li-top-msg" v-if="item.status==1">待核销</view>
 						</view>
 						<view class="order-list-li-info">
 							<view class="order-list-li-info-wrap">
 								<view class="order-list-li-info-wrap-item">
 									<view class="order-list-li-info-wrap-item-title">顾客</view>
 									<view class="order-list-li-info-wrap-item-msg">
-										<text>庄女士</text>
-										<text>13812345678</text>
+										<text>{{item.member_name}}</text>
+										<text>{{item.mobile}}</text>
 									</view>
 								</view>
 								<view class="order-list-li-info-wrap-item">
 									<view class="order-list-li-info-wrap-item-title">服务</view>
 									<view class="order-list-li-info-wrap-item-msg">
-										<text>泰式按摩</text>
+										<text v-if="item.service_name==null">{{item.reserve_name}}</text>
+										<text v-if="item.reserve_name==null">{{item.service_name}}</text>
 									</view>
 								</view>
 								<view class="order-list-li-info-wrap-item">
 									<view class="order-list-li-info-wrap-item-title">门店</view>
 									<view class="order-list-li-info-wrap-item-msg">
-										<text>罗约蓝池·温泉SPA</text>
+										<text>{{item.store_name}}</text>
 									</view>
 								</view>
 								<view class="order-list-li-info-wrap-item">
@@ -62,7 +63,7 @@
 								<view class="order-list-li-info-footer-price">
 									<view class="order-list-li-info-footer-price-msg">实付款：</view>
 									<view class="order-list-li-info-footer-present-price">
-										￥<text>332.70</text>
+										￥<text>{{item.amount}}</text>
 									</view>
 								</view>
 								<view class="order-list-li-info-footer-all-btn">
@@ -128,7 +129,7 @@
 			loading,
 			noData,
 			zPaging,
-			
+
 		},
 		onShow() {
 
@@ -155,15 +156,14 @@
 			// 订单列表
 			orderList(num, size) {
 				var vuedata = {
-					status: 1,
 					page_index: num, // 请求页数，
 					each_page: size, // 请求条数
 				}
-				this.apiget('api/v1/engineer/order', vuedata).then(res => {
+				this.apiget('api/v1/store/order', vuedata).then(res => {
 					if (res.status == 200) {
-						if (res.data.member.length != 0) {
+						if (res.data.data.length != 0) {
 							this.isData = true
-							let list = res.data.member
+							let list = res.data.data
 							this.$refs.paging1.complete(list);
 							return false;
 						}

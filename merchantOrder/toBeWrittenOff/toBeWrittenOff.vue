@@ -7,7 +7,9 @@
 			<view class="box-content-appointment-time">
 				<view class="box-content-appointment-time-info">
 					<view class="appointment-time-info-title">预约时间</view>
-					<view class="appointment-time-info-text">2021年1月4日 17:00-18:00</view>
+					<view class="appointment-time-info-text">{{orderDetails.plan_date}}
+						{{orderDetails.plan_start}}-{{orderDetails.plan_end}}
+					</view>
 				</view>
 				<view class="box-content-appointment-time-info-btn flex-center">提醒顾客</view>
 			</view>
@@ -21,12 +23,18 @@
 						</view>
 						<view class="order-list-li-wrap-item-info">
 							<view class="order-list-li-wrap-item-info-top">
-								<view class="wrap-item-info-top-text">泰式古法按摩</view>
-								<view class="wrap-item-info-top-msg">￥298.00</view>
+								<view class="wrap-item-info-top-text" v-if="orderDetails.reserve_name==null">
+									{{orderDetails.service_name}}
+								</view>
+								<view class="wrap-item-info-top-text" v-if="orderDetails.service_name==null">
+									{{orderDetails.reserve_name}}
+								</view>
+								<view class="wrap-item-info-top-msg">￥{{orderDetails.payable}}</view>
 							</view>
 							<view class="order-list-li-wrap-item-info-box">
 								<view class="order-list-li-wrap-item-info-box-list">
-									<view class="order-list-li-wrap-item-info-box-list-li" v-for="(s,k) in 2">泰式按摩</view>
+									<view class="order-list-li-wrap-item-info-box-list-li" v-for="(s,k) in 2">泰式按摩
+									</view>
 								</view>
 								<view class="order-list-li-wrap-item-info-box-number">x1</view>
 							</view>
@@ -37,14 +45,14 @@
 					<view class="box-content-order-info-main-item">
 						<view class="box-content-order-info-main-item-title">订单编号：</view>
 						<view class="box-content-order-info-main-item-text">
-							<text>400199110070101</text>
+							<text>{{orderDetails.out_trade_no}}</text>
 							<text style="color: #5DBDFE;">复制</text>
 						</view>
 					</view>
 					<view class="box-content-order-info-main-item">
 						<view class="box-content-order-info-main-item-title">下单时间：</view>
 						<view class="box-content-order-info-main-item-text">
-							<text>2021-01-13 10:35:11</text>
+							<text>{{orderDetails.plan_date}}</text>
 						</view>
 					</view>
 					<view class="box-content-order-info-main-item">
@@ -56,14 +64,15 @@
 					<view class="box-content-order-info-main-item">
 						<view class="box-content-order-info-main-item-title">支付方式：</view>
 						<view class="box-content-order-info-main-item-text">
-							<text>余额支付</text>
+							<text v-if="orderDetails.pay_type==1">微信支付</text>
+							<text v-if="orderDetails.pay_type==2">余额支付</text>
 						</view>
 					</view>
 				</view>
 				<view class="box-content-order-info-text">
 					<view class="box-content-order-info-text-list">
 						<view class="box-content-order-info-text-list-title">项目总价</view>
-						<view class="box-content-order-info-text-list-price">￥358.00</view>
+						<view class="box-content-order-info-text-list-price">￥{{orderDetails.amount}}</view>
 					</view>
 					<view class="box-content-order-info-text-list">
 						<view class="box-content-order-info-text-list-title">使用优惠券</view>
@@ -82,26 +91,26 @@
 				<view class="box-content-text-title">门店信息</view>
 				<view class="box-content-text-list">
 					<view class="box-content-text-list-title">门店</view>
-					<view class="box-content-text-list-msg">印象诗意·悠然SPA</view>
+					<view class="box-content-text-list-msg">{{orderDetails.store_name}}</view>
 				</view>
 			</view>
 			<view class="box-content-text">
 				<view class="box-content-text-title">下单用户信息</view>
 				<view class="box-content-text-list">
 					<view class="box-content-text-list-title">用户昵称</view>
-					<view class="box-content-text-list-msg">上善若水</view>
+					<view class="box-content-text-list-msg">{{memberInfo.nickname}}</view>
 				</view>
 				<view class="box-content-text-list">
 					<view class="box-content-text-list-title">用户名</view>
-					<view class="box-content-text-list-msg">王二麻子</view>
+					<view class="box-content-text-list-msg">{{memberInfo.name}}</view>
 				</view>
 				<view class="box-content-text-list">
 					<view class="box-content-text-list-title">手机号码</view>
-					<view class="box-content-text-list-msg">1888888888</view>
+					<view class="box-content-text-list-msg">{{memberInfo.mobile}}</view>
 				</view>
 				<view class="box-content-text-list">
 					<view class="box-content-text-list-title">邮箱</view>
-					<view class="box-content-text-list-msg">4488@163.com</view>
+					<view class="box-content-text-list-msg">{{memberInfo.email}}</view>
 				</view>
 			</view>
 
@@ -109,42 +118,51 @@
 				<view class="box-content-text-title">紧急联系人</view>
 				<view class="box-content-text-list">
 					<view class="box-content-text-list-title">姓名</view>
-					<view class="box-content-text-list-msg">王二麻子</view>
+					<view class="box-content-text-list-msg">{{memberInfo.urgency_name}}</view>
 				</view>
 				<view class="box-content-text-list">
 					<view class="box-content-text-list-title">联系电话</view>
-					<view class="box-content-text-list-msg">1888888888</view>
+					<view class="box-content-text-list-msg">{{memberInfo.urgency_mobile}}</view>
 				</view>
 				<view class="box-content-text-list">
 					<view class="box-content-text-list-title">关系</view>
-					<view class="box-content-text-list-msg">朋友</view>
+					<view class="box-content-text-list-msg">{{memberInfo.urgency_relation}}</view>
 				</view>
 			</view>
 			<view class="box-content-text">
 				<view class="box-content-text-title">用户健康信息</view>
 				<view class="box-content-text-list">
 					<view class="box-content-text-list-title">性别</view>
-					<view class="box-content-text-list-msg">男</view>
+					<view class="box-content-text-list-msg" v-if="memberInfo.sex==1">男</view>
+					<view class="box-content-text-list-msg" v-if="memberInfo.sex==2">女</view>
+					<view class="box-content-text-list-msg" v-if="memberInfo.sex==0">保密</view>
+
 				</view>
 				<view class="box-content-text-list">
 					<view class="box-content-text-list-title">年龄</view>
-					<view class="box-content-text-list-msg">18</view>
+					<view class="box-content-text-list-msg">{{memberInfo.age}}</view>
 				</view>
 				<view class="box-content-text-list">
 					<view class="box-content-text-list-title">过往病例</view>
-					<view class="box-content-text-list-msg">无</view>
+					<view class="box-content-text-list-msg">{{memberInfo.cottoms==null?'无':memberInfo.cottoms}}</view>
 				</view>
 				<view class="box-content-text-list">
 					<view class="box-content-text-list-title">过敏病例</view>
-					<view class="box-content-text-list-msg">芒果过敏</view>
+					<view class="box-content-text-list-msg">{{memberInfo.allergy==null?'无':memberInfo.allergy}}</view>
 				</view>
 				<view class="box-content-text-list">
 					<view class="box-content-text-list-title">有无手术</view>
-					<view class="box-content-text-list-msg">无</view>
+					<view class="box-content-text-list-msg">{{memberInfo.operation==1?'有':'无'}}</view>
+				</view>
+				<view class="box-content-text-list">
+					<view class="box-content-text-list-title">是否怀孕</view>
+					<view class="box-content-text-list-msg">{{memberInfo.fetation.operation==1?'否':'是'}}</view>
 				</view>
 				<view class="box-content-text-list">
 					<view class="box-content-text-list-title">注意事项</view>
-					<view class="box-content-text-list-msg">无</view>
+					<view class="box-content-text-list-msg">
+						{{memberInfo.announcements==null?'无':memberInfo.announcements}}
+					</view>
 				</view>
 			</view>
 		</view>
@@ -161,6 +179,33 @@
 		data() {
 			return {
 				barHeight: 0, //顶部电量导航栏高度
+				orderDetails: {
+					out_trade_no: '',
+					store_name: '',
+					plan_date: '',
+					plan_start: '',
+					plan_end: '',
+					amount: '',
+					pay_type: '',
+					reserve_name: '',
+					service_name: '',
+				},
+				memberInfo: {
+					email: '',
+					mobile: '',
+					name: '',
+					nickname: '',
+					urgency_name: '',
+					urgency_mobile: '',
+					urgency_relation: '',
+					sex: '',
+					age: '',
+					cottoms: '',
+					allergy: '',
+					operation: '',
+					fetation: '',
+					announcements: ''
+				}
 			};
 		},
 		components: {
@@ -174,8 +219,19 @@
 				}
 			});
 		},
+		onLoad(options) {
+			this.getDetails(options.id)
+		},
 		methods: {
-
+			// 获取订单详情
+			getDetails(id) {
+				this.apiget('api/v1/store/order/' + id, {}).then(res => {
+					if (res.status == 200) {
+						this.orderDetails = res.data.data
+						this.memberInfo = res.data.data.member_info
+					}
+				});
+			},
 		}
 	}
 </script>
@@ -463,7 +519,8 @@
 				color: #fff;
 				font-size: 32rpx;
 			}
-			.cancel{
+
+			.cancel {
 				width: 218rpx;
 				height: 78rpx;
 				border: 1rpx solid #666666;

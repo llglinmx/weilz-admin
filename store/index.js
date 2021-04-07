@@ -13,3 +13,21 @@ export function del(url, params) {
 	console.log(url)
 	return httpClient.Delete(url, params)
 };
+
+import Vue from 'vue'
+import Vuex from 'vuex'
+Vue.use(Vuex)
+const store = new Vuex.Store({
+	state: {
+		isAdd: false, //用于判断是否发布技师招聘
+	},
+	mutations: {
+		//用于判断是否添加地址 等同于发送监听
+		upAdd(state, bool) {
+			state.isAdd = bool
+		},
+
+	},
+	actions: {}
+})
+export default store
