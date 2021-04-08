@@ -8,10 +8,11 @@ const httpClient = {
 		};
 
 		return new Promise((resolve, reject) => {
-			uni.showLoading({
-				title: "加载中",
-				mask: true
-			});
+				uni.showLoading({
+					title: "加载中",
+					mask: true
+				});
+			
 
 			uni.request({
 				url: url,
@@ -66,7 +67,7 @@ const httpClient = {
 		let allurl = this.geturl(url);
 		return this.request('PUT', allurl, data)
 	},
-	
+
 	Delete: function(url, data) {
 		let allurl = this.geturl(url);
 		return this.request('DELETE', allurl, data)

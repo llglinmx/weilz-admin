@@ -76,6 +76,7 @@
 		data() {
 			return {
 				barHeight: 0, //顶部电量导航栏高度
+				id:'',
 			};
 		},
 		components: {
@@ -89,6 +90,10 @@
 					this.barHeight = res.statusBarHeight
 				}
 			});
+		},
+		onLoad(options) {
+			this.id = options.id
+			this.getRoom(1,50)
 		},
 		methods: {
 			// 返回
@@ -107,6 +112,26 @@
 			listClick() {
 				this.$refs.popup.open()
 			},
+			
+			// 获取房间列表
+			getRoom(num, size) {
+				let vuedata = {
+					page_index: num, // 请求页数，
+					each_page: size, // 请求条数
+					store_id:this.id,
+				}
+				this.apiget('api/v1/store/room_management', vuedata).then(res => {
+					if (res.status == 200) {
+						console.log(res.data)
+					}else if(res.status == 400){
+						uni.showToast({
+							title:res.massage,
+							icon:"none"
+						})
+					}
+				});
+			},
+			
 		}
 	}
 </script>

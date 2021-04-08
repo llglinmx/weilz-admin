@@ -5,20 +5,22 @@
 		</view>
 		<view class="box-content">
 			<view class="box-content-list">
-				<view class="box-content-list-li">
+				<view class="box-content-list-li" @click="selectStore">
 					<view class="box-content-list-li-title">门店</view>
 					<view class="box-content-list-li-info">
-						<view class="box-content-list-li-info-text">请选择门店</view>
+						<view class="box-content-list-li-info-text">{{storeName==''?'请选择门店':storeName}}</view>
 						<view class="box-content-list-li-info-more">
 							<text class="iconfont icongengduo icon-font"
 								style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
 						</view>
 					</view>
 				</view>
-				<view class="box-content-list-li">
+				<view class="box-content-list-li" @click="storeCategoryOpen">
 					<view class="box-content-list-li-title">门店分类</view>
 					<view class="box-content-list-li-info">
-						<view class="box-content-list-li-info-text">请选择门店分类</view>
+						<view class="box-content-list-li-info-text">
+							{{storeCategoryName==''?'请选择门店分类':storeCategoryName}}
+						</view>
 						<view class="box-content-list-li-info-more">
 							<text class="iconfont icongengduo icon-font"
 								style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
@@ -29,14 +31,14 @@
 					<view class="box-content-list-li-title">技师名字</view>
 					<view class="box-content-list-li-info">
 						<view class="box-content-list-li-info-input">
-							<input type="text" placeholder="请输入技师名字" />
+							<input type="text" v-model.trim="from.name" placeholder="请输入技师名字" />
 						</view>
 					</view>
 				</view>
-				<view class="box-content-list-li">
+				<view class="box-content-list-li" @click="platformOpen">
 					<view class="box-content-list-li-title">平台分类</view>
 					<view class="box-content-list-li-info">
-						<view class="box-content-list-li-info-text">请选择平台分类</view>
+						<view class="box-content-list-li-info-text">{{platformName==''?'请选择平台分类':platformName}}</view>
 						<view class="box-content-list-li-info-more">
 							<text class="iconfont icongengduo icon-font"
 								style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
@@ -47,7 +49,7 @@
 					<view class="box-content-list-li-title">手机号</view>
 					<view class="box-content-list-li-info">
 						<view class="box-content-list-li-info-input">
-							<input type="number" placeholder="请输入手机号码" />
+							<input type="number" v-model.trim="from.mobile" placeholder="请输入手机号码" />
 						</view>
 					</view>
 				</view>
@@ -55,14 +57,14 @@
 					<view class="box-content-list-li-title">电子邮箱</view>
 					<view class="box-content-list-li-info">
 						<view class="box-content-list-li-info-input">
-							<input type="text" placeholder="请输入电子邮箱" />
+							<input type="text" v-model.email="from.email" placeholder="请输入电子邮箱" />
 						</view>
 					</view>
 				</view>
-				<view class="box-content-list-li">
+				<view class="box-content-list-li" @click="projectOpen">
 					<view class="box-content-list-li-title">服务项目</view>
 					<view class="box-content-list-li-info">
-						<view class="box-content-list-li-info-text">请选择项目</view>
+						<view class="box-content-list-li-info-text">{{projectName==''?'请选择服务项目':projectName}}</view>
 						<view class="box-content-list-li-info-more">
 							<text class="iconfont icongengduo icon-font"
 								style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
@@ -98,10 +100,10 @@
 						</view>
 					</view>
 				</view>
-				<view class="box-content-list-li">
+				<view class="box-content-list-li" @click="gradeOpen">
 					<view class="box-content-list-li-title">技师等级</view>
 					<view class="box-content-list-li-info">
-						<view class="box-content-list-li-info-text">请选择等级</view>
+						<view class="box-content-list-li-info-text">{{gradeName==''?'请选择技师等级':gradeName}}</view>
 						<view class="box-content-list-li-info-more">
 							<text class="iconfont icongengduo icon-font"
 								style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
@@ -203,7 +205,7 @@
 				<view class="box-content-list-li">
 					<view class="box-content-list-li-title">排序</view>
 					<view class="box-content-list-li-info">
-						<view class="box-content-list-li-info-text">请选择顺序</view>
+						<view class="box-content-list-li-info-text">请选择排序</view>
 						<view class="box-content-list-li-info-more">
 							<text class="iconfont icongengduo icon-font"
 								style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
@@ -222,24 +224,72 @@
 			</view>
 		</view>
 		<view class="box-footer">
-			<btn-sky-blue btnName="确认提交" @btnClick="confirm" />
+			<btn-sky-blue btnName="确认提交" @btnClick="confirmAdd" v-if="type=='add'" />
+			<btn-sky-blue btnName="确认修改" @btnClick="confirmEdit" v-if="type=='edit'" />
 		</view>
+		<popup-list-select @cancel="storePopup" @confirm="storeConfirm" :visible='visible' :dataList="storeList">
+		</popup-list-select>
+
+		<popup-list-select @cancel="storeCategoryPopup" @confirm="storeCategoryConfirm" :visible='isStore'
+			:dataList="storeCategoryList">
+		</popup-list-select>
+		<popup-list-select @cancel="platformPopup" @confirm="platformConfirm" :visible='isPlatform'
+			:dataList="platformList">
+		</popup-list-select>
+
+		<popup-list-select @cancel="projectPopup" @confirm="projectConfirm" :visible='isProject'
+			:dataList="projectList">
+		</popup-list-select>
+
+		<popup-list-select @cancel="gradePopup" @confirm="gradeConfirm" :visible='isGrade' :dataList="gradeList">
+		</popup-list-select>
+
 	</view>
 </template>
 
 <script>
 	import navTitleBalck from "../../components/nav-title-balck/nav-title-balck.vue"
 	import btnSkyBlue from "../../components/btn-sky-blue/btn-sky-blue.vue"
+	import popupListSelect from '../../components/popup-list-select/popup-list-select.vue'
 	export default {
 		data() {
 			return {
 				barHeight: 0, //顶部电量导航栏高度
+				id: '',
+				type: '',
 				isCurr: false, //是否会开车
+				visible: false,
+				isStore: false,
+				isPlatform: false,
+				isProject: false,
+				isGrade: false,
+				storeList: [],
+				storeCategoryList: [],
+				platformList: [],
+				projectList: [],
+				gradeList: [],
+				storeCategoryName: '',
+				storeName: '',
+				platformName: '',
+				projectName: '',
+				gradeName: '',
+				from: {
+					name: '',
+					store: '',
+					storeCategory: '',
+					platform: '',
+					project: '',
+					grade: '',
+					simg: '',
+					mobile: '',
+					email: '',
+				}
 			};
 		},
 		components: {
 			navTitleBalck,
-			btnSkyBlue
+			btnSkyBlue,
+			popupListSelect
 		},
 		onReady() {
 			// 获取顶部电量状态栏高度
@@ -249,17 +299,214 @@
 				}
 			});
 		},
+		onLoad(options) {
+
+			var data = JSON.parse(options.data)
+			if (data.type == 'add') {
+				this.id = data.storeId
+				this.type = 'add'
+			} else if (data.type == 'edit') {
+				this.type = 'edit'
+				this.getDetails(data.id)
+			}
+
+
+			this.getStore()
+			this.getStoreCategory()
+			this.getPlatform()
+			this.getProject()
+			this.getGrad()
+		},
+
 		methods: {
+			// 选择门店
+			selectStore() {
+				this.visible = true
+			},
+			// 门店关闭弹窗
+			storePopup(e) {
+				this.visible = e
+			},
+			// 门店弹窗选择确认
+			storeConfirm(e) {
+				this.from.store = e.id
+				this.storeName = e.name
+			},
+
+			// 选择门店分类
+			storeCategoryOpen() {
+				this.isStore = true
+			},
+			// 门店分类关闭弹窗
+			storeCategoryPopup(e) {
+				this.isStore = e
+			},
+			// 门店分类弹窗选择确认
+			storeCategoryConfirm(e) {
+				this.from.storeCategory = e.id
+				this.storeCategoryName = e.name
+			},
+
+			// 选择平台分类
+			platformOpen() {
+				this.isPlatform = true
+			},
+			// 平台分类关闭弹窗
+			platformPopup(e) {
+				this.isPlatform = e
+			},
+			// 平台分类弹窗选择确认
+			platformConfirm(e) {
+				this.from.platform = e.id
+				this.platformName = e.name
+			},
+
+			// 选择服务项目
+			projectOpen() {
+				this.isProject = true
+			},
+			// 服务项目关闭弹窗
+			projectPopup(e) {
+				this.isProject = e
+			},
+			// 服务项目弹窗选择确认
+			projectConfirm(e) {
+				this.from.project = e.id
+				this.projectName = e.name
+			},
+
+			// 选择技师等级
+			gradeOpen() {
+				this.isGrade = true
+			},
+			// 技师等级关闭弹窗
+			gradePopup(e) {
+				this.isGrade = e
+			},
+			// 技师等级弹窗选择确认
+			gradeConfirm(e) {
+				this.from.grade = e.id
+				this.gradeName = e.name
+			},
+
 			// 是否会开车点击
 			currency(bool) {
 				this.isCurr = bool ? true : false
 			},
-			// 确认按钮
-			confirm() {
-				uni.showToast({
-					title: "确认提交",
-					icon: "none"
+			// 确认提交按钮
+			confirmAdd() {
+				var vuedata = {
+					store: this.id,
+					name: this.from.name,
+					simg: this.from.simg,
+					cid: this.from.platform,
+					store_cid: this.from.store,
+					level: this.from.grade,
+					mobile: this.from.mobile,
+					email: this.from.email,
+					service: this.from.projectName,
+				}
+				console.log(vuedata)
+
+				return false;
+				this.apipost('api/v1/store/engineer/add', vuedata).then(res => {
+					if (res.status == 200) {
+						this.$store.commit('upAddTechhnician', true)
+						uni.showToast({
+							title: "技师添加成功",
+							icon: 'none'
+						})
+						setTimeout(function() {
+							uni.navigateBack({
+								delta: 1
+							})
+						}, 500)
+					} else if (res.status == 400) {
+						uni.showToast({
+							title: res.massage,
+							icon: 'none'
+						})
+					}
 				})
+			},
+			// 确认修改
+			confirmEdit() {
+				return false;
+				this.apiput('api/v1/store/engineer/edit/' + this.id, vuedata).then(res => {
+					if (res.status == 200) {
+						this.$store.commit('upAddTechhnician', true)
+						uni.showToast({
+							title: "技师修改成功",
+							icon: 'none'
+						})
+						setTimeout(function() {
+							uni.navigateBack({
+								delta: 1
+							})
+						}, 500)
+					} else if (res.status == 400) {
+						uni.showToast({
+							title: res.massage,
+							icon: 'none'
+						})
+					}
+				})
+
+			},
+
+
+
+			// 获取详情
+			getDetails(id) {
+
+			},
+
+
+			// 获取门店列表
+			getStore() {
+				this.apiget('api/v1/store/store_information', {}).then(res => {
+					if (res.status == 200) {
+						this.storeList = res.data.member
+					}
+				});
+			},
+			// 获取门店类别
+			getStoreCategory() {
+				this.apiget('pc/category/category_type', {
+					type: 11
+				}).then(res => {
+					if (res.status == 200) {
+						this.storeCategoryList = res.data
+					}
+				});
+			},
+			// 获取平台分类
+			getPlatform() {
+				this.apiget('pc/category/category_type', {
+					type: 12
+				}).then(res => {
+					if (res.status == 200) {
+						this.platformList = res.data
+					}
+				});
+			},
+			// 获取服务项目
+			getProject() {
+				this.apiget('pc/reserve', {}).then(res => {
+					if (res.status == 200) {
+						this.projectList = res.data.reserveList
+					}
+				});
+			},
+			// 获取技师等级
+			getGrad() {
+				this.apiget('pc/category/category_type', {
+					type: 6
+				}).then(res => {
+					if (res.status == 200) {
+						this.gradeList = res.data
+					}
+				});
 			},
 		}
 	}

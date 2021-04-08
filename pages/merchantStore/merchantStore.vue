@@ -36,7 +36,7 @@
 						<view class="box-content-main-list-li" v-for="(item,index) in dataList" :key="index"
 							@click="storeDetails(item.id)">
 							<view class="box-content-main-list-li-image">
-								<image :src="item.bimg" mode="aspectFill"></image>
+								<image :src="item.simg" mode="aspectFill"></image>
 							</view>
 							<view class="box-content-main-list-li-info">
 								<view class="main-list-li-info-content">
@@ -103,6 +103,11 @@
 		onLoad() {
 
 		},
+		onShow() {
+			if(this.$store.state.isAddStore){
+				this.getStore(1,10)
+			}
+		},
 		methods: {
 			// input框 获得焦点事件
 			focus() {
@@ -122,8 +127,14 @@
 			},
 			// 添加门店
 			addStore() {
+				this.$store.commit("upMapObj", {})
+				this.$store.commit("upAddStore",false)
+				var str ={
+					type:'add',
+					id:''
+				}
 				uni.navigateTo({
-					url: "../../merchantStore/addStore/addStore"
+					url: "../../merchantStore/addStore/addStore?data="+JSON.stringify(str)
 				})
 			},
 			// 上拉 下拉

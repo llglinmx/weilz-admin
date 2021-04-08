@@ -7,14 +7,14 @@
 			<view class="box-content-banner">
 				<swiper class="swiper" :autoplay="autoplay" :interval="interval" :duration="duration"
 					:circular="circular">
-					<swiper-item class="swiper-item" v-for="(item,index) in imageList">
-						<image :src="item.url" mode="aspectFill" class="swiper-item"></image>
+					<swiper-item class="swiper-item" v-for="(item,index) in infoData.bimg">
+						<image :src="item" mode="aspectFill" class="swiper-item"></image>
 					</swiper-item>
 				</swiper>
 				<view class="box-content-banner-dot">
 					<text class="iconfont icontupian icon-font"
 						style="color: #fff;font-size: 24rpx;margin-top: 4rpx;"></text>
-					<text>4</text>
+					<text>{{infoData.bimg.length}}</text>
 				</view>
 			</view>
 			<view class="box-content-info">
@@ -52,7 +52,6 @@
 						<text style="color: #333;">{{infoData.address}}</text>
 						<text class="iconfont icondingwei1 icon-font"
 							style="color: #26BF82;font-size: 48rpx;margin-top: 4rpx;"></text>
-
 					</view>
 				</view>
 			</view>
@@ -67,6 +66,7 @@
 		<view class="box-footer">
 			<btn-sky-blue btnName="修改" @btnClick="modify" />
 		</view>
+		
 	</view>
 </template>
 
@@ -74,6 +74,7 @@
 	import navTitleBalck from "../../components/nav-title-balck/nav-title-balck.vue"
 	import btnSkyBlue from "../../components/btn-sky-blue/btn-sky-blue.vue"
 	import score from '../../components/score/score.vue'
+	
 	export default {
 		data() {
 			return {
@@ -104,14 +105,16 @@
 					content: '',
 					plan_date: '',
 					mobile: '',
-					duty_paragraph: ''
+					duty_paragraph: '',
+					bimg: {}
 				}
 			};
 		},
 		components: {
 			navTitleBalck,
 			btnSkyBlue,
-			score
+			score,
+			
 		},
 		onReady() {
 			// 获取顶部电量状态栏高度
@@ -125,9 +128,24 @@
 			this.id = options.id
 			this.getInfo(options.id)
 		},
+		onShow() {
+			if (this.$store.state.isAddStore) {
+				this.getInfo(this.id)
+			}
+		},
 		methods: {
+			
 			// 修改
-			modify() {},
+			modify() {
+				this.$store.commit("upAddStore", false)
+				var str = {
+					type: 'edit',
+					id: this.id
+				}
+				uni.navigateTo({
+					url: "../../merchantStore/addStore/addStore?data=" + JSON.stringify(str)
+				})
+			},
 			// 获取详情
 			getInfo(id) {
 				this.apiget('api/v1/store/store_information/' + id, {}).then(res => {

@@ -37,16 +37,22 @@
 			</view>
 		</view>
 		<view class="box-footer">
-			<view class="box-footer-btn flex-center">
+			<view class="box-footer-btn flex-center" @click="deleteStore">
 				删除门店
 			</view>
 		</view>
+		<uni-popup ref="popup" type="dialog">
+			<uni-popup-dialog type="warn" mode='base' title="警告" content="你确定要删除此门店吗？" :duration="2000"
+				:before-close="true" @close="close" @confirm="confirm"></uni-popup-dialog>
+		</uni-popup>
 	</view>
 </template>
 
 <script>
 	import navTitleBalck from "../../components/nav-title-balck/nav-title-balck.vue"
 	import score from '../../components/score/score.vue'
+	import UniPopup from "../../components/uni-popup/uni-popup.vue"
+	import UniPopupDialog from "../../components/uni-popup/uni-popup-dialog.vue"
 	export default {
 		data() {
 			return {
@@ -87,7 +93,9 @@
 		},
 		components: {
 			navTitleBalck,
-			score
+			score,
+			UniPopup,
+			UniPopupDialog
 		},
 		onReady() {
 			// 获取顶部电量状态栏高度
@@ -108,6 +116,34 @@
 					url: "../merchantInformation/merchantInformation?id=" + this.id
 				})
 			},
+			// 删除门店按钮
+			deleteStore() {
+				this.$refs.popup.open()
+			},
+
+			// 弹窗点击取消
+			close(done) {
+				done()
+			},
+			// 弹窗点击确认
+			confirm(done, value) {
+				this.apidelte('api/v1/store/store_information/del/' + this.id, {}).then(res => {
+					if (res.status == 200) {
+						this.$store.commit("upAddStore", true)
+						uni.showToast({
+							title: "删除成功",
+							icon: "none"
+						})
+						setTimeout(function() {
+							uni.navigateBack({
+								delta: 1
+							})
+						}, 500)
+					}
+					done()
+				});
+			},
+
 
 			// 菜单栏点击
 			menuListClick(index) {
@@ -124,7 +160,7 @@
 						break;
 					case 2: //技师管理
 						uni.navigateTo({
-							url: "../technicianManagement/technicianManagement"
+							url: "../technicianManagement/technicianManagement?id=" + this.id
 						})
 						break;
 					case 3: //排班表
@@ -140,7 +176,7 @@
 						break;
 					case 5: //房间管理
 						uni.navigateTo({
-							url: "../roomManagement/roomManagement"
+							url: "../roomManagement/roomManagement?id=" + this.id
 						})
 						break;
 				}

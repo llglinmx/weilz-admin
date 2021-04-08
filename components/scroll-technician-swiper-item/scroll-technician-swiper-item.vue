@@ -1,0 +1,328 @@
+<template>
+	<view class="content">
+		<!-- 这里设置了z-paging加载时禁止自动调用reload方法，自行控制何时reload（懒加载），同时允许touchmove事件冒泡，否则无法横向滚动切换tab -->
+		<z-paging ref="paging" @query="queryList" :list.sync="dataList" loading-more-no-more-text="已经到底了"
+			:mounted-auto-call-reload="false" :refresher-angle-enable-change-continued="false"
+			:touchmove-propagation-enabled="true" :use-custom-refresher="true" style="height: 100%;">
+			<!-- 自定义下拉刷新view，若不设置，则使用z-paging自带的下拉刷新view -->
+			<!-- <custom-refresher slot="refresher"></custom-refresher> -->
+			<loading-merchant v-if="isLoad"></loading-merchant>
+			<no-data v-if="dataList.length<=0&&!isLoad"></no-data>
+			<!-- <empty-view slot="empty"></empty-view> -->
+			<!-- 如果希望其他view跟着页面滚动，可以放在z-paging标签内 -->
+			<!-- list数据，建议像下方这样在item外层套一个view，而非直接for循环item，因为slot插入有数量限制 -->
+			<view class="box-content-main" v-if="dataList.length>0">
+				<view class="box-content-main-list">
+					<view class="box-content-main-list-li" v-for="(item,index) in dataList" :key="item.id">
+						<view class="box-content-main-list-li-top">
+							<view class="box-content-main-list-li-top-image">
+								<image src="../../static/images/001.png" mode="aspectFill"></image>
+								<text class="flex-center" v-if="tabIndex==1">临时技师</text>
+							</view>
+							<view class="box-content-main-list-li-top-info">
+								<view class="box-content-main-list-li-top-info-title">
+									<view class="box-content-main-list-li-top-info-title-text">张小小
+									</view>
+									<view class="box-content-main-list-li-top-info-title-msg">【金牌技师】
+									</view>
+								</view>
+								<view class="box-content-main-list-li-top-info-msg">工龄：2年</view>
+								<view class="box-content-main-list-li-top-info-msg">手机号：13825411234
+								</view>
+								<view class="box-content-main-list-li-top-info-wrap">
+									<view class="list-li-top-info-wrap-item">60分钟</view>
+									<view class="list-li-top-info-wrap-item">背部按摩</view>
+								</view>
+							</view>
+						</view>
+						<view class="box-content-main-list-li-bottom">
+							<view class="box-content-main-list-li-bottom-item" @click.stop="deleteClick(item.id)">
+								<text class="iconfont iconshanchu-shangjia icon-font"
+									style="color: #FF6666;font-size: 36rpx;margin-top: 4rpx;"></text>
+								<text>删除</text>
+							</view>
+
+							<view class="box-content-main-list-li-bottom-item"
+								@click.stop="editTechnician(item.store,item.id)">
+								<text class="iconfont iconbianji-shangjia icon-font"
+									style="color: #5DBDFE;font-size: 36rpx;margin-top: 4rpx;"></text>
+								<text>编辑</text>
+							</view>
+						</view>
+					</view>
+				</view>
+			</view>
+		</z-paging>
+		<uni-popup ref="popup" type="dialog">
+			<uni-popup-dialog type="warn" mode='base' title="警告" content="你确定要删除该技师吗？" :duration="2000"
+				:before-close="true" @close="close" @confirm="confirm"></uni-popup-dialog>
+		</uni-popup>
+	</view>
+</template>
+
+<script>
+	import zPaging from "../z-paging/components/z-paging/z-paging.vue"
+	import UniPopup from "../../components/uni-popup/uni-popup.vue"
+	import UniPopupDialog from "../../components/uni-popup/uni-popup-dialog.vue"
+	export default {
+		data() {
+			return {
+				dataList: [],
+				firstLoaded: false,
+				isLoad: true,
+				id: ''
+			}
+		},
+		components: {
+			zPaging,
+			UniPopup,
+			UniPopupDialog
+		},
+		props: {
+			tabIndex: {
+				type: Number,
+				default: function() {
+					return 0
+				}
+			},
+			currentIndex: {
+				type: Number,
+				default: function() {
+					return 0
+				}
+			},
+			orderType: {
+				type: String,
+				default: ''
+			},
+			search: {
+				type: String,
+				default: ''
+			}
+		},
+		watch: {
+			currentIndex: {
+				handler(newVal) {
+					if (newVal === this.tabIndex) {
+						//懒加载，当滑动到当前的item时，才去加载
+						if (!this.firstLoaded) {
+							this.$nextTick(() => {
+								this.$refs.paging.reload();
+							})
+						}
+					}
+				},
+				immediate: true
+			},
+		},
+		methods: {
+			queryList(pageNo, pageSize) {
+				//组件加载时会自动触发此方法，因此默认页面加载时会自动触发，无需手动调用
+				//这里的pageNo和pageSize会自动计算好，直接传给服务器即可
+				//模拟请求服务器获取分页数据，请替换成自己的网络请求
+				// this.$request.queryList(pageNo, pageSize, this.tabIndex + 1, (data) => {
+				// 	this.$refs.paging.complete(data);
+				// 	this.firstLoaded = true;
+				// })
+				this.getDataList(pageNo, pageSize)
+			},
+
+
+			// 获取数据
+			getDataList(num, size) {
+				var vuedata = {
+					page_index: num, // 请求页数，
+					each_page: size, // 请求条数
+				}
+				this.apiget('api/v1/store/engineer', vuedata).then(res => {
+					if (res.status == 200) {
+						if (res.data.length != 0) {
+							let list = res.data
+							let totalSize = res.data.total_rows
+							this.$refs.paging.addData(list);
+							this.firstLoaded = true;
+						}
+						this.isLoad = false
+					}
+				});
+			},
+
+			// 删除技师
+			deleteClick(id) {
+				this.id = id
+				this.$refs.popup.open()
+			},
+			// 弹窗点击取消
+			close(done) {
+				done()
+			},
+			// 弹窗点击确认
+			confirm(done, value) {
+				this.apidelte('api/v1/store/engineer/del/' + this.id, {}).then(res => {
+					if (res.status == 200) {
+						uni.showToast({
+							title: "删除成功",
+							icon: "none"
+						})
+						this.getDataList(1, 10)
+					}
+					done()
+				});
+			},
+
+			// 编辑技师
+			editTechnician(store, id) {
+				this.$store.commit('upAddTechhnician', false)
+				var str = {
+					type: 'edit',
+					storeId: store,
+					id: id,
+				}
+				uni.navigateTo({
+					url: "../../merchantStore/newTechnician/newTechnician?data=" + JSON.stringify(str)
+				})
+			},
+
+		}
+	}
+</script>
+
+<style scoped lang="scss">
+	.box-content-main {
+		padding: 0 20rpx;
+		box-sizing: border-box;
+
+		.box-content-main-list {
+			margin-bottom: 40rpx;
+
+			.box-content-main-list-li-active {
+				padding-bottom: 0 !important;
+			}
+
+			.box-content-main-list-li {
+				padding: 30rpx 30rpx 0;
+				box-sizing: border-box;
+				background: #fff;
+				border-radius: 20rpx;
+				margin-top: 20rpx;
+				transition: 0.3s;
+
+				.box-content-main-list-li-top {
+					display: flex;
+					align-items: center;
+					padding-bottom: 30rpx;
+					transition: 0.3s;
+					border-bottom: 1rpx solid #ededed;
+
+
+					.box-content-main-list-li-top-image {
+						position: relative;
+						display: flex;
+						align-items: center;
+						width: 164rpx;
+						border-radius: 10rpx;
+
+						image {
+							width: 164rpx;
+							height: 164rpx;
+						}
+
+						text {
+							position: absolute;
+							left: 0;
+							bottom: 0;
+							width: 100%;
+							height: 40rpx;
+							background: rgba(0, 0, 0, .5);
+							font-size: 24rpx;
+							color: #fff;
+							border-radius: 0rpx 0rpx 10rpx 10rpx;
+						}
+					}
+
+					.box-content-main-list-li-top-info {
+						height: 164rpx;
+						margin-left: 20rpx;
+						flex: 1;
+
+						.box-content-main-list-li-top-info-title {
+							display: flex;
+							align-items: center;
+
+							.box-content-main-list-li-top-info-title-text {
+								margin-right: 10rpx;
+								line-height: 34rpx;
+								font-size: 34rpx;
+								font-weight: 500;
+								color: #000;
+							}
+
+							.box-content-main-list-li-top-info-title-msg {
+								font-size: 28rpx;
+								line-height: 28rpx;
+								color: #FF8366;
+							}
+						}
+
+						.box-content-main-list-li-top-info-msg {
+							// line-height: 28rpx;
+							margin-top: 10rpx;
+							font-size: 24rpx;
+							color: #666;
+						}
+
+						.box-content-main-list-li-top-info-wrap {
+							margin-top: 10rpx;
+							display: flex;
+							align-items: center;
+							flex-wrap: wrap;
+
+							.list-li-top-info-wrap-item {
+								padding: 6rpx 10rpx;
+								margin-right: 10rpx;
+								margin-bottom: 10rpx;
+								background: #F5F5F5;
+								font-size: 22rpx;
+								color: #666;
+								border-radius: 3rpx;
+							}
+						}
+
+						.box-content-main-list-li-top-info-stock {
+							font-size: 24rpx;
+							color: #999;
+						}
+
+
+					}
+				}
+
+
+
+				.box-content-main-list-li-bottom {
+					height: 88rpx;
+					display: flex;
+					align-items: center;
+					overflow: hidden;
+					transition: 0.3s;
+
+					.box-content-main-list-li-bottom-item {
+						flex: 1;
+						display: flex;
+						align-items: center;
+						justify-content: center;
+						font-size: 28rpx;
+						color: #333;
+
+						text {}
+
+						.icon-font {
+							margin-right: 10rpx;
+						}
+					}
+				}
+
+			}
+		}
+	}
+</style>
