@@ -16,18 +16,17 @@
 					<view class="box-content-main-list-li" v-for="(item,index) in dataList" :key="item.id">
 						<view class="box-content-main-list-li-top">
 							<view class="box-content-main-list-li-top-image">
-								<image src="../../static/images/001.png" mode="aspectFill"></image>
+								<image :src="item.simg" mode="aspectFill"></image>
 								<text class="flex-center" v-if="tabIndex==1">临时技师</text>
 							</view>
 							<view class="box-content-main-list-li-top-info">
 								<view class="box-content-main-list-li-top-info-title">
-									<view class="box-content-main-list-li-top-info-title-text">张小小
-									</view>
-									<view class="box-content-main-list-li-top-info-title-msg">【金牌技师】
+									<view class="box-content-main-list-li-top-info-title-text">{{item.name}}</view>
+									<view class="box-content-main-list-li-top-info-title-msg">【{{item.level_name}}】
 									</view>
 								</view>
-								<view class="box-content-main-list-li-top-info-msg">工龄：2年</view>
-								<view class="box-content-main-list-li-top-info-msg">手机号：13825411234
+								<view class="box-content-main-list-li-top-info-msg">工龄：{{item.service_times}}年</view>
+								<view class="box-content-main-list-li-top-info-msg">手机号：{{item.mobile}}
 								</view>
 								<view class="box-content-main-list-li-top-info-wrap">
 									<view class="list-li-top-info-wrap-item">60分钟</view>
@@ -137,7 +136,7 @@
 				this.apiget('api/v1/store/engineer', vuedata).then(res => {
 					if (res.status == 200) {
 						if (res.data.length != 0) {
-							let list = res.data
+							let list = res.data.member
 							let totalSize = res.data.total_rows
 							this.$refs.paging.addData(list);
 							this.firstLoaded = true;

@@ -50,13 +50,17 @@
 				<text>全选</text>
 			</view>
 			<view class="box-footer-btn">
-				<view class="btn-delete flex-center">删除</view>
+				<view class="btn-delete flex-center" @click="deleteBtn">删除</view>
 				<view class="btn-off-the-shelf flex-center">下架</view>
 			</view>
 		</view>
 		<view class="box-footer-btn" :style="{height:!isChoice?'140rpx':'0'}">
 			<btn-sky-blue style="width: 100%;" btnName="添加项目" @btnClick="addProject" />
 		</view>
+		<uni-popup ref="popup" type="dialog">
+			<uni-popup-dialog type="warn" mode='base' title="警告" content="你确定要删除所选项目吗？" :duration="2000"
+				:before-close="true" @close="close" @confirm="confirm"></uni-popup-dialog>
+		</uni-popup>
 	</view>
 </template>
 
@@ -65,9 +69,12 @@
 	import merchantTabs from "../../components/merchant-tabs/merchant-tabs.vue"
 	import btnSkyBlue from "../../components/btn-sky-blue/btn-sky-blue.vue"
 	import scrollProjectManagementItem from '../../components/scroll-project-management-item/scroll-project-management-item.vue'
+	import UniPopup from "../../components/uni-popup/uni-popup.vue"
+	import UniPopupDialog from "../../components/uni-popup/uni-popup-dialog.vue"
 	export default {
 		data() {
 			return {
+				id: '',
 				barHeight: 0, //顶部电量导航栏高度
 				defaultIndex: 0, //当前滑动的页面
 				tabsList: ["出售中 0", "仓库中 0", "已售罄 0"],
@@ -80,7 +87,9 @@
 			navTitleBalck,
 			merchantTabs,
 			btnSkyBlue,
-			scrollProjectManagementItem
+			scrollProjectManagementItem,
+			UniPopup,
+			UniPopupDialog
 		},
 		onReady() {
 			// 获取顶部电量状态栏高度
@@ -90,6 +99,14 @@
 				}
 			});
 		},
+		onLoad(options) {
+			this.id = options.id
+		},
+		onShow() {
+			if (this.$store.state.isAddProject) {
+				this.$refs.check[this.defaultIndex].getDataList(1, 10)
+			}
+		},
 		methods: {
 			//返回
 			Gback() {
@@ -98,6 +115,21 @@
 				})
 			},
 
+
+			// 全选删除
+			deleteBtn() {
+				this.$refs.popup.open()
+			},
+
+			// 弹窗点击取消
+			close(done) {
+				done()
+			},
+			// 弹窗点击确认
+			confirm(done, value) {
+				this.$refs.check[this.defaultIndex].batchDelete() //调用子组件删除方法
+				done()
+			},
 
 
 			// 搜索按钮
@@ -131,8 +163,13 @@
 
 			// 添加项目
 			addProject() {
+				this.$store.commit('upAddProject', false)
+				var str = {
+					type: 'add',
+					id: this.id
+				}
 				uni.navigateTo({
-					url: "../addProject/addProject"
+					url: "../addProject/addProject?data=" + JSON.stringify(str)
 				})
 			},
 

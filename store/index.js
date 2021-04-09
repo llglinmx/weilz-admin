@@ -20,9 +20,10 @@ Vue.use(Vuex)
 const store = new Vuex.Store({
 	state: {
 		isAdd: false, //用于判断是否发布技师招聘
-		mapObj:{},//选择的定位具体地址信息
-		isAddStore:false,//是否有添加门店
-		isAddTechhnician:false,//是否有添加技师
+		mapObj: {}, //选择的定位具体地址信息
+		isAddStore: false, //是否有添加门店
+		isAddTechhnician: false, //是否有添加技师
+		isAddProject: false, //是否有添加项目
 	},
 	mutations: {
 		//用于判断是否添加地址 等同于发送监听
@@ -30,18 +31,21 @@ const store = new Vuex.Store({
 			state.isAdd = bool
 		},
 		// 更新地址信息
-		upMapObj(state,obj){
+		upMapObj(state, obj) {
 			state.mapObj = obj
 		},
-		
-		upAddStore(state,bool){
+
+		upAddStore(state, bool) {
 			state.isAddStore = bool
 		},
-		
-		upAddTechhnician(state,bool){
+
+		upAddTechhnician(state, bool) {
 			state.isAddTechhnician = bool
 		},
 
+		upAddProject(state, bool) {
+			state.isAddProject = bool
+		},
 	},
 	actions: {}
 })

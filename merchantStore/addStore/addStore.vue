@@ -155,6 +155,25 @@
 						</view>
 					</view>
 				</view>
+				<!-- <view class="box-content-list-li">
+					<view class="box-content-list-li-title">客服功能</view>
+					<view class="box-content-list-li-info">
+						<switch checked @change="switch1Change1" color="#07C160" />
+					</view>
+				</view> -->
+				<view class="box-content-list-li">
+					<view class="box-content-list-li-title">会员数据共通</view>
+					<view class="box-content-list-li-info">
+						<switch :checked='isCommon' @change="switch1Change2" color="#07C160" />
+					</view>
+				</view>
+				<view class="box-content-list-li">
+					<view class="box-content-list-li-title">门店提成</view>
+					<view class="box-content-list-li-info">
+						<switch :checked='isCommission' @change="switch1Change3" color="#07C160" />
+					</view>
+				</view>
+
 				<view class="box-content-list-item">
 					<view class="box-content-list-item-title">
 						<text>营业执照</text>
@@ -266,7 +285,8 @@
 					},
 				],
 				isState: false,
-
+				isCommon: false,
+				isCommission: false,
 				from: {
 					name: '', //门店名称
 					regionName: '', //区域名称
@@ -281,6 +301,8 @@
 					province: '', //省份id
 					city: '', //城市id
 					district: '', //区域id
+					common: -1, //会员数据共通
+					commission: -1, //门店提成
 					schedule: 1, //预约方式
 					status: '', //状态
 					card_sale: -1, //会员折扣 -1为关闭 1为开启
@@ -415,7 +437,7 @@
 						.longitude,
 					latitude: this.$store.state.mapObj.latitude ? this.$store.state.mapObj.latitude : this.from
 						.latitude,
-						isType:this.isType
+					isType: this.isType
 				}
 				uni.navigateTo({
 					url: "../selectLocation/selectLocation?data=" + JSON.stringify(map)
@@ -435,6 +457,21 @@
 				this.from.plan_date = e
 			},
 
+			// 客服功能
+			switch1Change1(e) {
+				console.log(e.target.value)
+			},
+			//会员数据共通
+			switch1Change2(e) {
+				this.from.common = e.target.value ? 1 : -1
+				this.isCommon = e.target.value
+			},
+			// 门店提成
+			switch1Change3(e) {
+				this.from.commission = e.target.value ? 1 : -1
+				this.isCommission = e.target.value
+			},
+
 
 			// 确认添加按钮
 			confirmAdd() {
@@ -447,6 +484,8 @@
 					plan_date: this.from.plan_date,
 					schedule: this.from.schedule,
 					status: this.from.status,
+					store_member: this.from.common,
+					fee_status: this.from.commission,
 					duty_paragraph: this.from.duty_paragraph,
 					card_sale: this.from.card_sale,
 					content: this.from.content,
@@ -490,6 +529,8 @@
 					plan_date: this.from.plan_date,
 					schedule: this.from.schedule,
 					status: this.from.status,
+					store_member: this.from.common,
+					fee_status: this.from.commission,
 					duty_paragraph: this.from.duty_paragraph,
 					card_sale: this.from.card_sale,
 					content: this.from.content,
@@ -561,22 +602,21 @@
 			// 上传封面图片
 			upCoverPhoto() {
 				uni.chooseImage({
-					count: 1, //默认100
+					count: 3, //默认100
 					sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
 					success: (res) => {
-						pathToBase64(res.tempFilePaths[0]).then((data) => {
-							// this.imageList.push(data)
+						res.tempFilePaths.forEach((item, index) => {
 							const path = 'images/';
 							// #ifdef H5
-							let file = res.tempFilePaths[0];
-							let suffix = res.tempFiles[0].name.split('.').pop();
+							let file = item;
+							let suffix = res.tempFiles[index].name.split('.').pop();
 							// #endif
-
+						
 							// #ifdef APP-PLUS
-							let file = res.tempFilePaths[0];
-							let suffix = res.tempFiles[0].path.split('.').pop();
+							let file = item;
+							let suffix = res.tempFiles[index].path.split('.').pop();
 							// #endif
-
+						
 							// 获取阿里云oss 信息
 							this.apiget('app/oss/url', {}).then(ress => {
 								if (ress.status == 200) {
@@ -714,6 +754,11 @@
 							this.timeList[1].isCurr = true
 						}
 
+						this.from.common = res.data.member.store_member
+						this.isCommon = res.data.member.store_member == 1 ? true : false
+						
+						this.from.commission = res.data.member.fee_status
+						this.isCommission = res.data.member.fee_status == 1 ? true : false
 
 						this.from.stateName = res.data.member.status == 1 ? "启用" : '关闭'
 

@@ -6,7 +6,7 @@
 			:touchmove-propagation-enabled="true" :use-custom-refresher="true" style="height: 100%;">
 			<!-- 自定义下拉刷新view，若不设置，则使用z-paging自带的下拉刷新view -->
 			<!-- <custom-refresher slot="refresher"></custom-refresher> -->
-			<loading v-if="isLoad"></loading>
+			<loading-merchant v-if="isLoad"></loading-merchant>
 			<no-data v-if="dataList.length<=0&&!isLoad"></no-data>
 			<!-- <empty-view slot="empty"></empty-view> -->
 			<!-- 如果希望其他view跟着页面滚动，可以放在z-paging标签内 -->
@@ -26,17 +26,18 @@
 									v-else></text>
 							</view>
 							<view class="box-content-main-list-li-top-image">
-								<image src="../../static/images/001.png" mode="aspectFill"></image>
+								<image :src="item.simg" mode="aspectFill"></image>
 							</view>
 							<view class="box-content-main-list-li-top-info">
-								<view class="box-content-main-list-li-top-info-title">泰式古法按摩</view>
+								<view class="box-content-main-list-li-top-info-title">{{item.name}}</view>
 								<view class="box-content-main-list-li-top-info-wrap">
-									<view class="list-li-top-info-wrap-item">60分钟</view>
-									<view class="list-li-top-info-wrap-item">背部按摩</view>
+									<view class="list-li-top-info-wrap-item">{{item.service_time}}分钟</view>
+									<view class="list-li-top-info-wrap-item" v-for="(j,i) in item.format" :key='j.id'>
+										{{j.name}}</view>
 								</view>
-								<view class="box-content-main-list-li-top-info-stock">库存：200</view>
+								<view class="box-content-main-list-li-top-info-stock">已售：{{item.sold}}</view>
 								<view class="box-content-main-list-li-top-info-price">
-									<view class="list-li-top-info-present-price">￥285.00</view>
+									<view class="list-li-top-info-present-price">￥{{item.price}}</view>
 									<view class="list-li-top-info-switch flex-center" v-if="!isChoice">
 										<text class="iconfont iconzhankai icon-font open"
 											:class="item.isOpen?'open-active':''"
@@ -51,7 +52,7 @@
 						</view>
 						<view class="box-content-main-list-li-bottom"
 							:class="item.isOpen?'box-content-main-list-li-bottom-active':''">
-							<view class="box-content-main-list-li-bottom-item" @click="projectDelete(index)">
+							<view class="box-content-main-list-li-bottom-item" @click="projectDelete(index,item.id)">
 								<text class="iconfont iconshanchu-shangjia icon-font"
 									style="color: #FF6666;font-size: 36rpx;margin-top: 4rpx;"></text>
 								<text>删除</text>
@@ -61,7 +62,7 @@
 									style="color: #4EC494;font-size: 36rpx;margin-top: 4rpx;"></text>
 								<text>下架</text>
 							</view>
-							<view class="box-content-main-list-li-bottom-item">
+							<view class="box-content-main-list-li-bottom-item" @click="projectEdit(item)">
 								<text class="iconfont iconbianji-shangjia icon-font"
 									style="color: #5DBDFE;font-size: 36rpx;margin-top: 4rpx;"></text>
 								<text>编辑</text>
@@ -73,17 +74,25 @@
 
 
 		</z-paging>
+		<uni-popup ref="popup" type="dialog">
+			<uni-popup-dialog type="warn" mode='base' title="警告" content="你确定要删除此项目吗？" :duration="2000"
+				:before-close="true" @close="close" @confirm="confirm"></uni-popup-dialog>
+		</uni-popup>
 	</view>
 </template>
 
 <script>
 	import zPaging from "../z-paging/components/z-paging/z-paging.vue"
+	import UniPopup from "../../components/uni-popup/uni-popup.vue"
+	import UniPopupDialog from "../../components/uni-popup/uni-popup-dialog.vue"
 	export default {
 		data() {
 			return {
 				dataList: [],
 				firstLoaded: false,
 				isLoad: true,
+				deleteIndex: -1,
+				id: ''
 			}
 		},
 		model: {
@@ -91,7 +100,9 @@
 			event: 'lonIsChoice'
 		},
 		components: {
-			zPaging
+			zPaging,
+			UniPopup,
+			UniPopupDialog
 		},
 		props: {
 			tabIndex: {
@@ -148,25 +159,21 @@
 				// 	this.$refs.paging.complete(data);
 				// 	this.firstLoaded = true;
 				// })
-				var page = {
-					num: pageNo,
-					size: pageSize,
 
-				}
-				this.getDataList(page)
+				this.getDataList(pageNo, pageSize)
 			},
 
 
 			// 获取数据
-			getDataList(page) {
+			getDataList(num, size) {
 				var vuedata = {
-					page_index: page.num, // 请求页数，
-					each_page: page.size, // 请求条数
+					page_index: num, // 请求页数，
+					each_page: size, // 请求条数
 				}
-				this.apiget('api/v1/store/store_information', vuedata).then(res => {
+				this.apiget('api/v1/store/service_reservation/index', vuedata).then(res => {
 					if (res.status == 200) {
-						if (res.data.member.length != 0) {
-							let list = res.data.member
+						if (res.data.data.length != 0) {
+							let list = res.data.data
 
 							list.map(item => {
 								item.isOpen = false
@@ -205,7 +212,7 @@
 
 			// 展开 收起
 			switchClick(index, bool) {
-				console.log(this.isSearch)
+
 				if (this.isSearch) { //如果有显示搜索框 点击则隐藏搜索
 					this.$emit('closeSearch', false)
 				}
@@ -221,8 +228,73 @@
 			},
 
 			// 删除单个项目
-			projectDelete(index) {
-				this.dataList.splice(index, 1)
+			projectDelete(index, id) {
+				this.deleteIndex = index
+				this.id = id
+				this.$refs.popup.open()
+			},
+
+			// 弹窗点击取消
+			close(done) {
+				done()
+			},
+			// 弹窗点击确认
+			confirm(done, value) {
+				this.apidelte('api/v1/store/Service_reservation/del/' + this.id, {}).then(res => {
+					if (res.status == 200) {
+						uni.showToast({
+							title: "删除成功",
+							icon: 'none'
+						})
+						this.dataList.splice(this.deleteIndex, 1)
+					} else if (res.status == 400) {
+						uni.showToast({
+							title: res.massage,
+							icon: 'none'
+						})
+					}
+					done()
+				})
+			},
+			// 批量删除
+			batchDelete() {
+				var str = ''
+				this.dataList.forEach(item => {
+					if (item.isCheck) {
+						str += item.id + ','
+					}
+				})
+				var id = str.slice(0, str.length - 1) //去掉最后一个字符
+
+				this.apidelte('api/v1/store/Service_reservation/del', {
+					id: id
+				}).then(res => {
+					if (res.status == 200) {
+						uni.showToast({
+							title: "删除成功",
+							icon: 'none'
+						})
+						this.getDataList(1, 10)
+					} else if (res.status == 400) {
+						uni.showToast({
+							title: res.massage,
+							icon: 'none'
+						})
+					}
+					done()
+				})
+			},
+
+			// 编辑
+			projectEdit(item) {
+				this.$store.commit('upAddProject', false)
+				var str = {
+					id: item.id,
+					type: 'edit'
+				}
+				uni.navigateTo({
+					url: "../addProject/addProject?data=" + JSON.stringify(str)
+				})
 			},
 		}
 	}
@@ -272,6 +344,7 @@
 						image {
 							width: 178rpx;
 							height: 178rpx;
+							border-radius: 10rpx;
 						}
 					}
 

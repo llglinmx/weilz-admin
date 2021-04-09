@@ -24,7 +24,7 @@ const httpClient = {
 					uni.hideLoading()
 					// console.log("接口获取原始数据：-------------------",res.data)
 					// console.log('状态码为：'+res.statusCode)
-					if (res.statusCode == 402 || res.statusCode == 400) {
+					if (res.statusCode == 402) {
 						uni.showToast({
 							icon: 'none',
 							duration: 1000,
@@ -35,7 +35,13 @@ const httpClient = {
 								url: '/pages/signUp/signUp'
 							});
 						}, 500);
-					} else {
+					} else if( res.statusCode == 400) {
+						uni.showToast({
+							icon: 'none',
+							duration: 1000,
+							title: '请求错误,状态码为：'+res.statusCode
+						});
+					}else{
 						if (res.data.error != null) {
 							uni.showToast({
 								icon: 'none',

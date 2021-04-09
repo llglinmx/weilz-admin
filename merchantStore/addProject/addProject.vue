@@ -1,7 +1,7 @@
 <template>
 	<view class="box">
 		<view class="box-head" :style="{paddingTop:barHeight+'px'}">
-			<nav-title-balck navTitle="添加项目"></nav-title-balck>
+			<nav-title-balck :navTitle="title"></nav-title-balck>
 		</view>
 		<view class="box-content">
 
@@ -10,24 +10,26 @@
 					<view class="box-content-list-li-title">项目名称</view>
 					<view class="box-content-list-li-info">
 						<view class="box-content-list-li-info-input">
-							<input type="text" placeholder="请输入项目名称" />
+							<input type="text" v-model.trim="from.name" placeholder="请输入项目名称" />
 						</view>
 					</view>
 				</view>
-				<view class="box-content-list-li">
+				<view class="box-content-list-li" @click="platformOpen">
 					<view class="box-content-list-li-title">平台分类</view>
 					<view class="box-content-list-li-info">
-						<view class="box-content-list-li-info-text">请选择平台分类</view>
+						<view class="box-content-list-li-info-text">{{platformName==''?'请选择平台分类':platformName}}</view>
 						<view class="box-content-list-li-info-more">
 							<text class="iconfont icongengduo icon-font"
 								style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
 						</view>
 					</view>
 				</view>
-				<view class="box-content-list-li">
+				<view class="box-content-list-li" @click="storeCategoryOpen">
 					<view class="box-content-list-li-title">门店分类</view>
 					<view class="box-content-list-li-info">
-						<view class="box-content-list-li-info-text">请选择门店分类</view>
+						<view class="box-content-list-li-info-text">
+							{{storeCategoryName==''?'请选择门店分类':storeCategoryName}}
+						</view>
 						<view class="box-content-list-li-info-more">
 							<text class="iconfont icongengduo icon-font"
 								style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
@@ -43,13 +45,14 @@
 				</view>
 				<view class="box-content-main-image-list">
 					<view class="box-content-main-image-list-li" :class="index==0?'list-li-affter':''"
-						v-for="(item,index) in 2" :key="index">
-						<image src="../../static/images/001.png" mode="aspectFill"></image>
-						<text class="close flex-center">
+						v-for="(item,index) in imageList" :key="index">
+						<image :src="item" mode="aspectFill"></image>
+						<text class="close flex-center" @click="delImage">
 							<text class="iconfont iconcuowu icon-font" style="color: #fff;font-size: 36rpx"></text>
 						</text>
 					</view>
-					<view class="box-content-main-image-list-up flex-center">
+					<view class="box-content-main-image-list-up flex-center" @click="upCoverPhoto"
+						v-if="imageList.length<3">
 						<text class="iconfont iconcuowu icon-font" style="color: #ddd;font-size: 90rpx"></text>
 					</view>
 				</view>
@@ -61,7 +64,7 @@
 					<view class="box-content-list-li-title">价格</view>
 					<view class="box-content-list-li-info">
 						<view class="box-content-list-li-info-input">
-							<input type="number" placeholder="请输入价格" />
+							<input type="number" v-model.trim="from.price" placeholder="请输入价格" />
 						</view>
 					</view>
 				</view>
@@ -69,7 +72,7 @@
 					<view class="box-content-list-li-title">原价</view>
 					<view class="box-content-list-li-info">
 						<view class="box-content-list-li-info-input">
-							<input type="number" placeholder="请输入原价" />
+							<input type="number" v-model.trim="from.o_price" placeholder="请输入原价" />
 						</view>
 					</view>
 				</view>
@@ -77,16 +80,33 @@
 					<view class="box-content-list-li-title">项目时长</view>
 					<view class="box-content-list-li-info">
 						<view class="box-content-list-li-info-input">
-							<input type="number" placeholder="请输入项目时长" />
+							<input type="number" v-model.trim="from.service_time" placeholder="请输入项目时长" />
 							<text>分钟</text>
 						</view>
 					</view>
 				</view>
-				<view class="box-content-list-li">
-					<view class="box-content-list-li-title">规格</view>
-					<view class="box-content-list-li-info">
-						<view class="box-content-list-li-info-input">
-							<input type="number" placeholder="请输入规格" />
+				<view class="box-content-list-li"
+					style="height: auto;padding: 30rpx 0;box-sizing: border-box; align-items: baseline;">
+					<view class="box-content-list-li-title" style="width: 100rpx;">规格</view>
+					<view class="box-content-list-li-info"
+						style="margin-left: 0;flex-direction: column;align-items: baseline;">
+						<view class="box-content-list-li-info-norms" v-for="(item,index) in normsList" :key="index">
+							<view class="list-li-info-norms-add flex-center" @click="addNorms(index)">
+								<text class="iconfont iconjia icon-font" style="color: #ccc;font-size: 24rpx"></text>
+							</view>
+							<view class="list-li-info-norms-text">
+								<input type="text" v-model.trim="item.name" placeholder="请输入规格名称" />
+							</view>
+							<view class="list-li-info-norms-reduce flex-center">
+								<text class="iconfont iconjian icon-font" style="color: #ccc;font-size: 24rpx"></text>
+							</view>
+							<view class="list-li-info-norms-price">
+								<input type="number" v-model.trim="item.price" placeholder="请输入价格" />
+							</view>
+							<view class="list-li-info-norms-del flex-center">
+								<text class="iconfont iconcuowu icon-font" style="color: #ccc;font-size: 52rpx"
+									@click="deleteNorms(index)" :style="{display:index==0?'none':'block'}"></text>
+							</view>
 						</view>
 					</view>
 				</view>
@@ -102,22 +122,22 @@
 									v-if="isCurr"></text>
 								<text class="iconfont iconweixuanzhong1 icon-font" style="color: #ccc;font-size: 48rpx;"
 									v-else></text>
-								<text>不限时间</text>
+								<text>时间范围</text>
 							</view>
 							<view class="box-content-list-li-info-check-box" @click="currency(false)">
 								<text class="iconfont iconxuanzhong icon-font" style="color: #07C160;font-size: 48rpx;"
 									v-if="!isCurr"></text>
 								<text class="iconfont iconweixuanzhong1 icon-font" style="color: #ccc;font-size: 48rpx;"
 									v-else></text>
-								<text>时间范围</text>
+								<text>不限时间</text>
 							</view>
 						</view>
 					</view>
 				</view>
-				<view class="box-content-list-li">
+				<view class="box-content-list-li" @click="stateOpen">
 					<view class="box-content-list-li-title">状态</view>
 					<view class="box-content-list-li-info">
-						<view class="box-content-list-li-info-text">请选择状态</view>
+						<view class="box-content-list-li-info-text">{{stateName==''?'请选择状态':stateName}}</view>
 						<view class="box-content-list-li-info-more">
 							<text class="iconfont icongengduo icon-font"
 								style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
@@ -127,10 +147,8 @@
 				<view class="box-content-list-li">
 					<view class="box-content-list-li-title">排序</view>
 					<view class="box-content-list-li-info">
-						<view class="box-content-list-li-info-text">请选择顺序</view>
-						<view class="box-content-list-li-info-more">
-							<text class="iconfont icongengduo icon-font"
-								style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
+						<view class="box-content-list-li-info-input">
+							<input type="number" v-model.trim="from.sort" placeholder="请输入排序顺序" />
 						</view>
 					</view>
 				</view>
@@ -138,31 +156,92 @@
 					<view class="box-content-list-li-title">详情</view>
 					<view class="box-content-list-li-info">
 						<view class="box-content-list-li-info-input">
-							<input type="text" placeholder="请输入详情" />
+							<input type="text" v-model.trim="from.content" placeholder="请输入详情" />
 						</view>
 					</view>
 				</view>
 			</view>
 		</view>
 		<view class="box-footer">
-			<btn-sky-blue btnName="确认添加" @btnClick="confirm" />
+			<btn-sky-blue btnName="确认添加" @btnClick="confirmAdd" v-if="this.type=='add'" />
+			<btn-sky-blue btnName="确认修改" @btnClick="confirmEdit" v-if="this.type=='edit'" />
 		</view>
+		<popup-list-select @cancel="storeCategoryPopup" @confirm="storeCategoryConfirm" :visible='isStore'
+			:dataList="storeCategoryList">
+		</popup-list-select>
+		<popup-list-select @cancel="platformPopup" @confirm="platformConfirm" :visible='isPlatform'
+			:dataList="platformList">
+		</popup-list-select>
+
+		<popup-list-select @cancel="statePopup" @confirm="stateConfirm" :visible='isState' :dataList="stateList">
+		</popup-list-select>
 	</view>
 </template>
 
 <script>
 	import navTitleBalck from "../../components/nav-title-balck/nav-title-balck.vue"
 	import btnSkyBlue from "../../components/btn-sky-blue/btn-sky-blue.vue"
+	import popupListSelect from '../../components/popup-list-select/popup-list-select.vue'
+
+	import {
+		pathToBase64,
+		base64ToPath
+	} from '../../js_sdk/mmmm-image-tools/index.js'
+	import uploadImage from "../../js_sdk/oss/uploadOSS.js";
+
 	export default {
 		data() {
 			return {
 				barHeight: 0, //顶部电量导航栏高度
 				isCurr: true, //订单使用时间
+				type: '',
+				id: '',
+				title: '',
+				storeId: '',
+				isStore: false,
+				isPlatform: false,
+				storeCategoryName: '',
+				platformName: '',
+				storeCategoryList: [],
+				platformList: [],
+				imageList: [],
+				from: {
+					name: '', //项目名称
+					storeId: this.storeId, //门店id
+					cid: '', //平台分类id
+					store_cid: '', //门店分类id
+					simg: '', //封面图
+					bimg: '', //图片
+					price: '', //价格
+					o_price: '', //原价
+					service_time: '', //项目服务时长
+					order_usage_time: 1, //下单使用时间（-1不限，1时间范围）
+					status: '', //状态
+					sort: '', //排序
+					format: [], //规格
+					content: '', //详情
+				},
+				isState: false,
+				stateName: '',
+				stateList: [{
+						name: '启用',
+						state: 1
+					},
+					{
+						name: '关闭',
+						state: 0
+					},
+				],
+				normsList: [{
+					"name": '',
+					"price": ''
+				}],
 			};
 		},
 		components: {
 			navTitleBalck,
-			btnSkyBlue
+			btnSkyBlue,
+			popupListSelect
 		},
 		onReady() {
 			// 获取顶部电量状态栏高度
@@ -172,7 +251,62 @@
 				}
 			});
 		},
+		onLoad(options) {
+			this.getStoreCategory()
+			this.getPlatform()
+			var data = JSON.parse(options.data)
+			this.type = data.type
+			if (data.type == 'add') {
+				this.title = '添加项目'
+				this.storeId = data.id
+			} else if (data.type == 'edit') {
+				this.id = data.id
+				this.title = '编辑项目'
+				this.getDetalis()
+			}
+		},
 		methods: {
+
+			// 选择平台分类
+			platformOpen() {
+				this.isPlatform = true
+			},
+			// 平台分类关闭弹窗
+			platformPopup(e) {
+				this.isPlatform = e
+			},
+			// 平台分类弹窗选择确认
+			platformConfirm(e) {
+				this.from.cid = e.id
+				this.platformName = e.name
+			},
+			// 选择门店分类
+			storeCategoryOpen() {
+				this.isStore = true
+			},
+			// 门店分类关闭弹窗
+			storeCategoryPopup(e) {
+				this.isStore = e
+			},
+			// 门店分类弹窗选择确认
+			storeCategoryConfirm(e) {
+				this.from.store_cid = e.id
+				this.storeCategoryName = e.name
+			},
+
+			// 状态
+			stateOpen() {
+				this.isState = true
+			},
+			// 状态关闭弹窗
+			statePopup(e) {
+				this.isState = e
+			},
+			// 状态弹窗选择确认
+			stateConfirm(e) {
+				this.from.status = e.state
+				this.stateName = e.name
+			},
 
 			// 订单使用时间
 			currency(bool) {
@@ -180,12 +314,207 @@
 			},
 
 
-			// 确认按钮
-			confirm() {
-				uni.showToast({
-					title: "确认提交",
-					icon: "none"
+			// 确认添加按钮
+			confirmAdd() {
+				var vuedata = {
+					name: this.from.name, //项目名称
+					store: this.storeId, //门店id
+					cid: this.from.cid, //平台分类id
+					store_cid: this.from.store_cid, //门店分类id
+					simg: this.imageList.length != 0 ? this.imageList[0] : '', //封面图
+					bimg: this.imageList.length != 0 ? this.imageList.join(',') : '', //图片
+					price: this.from.price, //价格
+					o_price: this.from.o_price, //原价
+					service_time: this.from.service_time, //项目服务时长
+					order_usage_time: this.isCurr ? 1 : -1, //下单使用时间（-1不限，1时间范围）
+					status: this.from.status, //状态
+					sort: this.from.sort, //排序
+					format: JSON.stringify(this.normsList), //规格
+					content: this.from.content, //详情
+				}
+				console.log(vuedata)
+				// return false
+				this.apipost('api/v1/store/service_reservation/add', vuedata).then(res => {
+					if (res.status == 200) {
+						this.$store.commit('upAddProject', true)
+						uni.showToast({
+							title: "项目添加成功",
+							icon: 'none'
+						})
+						setTimeout(function() {
+							uni.navigateBack({
+								delta: 1
+							})
+						}, 500)
+					} else if (res.status == 400) {
+						uni.showToast({
+							title: res.massage,
+							icon: 'none'
+						})
+					}
 				})
+			},
+			// 确认修改
+			confirmEdit() {
+				var vuedata = {
+					name: this.from.name, //项目名称
+					store: this.storeId, //门店id
+					cid: this.from.cid, //平台分类id
+					store_cid: this.from.store_cid, //门店分类id
+					simg: this.imageList.length != 0 ? this.imageList[0] : '', //封面图
+					bimg: this.imageList.length != 0 ? this.imageList.join(',') : '', //图片
+					price: this.from.price, //价格
+					o_price: this.from.o_price, //原价
+					service_time: this.from.service_time, //项目服务时长
+					order_usage_time: this.isCurr ? 1 : -1, //下单使用时间（-1不限，1时间范围）
+					status: this.from.status, //状态
+					sort: this.from.sort, //排序
+					format: JSON.stringify(this.normsList), //规格
+					content: this.from.content, //详情
+				}
+				this.apiput('api/v1/store/service_reservation/edit/' + this.id, vuedata).then(res => {
+					if (res.status == 200) {
+						this.$store.commit('upAddProject', true)
+						uni.showToast({
+							title: "项目修改成功",
+							icon: 'none'
+						})
+						setTimeout(function() {
+							uni.navigateBack({
+								delta: 1
+							})
+						}, 500)
+					} else if (res.status == 400) {
+						uni.showToast({
+							title: res.massage,
+							icon: 'none'
+						})
+					}
+				})
+			},
+
+
+			// 上传封面图片
+			upCoverPhoto() {
+				uni.chooseImage({
+					count: 3, //默认100
+					sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
+					success: (res) => {
+
+						res.tempFilePaths.forEach((item, index) => {
+							const path = 'images/';
+							// #ifdef H5
+							let file = item;
+							let suffix = res.tempFiles[index].name.split('.').pop();
+							// #endif
+
+							// #ifdef APP-PLUS
+							let file = item;
+							let suffix = res.tempFiles[index].path.split('.').pop();
+							// #endif
+
+							// 获取阿里云oss 信息
+							this.apiget('app/oss/url', {}).then(ress => {
+								if (ress.status == 200) {
+									var obj = {
+										accessid: ress.data.accessid,
+										policy: ress.data.policy,
+										signature: ress.data.signature,
+									}
+									// 上传图片
+									uploadImage(obj, file, path, suffix, result => {
+										this.imageList.push(result)
+									});
+								}
+							});
+						})
+					}
+				});
+			},
+			// 删除图片
+			delImage(index) {
+				this.imageList.splice(index, 1)
+			},
+
+			// 添加规格
+			addNorms(index) {
+				let str = {
+					"name": '',
+					"price": '',
+				}
+				this.normsList.splice(index + 1, 0, str) // 当前点击的后一位添加
+
+			},
+
+
+			// 删除规格
+			deleteNorms(index) {
+				this.normsList.splice(index, 1) // 当前点击位置删除
+			},
+
+
+			// 获取门店类别
+			getStoreCategory() {
+				this.apiget('pc/category/category_type', {
+					type: 11,
+					level: 1
+				}).then(res => {
+					if (res.status == 200) {
+						this.storeCategoryList = res.data
+					}
+				});
+			},
+			// 获取平台分类
+			getPlatform() {
+				this.apiget('pc/category/category_type', {
+					type: 12
+				}).then(res => {
+					if (res.status == 200) {
+						this.platformList = res.data
+					}
+				});
+			},
+			// 获取服务详情
+			getDetalis() {
+				this.apiget('api/v1/store/service_reservation/index/' + this.id, {}).then(res => {
+					if (res.status == 200) {
+						var data = res.data
+
+						this.from.name = data.name
+						this.storeId = data.store
+						this.from.cid = data.cid
+						this.from.store_cid = data.store_cid
+						this.from.price = data.price
+						this.from.o_price = data.o_price
+						this.imageList = data.bimg
+						this.from.service_time = data.service_time
+						this.from.order_usage_time = data.order_usage_time
+						
+						this.isCurr = data.order_usage_time == 1? true: false
+
+						this.from.status = data.status
+						this.stateName = data.status == 1 ? "启用" : '关闭'
+
+						this.from.format = data.format
+						this.normsList = data.format
+						this.from.sort = data.sort
+						this.from.content = data.content
+
+
+						this.storeCategoryList.forEach(item => {
+							if (item.id == data.store_cid) {
+								this.storeCategoryName = item.name
+							}
+						})
+
+						this.platformList.forEach(item => {
+							if (item.id == data.cid) {
+								this.platformName = item.name
+							}
+						})
+
+					}
+				});
 			},
 		}
 	}
@@ -285,6 +614,58 @@
 								text {}
 							}
 						}
+
+						.box-content-list-li-info-norms:last-child {
+							margin-bottom: 0;
+						}
+
+						.box-content-list-li-info-norms {
+							display: flex;
+							align-items: center;
+							margin-bottom: 30rpx;
+
+							.list-li-info-norms-text,
+							.list-li-info-norms-price {
+								display: flex;
+								align-items: center;
+								justify-content: center;
+								width: 200rpx;
+								height: 70rpx;
+								padding: 0 10rpx;
+								box-sizing: border-box;
+								border: 1rpx solid #ededed;
+								border-radius: 15rpx;
+
+								input {
+									text-align: center;
+									width: 100%;
+									height: 100%;
+									font-size: 24rpx;
+								}
+							}
+
+							.list-li-info-norms-add {
+								margin-right: 20rpx;
+								width: 60rpx;
+								height: 68rpx;
+								border: 1rpx solid #ededed;
+								border-radius: 15rpx;
+							}
+
+							.list-li-info-norms-reduce {
+								width: 40rpx;
+								height: 60rpx;
+							}
+
+							.list-li-info-norms-price {}
+
+							.list-li-info-norms-del {
+								width: 60rpx;
+								height: 70rpx;
+							}
+						}
+
+
 					}
 				}
 
@@ -353,6 +734,7 @@
 						image {
 							width: 160rpx;
 							height: 160rpx;
+							border-radius: 10rpx;
 						}
 
 						.close {

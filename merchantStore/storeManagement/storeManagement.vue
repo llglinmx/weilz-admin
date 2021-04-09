@@ -155,7 +155,7 @@
 						break;
 					case 1: //项目管理
 						uni.navigateTo({
-							url: "../projectManagement/projectManagement"
+							url: "../projectManagement/projectManagement?id="+this.id
 						})
 						break;
 					case 2: //技师管理

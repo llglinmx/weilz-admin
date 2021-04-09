@@ -75,7 +75,7 @@
 					<view class="box-content-list-li-title">语言</view>
 					<view class="box-content-list-li-info">
 						<view class="box-content-list-li-info-input">
-							<input type="text" placeholder="多种语言使用“；”间隔" />
+							<input type="text" v-model.trim="from.Language_skills" placeholder="多种语言使用“；”间隔" />
 						</view>
 					</view>
 				</view>
@@ -114,7 +114,7 @@
 					<view class="box-content-list-li-title">工龄</view>
 					<view class="box-content-list-li-info">
 						<view class="box-content-list-li-info-input">
-							<input type="number" placeholder="请输入工龄" />
+							<input type="number" v-model.trim="from.service_times" placeholder="请输入工龄" />
 							<text>年</text>
 						</view>
 					</view>
@@ -123,7 +123,7 @@
 					<view class="box-content-list-li-title">执照ID</view>
 					<view class="box-content-list-li-info">
 						<view class="box-content-list-li-info-input">
-							<input type="text" placeholder="请输入执照ID" />
+							<input type="number" v-model.trim="from.license_id" placeholder="请输入执照ID" />
 						</view>
 					</view>
 				</view>
@@ -131,22 +131,24 @@
 					<view class="box-content-list-item-text">
 						执照<text>(100*100)</text>
 					</view>
-					<view class="box-content-list-item-info">
-						<view class="box-content-list-item-info-icon flex-center">
+					<view class="box-content-list-item-info" @click="licenseImg">
+						<view class="box-content-list-item-info-icon flex-center" v-if="from.license_img==''">
 							<text class="iconfont icontupian icon-font" style="color: #fff;font-size: 50rpx;"></text>
 						</view>
-						<!-- <image src="box-content-list-item-info-image" mode=""></image> -->
+						<image :src="from.license_img" v-if="from.license_img!=''"
+							class="box-content-list-item-info-image" mode="aspectFill"></image>
 					</view>
 				</view>
 				<view class="box-content-list-item">
 					<view class="box-content-list-item-text">
 						工作照片<text>(110*80)</text>
 					</view>
-					<view class="box-content-list-item-info">
-						<view class="box-content-list-item-info-icon flex-center">
+					<view class="box-content-list-item-info" @click="upImage">
+						<view class="box-content-list-item-info-icon flex-center" v-if="from.simg==''">
 							<text class="iconfont icontupian icon-font" style="color: #fff;font-size: 50rpx;"></text>
 						</view>
-						<!-- <image src="box-content-list-item-info-image" mode=""></image> -->
+						<image :src="from.simg" v-if="from.simg!=''" class="box-content-list-item-info-image"
+							mode="aspectFill"></image>
 					</view>
 				</view>
 			</view>
@@ -156,7 +158,7 @@
 					<view class="box-content-list-li-info">
 						<view class="box-content-list-li-info-text" style="color: #999;">项目金额的</view>
 						<view class="box-content-list-li-info-input input-border">
-							<input type="number" value="" />
+							<input type="number" v-model.trim="from.service_fee" value="" />
 						</view>
 						<view class="box-content-list-li-info-msg">%</view>
 					</view>
@@ -166,35 +168,35 @@
 					<view class="box-content-list-li-info">
 						<view class="box-content-list-li-info-text" style="color: #999;">消费金额的</view>
 						<view class="box-content-list-li-info-input input-border">
-							<input type="number" value="" />
+							<input type="number" v-model.trim="from.fee" value="" />
 						</view>
 						<view class="box-content-list-li-info-msg">%</view>
 					</view>
 				</view>
-				<view class="box-content-list-li">
+				<view class="box-content-list-li" @click="timeOpen">
 					<view class="box-content-list-li-title">工作时间表</view>
 					<view class="box-content-list-li-info">
-						<view class="box-content-list-li-info-text">请选择工作时间表</view>
+						<view class="box-content-list-li-info-text">{{timeName==''?'请选择工作时间表':timeName}}</view>
 						<view class="box-content-list-li-info-more">
 							<text class="iconfont icongengduo icon-font"
 								style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
 						</view>
 					</view>
 				</view>
-				<view class="box-content-list-li">
+				<view class="box-content-list-li" v-if="type=='add'" @click="userOpen">
 					<view class="box-content-list-li-title">用户绑定</view>
 					<view class="box-content-list-li-info">
-						<view class="box-content-list-li-info-text">请选择用户</view>
+						<view class="box-content-list-li-info-text">{{userName==''?'请选择用户':userName}}</view>
 						<view class="box-content-list-li-info-more">
 							<text class="iconfont icongengduo icon-font"
 								style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
 						</view>
 					</view>
 				</view>
-				<view class="box-content-list-li">
+				<view class="box-content-list-li" @click="stateOpen">
 					<view class="box-content-list-li-title">状态</view>
 					<view class="box-content-list-li-info">
-						<view class="box-content-list-li-info-text">请选择状态</view>
+						<view class="box-content-list-li-info-text">{{stateName==''?'请选择状态':stateName}}</view>
 						<view class="box-content-list-li-info-more">
 							<text class="iconfont icongengduo icon-font"
 								style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
@@ -205,10 +207,8 @@
 				<view class="box-content-list-li">
 					<view class="box-content-list-li-title">排序</view>
 					<view class="box-content-list-li-info">
-						<view class="box-content-list-li-info-text">请选择排序</view>
-						<view class="box-content-list-li-info-more">
-							<text class="iconfont icongengduo icon-font"
-								style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
+						<view class="box-content-list-li-info-input">
+							<input type="number" v-model.trim="from.ordersort" placeholder="请输入排序" />
 						</view>
 					</view>
 				</view>
@@ -217,7 +217,7 @@
 					<view class="box-content-list-li-title">详情</view>
 					<view class="box-content-list-li-info">
 						<view class="box-content-list-li-info-input">
-							<input type="text" placeholder="请输入详情" />
+							<input type="text" v-model.trim="from.content" placeholder="请输入详情" />
 						</view>
 					</view>
 				</view>
@@ -244,6 +244,15 @@
 		<popup-list-select @cancel="gradePopup" @confirm="gradeConfirm" :visible='isGrade' :dataList="gradeList">
 		</popup-list-select>
 
+
+		<popup-list-select @cancel="timePopup" @confirm="timeConfirm" :visible='isTime' :dataList="timeList">
+		</popup-list-select>
+
+		<popup-list-select @cancel="userPopup" @confirm="userConfirm" :visible='isUser' :dataList="userList">
+		</popup-list-select>
+
+		<popup-list-select @cancel="statePopup" @confirm="stateConfirm" :visible='isState' :dataList="stateList">
+		</popup-list-select>
 	</view>
 </template>
 
@@ -251,6 +260,12 @@
 	import navTitleBalck from "../../components/nav-title-balck/nav-title-balck.vue"
 	import btnSkyBlue from "../../components/btn-sky-blue/btn-sky-blue.vue"
 	import popupListSelect from '../../components/popup-list-select/popup-list-select.vue'
+	import {
+		pathToBase64,
+		base64ToPath
+	} from '../../js_sdk/mmmm-image-tools/index.js'
+	import uploadImage from "../../js_sdk/oss/uploadOSS.js";
+
 	export default {
 		data() {
 			return {
@@ -263,26 +278,57 @@
 				isPlatform: false,
 				isProject: false,
 				isGrade: false,
+				isTime: false,
+				isUser: false,
+				isState: false,
 				storeList: [],
 				storeCategoryList: [],
 				platformList: [],
 				projectList: [],
 				gradeList: [],
+				timeList: [],
+				userList: [],
+				stateList: [{
+						name: '启用',
+						state: 1
+					},
+					{
+						name: '关闭',
+						state: 0
+					},
+				],
 				storeCategoryName: '',
 				storeName: '',
 				platformName: '',
 				projectName: '',
 				gradeName: '',
+				timeName: '',
+				userName: '',
+				stateName: '',
 				from: {
 					name: '',
-					store: '',
+					store: '', //门店id
+					store_cid: '', //门店分类ID
 					storeCategory: '',
-					platform: '',
-					project: '',
-					grade: '',
-					simg: '',
+					platform: '', //技师分类ID
+					grade: '', //技师等级
+					simg: '', //工作招聘
 					mobile: '',
 					email: '',
+					status: '',
+					service: '', //服务项目
+					service_fee: '', //项目服务费
+					fee: '', //技师提成
+					ordersort: '', //排序
+					content: '', //详情
+					service_times: '', //工龄
+					Language_skills: '', //语言
+					drive_card: -1, //是否会开车
+					license_id: '', //执照id
+					license_img: '', //执照图片
+					status: -1, //状态
+					schedule: '', //时间表·
+					uid: '', //用户id
 				}
 			};
 		},
@@ -300,6 +346,13 @@
 			});
 		},
 		onLoad(options) {
+			this.getStore()
+			this.getStoreCategory()
+			this.getPlatform()
+			this.getProject()
+			this.getGrad()
+			this.getTimeTable()
+			this.getUser();
 
 			var data = JSON.parse(options.data)
 			if (data.type == 'add') {
@@ -307,16 +360,11 @@
 				this.type = 'add'
 			} else if (data.type == 'edit') {
 				this.type = 'edit'
+				this.id = data.id
 				this.getDetails(data.id)
 			}
-
-
-			this.getStore()
-			this.getStoreCategory()
-			this.getPlatform()
-			this.getProject()
-			this.getGrad()
 		},
+
 
 		methods: {
 			// 选择门店
@@ -371,7 +419,7 @@
 			},
 			// 服务项目弹窗选择确认
 			projectConfirm(e) {
-				this.from.project = e.id
+				this.from.service = e.id
 				this.projectName = e.name
 			},
 
@@ -389,6 +437,50 @@
 				this.gradeName = e.name
 			},
 
+			// 选择工作时间表
+			timeOpen() {
+				this.isTime = true
+			},
+			// 工作时间表关闭弹窗
+			timePopup(e) {
+				this.isTime = e
+			},
+			// 工作时间表弹窗选择确认
+			timeConfirm(e) {
+				this.from.schedule = e.id
+				this.timeName = e.name
+			},
+
+
+			// 选择用户
+			userOpen() {
+				this.isUser = true
+			},
+			// 用户关闭弹窗
+			userPopup(e) {
+				this.isUser = e
+			},
+			// 用户弹窗选择确认
+			userConfirm(e) {
+				this.from.uid = e.id
+				this.userName = e.name
+			},
+
+			// 状态
+			stateOpen() {
+				this.isState = true
+			},
+			// 状态关闭弹窗
+			statePopup(e) {
+				this.isState = e
+			},
+			// 状态弹窗选择确认
+			stateConfirm(e) {
+				this.from.status = e.state
+				this.stateName = e.name
+			},
+
+
 			// 是否会开车点击
 			currency(bool) {
 				this.isCurr = bool ? true : false
@@ -396,19 +488,31 @@
 			// 确认提交按钮
 			confirmAdd() {
 				var vuedata = {
-					store: this.id,
-					name: this.from.name,
-					simg: this.from.simg,
-					cid: this.from.platform,
-					store_cid: this.from.store,
-					level: this.from.grade,
-					mobile: this.from.mobile,
-					email: this.from.email,
-					service: this.from.projectName,
+					store: this.from.store, //门店id
+					store_cid: this.from.storeCategory, //门店分类id
+					name: this.from.name, //技师名称
+					cid: this.from.platform, //技师分类ID
+					mobile: this.from.mobile, //手机号
+					email: this.from.email, //邮箱
+					service: this.from.service, //服务项目
+					Language_skills: this.from.Language_skills, //语言
+					drive_card: this.from.drive_card, //是否会开车
+					level: this.from.grade, //技师等级id
+					service_times: this.from.service_times, //工龄
+					license_id: this.from.license_id, //执照id
+					license_img: this.from.license_img, //执照图片
+					simg: this.from.simg, //工作照片
+					service_fee: this.from.service_fee, //项目服务费
+					fee: this.from.fee, //技师提成
+					schedule: this.from.schedule, // 工作时间表
+					uid: this.from.uid, // 选择用户
+					status: this.from.status, //状态
+					ordersort: this.from.ordersort, //排序
+					content: this.from.content, //详情
 				}
 				console.log(vuedata)
 
-				return false;
+				// return false;
 				this.apipost('api/v1/store/engineer/add', vuedata).then(res => {
 					if (res.status == 200) {
 						this.$store.commit('upAddTechhnician', true)
@@ -431,7 +535,28 @@
 			},
 			// 确认修改
 			confirmEdit() {
-				return false;
+				var vuedata = {
+					store: this.from.store, //门店id
+					store_cid: this.from.storeCategory, //门店分类id
+					name: this.from.name, //技师名称
+					cid: this.from.platform, //技师分类ID
+					mobile: this.from.mobile, //手机号
+					email: this.from.email, //邮箱
+					service: this.from.service, //服务项目
+					Language_skills: this.from.Language_skills, //语言
+					drive_card: this.from.drive_card, //是否会开车
+					level: this.from.grade, //技师等级id
+					service_times: this.from.service_times, //工龄
+					license_id: this.from.license_id, //执照id
+					license_img: this.from.license_img, //执照图片
+					simg: this.from.simg, //工作照片
+					service_fee: this.from.service_fee, //项目服务费
+					fee: this.from.fee, //技师提成
+					schedule: this.from.schedule, // 工作时间表
+					status: this.from.status, //状态
+					ordersort: this.from.ordersort, //排序
+					content: this.from.content, //详情
+				}
 				this.apiput('api/v1/store/engineer/edit/' + this.id, vuedata).then(res => {
 					if (res.status == 200) {
 						this.$store.commit('upAddTechhnician', true)
@@ -451,20 +576,163 @@
 						})
 					}
 				})
-
 			},
 
+			// 上传工作照片
+			upImage() {
+				uni.chooseImage({
+					count: 1, //默认100
+					sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
+					success: (res) => {
+						pathToBase64(res.tempFilePaths[0]).then((data) => {
+							this.from.simg = data
+							const path = 'avatar/';
+							// #ifdef H5
+							let file = res.tempFilePaths[0];
+							let suffix = res.tempFiles[0].name.split('.').pop();
+							// #endif
 
+							// #ifdef APP-PLUS
+							let file = res.tempFilePaths[0];
+							let suffix = res.tempFiles[0].path.split('.').pop();
+							// #endif
+
+							// 获取阿里云oss 信息
+							this.apiget('app/oss/url', {}).then(ress => {
+								if (ress.status == 200) {
+									var obj = {
+										accessid: ress.data.accessid,
+										policy: ress.data.policy,
+										signature: ress.data.signature,
+									}
+									// 上传图片
+									uploadImage(obj, file, path, suffix, result => {
+										this.from.simg = result
+									});
+								}
+							});
+						})
+					}
+				});
+			},
+
+			// 上传执照照片
+			licenseImg() {
+				uni.chooseImage({
+					count: 1, //默认100
+					sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
+					success: (res) => {
+						pathToBase64(res.tempFilePaths[0]).then((data) => {
+							this.from.license_img = data
+							const path = 'avatar/';
+							// #ifdef H5
+							let file = res.tempFilePaths[0];
+							let suffix = res.tempFiles[0].name.split('.').pop();
+							// #endif
+
+							// #ifdef APP-PLUS
+							let file = res.tempFilePaths[0];
+							let suffix = res.tempFiles[0].path.split('.').pop();
+							// #endif
+
+							// 获取阿里云oss 信息
+							this.apiget('app/oss/url', {}).then(ress => {
+								if (ress.status == 200) {
+									var obj = {
+										accessid: ress.data.accessid,
+										policy: ress.data.policy,
+										signature: ress.data.signature,
+									}
+									// 上传图片
+									uploadImage(obj, file, path, suffix, result => {
+										this.from.license_img = result
+									});
+								}
+							});
+						})
+					}
+				});
+			},
 
 			// 获取详情
 			getDetails(id) {
+				this.apiget('api/v1/store/engineer/' + id, {}).then(res => {
+					if (res.status == 200) {
+						var data = res.data.member
+						this.from.store = data.store
+						this.from.storeCategory = data.store_cid
+						this.from.platform = data.cid
+						this.from.name = data.name
+						this.from.mobile = data.mobile
+						this.from.email = data.mail
+						this.from.service = data.service
+						this.from.Language_skills = data.Language_skills
+						this.from.drive_card = data.drive_card
+						this.from.grade = data.level
+						this.from.service_times = data.service_times
+						this.from.license_id = data.license_id
+						this.from.license_img = data.license_img
+						this.from.simg = data.simg
+						this.from.service_fee = data.service_fee
+						this.from.fee = data.fee
+						this.from.schedule = data.schedule
+						this.from.status = data.status
+						this.from.ordersort = data.sort
+						this.from.content = data.content
+						
+						this.storeList.forEach(item => {
+							if (item.id == data.store) {
+								this.storeName = item.name
+							}
+						})
 
+						this.storeCategoryList.forEach(item => {
+							if (item.id == data.store_cid) {
+								this.storeCategoryName = item.name
+							}
+						})
+						this.platformList.forEach(item => {
+							if (item.id == data.cid) {
+								this.platformName = item.name
+							}
+						})
+
+						this.projectList.forEach(item => {
+							if (item.id == data.service) {
+								this.projectName = item.name
+							}
+						})
+						this.gradeList.forEach(item => {
+							if (item.id == data.level) {
+								this.gradeName = item.name
+							}
+						})
+
+						this.isCurr = data.drive_card == 1 ? true : false
+
+						this.timeList.forEach(item => {
+							if (item.id == data.schedule) {
+								this.timeName = item.name
+							}
+						})
+
+
+						this.stateList.forEach(item => {
+							if (item.state == data.status) {
+								this.stateName = item.name
+							}
+						})
+
+					}
+				});
 			},
 
 
 			// 获取门店列表
 			getStore() {
-				this.apiget('api/v1/store/store_information', {}).then(res => {
+				this.apiget('api/v1/store/store_information', {
+					level: 1
+				}).then(res => {
 					if (res.status == 200) {
 						this.storeList = res.data.member
 					}
@@ -473,7 +741,8 @@
 			// 获取门店类别
 			getStoreCategory() {
 				this.apiget('pc/category/category_type', {
-					type: 11
+					type: 11,
+					level: 1
 				}).then(res => {
 					if (res.status == 200) {
 						this.storeCategoryList = res.data
@@ -505,6 +774,22 @@
 				}).then(res => {
 					if (res.status == 200) {
 						this.gradeList = res.data
+					}
+				});
+			},
+			// 获取时间表
+			getTimeTable() {
+				this.apiget('api/v1/store/engineer/schedule', {}).then(res => {
+					if (res.status == 200) {
+						this.timeList = res.data
+					}
+				});
+			},
+			// 获取用户
+			getUser() {
+				this.apiget('api/v1/store/engineer/member_info', {}).then(res => {
+					if (res.status == 200) {
+						this.userList = res.data
 					}
 				});
 			},
@@ -588,6 +873,10 @@
 							height: 60rpx;
 							margin: 0 20rpx;
 							border: 1rpx solid #EDEDED;
+
+							input {
+								text-align: center;
+							}
 						}
 
 
@@ -652,6 +941,7 @@
 						.box-content-list-item-info-image {
 							width: 120rpx;
 							height: 120rpx;
+							border-radius: 10rpx;
 						}
 					}
 				}

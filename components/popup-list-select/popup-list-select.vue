@@ -32,8 +32,6 @@
 				default: false
 			},
 			dataList: {
-				type: Array,
-				default: []
 			}
 		},
 		methods: {
