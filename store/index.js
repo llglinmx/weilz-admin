@@ -24,6 +24,8 @@ const store = new Vuex.Store({
 		isAddStore: false, //是否有添加门店
 		isAddTechhnician: false, //是否有添加技师
 		isAddProject: false, //是否有添加项目
+		isAddCoupon:false,//是否有添加优惠券
+		isAddPackageCard:false,//是否有添加套餐卡
 	},
 	mutations: {
 		//用于判断是否添加地址 等同于发送监听
@@ -45,6 +47,12 @@ const store = new Vuex.Store({
 
 		upAddProject(state, bool) {
 			state.isAddProject = bool
+		},
+		upAddCoupon(state, bool) {
+			state.isAddCoupon = bool
+		},
+		upAddPackageCard(state, bool) {
+			state.isAddPackageCard = bool
 		},
 	},
 	actions: {}

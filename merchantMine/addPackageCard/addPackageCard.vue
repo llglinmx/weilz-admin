@@ -4,22 +4,23 @@
 			<nav-title-balck navTitle="添加套餐卡"></nav-title-balck>
 		</view>
 		<view class="box-content">
-
 			<view class="box-content-list">
-				<view class="box-content-list-li">
+				<view class="box-content-list-li" @click="storeOpen">
 					<view class="box-content-list-li-title">门店</view>
 					<view class="box-content-list-li-info">
-						<view class="box-content-list-li-info-text">请选择门店</view>
+						<view class="box-content-list-li-info-text">{{storeName==''?'请选择门店':storeName}}</view>
 						<view class="box-content-list-li-info-more">
 							<text class="iconfont icongengduo icon-font"
 								style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
 						</view>
 					</view>
 				</view>
-				<view class="box-content-list-li">
+				<view class="box-content-list-li" @click="storeCategoryOpen">
 					<view class="box-content-list-li-title">门店分类</view>
 					<view class="box-content-list-li-info">
-						<view class="box-content-list-li-info-text">请选择门店分类</view>
+						<view class="box-content-list-li-info-text">
+							{{storeCategoryName==''?'请选择门店分类':storeCategoryName}}
+						</view>
 						<view class="box-content-list-li-info-more">
 							<text class="iconfont icongengduo icon-font"
 								style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
@@ -30,14 +31,14 @@
 					<view class="box-content-list-li-title">套餐卡名称</view>
 					<view class="box-content-list-li-info">
 						<view class="box-content-list-li-info-input">
-							<input type="text" placeholder="请输入套餐卡名称" />
+							<input type="text" v-model.trim="from.name" placeholder="请输入套餐卡名称" />
 						</view>
 					</view>
 				</view>
-				<view class="box-content-list-li">
+				<view class="box-content-list-li" @click="planformOpen">
 					<view class="box-content-list-li-title">平台分类</view>
 					<view class="box-content-list-li-info">
-						<view class="box-content-list-li-info-text">请选择分类</view>
+						<view class="box-content-list-li-info-text">{{platformName==''?'请选择平台分类':platformName}}</view>
 						<view class="box-content-list-li-info-more">
 							<text class="iconfont icongengduo icon-font"
 								style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
@@ -52,32 +53,34 @@
 				</view>
 				<view class="box-content-main-image-list">
 					<view class="box-content-main-image-list-li" :class="index==0?'list-li-affter':''"
-						v-for="(item,index) in 2" :key="index">
-						<image src="../../static/images/001.png" mode="aspectFill"></image>
-						<text class="close flex-center">
+						v-for="(item,index) in imageList" :key="index">
+						<image :src="item" mode="aspectFill"></image>
+						<text class="close flex-center" @click="delImage">
 							<text class="iconfont iconcuowu icon-font" style="color: #fff;font-size: 36rpx"></text>
 						</text>
 					</view>
-					<view class="box-content-main-image-list-up flex-center">
+					<view class="box-content-main-image-list-up flex-center" @click="upCoverPhoto"
+						v-if="imageList.length<3">
 						<text class="iconfont iconcuowu icon-font" style="color: #ddd;font-size: 90rpx"></text>
 					</view>
 				</view>
 			</view>
 			<view class="box-content-main">
-				<view class="box-content-main-top">
+				<view class="box-content-main-top" :style="{borderBottom:dataList.length!=0?'1rpx solid #ededed':0}">
 					<view class="box-content-main-top-title">套餐项目</view>
-					<view class="box-content-main-top-add flex-center">
+					<view class="box-content-main-top-add flex-center" @click="packageCardOpen">
 						<text class="iconfont iconcuowu icon-font" style="color: #ccc;font-size: 36rpx"></text>
 					</view>
 				</view>
-				<view class="box-content-main-list">
-					<view class="box-content-main-list-li" v-for="(item,index) in dataList" :key="index">
+				<view class="box-content-main-list"
+					:style="{height:dataList.length!=0?'auto':0,paddingBottom:dataList.length!=0?'30rpx':0}">
+					<view class="box-content-main-list-li" v-for="(item,index) in dataList" :key="item.id">
 						<view class="box-content-main-list-li-image">
-							<image src="../../static/images/001.png" mode="aspectFill"></image>
+							<image :src="item.simg" mode="aspectFill"></image>
 						</view>
 						<view class="box-content-main-list-li-info">
 							<view class="box-content-main-list-li-info-text">
-								<view class="list-li-info-text-title">{{item.title}}</view>
+								<view class="list-li-info-text-title">{{item.name}}</view>
 								<view class="list-li-info-text-price">￥{{item.price}}</view>
 							</view>
 							<view class="box-content-main-list-li-info-bottom">
@@ -108,7 +111,7 @@
 					<view class="box-content-list-li-title">价格</view>
 					<view class="box-content-list-li-info">
 						<view class="box-content-list-li-info-input">
-							<input type="number" placeholder="请输入价格" />
+							<input type="number" v-model.trim="from.price" placeholder="请输入价格" />
 						</view>
 					</view>
 				</view>
@@ -116,33 +119,15 @@
 					<view class="box-content-list-li-title">库存</view>
 					<view class="box-content-list-li-info">
 						<view class="box-content-list-li-info-input">
-							<input type="number" placeholder="最高为10000" />
+							<input type="number" maxlength="10000" v-model.trim="from.quantity"
+								placeholder="最高为10000" />
 						</view>
 					</view>
 				</view>
 
+
 				<view class="box-content-list-li">
-					<view class="box-content-list-li-title">有效期</view>
-					<view class="box-content-list-li-info">
-						<view class="box-content-list-li-info-text">固定日期时间</view>
-						<view class="box-content-list-li-info-more">
-							<text class="iconfont icongengduo icon-font"
-								style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
-						</view>
-					</view>
-				</view>
-				<view class="box-content-list-li">
-					<view class="box-content-list-li-title">固定日期区间</view>
-					<view class="box-content-list-li-info">
-						<view class="box-content-list-li-info-text">请设置日期区间</view>
-						<view class="box-content-list-li-info-more">
-							<text class="iconfont icongengduo icon-font"
-								style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
-						</view>
-					</view>
-				</view>
-				<view class="box-content-list-li">
-					<view class="box-content-list-li-title">是否通用</view>
+					<view class="box-content-list-li-title" style="width: 120rpx;">使用时间</view>
 					<view class="box-content-list-li-info">
 						<view class="box-content-list-li-info-check">
 							<view class="box-content-list-li-info-check-box" @click="currency(true)">
@@ -150,15 +135,44 @@
 									v-if="isCurr"></text>
 								<text class="iconfont iconweixuanzhong1 icon-font" style="color: #ccc;font-size: 48rpx;"
 									v-else></text>
-								<text>是</text>
+								<text>固定日期</text>
 							</view>
 							<view class="box-content-list-li-info-check-box" @click="currency(false)">
 								<text class="iconfont iconxuanzhong icon-font" style="color: #07C160;font-size: 48rpx;"
 									v-if="!isCurr"></text>
 								<text class="iconfont iconweixuanzhong1 icon-font" style="color: #ccc;font-size: 48rpx;"
 									v-else></text>
-								<text>否</text>
+								<text>固定时长</text>
 							</view>
+						</view>
+					</view>
+				</view>
+				<view class="box-content-list-li" v-if="!isCurr">
+					<view class="box-content-list-li-title" style="width: 120rpx;">有效期</view>
+					<view class="box-content-list-li-info">
+						<view class="box-content-list-li-info-input">
+							<input type="number" v-model.trim="from.fixed_term" placeholder="有效天数(自领取后按天计算)" />
+							<text>天</text>
+						</view>
+					</view>
+				</view>
+				<view class="box-content-list-li" v-if="isCurr" @click="dateStartOpen">
+					<view class="box-content-list-li-title">活动开始时间</view>
+					<view class="box-content-list-li-info">
+						<view class="box-content-list-li-info-text">{{startTime==''?'请设置日期':startTime}}</view>
+						<view class="box-content-list-li-info-more">
+							<text class="iconfont icongengduo icon-font"
+								style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
+						</view>
+					</view>
+				</view>
+				<view class="box-content-list-li" @click="dateEndOpen" v-if="isCurr">
+					<view class="box-content-list-li-title">活动结束时间</view>
+					<view class="box-content-list-li-info">
+						<view class="box-content-list-li-info-text">{{endTime==''?'请设置日期':endTime}}</view>
+						<view class="box-content-list-li-info-more">
+							<text class="iconfont icongengduo icon-font"
+								style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
 						</view>
 					</view>
 				</view>
@@ -171,10 +185,8 @@
 				<view class="box-content-list-li">
 					<view class="box-content-list-li-title">排序</view>
 					<view class="box-content-list-li-info">
-						<view class="box-content-list-li-info-text">请设置</view>
-						<view class="box-content-list-li-info-more">
-							<text class="iconfont icongengduo icon-font"
-								style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
+						<view class="box-content-list-li-info-input">
+							<input type="number" v-model.trim="from.sort" placeholder="请输入排序" />
 						</view>
 					</view>
 				</view>
@@ -187,51 +199,89 @@
 			</view>
 		</view>
 		<view class="box-footer">
-			<btn-sky-blue btnName="确认添加" @btnClick="confirm" />
+			<btn-sky-blue btnName="确认添加" @btnClick="confirmAdd" v-if="type =='add'" />
+			<btn-sky-blue btnName="确认修改" @btnClick="confirmEdit" v-if="type =='edit'" />
 		</view>
+		<popup-list-select @cancel="storeCancel" @confirm="storeConfirm" :visible='isStore' :dataList="storeList">
+		</popup-list-select>
+
+		<popup-list-select @cancel="storeCategoryCancel" @confirm="storeCategoryConfirm" :visible='isStoreCategory'
+			:dataList="storeCategoryList">
+		</popup-list-select>
+		<popup-list-select @cancel="planformCancel" @confirm="planformConfirm" :visible='isPlanform'
+			:dataList="planformList">
+		</popup-list-select>
+
+		<select-date @cancel="dateStartCancel" @confirm="dateStartConfirm" :visible='isStartDate' />
+		<select-date @cancel="dateEndCancel" @confirm="dateEndConfirm" :visible='isEndDate' />
+
+		<select-list-popup @cancel="packageCardCancel" :dataList="list" @confirm="packageCardConfirm"
+			:visible='isPackageCard' />
 	</view>
 </template>
 
 <script>
 	import navTitleBalck from "../../components/nav-title-balck/nav-title-balck.vue"
 	import btnSkyBlue from "../../components/btn-sky-blue/btn-sky-blue.vue"
+	import popupListSelect from '../../components/popup-list-select/popup-list-select.vue'
+	import selectDate from '../../components/select-date/select-date.vue'
+	import selectListPopup from '../../components/select-list-popup/select-list-popup.vue'
+	import {
+		pathToBase64,
+		base64ToPath
+	} from '../../js_sdk/mmmm-image-tools/index.js'
+	import uploadImage from "../../js_sdk/oss/uploadOSS.js";
 	export default {
 		data() {
 			return {
 				barHeight: 0, //顶部电量导航栏高度
 				isCurr: true, //是否通用
 				isState: false, //发放状态
-				dataList: [{
-						title: "泰式古法按摩",
-						num: 1,
-						price: '258.00'
-					},
-					{
-						title: "全身按摩SPA",
-						num: 1,
-						price: '258.00'
-					},
-					{
-						title: "泰式古法按摩",
-						num: 1,
-						price: '258.00'
-					},
-					{
-						title: "泰式古法按摩",
-						num: 1,
-						price: '258.00'
-					},
-					{
-						title: "全身按摩SPA",
-						num: 1,
-						price: '258.00'
-					},
-				]
+				type: '',
+				id: '',
+				list: [],
+				dataList: [],
+				imageList: [],
+				storeList: [],
+				storeName: '',
+				isStore: false,
+				isStoreCategory: false,
+				storeCategoryList: [],
+				storeCategoryName: '',
+				isPlanform: false,
+				planformList: [],
+				platformName: '',
+				startTime: '',
+				endTime: '',
+				isStartDate: false,
+				isEndDate: false,
+				from: {
+					store: '', //门店id
+					store_cid: '', //门店分类
+					name: '', //套餐卡名称
+					cid: '', //平台分类
+					simg: '', //封面图
+					bimg: '', //轮播图
+					service: '', //项目
+					price: '', //价格
+					quantity: '', //库存
+					date_type: 1, //使用时间类型 1固定日期区间，2固定时长
+					begin_time: '', //开始时间
+					end_time: '', //结束时间
+					fixed_term: '', //固定时长
+					status: this.isState ? 1 : -1, //发放状态
+					sort: '', //排序
+					description: '', //优惠券说明
+				},
+				isPackageCard: false
 			};
 		},
 		components: {
 			navTitleBalck,
-			btnSkyBlue
+			btnSkyBlue,
+			popupListSelect,
+			selectDate,
+			selectListPopup
 		},
 		onReady() {
 			// 获取顶部电量状态栏高度
@@ -241,16 +291,172 @@
 				}
 			});
 		},
+		onLoad(options) {
+			this.getStore()
+			this.getStoreCategory()
+			this.getPlatform()
+
+			this.getDataList()
+
+			var data = JSON.parse(options.data)
+			if (data.type == 'add') {
+				this.type = 'add'
+			} else if (data.type == 'edit') {
+				this.type = 'edit'
+				this.id = data.id
+				this.getCardDetails(data.id)
+			}
+		},
 		methods: {
+
+			// 选择门店
+			storeOpen() {
+				this.isStore = true
+			},
+			// 门店关闭弹窗
+			storeCancel(e) {
+				this.isStore = e
+			},
+			// 门店弹窗选择确认
+			storeConfirm(e) {
+				this.from.store = e.id
+				this.storeName = e.name
+			},
+
+
+			// 选择门店分类
+			storeCategoryOpen() {
+				this.isStoreCategory = true
+			},
+			// 门店分类关闭弹窗
+			storeCategoryCancel(e) {
+				this.isStoreCategory = e
+			},
+			// 门店分类弹窗选择确认
+			storeCategoryConfirm(e) {
+				this.from.store_cid = e.id
+				this.storeCategoryName = e.name
+			},
+
+			// 选择平台分类
+			planformOpen() {
+				this.isPlanform = true
+			},
+			// 平台分类关闭弹窗
+			planformCancel(e) {
+				this.isPlanform = e
+			},
+			// 平台分类弹窗选择确认
+			planformConfirm(e) {
+				this.from.cid = e.id
+				this.platformName = e.name
+			},
+			// 选择开始日期
+			dateStartOpen() {
+				this.isStartDate = true
+			},
+			// 开始日期关闭弹窗
+			dateStartCancel(e) {
+				this.isStartDate = e
+			},
+			// 选择开始日期弹窗选择确认
+			dateStartConfirm(e) {
+				this.startTime = e.year + '-' + e.month + '-' + e.day+' '+e.hour+':'+e.minute+':'+e.second
+			},
+
+			// 选择结束日期
+			dateEndOpen() {
+				if (this.startTime != '') {
+					this.isEndDate = true
+					return false;
+				}
+				uni.showToast({
+					title: "请先设置活动开始时间",
+					icon: "none"
+				})
+
+			},
+			// 结束日期关闭弹窗
+			dateEndCancel(e) {
+				this.isEndDate = e
+			},
+			// 选择结束日期弹窗选择确认
+			dateEndConfirm(e) {
+				this.endTime = e.year + '-' + e.month + '-' + e.day+' '+e.hour+':'+e.minute+':'+e.second
+			},
+
+
+			// 打开添加套餐类型
+			packageCardOpen() {
+				this.isPackageCard = true
+				this.getDataList()
+			},
+			// 套餐类型关闭弹窗
+			packageCardCancel(e) {
+				this.isPackageCard = e
+			},
+			// 选择套餐类型弹窗选择确认
+			packageCardConfirm(e) {
+				this.dataList = e
+			},
+
+
+
+			// 上传封面图片
+			upCoverPhoto() {
+				uni.chooseImage({
+					count: 3, //默认100
+					sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
+					success: (res) => {
+
+						res.tempFilePaths.forEach((item, index) => {
+							const path = 'images/';
+							// #ifdef H5
+							let file = item;
+							let suffix = res.tempFiles[index].name.split('.').pop();
+							// #endif
+
+							// #ifdef APP-PLUS
+							let file = item;
+							let suffix = res.tempFiles[index].path.split('.').pop();
+							// #endif
+
+							// 获取阿里云oss 信息
+							this.apiget('app/oss/url', {}).then(ress => {
+								if (ress.status == 200) {
+									var obj = {
+										accessid: ress.data.accessid,
+										policy: ress.data.policy,
+										signature: ress.data.signature,
+									}
+									// 上传图片
+									uploadImage(obj, file, path, suffix, result => {
+										this.imageList.push(result)
+									});
+								}
+							});
+						})
+					}
+				});
+			},
+			// 删除图片
+			delImage(index) {
+				this.imageList.splice(index, 1)
+			},
+
+
 			// switch 开关
 			switch1Change: function(e) {
 				this.isState = e.target.value
-				console.log('发生 change 事件，携带值为', e.target.value)
 			},
 
-			// 是否通用单选点击
+			// 使用时间类型单选点击
 			currency(bool) {
+				this.startTime = ''
+				this.endTime = ''
+				this.from.fixed_term = ''
 				this.isCurr = bool ? true : false
+				this.from.date_type = this.isCurr ? 1 : 2
 			},
 			// 步进器点击
 			stepper(index, type) {
@@ -272,24 +478,189 @@
 			},
 			// 删除按钮点击
 			deleteClick(index) {
-				if (this.dataList.length != 1) {
-					this.dataList.splice(index, 1)
-				} else {
-					uni.showToast({
-						title: "不能再删了，最少一个",
-						icon: "none"
-					})
-				}
+				this.dataList.splice(index, 1)
 			},
 
 
+			// 确认提交按钮
+			confirmAdd() {
 
-			// 确认按钮
-			confirm() {
-				uni.showToast({
-					title: "确认提交",
-					icon: "none"
+				var str = {}
+				var arr = []
+				this.dataList.forEach(item => {
+					str = {
+						id: item.id,
+						name: item.name,
+						times: item.num
+					}
+					arr.push(str)
 				})
+				this.from.service = arr
+
+				var vuedata = {
+					store: this.from.store, //门店id
+					store_cid: this.from.store_cid, //门店分类
+					cid: this.from.cid, //平台分类
+					name: this.from.name, //优惠券名称
+					simg: this.imageList.length != 0 ? this.imageList[0] : '', //封面图
+					bimg: this.imageList.length != 0 ? this.imageList.join(',') : '', //轮播图
+					service: JSON.stringify(this.from.service), //项目
+					price: this.from.price, //价格
+					quantity: this.from.quantity, //库存
+					date_type: this.isCurr ? 1 : 2, //使用时间类型 1固定日期区间，2固定时长
+					begin_time: this.startTime, //开始时间
+					end_time: this.endTime, //结束时间
+					fixed_term: this.from.fixed_term, //固定时长
+					status: this.isState ? 1 : -1, //发放状态
+					sort: this.from.sort, //排序
+					description: this.from.description, //优惠券说明
+				}
+				console.log(vuedata)
+				// return false;
+				this.apipost('api/v1/store/card/add', vuedata).then(res => {
+					if (res.status == 200) {
+						this.$store.commit('upAddPackageCard', true)
+						uni.showToast({
+							title: "套餐卡添加成功",
+							icon: 'none'
+						})
+						setTimeout(function() {
+							uni.navigateBack({
+								delta: 1
+							})
+						}, 500)
+					} else if (res.status == 400) {
+						uni.showToast({
+							title: res.massage,
+							icon: 'none'
+						})
+					}
+				})
+			},
+
+			// 确认修改
+			confirmEdit() {
+				var str = {}
+				var arr = []
+				this.dataList.forEach(item => {
+					str = {
+						id: item.id,
+						name: item.name,
+						times: item.num
+					}
+					arr.push(str)
+				})
+				this.from.service = arr
+
+				var vuedata = {
+					store: this.from.store, //门店id
+					store_cid: this.from.store_cid, //门店分类
+					cid: this.from.cid, //平台分类
+					name: this.from.name, //优惠券名称
+					simg: this.imageList.length != 0 ? this.imageList[0] : '', //封面图
+					bimg: this.imageList.length != 0 ? this.imageList.join(',') : '', //轮播图
+					service: JSON.stringify(this.from.service), //项目
+					price: this.from.price, //价格
+					quantity: this.from.quantity, //库存
+					date_type: this.isCurr ? 1 : 2, //使用时间类型 1固定日期区间，2固定时长
+					begin_time: this.startTime, //开始时间
+					end_time: this.endTime, //结束时间
+					fixed_term: this.from.fixed_term, //固定时长
+					status: this.isState ? 1 : -1, //发放状态
+					sort: this.from.sort, //排序
+					description: this.from.description, //优惠券说明
+				}
+				return false;
+				this.apiput('api/v1/store/card/edit/' + this.id, vuedata).then(res => {
+					if (res.status == 200) {
+						this.$store.commit('upAddPackageCard', true)
+						uni.showToast({
+							title: "套餐卡修改成功",
+							icon: 'none'
+						})
+						setTimeout(function() {
+							uni.navigateBack({
+								delta: 1
+							})
+						}, 500)
+					} else if (res.status == 400) {
+						uni.showToast({
+							title: res.massage,
+							icon: 'none'
+						})
+					}
+				})
+			},
+
+			// 获取平台分类
+			getDataList() {
+				var vuedata = {
+					page_index: 1, // 请求页数，
+					each_page: 50, // 请求条数
+					store_id: 54,
+				}
+				this.apiget('api/v1/store/service_reservation/index', vuedata).then(res => {
+					if (res.status == 200) {
+						var list = res.data.data
+
+						list.map(item => {
+							item.isCheck = false
+							item.num = 1
+						})
+
+						if (this.dataList.length != 0) {
+							list.forEach(item => {
+								this.dataList.forEach(res => {
+									if (item.id == res.id) {
+										console.log(res.num)
+										item.isCheck = res.isCheck
+										item.num = res.num
+									}
+								})
+							})
+						}
+						this.list = list
+					}
+				});
+			},
+			
+			// 获取套餐卡详情
+			getCardDetails(id) {
+				this.apiget('api/v1/store/card/index/' + id, {}).then(res => {
+					if (res.status == 200) {
+
+					}
+				});
+			},
+
+			// 获取门店列表
+			getStore() {
+				this.apiget('api/v1/store/store_information', {}).then(res => {
+					if (res.status == 200) {
+						this.storeList = res.data.member
+					}
+				});
+			},
+			// 获取门店分类
+			getStoreCategory() {
+				this.apiget('pc/category/category_type', {
+					type: 11,
+					level: 1
+				}).then(res => {
+					if (res.status == 200) {
+						this.storeCategoryList = res.data
+					}
+				});
+			},
+			// 获取平台分类
+			getPlatform() {
+				this.apiget('pc/category/category_type', {
+					type: 15
+				}).then(res => {
+					if (res.status == 200) {
+						this.planformList = res.data
+					}
+				});
 			},
 		}
 	}
@@ -432,7 +803,7 @@
 					justify-content: space-between;
 					padding-right: 40rpx;
 					box-sizing: border-box;
-					height: 80rpx;
+					height: 100rpx;
 					border-bottom: 1rpx solid #ededed;
 					color: #333;
 					font-size: 28rpx;
@@ -482,6 +853,7 @@
 						image {
 							width: 160rpx;
 							height: 160rpx;
+							border-radius: 10rpx;
 						}
 
 						.close {
@@ -508,7 +880,8 @@
 				}
 
 				.box-content-main-list {
-					padding-bottom: 30rpx;
+					overflow: hidden;
+					transition: 0.3s;
 
 
 					.box-content-main-list-li {

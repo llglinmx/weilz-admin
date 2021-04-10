@@ -484,6 +484,7 @@
 			// 是否会开车点击
 			currency(bool) {
 				this.isCurr = bool ? true : false
+				this.from.drive_card = this.isCurr ? 1 : -1
 			},
 			// 确认提交按钮
 			confirmAdd() {
@@ -679,7 +680,7 @@
 						this.from.status = data.status
 						this.from.ordersort = data.sort
 						this.from.content = data.content
-						
+
 						this.storeList.forEach(item => {
 							if (item.id == data.store) {
 								this.storeName = item.name
@@ -730,9 +731,7 @@
 
 			// 获取门店列表
 			getStore() {
-				this.apiget('api/v1/store/store_information', {
-					level: 1
-				}).then(res => {
+				this.apiget('api/v1/store/store_information', {}).then(res => {
 					if (res.status == 200) {
 						this.storeList = res.data.member
 					}

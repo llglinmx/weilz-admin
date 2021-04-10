@@ -16,7 +16,14 @@
 			</view>
 		</view>
 		<view class="box-content">
-			<view class="box-content-check">
+			<view class="box-content-check" v-if="defaultIndex==0 && couponList.length!=0">
+				<view class="box-content-check-wrap flex-center">
+					<text>选择门店</text>
+					<text class="iconfont iconxiangxiajiantou icon-font"
+						style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
+				</view>
+			</view>
+			<view class="box-content-check" v-if="defaultIndex==2 && cardList.length!=0">
 				<view class="box-content-check-wrap flex-center">
 					<text>选择门店</text>
 					<text class="iconfont iconxiangxiajiantou icon-font"
@@ -86,7 +93,8 @@
 													<text>删除</text>
 												</view>
 
-												<view class="box-content-main-list-li-bottom-item">
+												<view class="box-content-main-list-li-bottom-item"
+													@click="couponEdit(item.id)">
 													<text class="iconfont iconbianji-shangjia icon-font"
 														style="color: #5DBDFE;font-size: 36rpx;margin-top: 4rpx;"></text>
 													<text>编辑</text>
@@ -116,7 +124,7 @@
 												<view class="box-content-main-list-li-top-left">
 													<text class="iconfont iconshangjia"
 														style="font-size: 28rpx;color: #5DBDFE;margin-top: 4rpx;"></text>
-													<text>集美店</text>
+													<text>{{item.store_name}}</text>
 												</view>
 												<view class="box-content-main-list-li-top-right">出售中</view>
 											</view>
@@ -130,16 +138,14 @@
 														</view>
 														<view class="list-li-center-wrrap-info-price">￥{{item.price}}
 														</view>
-														<view class="list-li-center-wrrap-info-text">库存：10000</view>
+														<view class="list-li-center-wrrap-info-text">
+															库存：{{item.quantity}}</view>
 													</view>
 												</view>
-												<view class="list-li-center-text">
-													<text>背部按摩</text>
-													<text>x3</text>
-												</view>
-												<view class="list-li-center-text">
-													<text>足底按摩</text>
-													<text>x2</text>
+												<view class="list-li-center-text" v-for="(i,j) in item.service"
+													:key='item.id'>
+													<text>{{i.name}}</text>
+													<text>x{{i.times}}</text>
 												</view>
 											</view>
 											<view class="box-content-main-list-li-bottom">
@@ -155,7 +161,8 @@
 													<text>删除</text>
 												</view>
 
-												<view class="box-content-main-list-li-bottom-item">
+												<view class="box-content-main-list-li-bottom-item"
+													@click="cardEdit(item.id)">
 													<text class="iconfont iconbianji-shangjia icon-font"
 														style="color: #5DBDFE;font-size: 36rpx;margin-top: 4rpx;"></text>
 													<text>编辑</text>
@@ -278,7 +285,7 @@
 		</view>
 
 		<uni-popup ref="popup" type="dialog">
-			<uni-popup-dialog type="warn" mode='base' title="警告" content="你确定要删除此项吗？" :duration="2000"
+			<uni-popup-dialog type="warn" mode='base' title="警告" :content="content" :duration="2000"
 				:before-close="true" @close="close" @confirm="confirm"></uni-popup-dialog>
 		</uni-popup>
 	</view>
@@ -298,6 +305,7 @@
 			return {
 				barHeight: 0, //顶部电量导航栏高度
 				defaultIndex: 0, //当前滑动的页面
+				content: '你确定要删除此项吗?',
 				tabsList: ["优惠券", "兑换券", "套餐卡", "礼品卡", "储值卡"],
 				couponList: [],
 				cardList: [],
@@ -336,6 +344,14 @@
 		onLoad() {
 
 		},
+		onShow() {
+			if (this.$store.state.isAddCoupon) {
+				this.getCoupon(1, 10)
+			}
+			if (this.$store.state.isAddPackageCard) {
+				this.getCard(1, 10)
+			}
+		},
 
 
 		methods: {
@@ -364,6 +380,17 @@
 					}
 				});
 			},
+			// 优惠券编辑
+			couponEdit(id) {
+				let str = {
+					type: 'edit',
+					id: id
+				}
+				this.$store.commit('upAddCoupon', false)
+				uni.navigateTo({
+					url: "../newCoupons/newCoupons?data=" + JSON.stringify(str)
+				})
+			},
 
 			// 套餐卡上拉 下拉
 			cardQueryList(pageNo, pageSize) {
@@ -388,6 +415,17 @@
 						this.isCardLoad = false
 					}
 				});
+			},
+			// 套餐卡编辑
+			cardEdit(id) {
+				var str = {
+					type: 'edit',
+					id: id,
+				}
+				this.$store.commit('upAddPackageCard', false)
+				uni.navigateTo({
+					url: '../addPackageCard/addPackageCard?data=' + JSON.stringify(str)
+				})
 			},
 
 			// 礼品卡上拉 下拉
@@ -430,6 +468,24 @@
 				this.id = id
 				this.deleteIndex = index
 				this.$refs.popup.open()
+
+				switch (this.defaultIndex) {
+					case 0:
+						this.content = '你确定要删除此优惠券吗?'
+						break;
+					case 1:
+						break;
+					case 2:
+						this.content = '你确定要删除此套餐卡吗?'
+						break;
+					case 3:
+						this.content = '你确定要删除此礼品卡吗?'
+						break;
+					case 4:
+						break;
+				}
+
+
 			},
 
 
@@ -465,6 +521,7 @@
 				this.apidelte('api/v1/store/coupon/del/' + this.id, {}).then(res => {
 					if (res.status == 200) {
 						this.couponList.splice(this.deleteIndex, 1)
+						this.getCoupon(1, 10)
 						uni.showToast({
 							title: "优惠券删除成功",
 							icon: "none"
@@ -483,6 +540,7 @@
 							title: "套餐卡删除成功",
 							icon: "none"
 						})
+						this.getCard(1, 20)
 					}
 					done()
 				});
@@ -546,15 +604,20 @@
 
 			// 底部新增按钮
 			addBtn(type) {
+				let str = {
+					type: 'add',
+				}
 				switch (type) {
 					case 'coupon': //新增优惠券
+						this.$store.commit('upAddCoupon', false)
 						uni.navigateTo({
-							url: "../newCoupons/newCoupons"
+							url: "../newCoupons/newCoupons?data=" + JSON.stringify(str)
 						})
 						break;
 					case 'set-meal': //新增套餐卡
+						this.$store.commit('upAddPackageCard', false)
 						uni.navigateTo({
-							url: '../addPackageCard/addPackageCard'
+							url: '../addPackageCard/addPackageCard?data=' + JSON.stringify(str)
 						})
 						break;
 					case 'gift': //添加礼品卡
@@ -569,10 +632,10 @@
 				var date = new Date();
 				var date1 = new Date(time);
 				var dateTime = date1.toISOString().slice(0, 10)
-				return date<date1?'待发放':dateTime
+				return date < date1 ? '待发放' : dateTime
 			},
-			
-			dateTime(time){
+
+			dateTime(time) {
 				return time.toISOString().slice(0, 10)
 			}
 

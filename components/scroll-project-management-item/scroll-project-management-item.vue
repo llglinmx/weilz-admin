@@ -117,6 +117,7 @@
 					return 0
 				}
 			},
+			store:{},
 			isChoice: {
 				type: Boolean
 			},
@@ -169,6 +170,7 @@
 				var vuedata = {
 					page_index: num, // 请求页数，
 					each_page: size, // 请求条数
+					store_id:this.store,
 				}
 				this.apiget('api/v1/store/service_reservation/index', vuedata).then(res => {
 					if (res.status == 200) {

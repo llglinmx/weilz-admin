@@ -34,7 +34,7 @@
 						<swiper-item class="swiper-box-item-list" v-for="(item,index) in tabsList" :key="item.id">
 							<scroll-project-management-item ref="check" v-model="isChoice" :isChoice='isChoice'
 								:isSearch='isSearch' @closeSearch='closeSearchBox' @selectAll='selectCilck'
-								:isSelectAll='isSelectAll' :tabIndex="index" :currentIndex="defaultIndex">
+								:isSelectAll='isSelectAll' :store='id' :tabIndex="index" :currentIndex="defaultIndex">
 							</scroll-project-management-item>
 						</swiper-item>
 					</swiper>

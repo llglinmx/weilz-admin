@@ -41,6 +41,11 @@ const httpClient = {
 							duration: 1000,
 							title: '请求错误,状态码为：'+res.statusCode
 						});
+						setTimeout(function() {
+							uni.reLaunch({
+								url: '/pages/signUp/signUp'
+							});
+						}, 500);
 					}else{
 						if (res.data.error != null) {
 							uni.showToast({
