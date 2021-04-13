@@ -40,8 +40,7 @@
 									:touchmove-propagation-enabled="true" :use-custom-refresher="true"
 									style="height: 100%;">
 									<view class="box-content-main-list">
-										<view class="box-content-main-list-li" v-for="(item,index) in couponList"
-											:key="item.id">
+										<view class="box-content-main-list-li" v-for="(item,index) in couponList">
 											<view class="box-content-main-list-li-top">
 												<view class="box-content-main-list-li-top-left">
 													<text class="iconfont iconshangjia"
@@ -118,8 +117,7 @@
 									:touchmove-propagation-enabled="true" :use-custom-refresher="true"
 									:mounted-auto-call-reload="false" style="height: 100%;">
 									<view class="box-content-main-list">
-										<view class="box-content-main-list-li" v-for="(item,index) in cardList"
-											:key="item.id">
+										<view class="box-content-main-list-li" v-for="(item,index) in cardList">
 											<view class="box-content-main-list-li-top">
 												<view class="box-content-main-list-li-top-left">
 													<text class="iconfont iconshangjia"
@@ -142,8 +140,7 @@
 															库存：{{item.quantity}}</view>
 													</view>
 												</view>
-												<view class="list-li-center-text" v-for="(i,j) in item.service"
-													:key='item.id'>
+												<view class="list-li-center-text" v-for="(i,j) in item.service">
 													<text>{{i.name}}</text>
 													<text>x{{i.times}}</text>
 												</view>
@@ -184,8 +181,7 @@
 									:touchmove-propagation-enabled="true" :use-custom-refresher="true"
 									:mounted-auto-call-reload="false" style="height: 100%;">
 									<view class="box-content-main-list">
-										<view class="box-content-main-list-li" v-for="(item,index) in giftList"
-											:key="item.id">
+										<view class="box-content-main-list-li" v-for="(item,index) in giftList">
 											<view class="box-content-main-list-li-top">
 												<view class="box-content-main-list-li-top-left">
 													<text class="iconfont iconshangjia"
@@ -248,7 +244,8 @@
 													<text>删除</text>
 												</view>
 
-												<view class="box-content-main-list-li-bottom-item">
+												<view class="box-content-main-list-li-bottom-item"
+													@click="packageEdit(item.id)">
 													<text class="iconfont iconbianji-shangjia icon-font"
 														style="color: #5DBDFE;font-size: 36rpx;"></text>
 													<text>编辑</text>
@@ -350,6 +347,9 @@
 			}
 			if (this.$store.state.isAddPackageCard) {
 				this.getCard(1, 10)
+			}
+			if (this.$store.state.isAddGift) {
+				this.getGift(1, 10)
 			}
 		},
 
@@ -453,7 +453,9 @@
 							return false;
 						}
 						this.isGiftData = false
-						this.isGiftLoads = false
+						this.isGiftLoad = false
+
+
 					}
 				});
 			},
@@ -461,6 +463,17 @@
 			// 礼品卡展开 收起
 			openClose(index) {
 				this.giftList[index].isOpen = !this.giftList[index].isOpen
+			},
+
+			//礼品卡编辑
+			packageEdit(id) {
+				var str = {
+					id: id,
+					type: 'edit',
+				}
+				uni.navigateTo({
+					url: '../addGiftCard/addGiftCard?data=' + JSON.stringify(str)
+				})
 			},
 
 			//点击打开删除确认弹窗
@@ -555,6 +568,7 @@
 							title: "礼品卡删除成功",
 							icon: "none"
 						})
+						this.giftList(1, 10)
 					}
 					done()
 				});
@@ -621,8 +635,9 @@
 						})
 						break;
 					case 'gift': //添加礼品卡
+						this.$store.commit('upAddGift', false)
 						uni.navigateTo({
-							url: "../addGiftCard/addGiftCard"
+							url: '../addGiftCard/addGiftCard?data=' + JSON.stringify(str)
 						})
 						break;
 				}

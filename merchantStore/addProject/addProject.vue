@@ -166,14 +166,16 @@
 			<btn-sky-blue btnName="确认添加" @btnClick="confirmAdd" v-if="this.type=='add'" />
 			<btn-sky-blue btnName="确认修改" @btnClick="confirmEdit" v-if="this.type=='edit'" />
 		</view>
-		<popup-list-select @cancel="storeCategoryPopup" @confirm="storeCategoryConfirm" :visible='isStore'
-			:dataList="storeCategoryList">
-		</popup-list-select>
-		<popup-list-select @cancel="platformPopup" @confirm="platformConfirm" :visible='isPlatform'
-			:dataList="platformList">
+		<popup-list-select :skid='from.cid' @cancel="storeCategoryPopup" @confirm="storeCategoryConfirm"
+			:visible='isStore' :dataList="storeCategoryList">
 		</popup-list-select>
 
-		<popup-list-select @cancel="statePopup" @confirm="stateConfirm" :visible='isState' :dataList="stateList">
+		<popup-list-select :skid='from.store_cid' @cancel="platformPopup" @confirm="platformConfirm"
+			:visible='isPlatform' :dataList="platformList">
+		</popup-list-select>
+
+		<popup-list-select :skid='from.status' @cancel="statePopup" @confirm="stateConfirm" :visible='isState'
+			:dataList="stateList">
 		</popup-list-select>
 	</view>
 </template>
@@ -225,11 +227,11 @@
 				stateName: '',
 				stateList: [{
 						name: '启用',
-						state: 1
+						id: 1
 					},
 					{
 						name: '关闭',
-						state: 0
+						id: 0
 					},
 				],
 				normsList: [{
@@ -304,7 +306,7 @@
 			},
 			// 状态弹窗选择确认
 			stateConfirm(e) {
-				this.from.status = e.state
+				this.from.status = e.id
 				this.stateName = e.name
 			},
 
@@ -479,7 +481,6 @@
 				this.apiget('api/v1/store/service_reservation/index/' + this.id, {}).then(res => {
 					if (res.status == 200) {
 						var data = res.data
-
 						this.from.name = data.name
 						this.storeId = data.store
 						this.from.cid = data.cid
@@ -489,8 +490,8 @@
 						this.imageList = data.bimg
 						this.from.service_time = data.service_time
 						this.from.order_usage_time = data.order_usage_time
-						
-						this.isCurr = data.order_usage_time == 1? true: false
+
+						this.isCurr = data.order_usage_time == 1 ? true : false
 
 						this.from.status = data.status
 						this.stateName = data.status == 1 ? "启用" : '关闭'

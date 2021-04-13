@@ -147,11 +147,13 @@
 			<btn-sky-blue btnName="确认添加" @btnClick="confirmAdd" v-if="type =='add'" />
 			<btn-sky-blue btnName="确认修改" @btnClick="confirmEdit" v-if="type =='edit'" />
 		</view>
-		<popup-list-select @cancel="storeCancel" @confirm="storeConfirm" :visible='isStore' :dataList="storeList">
+		<popup-list-select :skid='from.store' @cancel="storeCancel" @confirm="storeConfirm" :visible='isStore' :dataList="storeList">
 		</popup-list-select>
-		<popup-list-select @cancel="codeCancel" @confirm="codeConfirm" :visible='isCode' :dataList="codeList">
+		
+		<popup-list-select :skid='from.code_type' @cancel="codeCancel" @confirm="codeConfirm" :visible='isCode' :dataList="codeList">
 		</popup-list-select>
-		<popup-list-select @cancel="accessCancel" @confirm="accessConfirm" :visible='isAccess' :dataList="accessList">
+		
+		<popup-list-select :skid='from.access' @cancel="accessCancel" @confirm="accessConfirm" :visible='isAccess' :dataList="accessList">
 		</popup-list-select>
 
 		<select-date @cancel="dateStartCancel" @confirm="dateStartConfirm" :visible='isStartDate' />

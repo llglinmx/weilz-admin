@@ -8,7 +8,7 @@
 				<view class="box-content-user-info">
 					<view class="box-content-user-info-top">
 						<view class="box-content-user-info-top-name">
-							张女士
+							{{infoData.name}}
 						</view>
 						<view class="box-content-user-info-top-leval">
 							<image src="../../static/images/grade-yellow.png" mode="aspectFill"></image>
@@ -20,7 +20,7 @@
 					</view>
 				</view>
 				<view class="box-content-user-image">
-					<image src="../../static/images/userImage.png" mode="aspectFill"></image>
+					<image :src="infoData.avatar" mode="aspectFill"></image>
 				</view>
 			</view>
 			<view class="box-content-wrap">
@@ -32,23 +32,29 @@
 			<view class="box-content-man">
 				<view class="box-content-man-item">
 					<view class="box-content-man-item-title">手机号码：</view>
-					<view class="box-content-man-item-text">13812345678</view>
+					<view class="box-content-man-item-text">{{infoData.mobile}}</view>
 				</view>
 				<view class="box-content-man-item">
 					<view class="box-content-man-item-title">消费金额：</view>
-					<view class="box-content-man-item-text">280.00</view>
+					<view class="box-content-man-item-text">{{infoData.order_status.consumption_money}}</view>
 				</view>
 			</view>
 		</view>
 		<view class="box-footer">
-			<view class="box-footer-btn-del flex-center">删除客户</view>
-			<view class="box-footer-btn-edit flex-center" @click="modify">修改资料</view>
+			<btn-sky-blue btnName="删除客户" @btnClick="deleteBtn" />
 		</view>
+		<uni-popup ref="popup" type="dialog">
+			<uni-popup-dialog type="warn" mode='base' title="警告" content="你确定要删除该客户吗?" :duration="2000"
+				:before-close="true" @close="close" @confirm="confirm"></uni-popup-dialog>
+		</uni-popup>
 	</view>
 </template>
 
 <script>
 	import navTitleBalck from "../../components/nav-title-balck/nav-title-balck.vue"
+	import btnSkyBlue from "../../components/btn-sky-blue/btn-sky-blue.vue"
+	import UniPopup from "../../components/uni-popup/uni-popup.vue"
+	import UniPopupDialog from "../../components/uni-popup/uni-popup-dialog.vue"
 	export default {
 		data() {
 			return {
@@ -66,10 +72,24 @@
 						number: "36"
 					},
 				],
+				infoData: {
+					name: '',
+					avatar: '',
+					mobile: '',
+					order_status: {
+						consumption_money: ''
+					}
+				}
 			};
 		},
 		components: {
-			navTitleBalck
+			navTitleBalck,
+			btnSkyBlue,
+			UniPopup,
+			UniPopupDialog
+		},
+		onLoad(options) {
+			this.getCustomerDetails(options.id)
 		},
 		onReady() {
 			// 获取顶部电量状态栏高度
@@ -80,11 +100,43 @@
 			});
 		},
 		methods: {
-			// 修改资料
-			modify() {
-				uni.navigateTo({
-					url: "../customerEditer/customerEditer"
-				})
+			// 删除客户
+			deleteBtn() {
+				this.$refs.popup.open()
+			},
+			// 获取客户详情
+			getCustomerDetails(id) {
+				this.apiget('api/v1/store/user_list/index/' + id, {}).then(res => {
+					if (res.status == 200) {
+						this.infoData = res.data.member
+					}
+				});
+			},
+			// 弹窗点击取消
+			close(done) {
+				// TODO 做一些其他的事情，before-close 为true的情况下，手动执行 done 才会关闭对话框
+				// ...
+				done()
+			},
+			// 弹窗点击确认
+			confirm(done, value) {
+				done()
+				return false
+				this.apidelte('api/v1/store/coupon/del/' + this.id, {}).then(res => {
+					if (res.status == 200) {
+						this.$store.commit('upDeleteCustomer', true)
+						uni.showToast({
+							title: "客户删除成功",
+							icon: "none"
+						})
+						setTimeout(() => {
+							uni.navigateBack({
+								delta: 1
+							})
+						}, 500)
+					}
+					done()
+				});
 			},
 		}
 	}
@@ -157,6 +209,7 @@
 					image {
 						width: 116rpx;
 						height: 116rpx;
+						border-radius: 50%;
 					}
 				}
 			}
@@ -230,28 +283,6 @@
 		.box-footer {
 			padding: 30rpx 40rpx;
 			box-sizing: border-box;
-			display: flex;
-			align-items: center;
-			justify-content: space-between;
-
-			.box-footer-btn-del {
-				width: 318rpx;
-				height: 78rpx;
-				background: #F7F7F7;
-				border: 1rpx solid #666666;
-				border-radius: 10rpx;
-				font-size: 32rpx;
-				color: #666;
-			}
-
-			.box-footer-btn-edit {
-				width: 320rpx;
-				height: 80rpx;
-				background: #5DBDFE;
-				border-radius: 10rpx;
-				font-size: 32rpx;
-				color: #fff;
-			}
 		}
 	}
 </style>

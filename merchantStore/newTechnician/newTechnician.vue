@@ -57,7 +57,7 @@
 					<view class="box-content-list-li-title">电子邮箱</view>
 					<view class="box-content-list-li-info">
 						<view class="box-content-list-li-info-input">
-							<input type="text" v-model.email="from.email" placeholder="请输入电子邮箱" />
+							<input type="number" v-model.email="from.email" placeholder="请输入电子邮箱" />
 						</view>
 					</view>
 				</view>
@@ -227,31 +227,36 @@
 			<btn-sky-blue btnName="确认提交" @btnClick="confirmAdd" v-if="type=='add'" />
 			<btn-sky-blue btnName="确认修改" @btnClick="confirmEdit" v-if="type=='edit'" />
 		</view>
-		<popup-list-select @cancel="storePopup" @confirm="storeConfirm" :visible='visible' :dataList="storeList">
+		<popup-list-select :skid='from.store' @cancel="storePopup" @confirm="storeConfirm" :visible='visible'
+			:dataList="storeList">
 		</popup-list-select>
 
-		<popup-list-select @cancel="storeCategoryPopup" @confirm="storeCategoryConfirm" :visible='isStore'
-			:dataList="storeCategoryList">
+		<popup-list-select :skid='from.store_cid' @cancel="storeCategoryPopup" @confirm="storeCategoryConfirm"
+			:visible='isStore' :dataList="storeCategoryList">
 		</popup-list-select>
-		<popup-list-select @cancel="platformPopup" @confirm="platformConfirm" :visible='isPlatform'
-			:dataList="platformList">
+		<popup-list-select :skid='from.platform' @cancel="platformPopup" @confirm="platformConfirm"
+			:visible='isPlatform' :dataList="platformList">
 		</popup-list-select>
 
-		<popup-list-select @cancel="projectPopup" @confirm="projectConfirm" :visible='isProject'
+		<popup-list-select :skid='from.service' @cancel="projectPopup" @confirm="projectConfirm" :visible='isProject'
 			:dataList="projectList">
 		</popup-list-select>
 
-		<popup-list-select @cancel="gradePopup" @confirm="gradeConfirm" :visible='isGrade' :dataList="gradeList">
+		<popup-list-select :skid='from.grade' @cancel="gradePopup" @confirm="gradeConfirm" :visible='isGrade'
+			:dataList="gradeList">
 		</popup-list-select>
 
 
-		<popup-list-select @cancel="timePopup" @confirm="timeConfirm" :visible='isTime' :dataList="timeList">
+		<popup-list-select :skid='from.schedule' @cancel="timePopup" @confirm="timeConfirm" :visible='isTime'
+			:dataList="timeList">
 		</popup-list-select>
 
-		<popup-list-select @cancel="userPopup" @confirm="userConfirm" :visible='isUser' :dataList="userList">
+		<popup-list-select :skid='from.uids' @cancel="userPopup" @confirm="userConfirm" :visible='isUser'
+			:dataList="userList">
 		</popup-list-select>
 
-		<popup-list-select @cancel="statePopup" @confirm="stateConfirm" :visible='isState' :dataList="stateList">
+		<popup-list-select :skid='from.status' @cancel="statePopup" @confirm="stateConfirm" :visible='isState'
+			:dataList="stateList">
 		</popup-list-select>
 	</view>
 </template>
@@ -290,11 +295,11 @@
 				userList: [],
 				stateList: [{
 						name: '启用',
-						state: 1
+						id: 1
 					},
 					{
 						name: '关闭',
-						state: 0
+						id: 0
 					},
 				],
 				storeCategoryName: '',
@@ -313,6 +318,7 @@
 					platform: '', //技师分类ID
 					grade: '', //技师等级
 					simg: '', //工作招聘
+					photo: [], //
 					mobile: '',
 					email: '',
 					status: '',
@@ -476,7 +482,7 @@
 			},
 			// 状态弹窗选择确认
 			stateConfirm(e) {
-				this.from.status = e.state
+				this.from.status = e.id
 				this.stateName = e.name
 			},
 
@@ -502,7 +508,7 @@
 					service_times: this.from.service_times, //工龄
 					license_id: this.from.license_id, //执照id
 					license_img: this.from.license_img, //执照图片
-					simg: this.from.simg, //工作照片
+					photo: JSON.stringify(this.from.photo), //工作照片
 					service_fee: this.from.service_fee, //项目服务费
 					fee: this.from.fee, //技师提成
 					schedule: this.from.schedule, // 工作时间表
@@ -550,7 +556,7 @@
 					service_times: this.from.service_times, //工龄
 					license_id: this.from.license_id, //执照id
 					license_img: this.from.license_img, //执照图片
-					simg: this.from.simg, //工作照片
+					photo: JSON.stringify(this.from.photo), //工作照片
 					service_fee: this.from.service_fee, //项目服务费
 					fee: this.from.fee, //技师提成
 					schedule: this.from.schedule, // 工作时间表
@@ -608,7 +614,13 @@
 									}
 									// 上传图片
 									uploadImage(obj, file, path, suffix, result => {
-										this.from.simg = result
+										// this.from.simg = result
+										this.from.photo = []
+										var str = {
+											name: result,
+											content: []
+										}
+										this.from.photo.push(str)
 									});
 								}
 							});
@@ -673,7 +685,9 @@
 						this.from.service_times = data.service_times
 						this.from.license_id = data.license_id
 						this.from.license_img = data.license_img
-						this.from.simg = data.simg
+						
+						this.from.simg = data.photo[0].name
+						this.from.photo = data.photo[0].name
 						this.from.service_fee = data.service_fee
 						this.from.fee = data.fee
 						this.from.schedule = data.schedule
@@ -719,7 +733,7 @@
 
 
 						this.stateList.forEach(item => {
-							if (item.state == data.status) {
+							if (item.id == data.status) {
 								this.stateName = item.name
 							}
 						})

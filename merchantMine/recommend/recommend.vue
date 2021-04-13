@@ -10,147 +10,9 @@
 			<view class="box-content-wrap">
 				<view class="box-content-wrap-item">
 					<swiper class="swiper-box" :current="defaultIndex" @change="tabChange">
-						<swiper-item class="swiper-box-item-list">
-							<view class="box-item-list-recommend public-style">
-								<view class="box-item-list-business-address">
-									<view class="box-item-list-business-address-item">
-										<text class="title">福建省</text>
-										<text class="iconfont iconxiangxiajiantou icon-font" style="color: #ccc;font-size: 28rpx;"></text>
-									</view>
-									<view class="box-item-list-business-address-item">
-										<text class="title">厦门市</text>
-										<text class="iconfont iconxiangxiajiantou icon-font" style="color: #ccc;font-size: 28rpx;"></text>
-									</view>
-								</view>
-								<view class="box-item-list-recommend-main">
-									<view class="box-item-list-recommend-main-list">
-										<view class="recommend-main-list-li" v-for="(item,index) in 10" :key="index">
-											<view class="recommend-main-list-li-top">
-												<view class="recommend-main-list-li-top-left">
-													<view class="recommend-main-list-li-top-left-image">
-														<image src="../../static/images/userImage.png" mode="aspectFill"></image>
-													</view>
-													<view class="recommend-main-list-li-top-left-info">
-														<view class="recommend-main-list-li-top-left-info-title">郑坤宇</view>
-														<view class="recommend-main-list-li-top-left-info-text">执业6年</view>
-													</view>
-												</view>
-												<view class="recommend-main-list-li-top-btn flex-center">联系TA</view>
-											</view>
-											<view class="recommend-main-list-li-bottom">
-												郑坤宇律师擅长民事合同纠纷、民间借贷纠纷、交通事故纠纷、劳动工伤纠纷、人身损害纠纷。
-											</view>
-										</view>
-									</view>
-								</view>
-							</view>
-						</swiper-item>
-						<swiper-item class="swiper-box-item-list">
-							<view class="box-item-list-recommend public-style">
-								<view class="box-item-list-business-address">
-									<view class="box-item-list-business-address-item">
-										<text class="title">福建省</text>
-										<text class="iconfont iconxiangxiajiantou icon-font" style="color: #ccc;font-size: 28rpx;"></text>
-									</view>
-									<view class="box-item-list-business-address-item">
-										<text class="title">厦门市</text>
-										<text class="iconfont iconxiangxiajiantou icon-font" style="color: #ccc;font-size: 28rpx;"></text>
-									</view>
-								</view>
-								<view class="box-item-list-recommend-main">
-									<view class="box-item-list-recommend-main-list">
-										<view class="recommend-main-list-li" v-for="(item,index) in 10" :key="index">
-											<view class="recommend-main-list-li-top">
-												<view class="recommend-main-list-li-top-left">
-													<view class="recommend-main-list-li-top-left-image">
-														<image src="../../static/images/userImage.png" mode="aspectFill"></image>
-													</view>
-													<view class="recommend-main-list-li-top-left-info">
-														<view class="recommend-main-list-li-top-left-info-title">刘小霞</view>
-														<view class="recommend-main-list-li-top-left-info-text">执业6年</view>
-													</view>
-												</view>
-												<view class="recommend-main-list-li-top-btn flex-center">联系TA</view>
-											</view>
-											<view class="recommend-main-list-li-bottom">
-												税务师，从事财务工作十八年，具有丰富的财务实战经验和涉税实战经验。
-											</view>
-										</view>
-									</view>
-								</view>
-							</view>
-						</swiper-item>
-						<swiper-item class="swiper-box-item-list">
-							<view class="box-item-list-business public-style">
-								<view class="box-item-list-business-address">
-									<view class="box-item-list-business-address-item">
-										<text class="title">福建省</text>
-										<text class="iconfont iconxiangxiajiantou icon-font" style="color: #ccc;font-size: 28rpx;"></text>
-									</view>
-									<view class="box-item-list-business-address-item">
-										<text class="title">厦门市</text>
-										<text class="iconfont iconxiangxiajiantou icon-font" style="color: #ccc;font-size: 28rpx;"></text>
-									</view>
-								</view>
-								<view class="box-item-list-business-main">
-									<view class="business-main-list">
-										<view class="business-main-list-li" v-for="(item,index) in 20" :key="index">
-											<view class="business-main-list-li-image">
-												<image src="../../static/images/1.png" mode="aspectFill"></image>
-											</view>
-											<view class="business-main-list-li-info">
-												<view class="business-main-list-li-info-title">花·SUN SPA</view>
-												<view class="business-main-list-li-info-score">
-													<text class="iconfont iconwujiaoxing icon-font" style="color: #FFCD4D;font-size: 28rpx;" v-for="item in 5"></text>
-													<text>5分</text>
-												</view>
-												<view class="business-main-list-li-info-text">地址：厦门市 集美区 杏滨路罗约酒店负一楼</view>
-												<view class="business-main-list-li-info-text">电话：0592-6060448</view>
-											</view>
-										</view>
-									</view>
-								</view>
-							</view>
-						</swiper-item>
-						<swiper-item class="swiper-box-item-list">
-							<view class="box-item-list-recommend public-style">
-								<view class="box-item-list-business-address">
-									<view class="box-item-list-business-address-item">
-										<text class="title">福建省</text>
-										<text class="iconfont iconxiangxiajiantou icon-font" style="color: #ccc;font-size: 28rpx;"></text>
-									</view>
-									<view class="box-item-list-business-address-item">
-										<text class="title">厦门市</text>
-										<text class="iconfont iconxiangxiajiantou icon-font" style="color: #ccc;font-size: 28rpx;"></text>
-									</view>
-								</view>
-								<view class="box-item-list-recommend-main">
-									<view class="box-item-list-recommend-main-list">
-										<view class="recommend-main-list-li" v-for="(item,index) in 10" :key="index">
-											<view class="recommend-main-list-li-top">
-												<view class="recommend-main-list-li-top-left">
-													<view class="recommend-main-list-li-top-left-image">
-														<image src="../../static/images/userImage.png" mode="aspectFill"></image>
-													</view>
-													<view class="recommend-main-list-li-top-left-info">
-														<view class="recommend-main-list-li-top-left-info-title">
-															<text class="title-name">张先生</text>
-															<text class="title-text">总监</text>
-														</view>
-														<view class="recommend-main-list-li-top-left-info-text" style="color:#333333">
-															上海市某资产管理公司
-														</view>
-													</view>
-												</view>
-												<view class="recommend-main-list-li-top-btn flex-center">投递项目</view>
-											</view>
-											<view class="recommend-main-list-li-bottom" style="color: #999;padding-left: 118rpx;box-sizing: border-box;">
-												关注地区：安徽省/北京/重庆/福建省/甘肃省/广东省/广西/贵州省
-											</view>
-										</view>
-									</view>
-								</view>
-							</view>
+						<swiper-item class="swiper-box-item-list" v-for="(item,index) in tabsList" :key="item.id">
+							<scroll-recommend-merchant-item :tabIndex="index" :typeId='typeId'
+								:currentIndex="defaultIndex"></scroll-recommend-merchant-item>
 						</swiper-item>
 					</swiper>
 				</view>
@@ -165,18 +27,27 @@
 <script>
 	import merchantTabs from "../../components/merchant-tabs/merchant-tabs.vue"
 	import navTitleBalck from "../../components/nav-title-balck/nav-title-balck.vue"
+	import loading from '../../components/loading/loading.vue'
+	import noData from '../../components/no-data/no-data.vue'
+	import zPaging from '../../components/z-paging/components/z-paging/z-paging.vue'
+	import scrollRecommendMerchantItem from '../../components/scroll-recommend-merchant-item/scroll-recommend-merchant-item.vue'
 	export default {
 		data() {
 			return {
 				barHeight: 0, //顶部电量导航栏高度
-				tabsList: ["律师推荐", "会计推荐", "商家推荐", "融资商推荐"],
+				tabsList: [],
 				defaultIndex: 0, //当前滑动的页面
-				navTitle: "律师推荐", //标题名称
+				navTitle: "", //标题名称
+				typeId: ''
 			};
 		},
 		components: {
 			merchantTabs,
-			navTitleBalck
+			navTitleBalck,
+			loading,
+			noData,
+			zPaging,
+			scrollRecommendMerchantItem
 		},
 		onReady() {
 			// 获取顶部电量状态栏高度
@@ -186,45 +57,49 @@
 				}
 			});
 		},
+		onLoad() {
+			this.getType()
+		},
 		methods: {
+
+
+			// 获取分类
+			getType() {
+				var vuedata = {
+					type: 13
+				}
+				this.apiget('pc/category/category_type', vuedata).then(res => {
+					if (res.status == 200) {
+						this.tabsList = res.data.reverse()
+						this.tabsList.map(item => {
+							item.name = item.name + '推荐'
+						})
+
+
+						this.navTitle = this.tabsList[0].name
+						this.typeId = this.tabsList[0].id
+					}
+				});
+			},
+
+			getData() {
+
+			},
+
+
 
 			// tabs 点击
 			tabClick(e) {
 				this.defaultIndex = e
-				switch (this.defaultIndex) {
-					case 0:
-						this.navTitle = "律师推荐"
-						break;
-					case 1:
-						this.navTitle = "会计推荐"
-						break;
-					case 2:
-						this.navTitle = "商家推荐"
-						break;
-					case 3:
-						this.navTitle = "融资商推荐"
-						break;
-				}
 			},
 			// 滑动切换列表
 			tabChange(e) {
 
 				this.$refs.boxTabs.tabToIndex(e.detail.current)
 				this.defaultIndex = e.detail.current
-				switch (this.defaultIndex) {
-					case 0:
-						this.navTitle = "律师推荐"
-						break;
-					case 1:
-						this.navTitle = "会计推荐"
-						break;
-					case 2:
-						this.navTitle = "商家推荐"
-						break;
-					case 3:
-						this.navTitle = "融资商推荐"
-						break;
-				}
+				this.navTitle = this.tabsList[this.defaultIndex].name
+
+				this.typeId = this.tabsList[this.defaultIndex].id
 			},
 		}
 	}
@@ -263,202 +138,6 @@
 							height: 100%;
 							overflow-y: scroll;
 
-							.box-item-list-business {
-								height: 100%;
-								display: flex;
-								flex-direction: column;
-
-
-								.box-item-list-business-main {
-									flex: 1;
-									overflow-y: scroll;
-									margin-bottom: 40rpx;
-
-									.business-main-list {
-										padding-left: 40rpx;
-										box-sizing: border-box;
-
-										.business-main-list-li:first-child {
-											padding-top: 0;
-										}
-
-										.business-main-list-li {
-											display: flex;
-											align-items: center;
-											padding: 40rpx 40rpx 40rpx 0;
-											box-sizing: border-box;
-											border-bottom: 1rpx solid #ededed;
-
-											.business-main-list-li-image {
-												display: flex;
-												align-items: center;
-
-												image {
-													width: 164rpx;
-													height: 164rpx;
-												}
-											}
-
-											.business-main-list-li-info {
-												margin-left: 20rpx;
-												flex: 1;
-												height: 164rpx;
-
-												.business-main-list-li-info-title {
-													line-height: 32rpx;
-													font-size: 34rpx;
-													color: #000;
-												}
-
-												.business-main-list-li-info-score {
-													margin-top: 10rpx;
-													display: flex;
-													align-items: center;
-
-													text {
-														margin-right: 6rpx;
-														font-size: 24rpx;
-														color: #999;
-													}
-												}
-
-												.business-main-list-li-info-text {
-													margin-top: 10rpx;
-													font-size: 24rpx;
-													color: #666;
-												}
-											}
-										}
-									}
-								}
-							}
-
-							.box-item-list-recommend {
-								height: 100%;
-								display: flex;
-								flex-direction: column;
-
-								.box-item-list-recommend-main {
-									flex: 1;
-									overflow-y: scroll;
-
-									.box-item-list-recommend-main-list {
-										margin-bottom: 40rpx;
-										padding-left: 40rpx;
-										box-sizing: border-box;
-
-										.recommend-main-list-li:first-child {
-											padding-top: 0;
-										}
-
-										.recommend-main-list-li {
-											padding: 40rpx 40rpx 40rpx 0;
-											box-sizing: border-box;
-											border-bottom: 1rpx solid #ededed;
-
-											.recommend-main-list-li-top {
-												display: flex;
-												align-items: center;
-												justify-content: space-between;
-
-												.recommend-main-list-li-top-left {
-													display: flex;
-													align-items: center;
-
-													.recommend-main-list-li-top-left-image {
-														display: flex;
-														align-items: center;
-
-														image {
-															width: 98rpx;
-															height: 98rpx;
-														}
-													}
-
-													.recommend-main-list-li-top-left-info {
-														margin-left: 20rpx;
-														flex: 1;
-
-														.recommend-main-list-li-top-left-info-title {
-															display: flex;
-															align-items: center;
-															font-size: 34rpx;
-															color: #000;
-
-															.title-name {
-																display: flex;
-																align-items: center;
-																height: 34rpx;
-																padding-right: 16rpx;
-																border-right: 1rpx solid #666;
-																font-size: 34rpx;
-																color: #000;
-															}
-
-															.title-text {
-																margin-left: 16rpx;
-																font-size: 28rpx;
-																color: #333;
-															}
-														}
-
-														.recommend-main-list-li-top-left-info-text {
-															margin-top: 15rpx;
-															font-size: 26rpx;
-															color: #999;
-														}
-
-													}
-												}
-
-												.recommend-main-list-li-top-btn {
-													width: 149rpx;
-													height: 60rpx;
-													background: #5DBDFE;
-													border-radius: 30rpx;
-													color: #fff;
-													font-size: 28rpx;
-												}
-											}
-
-											.recommend-main-list-li-bottom {
-												margin-top: 15rpx;
-												font-size: 26rpx;
-												color: #333;
-											}
-										}
-									}
-								}
-							}
-
-
-
-							.public-style {
-								.box-item-list-business-address {
-									padding: 0 40rpx;
-									box-sizing: border-box;
-									margin: 30rpx 0;
-									display: flex;
-									flex-wrap: wrap;
-
-									.box-item-list-business-address-item {
-										display: flex;
-										align-items: center;
-										padding: 16rpx 24rpx;
-										box-sizing: border-box;
-										margin-right: 20rpx;
-										background: #F7F7F7;
-										border-radius: 30rpx;
-
-										.title {
-											line-height: 28rpx;
-											margin-right: 16rpx;
-											font-size: 28rpx;
-											color: #666;
-										}
-									}
-								}
-							}
 
 						}
 					}

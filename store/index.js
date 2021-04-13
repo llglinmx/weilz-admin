@@ -22,10 +22,13 @@ const store = new Vuex.Store({
 		isAdd: false, //用于判断是否发布技师招聘
 		mapObj: {}, //选择的定位具体地址信息
 		isAddStore: false, //是否有添加门店
+		isAddRoom: false, //是否有添加房间
+		isDeleteCustomer: false, //是否删除客户
 		isAddTechhnician: false, //是否有添加技师
 		isAddProject: false, //是否有添加项目
-		isAddCoupon:false,//是否有添加优惠券
-		isAddPackageCard:false,//是否有添加套餐卡
+		isAddCoupon: false, //是否有添加优惠券
+		isAddPackageCard: false, //是否有添加套餐卡
+		isAddGift: false, //是否有添加礼品卡
 	},
 	mutations: {
 		//用于判断是否添加地址 等同于发送监听
@@ -41,6 +44,15 @@ const store = new Vuex.Store({
 			state.isAddStore = bool
 		},
 
+
+		upAddRoom(state, bool) {
+			state.isAddRoom = bool
+		},
+
+		upDeleteCustomer(state, bool) {
+			state.isDeleteCustomer = bool
+		},
+
 		upAddTechhnician(state, bool) {
 			state.isAddTechhnician = bool
 		},
@@ -53,6 +65,9 @@ const store = new Vuex.Store({
 		},
 		upAddPackageCard(state, bool) {
 			state.isAddPackageCard = bool
+		},
+		upAddGift(state, bool) {
+			state.isAddGift = bool
 		},
 	},
 	actions: {}

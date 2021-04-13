@@ -18,8 +18,10 @@
 			<view class="box-content-video">
 				<view class="box-content-video-main">
 					<view class="box-content-video-main-src">
-						<video :src="videoSrc" id="myVideo" @pause="pauseFun" :style="{display:isShow?'block':'none'}"></video>
-						<image src="../../static/images/cover.png" mode="aspectFill"  :style="{display:!isPlay&&!isShow?'block':'none'}"></image>
+						<video :src="videoSrc" id="myVideo" @pause="pauseFun"
+							:style="{display:isShow?'block':'none'}"></video>
+						<image :src="dataInfo.simg" mode="aspectFill"
+							:style="{display:!isPlay&&!isShow?'block':'none'}"></image>
 					</view>
 					<view class="box-content-video-main-cover flex-center" v-if="!isPlay">
 						<text class="iconfont iconbofang icon-font" style="color: #fff;font-size: 110rpx;"
@@ -92,6 +94,11 @@
 				isPlay: false, //是否播放
 				isShow: false, //第一次加载
 				videoplay: {},
+				dataInfo: {
+					name: '',
+					createtime: '',
+					simg: '',
+				},
 				videoSrc: 'https://apd-fe51a49b31e9f4791de3aba0ff95cffc.v.smtcdns.com/mv.music.tc.qq.com/AxT5QoAujYLHOC1WH3hU_xXc45YtxPaUmykltbJmjd4o/B77963B571B681CFB421F6B863E38CCB77EA5F62A793301E47FA920536D48C17A85A80B335FAFD41239B574F68585EA3ZZqqmusic_default/qmmv_0b6btyaaaaaacqamncymgjpfjhqaacpaaaca.f9844.mp4?fname=qmmv_0b6btyaaaaaacqamncymgjpfjhqaacpaaaca.f9844.mp4'
 			};
 		},
@@ -102,6 +109,9 @@
 			this.videoplay = wx.createVideoContext('myVideo')
 			console.log(this.videoplay)
 		},
+		onLoad(options) {
+			this.getDataDetails(options.id)
+		},
 		onReady() {
 			// 获取顶部电量状态栏高度
 			uni.getSystemInfo({
@@ -109,7 +119,7 @@
 					this.barHeight = res.statusBarHeight
 				}
 			});
-			
+
 		},
 		methods: {
 			// 返回
@@ -130,6 +140,16 @@
 			pauseFun(e) {
 				this.isPlay = false
 			},
+
+			// 获取详情
+			getDataDetails(id) {
+				this.apiget('api/v1/store/Video_tutorial/video_info/' + id, {}).then(res => {
+					if (res.status == 200) {
+						this.dataInfo = res.data.data
+					}
+				});
+			},
+
 		}
 	}
 </script>

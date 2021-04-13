@@ -16,7 +16,8 @@
 					<view class="box-content-main-list-li" v-for="(item,index) in dataList" :key="item.id">
 						<view class="box-content-main-list-li-top">
 							<view class="box-content-main-list-li-top-image">
-								<image :src="item.simg" mode="aspectFill"></image>
+								<image v-if="item.photo!=null&&item.photo!=''" :src="item.photo[0].name"
+									mode="aspectFill"></image>
 								<text class="flex-center" v-if="tabIndex==1">临时技师</text>
 							</view>
 							<view class="box-content-main-list-li-top-info">

@@ -5,7 +5,7 @@
 			"style": {
 				"navigationBarTitleText": "登录"
 			}
-		},{
+		}, {
 			"path": "pages/technicianHome/technicianHome",
 			"style": {
 				"navigationBarTitleText": "首页",
@@ -19,7 +19,7 @@
 				"navigationBarTextStyle": "white", //状态栏字体颜色
 				"navigationBarTitleText": "登录中心"
 			}
-		},  {
+		}, {
 			"path": "pages/merchantHome/merchantHome",
 			"style": {
 				"navigationBarTitleText": "商家首页",
@@ -322,16 +322,14 @@
 					"enablePullDownRefresh": false
 				}
 
-			}    ,{
-                    "path" : "selectLocation/selectLocation",
-                    "style" :                                                                                    
-                {
-                    "navigationBarTitleText": "",
-                    "enablePullDownRefresh": false
-                }
-                
-                }
-            ]
+			}, {
+				"path": "selectLocation/selectLocation",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}]
 		}, {
 			"root": "merchantMall",
 			"pages": []
@@ -360,13 +358,6 @@
 
 			}, {
 				"path": "customerDetails/customerDetails",
-				"style": {
-					"navigationBarTitleText": "",
-					"enablePullDownRefresh": false
-				}
-
-			}, {
-				"path": "customerEditer/customerEditer",
 				"style": {
 					"navigationBarTitleText": "",
 					"enablePullDownRefresh": false
@@ -520,7 +511,16 @@
 					"enablePullDownRefresh": false
 				}
 
-			}]
+			}    ,{
+                    "path" : "customerEditer/customerEditer",
+                    "style" :                                                                                    
+                {
+                    "navigationBarTitleText": "",
+                    "enablePullDownRefresh": false
+                }
+                
+                }
+            ]
 		}
 	],
 	"globalStyle": {

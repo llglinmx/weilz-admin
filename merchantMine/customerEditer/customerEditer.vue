@@ -116,21 +116,17 @@
 		flex-direction: column;
 		height: 100%;
 		background: #F7F7F7;
-
 		.box-head {
 			background-color: #fff;
-
 			.box-head-nav {
 				display: flex;
 				align-items: center;
 				padding: 0 20rpx;
 				box-sizing: border-box;
 				height: 88rpx;
-
 				.box-head-back {
 					width: 50rpx;
 				}
-
 				.box-head-title {
 					flex: 1;
 					text-align: center;
@@ -138,7 +134,6 @@
 					font-weight: 500;
 					color: #000;
 				}
-
 				.box-head-ico {
 					text-align: left;
 					font-size: 30rpx;
@@ -147,21 +142,17 @@
 				}
 			}
 		}
-
 		.box-content {
 			flex: 1;
 			overflow-y: scroll;
-
 			.box-content-list {
 				margin-top: 20rpx;
 				padding-left: 40rpx;
 				background: #fff;
 				box-sizing: border-box;
-
 				.box-content-list-li:last-child {
 					border-bottom: 0;
 				}
-
 				.box-content-list-li {
 					display: flex;
 					align-items: center;
@@ -170,28 +161,23 @@
 					box-sizing: border-box;
 					border-bottom: 1rpx solid #ededed;
 					font-size: 28rpx;
-
 					.box-content-list-li-title {
 						color: #333;
 					}
-
 					.box-content-list-li-input {
 						height: 100%;
 						margin-left: 50rpx;
 						flex: 1;
-
 						input {
 							font-size: 28rpx;
 							width: 100%;
 							height: 100%;
 						}
 					}
-
 					.box-content-list-li-more {}
 				}
 			}
 		}
-
 		.box-footer {}
 	}
 </style>

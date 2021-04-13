@@ -28,7 +28,7 @@
 					<view class="box-content-menu-list-li" @click="typeDetail(item)" v-for="(item,index) in menuList"
 						:key="index">
 						<image src="../../static/images/001.png" mode="aspectFill"></image>
-						<text>{{item.title}}</text>
+						<text>{{item.name}}</text>
 					</view>
 				</view>
 				<view class="box-content-menu-bar">
@@ -46,35 +46,44 @@
 					</view>
 				</view>
 				<view class="box-content-tabs-right" @click="changeIt">
-					<text class="iconfont iconhuanyihuan icon-font"
-						style="color: #5DBDFE;font-size: 36rpx;margin-top: 4rpx;" :class="isRotate?'rotate':''"></text>
-					<text>换一换</text>
+					<text>更多</text>
+					<text class="iconfont icongengduo icon-font"
+						style="color: #5DBDFE;font-size: 36rpx;margin-top: 4rpx;"></text>
 				</view>
 			</view>
 
 			<view class="box-content-main">
 				<swiper class="box-content-main-swiper" :current="tabsIndex" @change="tabChange">
 					<swiper-item class="swiper-box-item-list">
-						<view class="box-content-main-list">
-							<view class="box-content-main-list-li" v-for="(item,index) in 20" :key="index"
-								@click="massageDetails">
+						<view class="box-content-main-list" v-if="isData">
+							<view class="box-content-main-list-li" v-for="(item,index) in newestList" :key="item.id"
+								@click="massageDetails(item.id)">
 								<view class="box-content-main-list-li-image">
-									<image src="../../static/images/am-ico.png" mode="aspectFill"></image>
+									<image :src="item.simg" mode="aspectFill"></image>
 								</view>
-								<view class="box-content-main-list-li-text">推拿培训 肩部疼痛</view>
-								<view class="box-content-main-list-li-msg">肩部疼痛在线调理视频</view>
+								<view class="box-content-main-list-li-text">{{item.name}}</view>
+								<view class="box-content-main-list-li-msg">{{item.content}}</view>
 							</view>
+						</view>
+						<view class="box-content-main-list" v-if="!isData">
+							<loading v-if="isLoad" />
+							<no-data v-if="!isLoad" />
 						</view>
 					</swiper-item>
 					<swiper-item class="swiper-box-item-list">
-						<view class="box-content-main-list">
-							<view class="box-content-main-list-li" v-for="(item,index) in 20" :key="index">
+						<view class="box-content-main-list" v-if="isData">
+							<view class="box-content-main-list-li" v-for="(item,index) in hotList" :key="item.id"
+								@click="massageDetails(item.id)">
 								<view class="box-content-main-list-li-image">
-									<image src="../../static/images/am-ico1.png" mode="aspectFill"></image>
+									<image :src="item.simg" mode="aspectFill"></image>
 								</view>
-								<view class="box-content-main-list-li-text">面部护理手法指导教...</view>
-								<view class="box-content-main-list-li-msg">面部护理手法指导教学视频</view>
+								<view class="box-content-main-list-li-text">{{item.name}}</view>
+								<view class="box-content-main-list-li-msg">{{item.content}}</view>
 							</view>
+						</view>
+						<view class="box-content-main-list" v-if="!isData">
+							<loading v-if="isLoad" />
+							<no-data v-if="!isLoad" />
 						</view>
 					</swiper-item>
 				</swiper>
@@ -88,12 +97,13 @@
 
 <script>
 	import navTitleBalck from "../../components/nav-title-balck/nav-title-balck.vue"
+	import loading from '../../components/loading-merchant/loading-merchant.vue'
+	import noData from '../../components/no-data/no-data.vue'
 	export default {
 		data() {
 			return {
 				barHeight: 0, //顶部电量导航栏高度
 				isSearch: false, //是否搜索
-				isRotate: false, //是否旋转
 				tabsIndex: 0, //当前页面切换下标
 				tabs: ["最新课程", "热门推荐"],
 				imageList: [{
@@ -109,40 +119,23 @@
 						link: ""
 					}
 				],
-				menuList: [{
-						title: '按摩'
-					},
-					{
-						title: '美容'
-					},
-					{
-						title: '美甲'
-					},
-					{
-						title: '医美'
-					},
-					{
-						title: '健身'
-					},
-					{
-						title: '瑜伽'
-					},
-					{
-						title: '按摩'
-					},
-					{
-						title: '按摩'
-					},
-				],
+				menuList: [],
+				newestList: [],
+				hotList: '',
 				indicatorDots: true,
 				autoplay: true,
 				interval: 2000,
 				duration: 500,
 				circular: true,
+				isData: false,
+				isLoad: true,
+				isType: '',
 			};
 		},
 		components: {
-			navTitleBalck
+			navTitleBalck,
+			loading,
+			noData,
 		},
 		onReady() {
 			// 获取顶部电量状态栏高度
@@ -160,11 +153,22 @@
 			// 获取视频首页信息
 			getData() {
 				let vuedata = {
-					type:1
+					type: this.isType
 				}
 				this.apiget('api/v1/store/Video_tutorial', vuedata).then(res => {
 					if (res.status == 200) {
-						console.log(res.data)
+						this.menuList = res.data.video_list
+						if (res.data.member_list.length != 0) {
+							this.isData = true
+							if (this.tabsIndex == 0) {
+								this.newestList = res.data.member_list
+							} else {
+								this.hotList = res.data.member_list
+							}
+						} else {
+							this.isData = false
+							this.isLoad = false
+						}
 					}
 				});
 			},
@@ -181,15 +185,13 @@
 			},
 			// 分类栏
 			typeDetail(item) {
-				switch (item.title) {
-					case "按摩":
-						uni.navigateTo({
-							url: "../massage/massage"
-						})
-						break;
-					default:
-						break;
+				var str = {
+					cid: item.id,
+					title: item.name
 				}
+				uni.navigateTo({
+					url: "../massage/massage?data=" + JSON.stringify(str)
+				})
 			},
 
 
@@ -200,21 +202,31 @@
 			// 滑动切换列表
 			tabChange(e) {
 				this.tabsIndex = e.detail.current
+				this.indexChange(this.tabsIndex)
 			},
 
-			// 按摩详情
-			massageDetails() {
+			indexChange(index) {
+				switch (index) {
+					case 0:
+						this.isType = ''
+						break;
+					case 1:
+						this.isType = 1
+						break;
+				}
+				this.getData()
+			},
+
+			// 详情
+			massageDetails(id) {
 				uni.navigateTo({
-					url: "../massageDetails/massageDetails"
+					url: "../massageDetails/massageDetails?id=" + id
 				})
 			},
 
 			// 点击换一换
 			changeIt() {
-				this.isRotate = true
-				setTimeout(() => {
-					this.isRotate = false
-				}, 1000)
+
 			},
 		}
 	}
@@ -326,10 +338,11 @@
 						align-items: center;
 						justify-content: center;
 						margin-left: 40rpx;
-						width: 90rpx;
+						width: 120rpx;
+
 
 						image {
-							width: 88rpx;
+							width: 120rpx;
 							height: 88rpx;
 						}
 
@@ -337,6 +350,9 @@
 							margin-top: 10rpx;
 							font-size: 28rpx;
 							color: #333;
+							overflow: hidden;
+							text-overflow: ellipsis;
+							white-space: nowrap;
 						}
 					}
 				}
@@ -463,6 +479,7 @@
 									image {
 										width: 320rpx;
 										height: 200rpx;
+										border-radius: 10rpx;
 									}
 								}
 

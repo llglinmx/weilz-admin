@@ -31,8 +31,27 @@
 				type: Boolean,
 				default: false
 			},
-			dataList: {
+			dataList: {},
+			skid: {
+				type: [String, Number],
+				default: ''
 			}
+		},
+		mounted() {
+			// 是否有传入id
+			var that = this
+			setTimeout(() => {
+				if (that.skid != '') {
+					that.value = []
+					that.dataList.forEach((item, index) => {
+						if (item.id == that.skid) {
+							// console.log('获取到列表id：' + item.id)
+							that.value.push(index)
+							that.index = index
+						}
+					})
+				}
+			}, 1000)
 		},
 		methods: {
 			bindChange(e) {

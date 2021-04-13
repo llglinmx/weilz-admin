@@ -1,26 +1,19 @@
 <template>
 	<view class="box">
 		<view class="box-head" :style="{paddingTop:barHeight+'px'}">
-			<view class="box-head-nav">
-				<view class="box-head-back flex-center" @click="Gback">
-					<text class="iconfont iconfanhui" style="color: #000;font-size: 36rpx;margin-top: 8rpx;"></text>
-				</view>
-				<view class="box-head-title">客户管理</view>
-				<view class="box-head-ico flex-center">
-					添加
-				</view>
-			</view>
+			<nav-title-balck navTitle='客户管理' />
 		</view>
 		<view class="box-content">
 			<view class="box-content-search" :style="{display:isData?'block':'none'}">
 				<view class="box-content-search-box">
-					<view class="box-content-search-box-ico" :class="isSearch?'box-content-search-box-ico-active':''">
+					<view class="box-content-search-box-ico" :class="isSearch?'box-content-search-box-ico-active':''"
+						@click="searchClick">
 						<text class="iconfont iconsousuo1 icon-font"
 							style="color: #999;font-size: 40rpx;margin-top: 4rpx;"></text>
 					</view>
 					<view class="box-content-search-box-input"
 						:class="isSearch?'box-content-search-box-input-active':''">
-						<input type="text" @focus="focus" @blur="blur" placeholder="搜索用户名称" />
+						<input type="text" v-model.trim="search" @focus="focus" @blur="blur" placeholder="搜索用户名称" />
 					</view>
 				</view>
 			</view>
@@ -30,21 +23,21 @@
 					:use-custom-refresher="true" style="height: 100%;">
 					<view class="box-content-main-list">
 						<view class="box-content-main-list-li" v-for="(item,index) in dataList" :key="item.id"
-							@click="customerDetail">
+							@click="customerDetail(item.id)">
 							<view class="box-content-main-list-li-image">
-								<image src="../../static/images/userImage.png" mode="aspectFill"></image>
+								<image :src="item.avatar" mode="aspectFill"></image>
 							</view>
 							<view class="box-content-main-list-li-info">
 								<view class="box-content-main-list-li-info-left">
 									<view class="box-content-main-list-li-info-left-top">
-										<view class="main-list-li-info-left-top-title">张女士</view>
+										<view class="main-list-li-info-left-top-title">{{item.name}}</view>
 										<view class="main-list-li-info-left-top-text">
 											<image src="../../static/images/grade-yellow.png" mode=""></image>
 											<text>钻石会员</text>
 										</view>
 									</view>
 									<view class="box-content-main-list-li-info-left-bottom">
-										<text>消费 259.00元</text>
+										<text>消费 {{item.consumption_money.amount}}元</text>
 										<text>上次到店 2020-12-20 18:40</text>
 									</view>
 								</view>
@@ -80,7 +73,8 @@
 				isSearch: false, //是否有点击输入框搜索
 				isData: false,
 				isLoad: true,
-				dataList: []
+				dataList: [],
+				search: ''
 			};
 		},
 		components: {
@@ -97,6 +91,11 @@
 					this.barHeight = res.statusBarHeight
 				}
 			});
+		},
+		onShow() {
+			if (this.$store.state.isDeleteCustomer) {
+				this.getCustomer(1, 10)
+			}
 		},
 		methods: {
 			// 上拉 下拉
@@ -142,39 +141,21 @@
 			blur() {
 				this.isSearch = false
 			},
+			// 点击搜索
+			searchClick() {
+				if (this.search != '') {
+					this.getCustomer(1, 10)
+				}
+			},
 
 			// 客户详情
-			customerDetail() {
+			customerDetail(id) {
+				this.$store.commit('upDeleteCustomer', false)
 				uni.navigateTo({
-					url: "../customerDetails/customerDetails"
+					url: "../customerDetails/customerDetails?id=" + id
 				})
 			},
 
-
-
-			/*下拉刷新的回调*/
-			downCallback() {
-				this.PageNumber = 1
-				setTimeout(() => {
-					this.mescroll.endSuccess() // 请求成功 隐藏加载状态
-
-					// this.mescroll.showNoMore()
-
-				}, 1500)
-			},
-
-			/*上拉加载的回调*/
-			upCallback(page) {
-				this.PageNumber++
-				console.log(this.PageNumber)
-				setTimeout(() => {
-					this.mescroll.endSuccess() // 请求成功 隐藏加载状态
-					// if (this.PageNumber > 3) {
-					this.mescroll.showNoMore()
-					// }
-				}, 1500)
-				console.log("上拉加载")
-			},
 		}
 	}
 </script>
@@ -189,31 +170,6 @@
 		.box-head {
 			background-color: #fff;
 
-			.box-head-nav {
-				display: flex;
-				align-items: center;
-				padding: 0 20rpx;
-				box-sizing: border-box;
-				height: 88rpx;
-
-				.box-head-back {
-					width: 50rpx;
-				}
-
-				.box-head-title {
-					flex: 1;
-					text-align: center;
-					font-size: 34rpx;
-					font-weight: 500;
-					color: #000;
-				}
-
-				.box-head-ico {
-					text-align: left;
-					font-size: 30rpx;
-					width: 70rpx;
-				}
-			}
 		}
 
 		.box-content {
@@ -294,6 +250,7 @@
 							image {
 								width: 88rpx;
 								height: 88rpx;
+								border-radius: 50%;
 							}
 						}
 

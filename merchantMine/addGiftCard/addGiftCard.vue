@@ -1,7 +1,7 @@
 <template>
 	<view class="box">
 		<view class="box-head" :style="{paddingTop:barHeight+'px'}">
-			<nav-title-balck navTitle="添加礼品卡"></nav-title-balck>
+			<nav-title-balck :navTitle="type=='add'?'添加礼品卡':'编辑礼品卡'"></nav-title-balck>
 		</view>
 		<view class="box-content">
 
@@ -10,7 +10,7 @@
 					<view class="box-content-list-li-title">名称</view>
 					<view class="box-content-list-li-info">
 						<view class="box-content-list-li-info-input">
-							<input type="text" placeholder="请输入礼品卡名称" />
+							<input type="text" v-model.trim="from.name" placeholder="请输入礼品卡名称" />
 						</view>
 					</view>
 				</view>
@@ -22,52 +22,55 @@
 				</view>
 				<view class="box-content-main-image-list">
 					<view class="box-content-main-image-list-li" :class="index==0?'list-li-affter':''"
-						v-for="(item,index) in 2" :key="index">
-						<image src="../../static/images/001.png" mode="aspectFill"></image>
-						<text class="close flex-center">
+						v-for="(item,index) in imageList" :key="index">
+						<image :src="item" mode="aspectFill"></image>
+						<text class="close flex-center" @click="delImage(index)">
 							<text class="iconfont iconcuowu icon-font" style="color: #fff;font-size: 36rpx"></text>
 						</text>
 					</view>
-					<view class="box-content-main-image-list-up flex-center">
+					<view class="box-content-main-image-list-up flex-center" @click="upCoverPhoto"
+						v-if="imageList.length<3">
 						<text class="iconfont iconcuowu icon-font" style="color: #ddd;font-size: 90rpx"></text>
 					</view>
 				</view>
 			</view>
 			<view class="box-content-main">
-				<view class="box-content-main-top">
+				<view class="box-content-main-top"
+					:style="{borderBottom:packageDataList.length!=0?'1rpx solid #ededed':0}">
 					<view class="box-content-main-top-title">套餐项目</view>
-					<view class="box-content-main-top-add flex-center">
+					<view class="box-content-main-top-add flex-center" @click="packageCardOpen">
 						<text class="iconfont iconcuowu icon-font" style="color: #ccc;font-size: 36rpx"></text>
 					</view>
 				</view>
-				<view class="box-content-main-list" v-for="(i,j) in 3">
+				<view class="box-content-main-list" v-for="(item,index) in packageDataList" v-if="item.data.length!=0">
 					<view class="box-content-main-list-top">
-						<image src="../../static/images/business-blue-ico.png" mode="aspectFill"></image>
-						<text>罗约蓝池·温泉SPA</text>
+						<text class="iconfont iconshangjia"
+							style="font-size: 28rpx;color: #5DBDFE;margin-top: 4rpx;"></text>
+						<text>{{item.name}}</text>
 					</view>
-					<view class="box-content-main-list-li" v-for="(item,index) in dataList" :key="index">
+					<view class="box-content-main-list-li" v-for="(i,j) in item.data" :key="i.id">
 						<view class="box-content-main-list-li-image">
 							<image src="../../static/images/001.png" mode="aspectFill"></image>
 						</view>
 						<view class="box-content-main-list-li-info">
 							<view class="box-content-main-list-li-info-text">
-								<view class="list-li-info-text-title">{{item.title}}</view>
-								<view class="list-li-info-text-price">￥{{item.price}}</view>
+								<view class="list-li-info-text-title">{{i.name}}</view>
+								<view class="list-li-info-text-price">￥{{i.price}}</view>
 							</view>
 							<view class="box-content-main-list-li-info-bottom">
 								<view class="list-li-info-bottom-stepper">
 									<view class="list-li-info-bottom-stepper-reduce flex-center"
-										@click="stepper(index,'reduce')">
+										@click="stepper(index,j,'reduce')">
 										<text class="iconfont iconjian icon-font"
-											:style="{color:item.num>1?'#666':'#ccc'}"></text>
+											:style="{color:i.num>1?'#666':'#ccc'}"></text>
 									</view>
-									<view class="list-li-info-bottom-stepper-num flex-center">{{item.num}}</view>
+									<view class="list-li-info-bottom-stepper-num flex-center">{{i.num}}</view>
 									<view class="list-li-info-bottom-stepper-add flex-center"
-										@click="stepper(index,'add')">
+										@click="stepper(index,j,'add')">
 										<text class="iconfont iconjia icon-font" style="color:#666"></text>
 									</view>
 								</view>
-								<view class="list-li-info-bottom-delete" @click="deleteClick(index)">
+								<view class="list-li-info-bottom-delete" @click="deleteClick(index,j)">
 									<text class="iconfont iconshanchu-shangjia icon-font"
 										style="color: #ccc;font-size: 52rpx;"></text>
 								</view>
@@ -78,24 +81,29 @@
 			</view>
 
 			<view class="box-content-main">
-				<view class="box-content-main-top">
+				<view class="box-content-main-top"
+					:style="{borderBottom:couponDataList.length!=0?'1rpx solid #ededed':0}">
 					<view class="box-content-main-top-title">优惠券</view>
-					<view class="box-content-main-top-add flex-center">
+					<view class="box-content-main-top-add flex-center" @click="couponOpen">
 						<text class="iconfont iconcuowu icon-font" style="color: #ccc;font-size: 36rpx"></text>
 					</view>
 				</view>
-				<view class="box-content-main-coupon">
-					<view class="box-content-main-coupon-item" v-for="(item,index) in couponList">
+				<view class="box-content-main-coupon"
+					:style="{height:couponDataList.length!=0?'auto':0,paddingBottom:couponDataList.length!=0?'30rpx':0}">
+					<view class="box-content-main-coupon-item" v-for="(item,index) in couponDataList">
 						<view class="box-content-main-coupon-item-top">
 							<view class="box-content-main-coupon-item-top-left flex-center">优惠券</view>
 							<view class="box-content-main-coupon-item-top-right">
 								<view class="coupon-item-top-right-text">
-									<view class="coupon-item-top-right-text-title">礼品卡优惠券</view>
-									<view class="coupon-item-top-right-text-price">￥80.00</view>
+									<view class="coupon-item-top-right-text-title">{{item.name}}</view>
+									<view class="coupon-item-top-right-text-price">￥{{item.reduce_cost}}</view>
 								</view>
-								<view class="coupon-item-top-right-msg-content">满5元可用</view>
-								<view class="coupon-item-top-right-msg">适用门店：罗约蓝池·温泉SPA</view>
-								<view class="coupon-item-top-right-msg">有效期：2个月</view>
+								<view class="coupon-item-top-right-msg-content">满{{item.least_cost}}元可用</view>
+								<view class="coupon-item-top-right-msg">适用门店：{{item.name}}</view>
+								<view class="coupon-item-top-right-msg" v-if='item.date_type==1'>有效期：{{item.end_time}}
+								</view>
+								<view class="coupon-item-top-right-msg" v-if='item.date_type==2'>
+									有效期：{{item.fixed_term}}天</view>
 							</view>
 						</view>
 						<view class="box-content-main-coupon-item-bottom">
@@ -125,7 +133,7 @@
 					<view class="box-content-list-li-title">价格</view>
 					<view class="box-content-list-li-info">
 						<view class="box-content-list-li-info-input">
-							<input type="number" placeholder="请输入价格" />
+							<input type="number" v-model.trim="from.price" placeholder="请输入价格" />
 						</view>
 					</view>
 				</view>
@@ -133,25 +141,55 @@
 					<view class="box-content-list-li-title">库存</view>
 					<view class="box-content-list-li-info">
 						<view class="box-content-list-li-info-input">
-							<input type="number" placeholder="最高为10000" />
+							<input type="number" v-model.trim="from.kucun" placeholder="最高为10000" />
 						</view>
 					</view>
 				</view>
 
 				<view class="box-content-list-li">
-					<view class="box-content-list-li-title">有效期</view>
+					<view class="box-content-list-li-title" style="width: 120rpx;">使用时间</view>
 					<view class="box-content-list-li-info">
-						<view class="box-content-list-li-info-text">固定日期时间</view>
+						<view class="box-content-list-li-info-check">
+							<view class="box-content-list-li-info-check-box" @click="currency(true)">
+								<text class="iconfont iconxuanzhong icon-font" style="color: #07C160;font-size: 48rpx;"
+									v-if="isCurr"></text>
+								<text class="iconfont iconweixuanzhong1 icon-font" style="color: #ccc;font-size: 48rpx;"
+									v-else></text>
+								<text>固定日期</text>
+							</view>
+							<view class="box-content-list-li-info-check-box" @click="currency(false)">
+								<text class="iconfont iconxuanzhong icon-font" style="color: #07C160;font-size: 48rpx;"
+									v-if="!isCurr"></text>
+								<text class="iconfont iconweixuanzhong1 icon-font" style="color: #ccc;font-size: 48rpx;"
+									v-else></text>
+								<text>固定时长</text>
+							</view>
+						</view>
+					</view>
+				</view>
+				<view class="box-content-list-li" v-if="!isCurr">
+					<view class="box-content-list-li-title" style="width: 120rpx;">有效期</view>
+					<view class="box-content-list-li-info">
+						<view class="box-content-list-li-info-input">
+							<input type="number" v-model.trim="from.fixed_term" placeholder="有效天数(自领取后按天计算)" />
+							<text>天</text>
+						</view>
+					</view>
+				</view>
+				<view class="box-content-list-li" v-if="isCurr" @click="dateStartOpen">
+					<view class="box-content-list-li-title">活动开始时间</view>
+					<view class="box-content-list-li-info">
+						<view class="box-content-list-li-info-text">{{startTime==''?'请设置日期':startTime}}</view>
 						<view class="box-content-list-li-info-more">
 							<text class="iconfont icongengduo icon-font"
 								style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
 						</view>
 					</view>
 				</view>
-				<view class="box-content-list-li">
-					<view class="box-content-list-li-title">固定日期区间</view>
+				<view class="box-content-list-li" @click="dateEndOpen" v-if="isCurr">
+					<view class="box-content-list-li-title">活动结束时间</view>
 					<view class="box-content-list-li-info">
-						<view class="box-content-list-li-info-text">请设置日期区间</view>
+						<view class="box-content-list-li-info-text">{{endTime==''?'请设置日期':endTime}}</view>
 						<view class="box-content-list-li-info-more">
 							<text class="iconfont icongengduo icon-font"
 								style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
@@ -162,7 +200,7 @@
 					<view class="box-content-list-li-title">每次数量限制</view>
 					<view class="box-content-list-li-info">
 						<view class="box-content-list-li-info-input">
-							<input type="number" placeholder="最低为1" />
+							<input type="number" v-model.trim="from.buy_limit" placeholder="最低为1" />
 						</view>
 					</view>
 				</view>
@@ -175,88 +213,93 @@
 				<view class="box-content-list-li">
 					<view class="box-content-list-li-title">排序</view>
 					<view class="box-content-list-li-info">
-						<view class="box-content-list-li-info-text">请设置</view>
-						<view class="box-content-list-li-info-more">
-							<text class="iconfont icongengduo icon-font"
-								style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
+						<view class="box-content-list-li-info-input">
+							<input type="number" v-model.trim="from.sort" placeholder="请输入排序" />
 						</view>
 					</view>
 				</view>
 				<view class="box-content-list-li-item">
-					<view class="box-content-list-li-item-title">套餐卡使用说明</view>
+					<view class="box-content-list-li-item-title">礼品卡使用说明</view>
 					<view class="box-content-list-li-item-textarea">
-						<textarea value="" placeholder="请输入使用说明" />
+						<textarea value="" v-model="from.gift_explain" placeholder="请输入使用说明" />
 					</view>
 				</view>
 			</view>
 		</view>
 		<view class="box-footer">
-			<btn-sky-blue btnName="确认添加" @btnClick="confirm" />
+			<btn-sky-blue btnName="确认添加" @btnClick="confirmAdd" v-if="type =='add'" />
+			<btn-sky-blue btnName="确认修改" @btnClick="confirmEdit" v-if="type =='edit'" />
 		</view>
+		<select-date @cancel="dateStartCancel" @confirm="dateStartConfirm" :visible='isStartDate' />
+		<select-date @cancel="dateEndCancel" @confirm="dateEndConfirm" :visible='isEndDate' />
+
+		<select-list-popup-package @cancel="packageCardCancel" :dataList="packageList" @confirm="packageCardConfirm"
+			:visible='isPackageCard' />
+		<coupon-list-popup @cancel="couponCancel" :dataList="couponList" @confirm="couponConfirm" :visible='isCoupon' />
+
 	</view>
 </template>
 
 <script>
 	import navTitleBalck from "../../components/nav-title-balck/nav-title-balck.vue"
 	import btnSkyBlue from "../../components/btn-sky-blue/btn-sky-blue.vue"
+	import selectDate from '../../components/select-date/select-date.vue'
+	import selectListPopupPackage from '../../components/select-list-popup-package/select-list-popup-package.vue'
+	import couponListPopup from '../../components/coupon-list-popup/coupon-list-popup.vue'
+	import {
+		pathToBase64,
+		base64ToPath
+	} from '../../js_sdk/mmmm-image-tools/index.js'
+	import uploadImage from "../../js_sdk/oss/uploadOSS.js";
 	export default {
 		data() {
 			return {
 				barHeight: 0, //顶部电量导航栏高度
 				isCurr: true, //是否通用
 				isState: false, //发放状态
-				couponList: [{
-						title: "礼品卡优惠券",
-						num: 1,
-						price: '258.00'
-					},
-					{
-						title: "礼品卡优惠券",
-						num: 1,
-						price: '258.00'
-					},
-					{
-						title: "礼品卡优惠券",
-						num: 1,
-						price: '258.00'
-					},
-					{
-						title: "礼品卡优惠券",
-						num: 1,
-						price: '258.00'
-					}
-				],
-				dataList: [{
-						title: "泰式古法按摩",
-						num: 1,
-						price: '258.00'
-					},
-					{
-						title: "全身按摩SPA",
-						num: 1,
-						price: '258.00'
-					},
-					{
-						title: "泰式古法按摩",
-						num: 1,
-						price: '258.00'
-					},
-					{
-						title: "泰式古法按摩",
-						num: 1,
-						price: '258.00'
-					},
-					{
-						title: "全身按摩SPA",
-						num: 1,
-						price: '258.00'
-					},
-				]
+				type: '',
+				id: '',
+				imageList: [],
+				isPackageCard: false,
+				isCoupon: false,
+				sum: 1, //计数
+				sumCoupon: 1, //计数
+				from: {
+					name: '', //礼品卡名称
+					simg: '', //封面
+					bimg: '', //图片
+					pack: '', //套餐卡
+					coupon: '', //礼品卡
+					price: '', //价格
+					kucun: '', //库存
+					date_type: 1, //使用时间类型 1固定日期区间，2固定时长
+					begin_time: '', //开始时间
+					end_time: '', //结束时间
+					fixed_term: '', //固定时长
+					status: this.isState ? 1 : -1, //发放状态
+					sort: '', //排序
+					gift_explain: '', //优惠券说明
+				},
+				startTime: '',
+				endTime: '',
+				isStartDate: false,
+				isEndDate: false,
+				editDataList: [],
+				packageDataList: [],
+				packageList: [],
+
+				couponList: [],
+				couponDataList: [],
+				couponEditDataList: [],
+
 			};
 		},
 		components: {
 			navTitleBalck,
-			btnSkyBlue
+			btnSkyBlue,
+			selectDate,
+			selectListPopupPackage,
+			couponListPopup
 		},
 		onReady() {
 			// 获取顶部电量状态栏高度
@@ -266,85 +309,508 @@
 				}
 			});
 		},
+		onLoad(options) {
+			var data = JSON.parse(options.data)
+			if (data.type == 'add') {
+				this.type = 'add'
+			} else if (data.type == 'edit') {
+				this.type = 'edit'
+				this.id = data.id
+				this.getPackage(data.id)
+			}
+		},
 		methods: {
+
+
+			// 打开添加套餐类型
+			packageCardOpen() {
+				this.getDataList()
+			},
+			// 套餐类型关闭弹窗
+			packageCardCancel(e) {
+				this.isPackageCard = e
+			},
+			// 选择套餐类型弹窗选择确认
+			packageCardConfirm(e) {
+				this.packageDataList = e
+				console.log(e)
+			},
+
+			// 打开优惠券弹出层
+			couponOpen() {
+				this.getCouponList()
+			},
+			// 优惠券关闭弹窗
+			couponCancel(e) {
+				this.isCoupon = e
+			},
+			// 优惠券弹窗选择确认
+			couponConfirm(e) {
+				this.couponDataList = e
+			},
+
+
+			// 选择开始日期
+			dateStartOpen() {
+				this.isStartDate = true
+			},
+			// 开始日期关闭弹窗
+			dateStartCancel(e) {
+				this.isStartDate = e
+			},
+			// 选择开始日期弹窗选择确认
+			dateStartConfirm(e) {
+				this.startTime = e.year + '-' + e.month + '-' + e.day + ' ' + e.hour + ':' + e.minute + ':' + e.second
+			},
+
+			// 选择结束日期
+			dateEndOpen() {
+				if (this.startTime != '') {
+					this.isEndDate = true
+					return false;
+				}
+				uni.showToast({
+					title: "请先设置活动开始时间",
+					icon: "none"
+				})
+
+			},
+			// 结束日期关闭弹窗
+			dateEndCancel(e) {
+				this.isEndDate = e
+			},
+			// 选择结束日期弹窗选择确认
+			dateEndConfirm(e) {
+				this.endTime = e.year + '-' + e.month + '-' + e.day + ' ' + e.hour + ':' + e.minute + ':' + e.second
+			},
+
+
+
+			// 上传封面图片
+			upCoverPhoto() {
+				uni.chooseImage({
+					count: 3, //默认100
+					sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
+					success: (res) => {
+
+						res.tempFilePaths.forEach((item, index) => {
+							const path = 'images/';
+							// #ifdef H5
+							let file = item;
+							let suffix = res.tempFiles[index].name.split('.').pop();
+							// #endif
+
+							// #ifdef APP-PLUS
+							let file = item;
+							let suffix = res.tempFiles[index].path.split('.').pop();
+							// #endif
+
+							// 获取阿里云oss 信息
+							this.apiget('app/oss/url', {}).then(ress => {
+								if (ress.status == 200) {
+									var obj = {
+										accessid: ress.data.accessid,
+										policy: ress.data.policy,
+										signature: ress.data.signature,
+									}
+									// 上传图片
+									uploadImage(obj, file, path, suffix, result => {
+										this.imageList.push(result)
+									});
+								}
+							});
+						})
+					}
+				});
+			},
+			// 删除图片
+			delImage(index) {
+				this.imageList.splice(index, 1)
+			},
+
 			// switch 开关
 			switch1Change: function(e) {
 				this.isState = e.target.value
 				console.log('发生 change 事件，携带值为', e.target.value)
 			},
 
-			// 是否通用单选点击
+			// 使用时间类型单选点击
 			currency(bool) {
+				this.startTime = ''
+				this.endTime = ''
+				this.from.fixed_term = ''
 				this.isCurr = bool ? true : false
+				this.from.date_type = this.isCurr ? 1 : 2
 			},
+
 			// 步进器点击
-			stepper(index, type) {
+			stepper(index, idx, type) {
 				switch (type) {
 					case 'reduce':
-						if (this.dataList[index].num <= 1) {
+						if (this.packageDataList[index].data[idx].num <= 1) {
 							uni.showToast({
 								title: "已经减到最低了，不能再减少了",
 								icon: "none"
 							})
 							return;
 						}
-						this.dataList[index].num--
+						this.packageDataList[index].data[idx].num--
 						break;
 					case 'add':
-						this.dataList[index].num++
+						this.packageDataList[index].data[idx].num++
 						break;
 				}
 			},
 			// 删除按钮点击
-			deleteClick(index) {
-				if (this.dataList.length != 1) {
-					this.dataList.splice(index, 1)
+			deleteClick(index, idx) {
+				if (this.packageDataList[index].data.length != 0) {
+					this.packageDataList[index].data.splice(idx, 1)
 				} else {
-					uni.showToast({
-						title: "不能再删了，最少一个",
-						icon: "none"
-					})
+					this.packageDataList.splice(index, 1)
 				}
 			},
 
 
 			// 优惠券步进器点击
-			couponStepper(index, type) {
+			couponStepper(index, idx, type) {
 				switch (type) {
 					case 'reduce':
-						if (this.couponList[index].num <= 1) {
-							uni.showToast({
-								title: "已经减到最低了，不能再减少了",
-								icon: "none"
-							})
-							return;
-						}
-						this.couponList[index].num--
+						this.couponDataList[index].num--
 						break;
 					case 'add':
-						this.couponList[index].num++
+						this.couponDataList[index].num++
 						break;
 				}
 			},
+
 			// 优惠券删除点击
-			couponDeleteClick(index) {
-				if (this.couponList.length != 1) {
-					this.couponList.splice(index, 1)
-				} else {
-					uni.showToast({
-						title: "不能再删了，最少一个",
-						icon: "none"
-					})
-				}
+			couponDeleteClick(index, idx) {
+				this.couponDataList[index].data.splice(idx, 1)
 			},
 
 
-			// 确认按钮
-			confirm() {
-				uni.showToast({
-					title: "确认提交",
-					icon: "none"
+			// 获取套餐分类
+			getDataList() {
+				var vuedata = {
+					page_index: 1, // 请求页数，
+					each_page: 50, // 请求条数
+					gift_type: 1
+				}
+				this.apiget('api/v1/store/service_reservation/index', vuedata).then(res => {
+					if (res.status == 200) {
+						var list = res.data.data
+						var obj = {
+							id: '',
+							name: '',
+							data: []
+						}
+						var dataArr = []
+
+						if (list.length != 0) {
+
+							list.map(item => {
+								item.isCheck = false
+								item.num = 1
+							})
+
+							let ids = list.map(item => item.store);
+							let arrs = [...new Set(ids)].filter(v => v);
+							arrs.map(id => {
+								var obj = {
+									id: '',
+									name: '',
+									data: []
+								}
+								list.map(val => {
+									if (val.store == id) {
+										obj.id = id;
+										obj.name = val.store_name;
+										obj.data.push(val);
+									}
+								})
+								dataArr.push(obj)
+							})
+
+
+
+							if (this.type == 'add') { //添加
+								if (this.packageDataList.length != 0) {
+									dataArr.map(item => {
+										item.data.map(res => {
+											this.packageDataList.map(ele => {
+												ele.data.map(e => {
+													if (item.id == res.id) {
+														res.isCheck = true
+														res.num = e.num
+													}
+												})
+											})
+										})
+										console.log(item.data)
+									})
+									// console.log(dataArr)
+								}
+							} else if (this.type == 'edit') { //编辑
+								list.map(item => {
+									this.editDataList.map(res => {
+										if (item.id == res.id) {
+											item.isCheck = true
+											item.num = res.times
+										}
+									})
+								})
+
+								var arr = []
+								list.forEach(item => {
+									if (item.isCheck) {
+										arr.push(item)
+									}
+								})
+								this.dataList = arr
+							}
+
+							this.packageList = dataArr
+							this.isPackageCard = true
+
+						} else {
+							if (this.type == 'add') {
+								uni.showToast({
+									title: '该门店还没有任何套餐',
+									icon: "none"
+								})
+							} else if (this.type == 'edit') {
+								if (this.sum != 1) {
+									uni.showToast({
+										title: '该门店还没有任何套餐',
+										icon: "none"
+									})
+								}
+							}
+						}
+						this.sum++
+					}
+				});
+			},
+
+			// 获取优惠券分类
+			getCouponList() {
+				this.isCoupon = true
+				var vuedata = {
+					page_index: 1, // 请求页数，
+					each_page: 50, // 请求条数
+					gift_type: 1
+				}
+				this.apiget('api/v1/store/coupon/index', vuedata).then(res => {
+					if (res.status == 200) {
+						var list = res.data.data
+
+						if (list.length != 0) {
+							list.map(item => {
+								item.isCheck = false
+								item.num = 1
+							})
+							if (this.type == 'add') { //添加
+								if (this.couponDataList.length != 0) {
+									list.forEach(item => {
+										this.couponDataList.forEach(res => {
+											if (item.id == res.id) {
+												item.isCheck = res.isCheck
+												item.num = res.num
+											}
+										})
+									})
+								}
+							} else if (this.type == 'edit') { //编辑
+								list.map(item => {
+									this.couponEditDataList.map(res => {
+										if (item.id == res.id) {
+											item.isCheck = true
+											item.num = res.times
+										}
+									})
+								})
+
+								var arr = []
+								list.forEach(item => {
+									if (item.isCheck) {
+										arr.push(item)
+									}
+								})
+								this.couponDataList = arr
+							}
+							this.couponList = list
+
+							if (this.sumCoupon != 1) {
+								this.isCoupon = true
+							}
+						} else {
+							this.isCoupon = false
+							uni.showToast({
+								title: '暂无任何可选优惠券',
+								icon: "none"
+							})
+						}
+						this.sumCoupon++
+					}
+				});
+			},
+
+			// 确定添加按钮
+			confirmAdd() {
+				var str = {}
+				var obj = {}
+				var arr = []
+				var data = []
+				this.couponDataList.forEach(item => {
+					str = {
+						id: item.id,
+						name: item.name,
+						times: item.num
+					}
+					arr.push(str)
 				})
+				this.packageDataList.forEach(item => {
+					item.data.forEach(res => {
+						obj = {
+							id: res.id,
+							name: res.name,
+							times: res.num
+						}
+						data.push(obj)
+					})
+				})
+
+
+				this.from.coupon = arr
+				this.from.pack = data
+
+				var vuedata = {
+					name: this.from.name, //礼品卡名称
+					simg: this.imageList.length != 0 ? this.imageList[0] : '', //封面图
+					bimg: this.imageList.length != 0 ? this.imageList.join(',') : '', //图片
+					pack: JSON.stringify(this.from.pack), //套餐卡列表
+					coupon: JSON.stringify(this.from.coupon), //优惠券列表
+					price: this.from.price, //价格
+					kucun: this.from.kucun, //库存
+					date_type: this.isCurr ? 1 : 2, //使用时间类型 1固定日期区间，2固定时长
+					begin_time: this.startTime, //开始时间
+					end_time: this.endTime, //结束时间
+					fixed_term: this.from.fixed_term, //固定时长
+					buy_limit: this.from.buy_limit, //固定数量限制
+					status: this.isState ? 1 : -1, //发放状态
+					sort: this.from.sort, //排序
+					gift_explain: this.from.gift_explain, //优惠券说明
+				}
+				console.log(vuedata)
+				// return false
+				this.apipost('api/v1/store/gift/add', vuedata).then(res => {
+					if (res.status == 200) {
+						this.$store.commit('upAddGift', true)
+						uni.showToast({
+							title: "礼品卡添加成功",
+							icon: 'none'
+						})
+						setTimeout(function() {
+							uni.navigateBack({
+								delta: 1
+							})
+						}, 500)
+					} else if (res.status == 400) {
+						uni.showToast({
+							title: res.massage,
+							icon: 'none'
+						})
+					}
+				})
+			},
+			
+			// 确定修改按钮
+			confirmEdit() {
+				var str = {}
+				var obj = {}
+				var arr = []
+				var data = []
+				this.couponDataList.forEach(item => {
+					str = {
+						id: item.id,
+						name: item.name,
+						times: item.num
+					}
+					arr.push(str)
+				})
+				this.packageDataList.forEach(item => {
+					item.data.forEach(res => {
+						obj = {
+							id: res.id,
+							name: res.name,
+							times: res.num
+						}
+						data.push(obj)
+					})
+				})
+				
+				
+				this.from.coupon = arr
+				this.from.pack = data
+				
+				var vuedata = {
+					name: this.from.name, //礼品卡名称
+					simg: this.imageList.length != 0 ? this.imageList[0] : '', //封面图
+					bimg: this.imageList.length != 0 ? this.imageList.join(',') : '', //图片
+					pack: JSON.stringify(this.from.pack), //套餐卡列表
+					coupon: JSON.stringify(this.from.coupon), //优惠券列表
+					price: this.from.price, //价格
+					kucun: this.from.kucun, //库存
+					date_type: this.isCurr ? 1 : 2, //使用时间类型 1固定日期区间，2固定时长
+					begin_time: this.startTime, //开始时间
+					end_time: this.endTime, //结束时间
+					fixed_term: this.from.fixed_term, //固定时长
+					buy_limit: this.from.buy_limit, //固定数量限制
+					status: this.isState ? 1 : -1, //发放状态
+					sort: this.from.sort, //排序
+					gift_explain: this.from.gift_explain, //优惠券说明
+				}
+				this.apiput('api/v1/store/gift/edit/' + this.id, vuedata).then(res => {
+					if (res.status == 200) {
+						this.$store.commit('upAddGift', true)
+						uni.showToast({
+							title: "礼品卡修改成功",
+							icon: 'none'
+						})
+						setTimeout(function() {
+							uni.navigateBack({
+								delta: 1
+							})
+						}, 500)
+					} else if (res.status == 400) {
+						uni.showToast({
+							title: res.massage,
+							icon: 'none'
+						})
+					}
+				})
+			},
+			// 获取礼品卡详情
+			getPackage(id) {
+				this.apiget('api/v1/store/gift/index/' + id, {}).then(res => {
+					if (res.status == 200) {
+						var data = res.data
+						this.from.name = data.name
+						this.imageList = data.bimg
+						this.from.pack = data.pack
+						this.from.coupon = data.coupon
+						this.from.price = data.price
+						this.from.kucun = data.kucun
+						this.isCurr = data.date_type == 1 ? true : false
+						this.startTime = data.begin_time
+						this.endTime = data.end_time
+						this.from.fixed_term = data.fixed_term
+						this.from.buy_limit = data.buy_limit
+						this.isState = data.status == 1 ? true : false
+						this.from.sort = data.sort
+						this.from.gift_explain = data.gift_explain
+					}
+				});
 			},
 		}
 	}
@@ -487,7 +953,7 @@
 					justify-content: space-between;
 					padding-right: 40rpx;
 					box-sizing: border-box;
-					height: 80rpx;
+					height: 100rpx;
 					border-bottom: 1rpx solid #ededed;
 					color: #333;
 					font-size: 28rpx;
@@ -570,13 +1036,9 @@
 						display: flex;
 						align-items: center;
 
-						image {
-							width: 28rpx;
-							height: 28rpx;
-						}
 
 						text {
-							margin-left: 10rpx;
+							margin-right: 10rpx;
 							font-size: 28rpx;
 							color: #000;
 						}
