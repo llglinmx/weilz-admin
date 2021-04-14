@@ -27,9 +27,6 @@
 <script>
 	import tabs from "../../components/tabs/tabs.vue"
 	import navTitleBalck from "../../components/nav-title-balck/nav-title-balck.vue"
-	import loading from '../../components/loading/loading.vue'
-	import noData from '../../components/no-data/no-data.vue'
-	import zPaging from '../../components/z-paging/components/z-paging/z-paging.vue'
 	import scrollRecommendSwiperItem from '../../components/scroll-recommend-swiper-item/scroll-recommend-swiper-item.vue'
 	export default {
 		data() {
@@ -44,9 +41,6 @@
 		components: {
 			tabs,
 			navTitleBalck,
-			loading,
-			noData,
-			zPaging,
 			scrollRecommendSwiperItem
 		},
 		onReady() {

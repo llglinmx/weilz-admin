@@ -11,9 +11,9 @@
 		<view class="box-content">
 			<view class="box-content-main">
 				<view class="shop-logo flex-center">
-					<image src="../../static/images/shop-logo.png" mode="aspectFill"></image>
+					<image :src="infoData.simg" mode="aspectFill"></image>
 				</view>
-				<view class="shop-title">蓝池美容美体有限公司</view>
+				<view class="shop-title">{{infoData.company}}</view>
 				<view class="shop-score">
 					<text class="iconfont iconwujiaoxing icon-font" style="color: #FFCD4D;font-size: 28rpx;"
 						v-for="item in 5"></text>
@@ -69,7 +69,11 @@
 						title: "账号管理",
 						image: "../../static/images/mine-icon6.png"
 					},
-				]
+				],
+				infoData: {
+					company: '',
+					simg: ''
+				}
 			};
 		},
 		components: {
@@ -90,7 +94,7 @@
 			getInfo() {
 				this.apiget('api/v1/store/admin_info', {}).then(res => {
 					if (res.status == 200) {
-						console.log(res.data)
+						this.infoData = res.data
 					}
 				});
 			},
@@ -231,6 +235,7 @@
 					image {
 						width: 210rpx;
 						height: 210rpx;
+						border-radius: 20rpx;
 					}
 				}
 

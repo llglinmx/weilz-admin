@@ -47,7 +47,7 @@
 					<view class="box-content-main-image-list-li" :class="index==0?'list-li-affter':''"
 						v-for="(item,index) in imageList" :key="index">
 						<image :src="item" mode="aspectFill"></image>
-						<text class="close flex-center" @click="delImage">
+						<text class="close flex-center" @click="delImage(index)">
 							<text class="iconfont iconcuowu icon-font" style="color: #fff;font-size: 36rpx"></text>
 						</text>
 					</view>

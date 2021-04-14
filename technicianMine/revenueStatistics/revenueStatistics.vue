@@ -15,16 +15,14 @@
 				</view>
 			</view>
 			<view class="box-content-main">
-				<mescroll-uni ref="mescrollRef" @down="downCallback" @up="upCallback" :down="downOption" :up="upOption"
-					:height="mesHeight">
-					<view class="box-content-main-list">
-						<view class="box-content-main-list-li" v-for="(item,index) in 100" :key="index">
-							<view class="box-content-main-list-li-text">2021第{{index+1}}周</view>
-							<view class="box-content-main-list-li-text">32158.41</view>
-							<view class="box-content-main-list-li-text">{{index+99}}</view>
-						</view>
-					</view>
-				</mescroll-uni>
+				<swiper class="swiper-box" :current="defaultIndex" @change="tabChange">
+					<swiper-item class="swiper-box-item-list" v-for="(item,index) in tabs" :key="item.id">
+						<scroll-profit-swiper-item :tabIndex="index" :currentIndex="defaultIndex">
+						</scroll-profit-swiper-item>
+					</swiper-item>
+				</swiper>
+
+
 			</view>
 		</view>
 	</view>
@@ -33,39 +31,23 @@
 <script>
 	import navTitleWhite from "../../components/nav-title-white/nav-title-white.vue"
 	import liuyunoTabs from "@/components/liuyuno-tabs/liuyuno-tabs.vue";
-	import MescrollMixin from "../../components/mescroll-uni/mescroll-mixins.js";
-	import MescrollUni from "@/components/mescroll-uni/mescroll-uni.vue"
+	import scrollProfitSwiperItem from '../../components/scroll-profit-swiper-item/scroll-profit-swiper-item.vue'
 	export default {
-		mixins: [MescrollMixin], // 使用mixin
 		data() {
 			return {
 				barHeight: 0, //顶部电量导航栏高度
 				defaultIndex: 0,
 				tabs: ["按天", "按周", "按月", "按年"],
-				mesHeight: 0,
-				downOption: { // 下拉刷新配置
-					auto: false,
-				},
-				upOption: { // 上拉加载配置
-					noMoreSize: 5,
-					textLoading: "正在加载更多数据",
-					textNoMore: "——  已经到底了  ——",
-					isBounce: true,
-					auto: false,
-				},
-				PageNumber: 1, // 请求页数，
-				PageLimt: 10, // 请求条数
+
 			};
 		},
 		components: {
 			navTitleWhite,
 			liuyunoTabs,
-			MescrollUni
+			scrollProfitSwiperItem
 		},
 		onShow() {
-			const sys = uni.getSystemInfoSync();
-			var Heigh = sys.windowHeight
-			this.mesHeight = (Heigh - 140) * 2
+
 		},
 		onReady() {
 			// 获取顶部电量状态栏高度
@@ -80,30 +62,12 @@
 			tabClick(e) {
 				this.defaultIndex = e
 			},
-
-			/*下拉刷新的回调*/
-			downCallback() {
-				this.PageNumber = 1
-				setTimeout(() => {
-					this.mescroll.endSuccess() // 请求成功 隐藏加载状态
-
-					// this.mescroll.showNoMore()
-
-				}, 1500)
+			// 滑动切换列表
+			tabChange(e) {
+				this.$refs.boxTabs.tabToIndex(e.detail.current)
+				this.defaultIndex = e.detail.current
 			},
 
-			/*上拉加载的回调*/
-			upCallback(page) {
-				this.PageNumber++
-				console.log(this.PageNumber)
-				setTimeout(() => {
-					this.mescroll.endSuccess() // 请求成功 隐藏加载状态
-					// if (this.PageNumber > 3) {
-					this.mescroll.showNoMore()
-					// }
-				}, 1500)
-				console.log("上拉加载")
-			},
 		}
 	}
 </script>
@@ -157,32 +121,11 @@
 				flex: 1;
 				overflow-y: scroll;
 
-				.box-content-main-list {
-					display: flex;
-					flex-direction: column;
+				.swiper-box {
+					height: 100%;
 
-					.box-content-main-list-li {
-						display: flex;
-						height: 88rpx;
-						background: #F7F7F7;
-
-						.box-content-main-list-li-text {
-							display: flex;
-							align-items: center;
-							justify-content: center;
-							flex: 1;
-							color: #333;
-							font-size: 28rpx;
-						}
-
-						.box-content-main-list-li-text:nth-child(2) {
-							color: #26BF82;
-						}
-
-					}
-
-					.box-content-main-list-li:nth-child(2n) {
-						background: #fff;
+					.swiper-box-item-list {
+						height: 100%;
 					}
 				}
 			}

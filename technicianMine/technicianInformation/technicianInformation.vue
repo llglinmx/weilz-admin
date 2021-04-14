@@ -48,8 +48,8 @@
 				<view class="box-content-store-title">所属门店</view>
 				<view class="box-content-store-list">
 					<view class="box-content-store-list-text">
-						<text class="iconfont iconmendian icon-font" style="color:#26BF82;font-size: 28rpx"></text>
-						<text style="font-weight: 500;color: #000;margin-left: 20rpx;">罗约蓝池·温泉SPA</text>
+						<text class="iconfont iconshangjia icon-font" style="color:#26BF82;font-size: 28rpx"></text>
+						<text style="font-weight: 500;color: #000;margin-left: 20rpx;">{{userInfo.store_name}}</text>
 					</view>
 					<view class="box-content-store-list-more">
 						<text class="iconfont icongengduo icon-font"
@@ -58,8 +58,8 @@
 				</view>
 				<view class="box-content-store-list">
 					<view class="box-content-store-list-text">
-						<text class="iconfont icondingwei1 icon-font" style="color:#26BF82;font-size: 40rpx"></text>
-						<text style="color: #333;margin-left: 20rpx;">中国 福建省 厦门市 集美区 杏滨路罗约酒店负一楼</text>
+						<text class="iconfont icondingwei1 icon-font" style="color:#26BF82;font-size: 36rpx"></text>
+						<text style="color: #333;margin-left: 20rpx;">{{userInfo.store_address}}</text>
 					</view>
 					<view class="box-content-store-list-more">
 						<text class="iconfont icongengduo icon-font"

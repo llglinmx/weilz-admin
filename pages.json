@@ -86,7 +86,7 @@
 		}, {
 			"path": "pages/merchantMine/merchantMine",
 			"style": {
-				"navigationBarTitleText": "",
+				"navigationBarTitleText": "个人中心",
 				"navigationBarTextStyle": "white", //状态栏字体颜色
 				"enablePullDownRefresh": false
 			}
@@ -511,16 +511,14 @@
 					"enablePullDownRefresh": false
 				}
 
-			}    ,{
-                    "path" : "customerEditer/customerEditer",
-                    "style" :                                                                                    
-                {
-                    "navigationBarTitleText": "",
-                    "enablePullDownRefresh": false
-                }
-                
-                }
-            ]
+			}, {
+				"path": "customerEditer/customerEditer",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}]
 		}
 	],
 	"globalStyle": {
