@@ -155,7 +155,7 @@
 						break;
 					case 1: //项目管理
 						uni.navigateTo({
-							url: "../projectManagement/projectManagement?id="+this.id
+							url: "../projectManagement/projectManagement?id=" + this.id
 						})
 						break;
 					case 2: //技师管理
@@ -165,7 +165,7 @@
 						break;
 					case 3: //排班表
 						uni.navigateTo({
-							url: "../schedule/schedule"
+							url: "../schedule/schedule?id=" + this.id
 						})
 						break;
 					case 4: //技师招聘

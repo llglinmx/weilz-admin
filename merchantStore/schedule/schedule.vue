@@ -100,6 +100,7 @@
 				barHeight: 0, //顶部电量导航栏高度
 				tabsList: ["团队排班表", "员工排班表"],
 				defaultIndex: 1, //当前滑动的页面
+				id:'',
 			};
 		},
 		components: {
@@ -115,11 +116,18 @@
 				}
 			});
 		},
+		onLoad(options) {
+			this.id = options.id
+		},
 		methods: {
 			// 添加排班表
 			addSchedule() {
+				var str={
+					type:'add',
+					id:this.id,
+				}
 				uni.navigateTo({
-					url: "../addSchedule/addSchedule"
+					url: "../addSchedule/addSchedule?data="+JSON.stringify(str)
 				})
 			},
 
@@ -144,6 +152,27 @@
 			tabChange(e) {
 				this.$refs.boxTabs.tabToIndex(e.detail.current)
 				this.defaultIndex = e.detail.current
+			},
+			
+			// 获取排班表
+			getSchedule() {
+				this.apiget('api/v1/store/schedule', {
+					store: this.id,
+				}).then(res => {
+					if (res.status == 200) {
+						
+					}
+				});
+			},
+			//获取技师
+			getTechniciany() {
+				this.apiget('api/v1/store/engineer', {
+					store: this.id,
+				}).then(res => {
+					if (res.status == 200) {
+						this.engineerList = res.data.member
+					}
+				});
 			},
 		}
 	}
