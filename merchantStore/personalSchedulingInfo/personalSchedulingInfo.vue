@@ -325,6 +325,13 @@
 						flex: 1;
 						padding: 20rpx;
 						box-sizing: border-box;
+						border-radius: 10rpx;
+						
+						// background: rgba(78,196,148,0.1);
+						// color: #26BF81;
+						
+						background: rgba(248,148,148,0.1);
+						color: #FF6363;
 
 						.box-content-list-li-info-wrap {
 							.list-li-info-wrap-item {

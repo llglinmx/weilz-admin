@@ -98,10 +98,10 @@
 					page_index: num, // 请求页数，
 					each_page: size, // 请求条数
 				}
-				this.apiget('api/v1/store/admin/store', vuedata).then(res => {
+				this.apiget('api/v1/store/admin', vuedata).then(res => {
 					if (res.status == 200) {
 
-						if (res.data.store.length != 0) {
+						if (res.data.length != 0 && res.data.store.length != 0) {
 							this.isData = true
 							let list = res.data.store
 							this.$refs.paging1.complete(list);
@@ -207,7 +207,7 @@
 			}
 
 			.box-content-main {
-				
+
 				.box-content-main-list {
 					background: #fff;
 					padding: 30rpx 0;

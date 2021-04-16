@@ -20,7 +20,7 @@
 				<view class="box-content-wrap-item">
 					<swiper class="swiper-box" :current="defaultIndex" @change="tabChange">
 						<swiper-item class="swiper-box-item-list" v-for="(item,index) in tabsList" :key='index'>
-							<scroll-technician-swiper-item ref="tech" :tabIndex="index" :currentIndex="defaultIndex">
+							<scroll-technician-swiper-item ref="tech" :store='id' :tabIndex="index" :currentIndex="defaultIndex">
 							</scroll-technician-swiper-item>
 						</swiper-item>
 					</swiper>

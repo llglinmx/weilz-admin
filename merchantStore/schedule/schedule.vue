@@ -34,10 +34,10 @@
 							</view>
 						</swiper-item>
 						<swiper-item class="swiper-box-item-list">
-							<view class="box-content-check-wrap">
-								<view class="box-content-check-wrap-title">员工</view>
+							<view class="box-content-check-wrap" @click="selectOpen">
+								<view class="box-content-check-wrap-title">技师</view>
 								<view class="box-content-check-wrap-text">
-									<text>王二麻子</text>
+									<text>{{engineerName==''?'请选择技师':engineerName}}</text>
 									<text class="iconfont icongengduo icon-font"
 										style="color: #ccc;font-size: 32rpx;margin-top: 8rpx;"></text>
 								</view>
@@ -87,6 +87,9 @@
 		<view class="box-footer">
 			<btn-sky-blue btnName="添加排班表" @btnClick="addSchedule" />
 		</view>
+		<popup-list-select :skid='engineer_id' @cancel="engineerCancel" @confirm="engineerCconfirm"
+			:visible='visible' :dataList="engineerList">
+		</popup-list-select>
 	</view>
 </template>
 
@@ -94,6 +97,8 @@
 	import merchantTabs from "../../components/merchant-tabs/merchant-tabs.vue"
 	import navTitleBalck from "../../components/nav-title-balck/nav-title-balck.vue"
 	import schedulingCalendar from "../../components/scheduling-calendar/scheduling-calendar.vue"
+	import popupListSelect from '../../components/popup-list-select/popup-list-select.vue'
+	
 	export default {
 		data() {
 			return {
@@ -101,12 +106,17 @@
 				tabsList: ["团队排班表", "员工排班表"],
 				defaultIndex: 1, //当前滑动的页面
 				id:'',
+				visible:false,
+				engineerList: [],
+				engineerName: '',
+				engineer_id: '', //技师id
 			};
 		},
 		components: {
 			merchantTabs,
 			navTitleBalck,
-			schedulingCalendar
+			schedulingCalendar,
+			popupListSelect
 		},
 		onReady() {
 			// 获取顶部电量状态栏高度
@@ -118,8 +128,25 @@
 		},
 		onLoad(options) {
 			this.id = options.id
+			this.getTechniciany()
 		},
 		methods: {
+			
+			// 选择技师
+			selectOpen() {
+				this.visible = true
+			},
+			// 选择技师取消按钮
+			engineerCancel(e) {
+				this.visible = e
+			},
+			// 选择技师取消按钮
+			engineerCconfirm(e) {
+				this.engineer_id = e.id
+				this.engineerName = e.name
+			},
+			
+			
 			// 添加排班表
 			addSchedule() {
 				var str={

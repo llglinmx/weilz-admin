@@ -98,7 +98,8 @@
 			search: {
 				type: String,
 				default: ''
-			}
+			},
+			store:{}
 		},
 		watch: {
 			currentIndex: {
@@ -133,6 +134,7 @@
 				var vuedata = {
 					page_index: num, // 请求页数，
 					each_page: size, // 请求条数
+					store:this.store,
 				}
 				this.apiget('api/v1/store/engineer', vuedata).then(res => {
 					if (res.status == 200) {
@@ -143,6 +145,11 @@
 							this.firstLoaded = true;
 						}
 						this.isLoad = false
+					} else {
+						uni.showToast({
+							title: res.massage,
+							icon: "none"
+						})
 					}
 				});
 			},
@@ -220,11 +227,11 @@
 						display: flex;
 						align-items: center;
 						width: 164rpx;
-						border-radius: 10rpx;
 
 						image {
 							width: 164rpx;
 							height: 164rpx;
+							border-radius: 10rpx;
 						}
 
 						text {

@@ -68,14 +68,14 @@
 
 			<view class="box-content-main">
 				<view class="box-content-main-calendar">
-
+					<scheduling-calendar :extraData='extraData' />
 				</view>
 				<view class="box-content-main-schedule-list">
 					<view class="box-content-main-schedule-list-li" v-for="(item,index) in dataList" :key="index">
 						<view class="box-content-main-schedule-list-li-title">
 							<view class="box-content-main-schedule-list-li-title-left">
 								<text>{{item.title}}</text>
-								<text>{{item.number}}</text>
+								<text>{{item.number | basic}}</text>
 							</view>
 							<view class="box-content-main-schedule-list-li-title-right">
 								<switch :checked='item.isCheck' color="#26BF81" style="transform:scale(0.7)"
@@ -139,6 +139,23 @@
 	import btnSkyBlue from "../../components/btn-sky-blue/btn-sky-blue.vue"
 	import popupListSelect from '../../components/popup-list-select/popup-list-select.vue'
 	import selectTime from '@/components/select-time/select-time.vue';
+	import schedulingCalendar from "../../components/scheduling-calendar/scheduling-calendar.vue"
+
+	const getYearMonthDay = (date) => {
+		let year = date.getFullYear();
+		let month = date.getMonth();
+		let day = date.getDate();
+
+		return {
+			year,
+			month,
+			day
+		}
+	}
+	const getDate = (year, month, day) => {
+		return new Date(year, month, day)
+	}
+
 
 	export default {
 		data() {
@@ -154,6 +171,7 @@
 				indexOne: -1,
 				indexTwo: -1,
 				timeType: '',
+				arrTime: [],
 				from: {
 					engineer_id: '', //技师id
 					name: '', //排班名称
@@ -165,7 +183,7 @@
 				},
 				dataList: [{
 						title: "周一",
-						number: "01/08/15/22/29",
+						number: "",
 						isCheck: false,
 						data: [{
 							startTime: '',
@@ -175,7 +193,7 @@
 					},
 					{
 						title: "周二",
-						number: "02/09/16/23/30",
+						number: "",
 						isCheck: false,
 						data: [{
 							startTime: '',
@@ -185,7 +203,7 @@
 					},
 					{
 						title: "周三",
-						number: "03/10/17/24",
+						number: "",
 						isCheck: false,
 						data: [{
 							startTime: '',
@@ -195,7 +213,7 @@
 					},
 					{
 						title: "周四",
-						number: "04/11/18/25",
+						number: "",
 						isCheck: false,
 						data: [{
 							startTime: '',
@@ -205,7 +223,7 @@
 					},
 					{
 						title: "周五",
-						number: "06/13/20/27",
+						number: "",
 						isCheck: false,
 						data: [{
 							startTime: '',
@@ -215,7 +233,7 @@
 					},
 					{
 						title: "周六",
-						number: "06/13/20/27",
+						number: "",
 						isCheck: false,
 						data: [{
 							startTime: '',
@@ -224,7 +242,7 @@
 						}, ],
 					}, {
 						title: "周日",
-						number: "07/14/21/28",
+						number: "",
 						isCheck: false,
 						data: [{
 							startTime: '',
@@ -233,13 +251,20 @@
 						}, ],
 					},
 				],
+				extraData: []
 			};
+		},
+		filters: {
+			basic(val) { //去除最后一个字符
+				return val.substring(0, val.length - 1);
+			},
 		},
 		components: {
 			navTitleBalck,
 			btnSkyBlue,
 			selectTime,
-			popupListSelect
+			popupListSelect,
+			schedulingCalendar
 		},
 		onReady() {
 			// 获取顶部电量状态栏高度
@@ -258,11 +283,12 @@
 				this.titleType = 'add'
 			} else {
 				this.titleType = 'edit'
-			}
 
+			}
+			this.getYear()
 		},
 		methods: {
-			// 选择员工
+			// 选择技师
 			selectOpen() {
 				this.visible = true
 			},
@@ -324,6 +350,48 @@
 			switch1Change(e, index) {
 				var bool = e.detail.value
 				this.dataList[index].isCheck = bool ? true : false
+
+				this.extraData.map(item => {
+					var w = new Date(item.day).getDay() //获取星期 0（周日） 到 6（周六） 之间的一个整数。
+					switch (index) {
+						case 0:
+							if (w == 1) {
+								item.data.value = this.dataList[index].isCheck ? '上班' : '未排班'
+							}
+							break;
+						case 1:
+							if (w == 2) {
+								item.data.value = this.dataList[index].isCheck ? '上班' : '未排班'
+							}
+							break;
+						case 2:
+							if (w == 3) {
+								item.data.value = this.dataList[index].isCheck ? '上班' : '未排班'
+							}
+							break;
+						case 3:
+							if (w == 4) {
+								item.data.value = this.dataList[index].isCheck ? '上班' : '未排班'
+							}
+							break;
+						case 4:
+							if (w == 5) {
+								item.data.value = this.dataList[index].isCheck ? '上班' : '未排班'
+							}
+							break;
+						case 5:
+							if (w == 6) {
+								item.data.value = this.dataList[index].isCheck ? '上班' : '未排班'
+							}
+							break;
+						case 6:
+							if (w == 0) {
+								item.data.value = this.dataList[index].isCheck ? '上班' : '未排班'
+							}
+							break;
+					}
+				})
+
 			},
 			// 状态
 			switchState(e) {
@@ -467,18 +535,18 @@
 				this.addScheduling(vuedata)
 			},
 			// 添加排班
-			addScheduling(data){
+			addScheduling(data) {
 				this.apipost('api/v1/store/schedule/add', data).then(res => {
 					if (res.status == 200) {
 						uni.showToast({
-							title:'排班表添加成功',
-							icon:'none'
+							title: '排班表添加成功',
+							icon: 'none'
 						})
-						setTimeout(()=>{
+						setTimeout(() => {
 							uni.navigateBack({
-								delta:1
+								delta: 1
 							})
-						},500)
+						}, 500)
 					}
 				});
 			},
@@ -493,6 +561,81 @@
 					}
 				});
 			},
+			// 获取年月日
+			getYear() {
+				var year = getYearMonthDay(new Date()).year
+				var month = getYearMonthDay(new Date()).month
+
+				let currentFirstDay = getDate(year, month, 1);
+
+				let week = currentFirstDay.getDay();
+				let startDay = currentFirstDay - week * 60 * 60 * 1000 * 24;
+				let arr = [];
+				for (let i = 0; i < 35; i++) {
+					let day = new Date(startDay + i * 60 * 60 * 1000 * 24);
+					let {
+						year: dayY,
+						month: dayM,
+						day: dayD
+					} = getYearMonthDay(day);
+					var date = new Date(day); // 初始化日期
+					var str = {
+						data: date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate(),
+						value: '未排班',
+						dot: true,
+						active: true
+					}
+					let obj = {
+						day: day,
+						data: str
+					}
+					arr.push(obj)
+					this.extraData = arr
+				}
+
+				// 此处是获取到 为 周日-周六 各自对应的时间
+				var sTime = ''
+				arr.forEach(item => {
+					var w = new Date(item.day).getDay() //获取星期 0（周日） 到 6（周六） 之间的一个整数。
+					// 周一 至 周日 对应显示
+					switch (w) {
+						case 0:
+							sTime = new Date(item.day).getDate()
+							this.dataList[6].number += sTime + '/'
+							break;
+						case 1:
+							sTime = new Date(item.day).getDate()
+							this.dataList[0].number += sTime + '/'
+							break;
+						case 2:
+							sTime = new Date(item.day).getDate()
+							this.dataList[1].number += sTime + '/'
+							break;
+						case 3:
+							sTime = new Date(item.day).getDate()
+							this.dataList[2].number += sTime + '/'
+							break;
+						case 4:
+							sTime = new Date(item.day).getDate()
+							this.dataList[3].number += sTime + '/'
+							break;
+						case 5:
+							sTime = new Date(item.day).getDate()
+							this.dataList[4].number += sTime + '/'
+							break;
+						case 6:
+							sTime = new Date(item.day).getDate()
+							this.dataList[5].number += sTime + '/'
+							break;
+					}
+
+					// console.log(w)
+				})
+
+				return arr
+			},
+
+
 		}
 	}
 </script>
@@ -580,7 +723,7 @@
 				background: #fff;
 
 				.box-content-main-calendar {
-					height: 700rpx;
+					// height: 700rpx;
 				}
 
 				.box-content-main-schedule-list {

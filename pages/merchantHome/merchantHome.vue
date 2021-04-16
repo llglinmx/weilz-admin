@@ -161,7 +161,7 @@
 				}
 				this.apiget('api/v1/store/order', vuedata).then(res => {
 					if (res.status == 200) {
-						if (res.data.data.length != 0) {
+						if (res.data != 0 && res.data.data.length != 0) {
 							this.isData = true
 							let list = res.data.data
 							this.$refs.paging1.complete(list);

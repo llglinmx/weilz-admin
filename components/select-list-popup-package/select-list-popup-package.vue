@@ -69,22 +69,13 @@
 			},
 			// 确定
 			confirm() {
-				// var obj = {
-				// 	name: '',
-				// 	id: '',
-				// 	data: []
-				// }
 				var dataArr = []
-				var arrData = []
-				var arr = []
-
 				this.dataList.map(item => {
 					item.data.forEach(res => {
 						if (res.isCheck) {
 							dataArr.push(item)
 						}
 					})
-
 				})
 
 				var obj = {};
@@ -93,17 +84,12 @@
 					return item;
 				}, []);
 
-				dataArr.forEach((item, index) => {
-					item.data.forEach((res, idx) => {
-						console.log(!res.isCheck)
-						if (!res.isCheck) {
-							dataArr[index].data.splice(idx, 1)
-						}
-					})
+				let newarr = dataArr.map(item => {
+					item.data = item.data.filter(res => res.isCheck)
+					return item;
 				})
-				console.log(dataArr)
 
-				this.$emit('confirm', [...dataArr])
+				this.$emit('confirm', [...newarr])
 				this.cancel()
 			},
 			prevent() {},

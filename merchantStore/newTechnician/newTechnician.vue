@@ -57,7 +57,7 @@
 					<view class="box-content-list-li-title">电子邮箱</view>
 					<view class="box-content-list-li-info">
 						<view class="box-content-list-li-info-input">
-							<input type="number" v-model.email="from.email" placeholder="请输入电子邮箱" />
+							<input type="text" v-model.email="from.email" placeholder="请输入电子邮箱" />
 						</view>
 					</view>
 				</view>
@@ -685,7 +685,7 @@
 						this.from.service_times = data.service_times
 						this.from.license_id = data.license_id
 						this.from.license_img = data.license_img
-						
+
 						this.from.simg = data.photo[0].name
 						this.from.photo = data.photo[0].name
 						this.from.service_fee = data.service_fee

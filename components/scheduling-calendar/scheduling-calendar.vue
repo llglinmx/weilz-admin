@@ -10,15 +10,17 @@
 			</view>
 		</view>
 		<view class="content-calendar-week">
-			<view class="content-calendar-week-item flex-center" v-for="(item,index) in weeks" :key="index">{{item}}</view>
+			<view class="content-calendar-week-item flex-center" v-for="(item,index) in weeks" :key="index">{{item}}
+			</view>
 		</view>
 		<view class="content-calendar-list">
-			<view class="content-calendar-list-li flex-center" @click="clickDate(item.day)" v-for="(item,index) in visibleDays"
-			 :class="[{bgColor:isToday(item.day)},{bgColorCheck:isClick(item.day)}]" :key="index">
+			<view class="content-calendar-list-li flex-center" @click="clickDate(item.day)"
+				v-for="(item,index) in visibleDays"
+				:class="[{bgColor:isToday(item.day)},{bgColorCheck:isClick(item.day)}]" :key="index">
 				<text class="day" :class="[{notCurrentMonth: !isCurrentMonth(item.day)}
 						]">{{item.day | dayFilter}}</text>
 				<text class="msg" :class="[{notCurrentMonth: !isCurrentMonth(item.day)},{msgActive:isToday(item.day)},{msgActive:isClick(item.day)}
-						]">上班</text>
+						]">{{item.data.value}}</text>
 			</view>
 		</view>
 	</view>
@@ -120,6 +122,8 @@
 					},
 					month_data
 				} = this;
+
+
 				let currentFirstDay = getDate(year, month, 1);
 				let week = currentFirstDay.getDay();
 				let startDay = currentFirstDay - week * 60 * 60 * 1000 * 24;
@@ -132,17 +136,19 @@
 						day: dayD
 					} = getYearMonthDay(day);
 					let data = {};
+					// console.log(month_data)
+
 					for (let item of month_data) {
-						let dateString = item.date;
+						let dateString = item.data.data;
 						let dateArr = dateString.indexOf('-') !== -1 ?
 							dateString.split('-') :
-							dateString.indexOf('/') !== -1 ?
-							dateString.split('/') : [];
+							dateString.indexOf('/') !== -1 ? dateString.split('/') : [];
 						if (dateArr.length === 3 &&
 							Number(dateArr[0]) === Number(dayY) &&
 							Number(dateArr[1]) === (Number(dayM) + 1) &&
 							Number(dateArr[2]) === Number(dayD)) {
-							data = item
+
+							data = item.data
 						}
 					}
 					let obj = {
@@ -151,7 +157,7 @@
 					}
 					arr.push(obj)
 				}
-				console.log(arr)
+				// console.log(arr)
 				return arr
 			}
 		},
@@ -266,13 +272,13 @@
 
 <style scoped lang="scss">
 	.content-calendar {
-		padding: 0 20rpx;
-		box-sizing: border-box;
 
 		.content-calendar-top {
 			height: 93rpx;
 			display: flex;
 			align-items: center;
+			padding: 0 20rpx;
+			box-sizing: border-box;
 			justify-content: space-between;
 			border-bottom: 1rpx solid #ededed;
 
@@ -289,6 +295,7 @@
 		.content-calendar-week {
 			display: flex;
 			align-items: center;
+			justify-content: center;
 
 			.content-calendar-week-item {
 				width: 95rpx;
@@ -298,6 +305,8 @@
 
 		.content-calendar-list {
 			display: flex;
+			align-items: center;
+			justify-content: center;
 			flex-wrap: wrap;
 
 			.content-calendar-list-li {

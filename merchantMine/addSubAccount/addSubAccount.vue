@@ -72,14 +72,23 @@
 						<view class="jurisdiction-list-li-box">
 							<view class="jurisdiction-list-li-box-title">{{item.title}}</view>
 							<view class="jurisdiction-list-li-box-wrap">
+								<!-- <view class="jurisdiction-list-li-box-wrap-item">
+									<text class="iconfont iconweixuanzhong icon-font"
+										style="color:#B2B2B2;font-size: 40rpx;margin-top: 4rpx;"
+										v-if="!item.isAllCheck"></text>
+									<text class="iconfont iconxuanzhong2 icon-font"
+										style="color:#07C160;font-size: 40rpx;margin-top: 4rpx;"
+										v-if="item.isAllCheck"></text>
+									<text>全选</text>
+								</view> -->
 								<view class="jurisdiction-list-li-box-wrap-item" v-for="(i,j) in item.data" :key="j"
 									@click="permissionSelection(index,j)">
 									<text class="iconfont iconweixuanzhong icon-font"
 										style="color:#B2B2B2;font-size: 40rpx;margin-top: 4rpx;"
-										v-show="!j.isCheck"></text>
+										v-if="!i.isCheck"></text>
 									<text class="iconfont iconxuanzhong2 icon-font"
 										style="color:#07C160;font-size: 40rpx;margin-top: 4rpx;"
-										v-show="j.isCheck"></text>
+										v-if="i.isCheck"></text>
 									<text>{{i.text}}</text>
 								</view>
 							</view>
@@ -167,416 +176,8 @@
 				dataList: [{
 					title: "请选择门店"
 				}],
-				arrList: [{
-						title: "短信权限",
-						isAllCheck: false,
-						data: [{
-								text: "全选",
-								isCheck: false
-							},
-							{
-								text: "短信",
-								isCheck: false
-							},
-							{
-								text: "短信增加",
-								isCheck: false
-							},
-							{
-								text: "短信修改",
-								isCheck: false
-							},
-							{
-								text: "短信删除",
-								isCheck: false
-							},
-						]
-					},
-					{
-						title: "打印权限",
-						isAllCheck: false,
-						data: [{
-								text: "全选",
-								isCheck: false
-							},
-							{
-								text: "打印",
-								isCheck: false
-							},
-							{
-								text: "打印增加",
-								isCheck: false
-							},
-							{
-								text: "打印修改",
-								isCheck: false
-							},
-							{
-								text: "打印删除",
-								isCheck: false
-							},
-						]
-					},
-					{
-						title: "区域权限",
-						isAllCheck: false,
-						data: [{
-								text: "全选",
-								isCheck: false
-							},
-							{
-								text: "区域",
-								isCheck: false
-							},
-						]
-					},
-					{
-						title: "门店权限",
-						isAllCheck: false,
-						data: [{
-								text: "全选",
-								isCheck: false
-							},
-							{
-								text: "门店",
-								isCheck: false
-							},
-							{
-								text: "门店分类",
-								isCheck: false
-							},
-							{
-								text: "门店修改",
-								isCheck: false
-							},
-						]
-					},
-					{
-						title: "导航权限",
-						isAllCheck: false,
-						data: [{
-								text: "全选",
-								isCheck: false
-							},
-							{
-								text: "导航",
-								isCheck: false
-							},
-							{
-								text: "导航增加",
-								isCheck: false
-							},
-							{
-								text: "导航修改",
-								isCheck: false
-							},
-							{
-								text: "导航删除",
-								isCheck: false
-							},
-						]
-					},
-					{
-						title: "技师权限",
-						isAllCheck: false,
-						data: [{
-								text: "全选",
-								isCheck: false
-							},
-							{
-								text: "技师分类增加",
-								isCheck: false
-							},
-							{
-								text: "技师分类修改",
-								isCheck: false
-							},
-							{
-								text: "技师分类删除",
-								isCheck: false
-							},
-							{
-								text: "技师等级",
-								isCheck: false
-							},
-							{
-								text: "技师",
-								isCheck: false
-							},
-							{
-								text: "技师增加",
-								isCheck: false
-							},
-							{
-								text: "技师修改",
-								isCheck: false
-							},
-							{
-								text: "技师删除",
-								isCheck: false
-							},
-						]
-					},
-					{
-						title: "排班表权限",
-						isAllCheck: false,
-						data: [{
-								text: "全选",
-								isCheck: false
-							},
-							{
-								text: "排班表",
-								isCheck: false
-							},
-							{
-								text: "排班表增加",
-								isCheck: false
-							},
-							{
-								text: "排班表修改",
-								isCheck: false
-							},
-							{
-								text: "排班表删除",
-								isCheck: false
-							},
-						]
-					},
-					{
-						title: "项目权限",
-						isAllCheck: false,
-						data: [{
-								text: "全选",
-								isCheck: false
-							},
-							{
-								text: "项目分类",
-								isCheck: false
-							},
-							{
-								text: "项目分类增加",
-								isCheck: false
-							},
-							{
-								text: "项目分类修改",
-								isCheck: false
-							},
-							{
-								text: "项目分类删除",
-								isCheck: false
-							},
-							{
-								text: "项目",
-								isCheck: false
-							},
-							{
-								text: "项目增加",
-								isCheck: false
-							},
-							{
-								text: "项目修改",
-								isCheck: false
-							},
-							{
-								text: "项目删除",
-								isCheck: false
-							},
-						]
-					},
-					{
-						title: "优惠券权限",
-						isAllCheck: false,
-						data: [{
-								text: "全选",
-								isCheck: false
-							},
-							{
-								text: "优惠券",
-								isCheck: false
-							},
-							{
-								text: "优惠券添加",
-								isCheck: false
-							},
-							{
-								text: "优惠券修改",
-								isCheck: false
-							},
-							{
-								text: "优惠券删除",
-								isCheck: false
-							},
-							{
-								text: "兑换券",
-								isCheck: false
-							},
-							{
-								text: "兑换券添加",
-								isCheck: false
-							},
-							{
-								text: "兑换券修改",
-								isCheck: false
-							},
-							{
-								text: "兑换券删除",
-								isCheck: false
-							},
-						]
-					},
-					{
-						title: "套餐权限",
-						isAllCheck: false,
-						data: [{
-								text: "全选",
-								isCheck: false
-							},
-							{
-								text: "套餐卡分类",
-								isCheck: false
-							},
-							{
-								text: "套餐卡分类添加",
-								isCheck: false
-							},
-							{
-								text: "套餐卡分类修改",
-								isCheck: false
-							},
-							{
-								text: "套餐卡分类删除",
-								isCheck: false
-							},
-							{
-								text: "套餐卡",
-								isCheck: false
-							},
-							{
-								text: "套餐卡添加",
-								isCheck: false
-							},
-							{
-								text: "套餐卡修改",
-								isCheck: false
-							},
-							{
-								text: "套餐卡删除",
-								isCheck: false
-							},
-							{
-								text: "通用套餐卡",
-								isCheck: false
-							},
-							{
-								text: "通用套餐卡添加",
-								isCheck: false
-							},
-							{
-								text: "通用套餐卡修改",
-								isCheck: false
-							},
-							{
-								text: "通用套餐卡删除",
-								isCheck: false
-							},
-						]
-					},
-					{
-						title: "礼品卡权限",
-						isAllCheck: false,
-						data: [{
-								text: "全选",
-								isCheck: false
-							},
-							{
-								text: "礼品卡",
-								isCheck: false
-							},
-							{
-								text: "礼品卡添加",
-								isCheck: false
-							},
-							{
-								text: "礼品卡修改",
-								isCheck: false
-							},
-							{
-								text: "礼品卡删除",
-								isCheck: false
-							},
-							{
-								text: "礼品卡兑换码",
-								isCheck: false
-							},
-						]
-					},
-					{
-						title: "教程权限",
-						isAllCheck: false,
-						data: [{
-								text: "全选",
-								isCheck: false
-							},
-							{
-								text: "教程",
-								isCheck: false
-							},
-							{
-								text: "教程添加",
-								isCheck: false
-							},
-							{
-								text: "教程修改",
-								isCheck: false
-							},
-							{
-								text: "教程删除",
-								isCheck: false
-							},
-						]
-					},
-					{
-						title: "订单权限",
-						isAllCheck: false,
-						data: [{
-								text: "全选",
-								isCheck: false
-							},
-							{
-								text: "商城订单",
-								isCheck: false
-							},
-							{
-								text: "预约订单",
-								isCheck: false
-							},
-							{
-								text: "打赏记录",
-								isCheck: false
-							},
-							{
-								text: "买单记录",
-								isCheck: false
-							},
-							{
-								text: "套餐订单",
-								isCheck: false
-							},
-							{
-								text: "礼品卡订单",
-								isCheck: false
-							},
-							{
-								text: "技师提现",
-								isCheck: false
-							},
-							{
-								text: "门店提现",
-								isCheck: false
-							},
-						]
-					},
-				]
+				checkList: [],
+				arrList: []
 			};
 		},
 		components: {
@@ -590,6 +191,9 @@
 					this.barHeight = res.statusBarHeight
 				}
 			});
+		},
+		onLoad() {
+			this.getPermission()
 		},
 		methods: {
 			// switch 开关
@@ -635,8 +239,7 @@
 						item.isAllCheck = true
 						item.data.forEach(res => {
 							res.isCheck = true
-							// this.$set(res.isCheck,'true');
-							this.$forceUpdate();
+							res.value = 1
 						})
 					})
 				} else {
@@ -644,11 +247,10 @@
 						item.isAllCheck = false
 						item.data.forEach(res => {
 							res.isCheck = false
-							// this.$set(res.isCheck,'false');
+							res.value = -1
 						})
 					})
 				}
-				console.log(this.arrList)
 
 			},
 			// 权限选择
@@ -660,17 +262,20 @@
 					})
 				} else {
 					this.arrList[index].data[idx].isCheck = !this.arrList[index].data[idx].isCheck;
-					
+					this.arrList[index].data[idx].value = this.arrList[index].data[idx].isCheck ? 1 : -1
+
+
+					this.arrList[index].data[0].isCheck = true //判断单行是否全选 
 					this.arrList[index].data.forEach(item => {
-						if (item.isCheck == false) {
-							this.arrList[index].data[0].isCheck = false
-						} else {
-							// this.arrList[index].data[0].isCheck = true
-						}
+						this.arrList[index].data[0].isCheck = item.isCheck && this.arrList[index].data[0].isCheck
 					})
 				}
-
-				console.log(this.arrList[index].data)
+				this.isAll = true //判断全部是否全选
+				this.arrList.forEach(item => {
+					item.data.forEach(res => {
+						this.isAll = res.isCheck && this.isAll
+					})
+				})
 			},
 
 
@@ -681,6 +286,42 @@
 					icon: "none"
 				})
 			},
+
+			// 获取权限列表
+			getPermission(num, size) {
+				this.apiget('api/v1/store/admin/limit', {}).then(res => {
+					if (res.status == 200) {
+						let permissionsList = res.data.limit;
+						this.checkList = permissionsList.map((item) => {
+							let obj = {
+								value: -1,
+								isAllCheck: false,
+								title: item.name
+							};
+							let arr = Object.entries(item.list);
+							obj.data = arr.map((val) => {
+								return {
+									value: -1,
+									isCheck: false,
+									field: val[0],
+									text: val[1]
+								};
+							});
+							var str = {
+								value: -1,
+								isCheck: false,
+								field: 'all',
+								text: '全选'
+							}
+							obj.data.splice(0, 0, str)
+							// console.log("obj",obj);
+							return obj;
+						});
+						this.arrList = this.checkList
+						console.log(this.checkList)
+					}
+				})
+			}
 		}
 	}
 </script>

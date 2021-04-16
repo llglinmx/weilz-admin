@@ -333,7 +333,6 @@
 			// 选择套餐类型弹窗选择确认
 			packageCardConfirm(e) {
 				this.packageDataList = e
-				console.log(e)
 			},
 
 			// 打开优惠券弹出层
@@ -535,20 +534,21 @@
 
 							if (this.type == 'add') { //添加
 								if (this.packageDataList.length != 0) {
-									dataArr.map(item => {
-										item.data.map(res => {
-											this.packageDataList.map(ele => {
-												ele.data.map(e => {
-													if (item.id == res.id) {
-														res.isCheck = true
-														res.num = e.num
+									for (var i = 0; i < dataArr.length; i++) {
+										for (var k = 0; k < dataArr[i].data.length; k++) {
+											for (var j = 0; j < this.packageDataList.length; j++) {
+												for (var h = 0; h < this.packageDataList[j].data.length; h++) {
+													if (dataArr[i].data[k].id == this.packageDataList[j].data[h]
+														.id) {
+														dataArr[i].data[k].isCheck = true
+														dataArr[i].data[k].num = this.packageDataList[j].data[h]
+															.num
 													}
-												})
-											})
-										})
-										console.log(item.data)
-									})
-									// console.log(dataArr)
+												}
+											}
+
+										}
+									}
 								}
 							} else if (this.type == 'edit') { //编辑
 								list.map(item => {
@@ -566,6 +566,7 @@
 										arr.push(item)
 									}
 								})
+								console.log(arr)
 								this.dataList = arr
 							}
 
@@ -723,7 +724,7 @@
 					}
 				})
 			},
-			
+
 			// 确定修改按钮
 			confirmEdit() {
 				var str = {}
@@ -748,11 +749,11 @@
 						data.push(obj)
 					})
 				})
-				
-				
+
+
 				this.from.coupon = arr
 				this.from.pack = data
-				
+
 				var vuedata = {
 					name: this.from.name, //礼品卡名称
 					simg: this.imageList.length != 0 ? this.imageList[0] : '', //封面图
