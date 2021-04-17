@@ -157,19 +157,19 @@
 							type: 'line',
 							smooth: true,
 							data: [125, 200, 362, 369, 358, 159, 258],
-							color: ['#5DBDFE'], //折线条的颜色
+							// color: ['#5DBDFE'], //折线条的颜色
 						},
 						{
 							type: 'line',
 							smooth: true,
 							data: [500, 632, 360, 258, 852, 254, 369],
-							color: ['#FF8366'], //折线条的颜色
+							// color: ['#FF8366'], //折线条的颜色
 						},
 						{
 							type: 'line',
 							smooth: true,
 							data: [300, 35, 584, 365, 752, 853, 654],
-							color: ['#FFDB3A'], //折线条的颜色
+							// color: ['#FFDB3A'], //折线条的颜色
 						}
 					]
 				}

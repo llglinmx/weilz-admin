@@ -207,7 +207,7 @@
 				<view class="box-content-list-li">
 					<view class="box-content-list-li-title">状态</view>
 					<view class="box-content-list-li-info">
-						<switch :checked="isState" @change="switch1Change" color="#07C160" />
+						<switch :checked="isState" @change="switch1Change"  style="transform: scale(0.7);" color="#07C160" />
 					</view>
 				</view>
 				<view class="box-content-list-li">

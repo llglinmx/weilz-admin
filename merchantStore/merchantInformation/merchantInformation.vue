@@ -8,7 +8,8 @@
 				<swiper class="swiper" :autoplay="autoplay" :interval="interval" :duration="duration"
 					:circular="circular">
 					<swiper-item class="swiper-item" v-for="(item,index) in infoData.bimg">
-						<image :src="item" mode="aspectFill" class="swiper-item"></image>
+						<image :src="item" mode="aspectFill" class="swiper-item"
+							@click="previewImg(infoData.bimg,index)"></image>
 					</swiper-item>
 				</swiper>
 				<view class="box-content-banner-dot">
@@ -19,7 +20,7 @@
 			</view>
 			<view class="box-content-info">
 				<view class="box-content-info-image">
-					<image :src="infoData.simg" mode="aspectFill"></image>
+					<image :src="infoData.simg" mode="aspectFill" @click="previewImg(infoData.simg)"></image>
 				</view>
 				<view class="box-content-info-main">
 					<view class="box-content-info-main-title">{{infoData.name}}</view>
@@ -66,7 +67,7 @@
 		<view class="box-footer">
 			<btn-sky-blue btnName="修改" @btnClick="modify" />
 		</view>
-		
+
 	</view>
 </template>
 
@@ -74,8 +75,9 @@
 	import navTitleBalck from "../../components/nav-title-balck/nav-title-balck.vue"
 	import btnSkyBlue from "../../components/btn-sky-blue/btn-sky-blue.vue"
 	import score from '../../components/score/score.vue'
-	
+	import mixins from '../../static/js/mixins.js'
 	export default {
+		mixins: [mixins],
 		data() {
 			return {
 				barHeight: 0, //顶部电量导航栏高度
@@ -114,7 +116,7 @@
 			navTitleBalck,
 			btnSkyBlue,
 			score,
-			
+
 		},
 		onReady() {
 			// 获取顶部电量状态栏高度
@@ -133,8 +135,9 @@
 				this.getInfo(this.id)
 			}
 		},
+
 		methods: {
-			
+
 			// 修改
 			modify() {
 				this.$store.commit("upAddStore", false)

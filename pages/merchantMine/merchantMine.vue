@@ -11,7 +11,7 @@
 		<view class="box-content">
 			<view class="box-content-main">
 				<view class="shop-logo flex-center">
-					<image :src="infoData.simg" mode="aspectFill"></image>
+					<image :src="infoData.simg" mode="aspectFill"  @click="previewImg(infoData.simg)"></image>
 				</view>
 				<view class="shop-title">{{infoData.company}}</view>
 				<view class="shop-score">
@@ -36,7 +36,9 @@
 
 <script>
 	import merchantTabbar from "../../components/merchant-tabbar/merchant-tabbar.vue"
+	import mixins from '../../static/js/mixins.js'
 	export default {
+		mixins: [mixins],
 		data() {
 			return {
 				barHeight: 0, //顶部电量导航栏高度
@@ -215,6 +217,8 @@
 			background: #5DBDFE;
 
 			.box-content-main {
+				display: flex;
+				flex-direction: column;
 				position: relative;
 				height: calc(100% - 134rpx);
 				margin-top: 134rpx;
@@ -261,6 +265,8 @@
 				}
 
 				.shop-list {
+					flex: 1;
+					overflow-y: scroll;
 					display: flex;
 					align-items: center;
 					// justify-content: center;

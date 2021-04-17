@@ -25,7 +25,8 @@
 									v-for="(i,j) in typeSplit(item.position_benefits)">{{i}}</view>
 							</view>
 							<view class="screen-main-list-li-name">
-								<view class="screen-main-list-li-name-title" v-if="item.store_info!=null&&item.store_info!=''">{{item.store_info.name}}</view>
+								<view class="screen-main-list-li-name-title"
+									v-if="item.store_info!=null&&item.store_info!=''">{{item.store_info.name}}</view>
 								<view class="screen-main-list-li-name-more">
 									<text class="iconfont icongengduo icon-font"
 										style="color: #ccc;font-size: 28rpx;margin-top: 4rpx;"></text>
@@ -198,6 +199,7 @@
 								padding: 10rpx 16rpx;
 								box-sizing: border-box;
 								margin-right: 10rpx;
+								margin-bottom: 10rpx;
 								color: #666;
 								font-size: 24rpx;
 								background: #F7F7F7;

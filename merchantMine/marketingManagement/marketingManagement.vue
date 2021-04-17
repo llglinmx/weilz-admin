@@ -561,6 +561,7 @@
 
 			// 礼品卡删除
 			deleteGift(done) {
+				done()
 				this.apidelte('api/v1/store/gift/del/' + this.id, {}).then(res => {
 					if (res.status == 200) {
 						this.giftList.splice(this.deleteIndex, 1)
@@ -570,7 +571,6 @@
 						})
 						this.giftList(1, 10)
 					}
-					done()
 				});
 			},
 

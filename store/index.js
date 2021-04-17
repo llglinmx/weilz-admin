@@ -29,6 +29,7 @@ const store = new Vuex.Store({
 		isAddCoupon: false, //是否有添加优惠券
 		isAddPackageCard: false, //是否有添加套餐卡
 		isAddGift: false, //是否有添加礼品卡
+		isAddAccount:false,//是否有添加账号
 	},
 	mutations: {
 		//用于判断是否添加地址 等同于发送监听
@@ -68,6 +69,9 @@ const store = new Vuex.Store({
 		},
 		upAddGift(state, bool) {
 			state.isAddGift = bool
+		},
+		upAddAccount(state, bool) {
+			state.isAddAccount = bool
 		},
 	},
 	actions: {}

@@ -3,7 +3,7 @@
 		<view class="box-head" :style="{paddingTop:barHeight+'px'}">
 			<nav-title-balck navTitle="账号管理"></nav-title-balck>
 		</view>
-		<view class="box-content" :style="{display:isData?'block':'none'}">
+		<view class="box-content">
 			<view class="box-content-search">
 				<view class="box-content-search-box">
 					<view class="box-content-search-box-ico" :class="isSearch?'box-content-search-box-ico-active':''">
@@ -16,21 +16,21 @@
 					</view>
 				</view>
 			</view>
-			<view class="box-content-main">
+			<view class="box-content-main" :style="{display:isData?'block':'none'}">
 				<z-paging ref="paging1" @query="queryList" :list.sync="dataList" loading-more-no-more-text="已经到底了"
 					:refresher-angle-enable-change-continued="false" :touchmove-propagation-enabled="true"
 					:use-custom-refresher="true" style="height: 100%;">
 					<view class="box-content-main-list">
 						<view class="box-content-main-list-li" v-for="(item,index) in dataList" :key="item.id"
-							@click="accountDetail">
+							@click="accountDetail(item.id)">
 							<view class="box-content-main-list-li-image flex-center">
 								<text class="iconfont iconmendian1 icon-font"
 									style="color:#5DBDFE;font-size: 52rpx"></text>
 							</view>
 							<view class="box-content-main-list-li-info">
 								<view class="box-content-main-list-li-info-left">
-									<view class="list-li-info-left-title">{{item.name}}</view>
-									<view class="list-li-info-left-text">账号：{{item.account}}</view>
+									<view class="list-li-info-left-title">{{item.company}}</view>
+									<view class="list-li-info-left-text">账号：{{item.username}}</view>
 								</view>
 								<view class="box-content-main-list-li-info-more">
 									<text class="iconfont icongengduo icon-font"
@@ -41,11 +41,12 @@
 					</view>
 				</z-paging>
 			</view>
+			<view class="box-content-main" :style="{display:!isData?'block':'none'}">
+				<loading v-if="isLoad" />
+				<no-data v-if="!isLoad" />
+			</view>
 		</view>
-		<view class="box-content" :style="{display:!isData?'block':'none'}">
-			<loading v-if="isLoad" />
-			<no-data v-if="!isLoad" />
-		</view>
+
 		<view class="box-footer">
 			<btn-sky-blue btnName="添加子账号" @btnClick="addBtn" />
 		</view>
@@ -86,6 +87,11 @@
 		onLoad() {
 
 		},
+		onShow() {
+			if (this.$store.state.isAddAccount) {
+				this.storeList(1, 20)
+			}
+		},
 		methods: {
 			// 上拉 下拉
 			queryList(pageNo, pageSize) {
@@ -101,9 +107,9 @@
 				this.apiget('api/v1/store/admin', vuedata).then(res => {
 					if (res.status == 200) {
 
-						if (res.data.length != 0 && res.data.store.length != 0) {
+						if (res.data.length != 0 && res.data.member.length != 0) {
 							this.isData = true
-							let list = res.data.store
+							let list = res.data.member
 							this.$refs.paging1.complete(list);
 						} else {
 							this.isData = false
@@ -124,16 +130,20 @@
 			},
 
 			// 账号详情
-			accountDetail() {
+			accountDetail(id) {
 				uni.navigateTo({
-					url: "../accountDetails/accountDetails"
+					url: "../accountDetails/accountDetails?id=" + id
 				})
 			},
 
 			// 添加按钮
 			addBtn() {
+				this.$store.commit('upAddAccount', false)
+				var str = {
+					type: 'add'
+				}
 				uni.navigateTo({
-					url: "../addSubAccount/addSubAccount"
+					url: "../addSubAccount/addSubAccount?data=" + JSON.stringify(str)
 				})
 			},
 		}
@@ -152,6 +162,8 @@
 		}
 
 		.box-content {
+			display: flex;
+			flex-direction: column;
 			flex: 1;
 			overflow-y: scroll;
 
@@ -207,6 +219,8 @@
 			}
 
 			.box-content-main {
+				flex: 1;
+				overflow-y: scroll;
 
 				.box-content-main-list {
 					background: #fff;
@@ -244,6 +258,7 @@
 								}
 
 								.list-li-info-left-text {
+									margin-top: 10rpx;
 									font-size: 24rpx;
 									color: #999;
 								}

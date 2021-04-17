@@ -1,7 +1,7 @@
 <template>
 	<view class="box">
 		<view class="box-head" :style="{paddingTop:barHeight+'px'}">
-			<nav-title-balck navTitle="添加子账号"></nav-title-balck>
+			<nav-title-balck :navTitle="type=='add'?'添加子账号':'编辑子账号'"></nav-title-balck>
 		</view>
 		<view class="box-content">
 
@@ -10,7 +10,7 @@
 					<view class="box-content-list-li-title">用户名</view>
 					<view class="box-content-list-li-info">
 						<view class="box-content-list-li-info-input">
-							<input type="text" placeholder="请输入用户名" />
+							<input type="text" v-model.trim="from.username" placeholder="请输入用户名" />
 						</view>
 					</view>
 				</view>
@@ -18,7 +18,7 @@
 					<view class="box-content-list-li-title">密码</view>
 					<view class="box-content-list-li-info">
 						<view class="box-content-list-li-info-input">
-							<input type="text" password="true" placeholder="请输入密码" />
+							<input type="number" v-model.trim="from.password" password="true" placeholder="请输入密码" />
 						</view>
 					</view>
 				</view>
@@ -26,7 +26,8 @@
 					<view class="box-content-list-li-title">重复密码</view>
 					<view class="box-content-list-li-info">
 						<view class="box-content-list-li-info-input">
-							<input type="text" password="true" placeholder="请再次输入密码" />
+							<input type="number" v-model.trim="from.repeatpassword" password="true"
+								placeholder="请再次输入密码" />
 						</view>
 					</view>
 				</view>
@@ -35,20 +36,27 @@
 			<view class="box-content-main">
 				<view class="box-content-main-top">
 					<view class="box-content-main-top-title">管理门店</view>
-					<view class="box-content-main-top-add flex-center" @click="addStoreMenu">
+					<view class="box-content-main-top-add flex-center" @click="storeOpen">
 						<text class="iconfont iconcuowu icon-font" style="color: #ccc;font-size: 36rpx"></text>
 					</view>
 				</view>
 				<view class="box-content-store-list">
-					<view class="box-content-store-list-li" v-for="(item,index) in dataList" :key="index">
+					<view class="box-content-store-list-li" v-for="(item,index) in dataList" :key="index"
+						@click="storeOpen">
 						<view class="box-content-store-list-li-info">
-							<view class="store-list-li-info-text">请选择门店</view>
-							<view class="store-list-li-info-more">
+							<view class="store-list-li-info-text">{{item.name}}</view>
+							<!-- <view class="store-list-li-info-more">
 								<text class="iconfont icongengduo icon-font"
 									style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
-							</view>
+							</view> -->
 						</view>
-						<view class="box-content-store-list-li-delete" @click="storeDeleteClick(index)">
+						<view class="box-content-store-list-li-delete" v-if="item.id==-1">
+							<text class="iconfont icongengduo icon-font"
+								style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
+
+						</view>
+						<view class="box-content-store-list-li-delete" v-if="item.id!=-1"
+							@click.stop="storeDeleteClick(index)">
 							<text class="iconfont iconshanchu-shangjia icon-font"
 								style="color: #ccc;font-size: 48rpx"></text>
 						</view>
@@ -99,10 +107,21 @@
 
 
 			<view class="box-content-list">
-				<view class="box-content-list-li">
-					<view class="box-content-list-li-title">有效时间</view>
+				<view class="box-content-list-li" @click="dateStartOpen">
+					<view class="box-content-list-li-title">有效开始时间</view>
 					<view class="box-content-list-li-info">
-						<view class="box-content-list-li-info-text">请选择时间</view>
+						<view class="box-content-list-li-info-text">{{from.start_time==''?'请设置时间':from.start_time}}
+						</view>
+						<view class="box-content-list-li-info-more">
+							<text class="iconfont icongengduo icon-font"
+								style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
+						</view>
+					</view>
+				</view>
+				<view class="box-content-list-li" @click="dateEndOpen">
+					<view class="box-content-list-li-title">有效结束时间</view>
+					<view class="box-content-list-li-info">
+						<view class="box-content-list-li-info-text">{{from.end_time==''?'请设置时间':from.end_time}}</view>
 						<view class="box-content-list-li-info-more">
 							<text class="iconfont icongengduo icon-font"
 								style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
@@ -113,7 +132,7 @@
 					<view class="box-content-list-li-title">姓名</view>
 					<view class="box-content-list-li-info">
 						<view class="box-content-list-li-info-input">
-							<input type="text" placeholder="请输入姓名" />
+							<input type="text" v-model.trim="from.name" placeholder="请输入姓名" />
 						</view>
 					</view>
 				</view>
@@ -121,7 +140,7 @@
 					<view class="box-content-list-li-title">身份证</view>
 					<view class="box-content-list-li-info">
 						<view class="box-content-list-li-info-input">
-							<input type="number" placeholder="请输入身份证号" />
+							<input type="number" v-model.trim="from.identityCard" placeholder="请输入身份证号" />
 						</view>
 					</view>
 				</view>
@@ -129,7 +148,7 @@
 					<view class="box-content-list-li-title">手机号</view>
 					<view class="box-content-list-li-info">
 						<view class="box-content-list-li-info-input">
-							<input type="number" placeholder="请输入手机号" />
+							<input type="number" v-model.trim="from.mobile" placeholder="请输入手机号" />
 						</view>
 					</view>
 				</view>
@@ -137,52 +156,83 @@
 					<view class="box-content-list-li-title">公司名</view>
 					<view class="box-content-list-li-info">
 						<view class="box-content-list-li-info-input">
-							<input type="text" placeholder="请输入公司名称" />
+							<input type="text" v-model.trim="from.company" placeholder="请输入公司名称" />
 						</view>
 					</view>
 				</view>
 
-				<view class="box-content-list-li">
+				<!-- 	<view class="box-content-list-li">
 					<view class="box-content-list-li-title">工卡ID</view>
 					<view class="box-content-list-li-info">
 						<view class="box-content-list-li-info-input">
 							<input type="number" placeholder="请输入工卡ID" />
 						</view>
 					</view>
-				</view>
+				</view> -->
 				<view class="box-content-list-li">
 					<view class="box-content-list-li-title">状态</view>
 					<view class="box-content-list-li-info">
-						<switch :checked="isState" @change="switch1Change" color="#07C160" />
+						<switch :checked="isState" @change="switch1Change" style="transform: scale(0.7);"
+							color="#07C160" />
 					</view>
 				</view>
 			</view>
 		</view>
 		<view class="box-footer">
-			<btn-sky-blue btnName="确认添加" @btnClick="confirm" />
+			<btn-sky-blue btnName="确认添加" v-if="type=='add'" @btnClick="confirmAdd" />
+			<btn-sky-blue btnName="确认修改" v-if="type=='edit'" @btnClick="confirmEdit" />
 		</view>
+
+		<store-list-select @cancel='storeCancel' @confirm='storeConfirm' :visible="visible" :dataList="storeList" />
+		<select-date @cancel="dateStartCancel" @confirm="dateStartConfirm" :visible='isStartDate' />
+		<select-date @cancel="dateEndCancel" @confirm="dateEndConfirm" :visible='isEndDate' />
 	</view>
 </template>
 
 <script>
 	import navTitleBalck from "../../components/nav-title-balck/nav-title-balck.vue"
 	import btnSkyBlue from "../../components/btn-sky-blue/btn-sky-blue.vue"
+	import storeListSelect from '../../components/store-list-select/store-list-select.vue'
+	import selectDate from '../../components/select-date/select-date.vue'
 	export default {
 		data() {
 			return {
+				type: 'add',
+				id: '',
 				barHeight: 0, //顶部电量导航栏高度
 				isState: false, //状态		
 				isAll: false, //是否全选
+				storeList: [],
 				dataList: [{
-					title: "请选择门店"
+					name: "请选择门店",
+					id: -1
 				}],
 				checkList: [],
-				arrList: []
+				arrList: [],
+				visible: false,
+				isStartDate: false,
+				isEndDate: false,
+				from: {
+					username: '', //用户名
+					password: '', //密码
+					repeatpassword: '', //重复密码
+					store: [], //门店（使用JSON格式传递），例：[{"id":"19","name":"聚互时代软二店"},{"id":"15","name":"聚互时代软三店"}]
+					manage: '', //权限
+					start_time: '', //有效开始时间
+					end_time: '', //有效结束时间
+					name: '', //姓名
+					mobile: '', //电话
+					identityCard: '', //身份证号
+					company: '', //公司名称
+					status: 0, //状态
+				}
 			};
 		},
 		components: {
 			navTitleBalck,
-			btnSkyBlue
+			btnSkyBlue,
+			storeListSelect,
+			selectDate
 		},
 		onReady() {
 			// 获取顶部电量状态栏高度
@@ -192,40 +242,112 @@
 				}
 			});
 		},
-		onLoad() {
+		onLoad(options) {
 			this.getPermission()
+			this.getStoreList()
+			var data = JSON.parse(options.data)
+
+			if (data.type == 'add') {
+				this.type = 'add'
+			} else {
+				this.type = 'edit'
+				this.id = data.id
+				this.getDetails(data.id)
+			}
+
+
 		},
 		methods: {
+			// 选择门店
+			storeOpen() {
+				this.storeList.map(item => {
+					item.isCheck = false
+					this.dataList.map(res => {
+						if (item.id == res.id) {
+							item.isCheck = true
+						}
+					})
+				})
+				this.visible = true
+			},
+
+			// 门店弹出取消
+			storeCancel(e) {
+				this.visible = e
+			},
+			// 门店弹出确认
+			storeConfirm(e) {
+				this.dataList = e
+			},
+
+			// 选择开始日期
+			dateStartOpen() {
+				this.isStartDate = true
+			},
+			// 开始日期关闭弹窗
+			dateStartCancel(e) {
+				this.isStartDate = e
+			},
+			// 选择开始日期弹窗选择确认
+			dateStartConfirm(e) {
+				this.from.start_time = e.year + '-' + e.month + '-' + e.day + ' ' + e.hour + ':' + e.minute + ':' + e
+					.second
+			},
+
+			// 选择结束日期
+			dateEndOpen() {
+				if (this.from.startTime != '') {
+					this.isEndDate = true
+					return false;
+				}
+				uni.showToast({
+					title: "请先有效期开始时间",
+					icon: "none"
+				})
+
+			},
+			// 结束日期关闭弹窗
+			dateEndCancel(e) {
+				this.isEndDate = e
+			},
+			// 选择结束日期弹窗选择确认
+			dateEndConfirm(e) {
+				this.from.end_time = e.year + '-' + e.month + '-' + e.day + ' ' + e.hour + ':' + e.minute + ':' + e.second
+			},
+
+
+
 			// switch 开关
 			switch1Change: function(e) {
 				this.isState = e.target.value
-				console.log('发生 change 事件，携带值为', e.target.value)
+				this.from.status = this.isState ? 1 : 0
 			},
 
 			// 添加选择门店
 			addStoreMenu() {
 				let str = {
-					title: "请输入门店"
+					name: "请输入门店",
+					id: -1
 				}
 				// Object.assign(title:"请输入门店")
-				if (this.dataList.length >= 5) {
-					uni.showToast({
-						title: "最大只能添加5个门店",
-						icon: "none"
-					})
-					return;
-				}
-				this.dataList.splice(this.dataList.length, 1, str)
+				// if (this.dataList.length >= 5) {
+				// 	uni.showToast({
+				// 		title: "最大只能添加5个门店",
+				// 		icon: "none"
+				// 	})
+				// 	return;
+				// }
+				// this.dataList.splice(this.dataList.length, 1, str)
 			},
 			// 选择门店删除
 			storeDeleteClick(index) {
 				if (this.dataList.length != 1) {
 					this.dataList.splice(index, 1)
 				} else {
-					uni.showToast({
-						title: "不能再删了，最少一个",
-						icon: "none"
-					})
+					this.dataList = [{
+						name: '请选择门店',
+						id: -1
+					}]
 				}
 			},
 
@@ -259,6 +381,7 @@
 					this.arrList[index].isAllCheck = !this.arrList[index].isAllCheck
 					this.arrList[index].data.forEach(item => {
 						item.isCheck = this.arrList[index].isAllCheck ? true : false
+						item.value = item.isCheck ? 1 : -1
 					})
 				} else {
 					this.arrList[index].data[idx].isCheck = !this.arrList[index].data[idx].isCheck;
@@ -279,11 +402,131 @@
 			},
 
 
-			// 确认按钮
-			confirm() {
-				uni.showToast({
-					title: "确认添加",
-					icon: "none"
+			// 确认添加按钮
+			confirmAdd() {
+				var data = {}
+				this.arrList.forEach(item => {
+					item.data.forEach(res => {
+						var key = res.field;
+						var val = res.value;
+						data[key] = val;
+					})
+				})
+				var vuedata = {
+					username: this.from.username, //用户名
+					password: this.from.password, //密码
+					repeatpassword: this.from.repeatpassword, //重复密码
+					store: JSON.stringify(this
+						.dataList), //门店（使用JSON格式传递），例：[{"id":"19","name":"聚互时代软二店"},{"id":"15","name":"聚互时代软三店"}]
+					manage: JSON.stringify(data), //权限
+					start_time: this.from.start_time, //有效开始时间
+					end_time: this.from.end_time, //有效结束时间
+					name: this.from.name, //姓名
+					mobile: this.from.mobile, //电话
+					IdentityCard: this.from.identityCard, //身份证号
+					company: this.from.company, //公司名称
+					status: this.isState ? 1 : 0, //状态
+				}
+
+				if (this.from.username == '') {
+					uni.showToast({
+						title: "请输入用户名",
+						icon: 'none'
+					})
+					return false;
+				}
+
+				if (this.from.password == '' && this.from.repeatpassword == '') {
+					if (this.from.password != this.from.repeatpassword) {
+						uni.showToast({
+							title: "两次密码不一致，请重新输入",
+							icon: 'none'
+						})
+						return false;
+					}
+					uni.showToast({
+						title: "请检查是否有输入密码",
+						icon: 'none'
+					})
+					return false;
+				}
+
+				if (this.dataList[0].id == -1) {
+					uni.showToast({
+						title: "请选择门店,最少一个",
+						icon: 'none'
+					})
+					return false;
+				}
+				this.postAddSubAccount(vuedata)
+			},
+
+			// 确认修改按钮
+			confirmEdit() {
+				var data = {}
+				this.arrList.forEach(item => {
+					item.data.forEach(res => {
+						var key = res.field;
+						var val = res.value;
+						data[key] = val;
+					})
+				})
+
+				var vuedata = {
+					username: this.from.username, //用户名
+					password: this.from.password, //密码
+					repeatpassword: this.from.repeatpassword, //重复密码
+					store: JSON.stringify(this
+						.dataList), //门店（使用JSON格式传递），例：[{"id":"19","name":"聚互时代软二店"},{"id":"15","name":"聚互时代软三店"}]
+					manage: JSON.stringify(data), //权限
+					start_time: this.from.start_time, //有效开始时间
+					end_time: this.from.end_time, //有效结束时间
+					name: this.from.name, //姓名
+					mobile: this.from.mobile, //电话
+					IdentityCard: this.from.identityCard, //身份证号
+					company: this.from.company, //公司名称
+					status: this.isState ? 1 : 0, //状态
+				}
+				this.apiput('api/v1/store/admin/edit/' + this.id, vuedata).then(res => {
+					if (res.status == 200) {
+						this.$store.commit('upAddAccount', true)
+						uni.showToast({
+							title: "账号信息修改成功",
+							icon: 'none'
+						})
+						setTimeout(function() {
+							uni.navigateBack({
+								delta: 2
+							})
+						}, 500)
+					} else if (res.status == 400) {
+						uni.showToast({
+							title: res.massage,
+							icon: 'none'
+						})
+					}
+				})
+			},
+
+			postAddSubAccount(vuedata) {
+				this.apipost('api/v1/store/admin/add', vuedata).then(res => {
+					if (res.status == 200) {
+						this.$store.commit('upAddAccount', true)
+						uni.showToast({
+							title: "账号添加成功",
+							icon: 'none'
+						})
+						setTimeout(function() {
+							uni.navigateBack({
+								delta: 1
+							})
+						}, 500)
+					} else if (res.status == 400) {
+						uni.showToast({
+							title: res.massage,
+							icon: 'none'
+						})
+					}
 				})
 			},
 
@@ -318,7 +561,74 @@
 							return obj;
 						});
 						this.arrList = this.checkList
-						console.log(this.checkList)
+						// console.log(this.checkList)
+					}
+				})
+			},
+
+			// 获取门店列表
+			getStoreList() {
+				this.apiget('api/v1/store/store_information', {}).then(res => {
+					if (res.status == 200) {
+						this.storeList = res.data.member
+						this.storeList.map(item => {
+							item.isCheck = false
+						})
+					}
+				})
+			},
+			// 获取账号详情
+			getDetails(id) {
+				this.apiget('api/v1/store/admin/' + id, {}).then(res => {
+					if (res.status == 200) {
+						var data = res.data.member
+						var arr = []
+						this.from.username = data.username
+						// password: this.from.password, //密码
+						// repeatpassword: this.from.repeatpassword, //重复密码
+						data.store_array.forEach(item => { //处理门店数据
+							var str = {
+								name: item.name,
+								id: item.id
+							}
+							arr.push(str)
+						})
+						this.dataList = arr
+						this.from.manage = data.manage
+
+						var manage = JSON.parse(data.manage)
+						console.log(manage)
+						this.arrList.forEach(item => {
+							item.data.forEach(ele => {
+								for (let key in manage) {
+									if (ele.field == key) {
+										ele.value = manage[key]
+										ele.isCheck = manage[key] == 1 ? true : false
+									}
+								}
+							})
+						})
+						console.log(this.arrList)
+
+						this.isAll = true;
+						this.arrList.forEach((item, index) => {
+							item.data.forEach((ele, idx) => {
+								if (!ele.isCheck) { //此处判断是区分此行是否有全选
+									item.data[0].isCheck = false
+									item.data[0].value = -1
+								}
+								this.isAll = ele.isCheck && this.isAll
+							})
+						})
+
+						this.from.start_time = data.start_time
+						this.from.end_time = data.end_time
+						this.from.name = data.name
+						this.from.mobile = data.mobile
+						this.from.identityCard = data.identity_card
+						this.from.company = data.company
+						this.from.status = data.status
+						this.isState = data.status == 1 ? true : false //状态
 					}
 				})
 			}
