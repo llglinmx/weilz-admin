@@ -14,11 +14,11 @@
 					<image :src="infoData.simg" mode="aspectFill"  @click="previewImg(infoData.simg)"></image>
 				</view>
 				<view class="shop-title">{{infoData.company}}</view>
-				<view class="shop-score">
+				<!-- <view class="shop-score">
 					<text class="iconfont iconwujiaoxing icon-font" style="color: #FFCD4D;font-size: 28rpx;"
 						v-for="item in 5"></text>
 					<text>5分</text>
-				</view>
+				</view> -->
 				<view class="shop-list">
 					<view class="shop-list-li flex-center" v-for="(item,index) in menuList" :key="index"
 						@click="menuListClick(index)">

@@ -21,8 +21,8 @@
 				<view class="box-content-wrap-item">
 					<swiper class="swiper-box" :current="defaultIndex" @change="tabChange">
 						<swiper-item class="swiper-box-item-list" v-for="(item,index) in tabsList" :key="index">
-							<scroll-order-swiper-item :search="search" :orderType="orderType" :tabIndex="index"
-								:currentIndex="defaultIndex">
+							<scroll-order-swiper-item ref='orderItem' @openPopup='openPopup' :search="search"
+								:orderType="orderType" :tabIndex="index" :currentIndex="defaultIndex">
 							</scroll-order-swiper-item>
 						</swiper-item>
 					</swiper>
@@ -32,6 +32,12 @@
 		<view class="box-footer">
 			<merchant-tabbar @tabbarClick="tabbarClick" :activeIndex="activeIndex"></merchant-tabbar>
 		</view>
+
+		<uni-popup ref="popup" type="dialog">
+			<uni-popup-dialog type="warn" mode='base' title="警告"
+				content="你确定要取消此订单吗?" :duration="2000" :before-close="true"
+				@close="close" @confirm="confirm"></uni-popup-dialog>
+		</uni-popup>
 	</view>
 </template>
 
@@ -39,6 +45,8 @@
 	import merchantTabbar from "../../components/merchant-tabbar/merchant-tabbar.vue"
 	import merchantTabs from "../../components/merchant-tabs/merchant-tabs.vue"
 	import scrollOrderSwiperItem from '../../components/scroll-order-swiper-item/scroll-order-swiper-item.vue'
+	import UniPopup from "../../components/uni-popup/uni-popup.vue"
+	import UniPopupDialog from "../../components/uni-popup/uni-popup-dialog.vue"
 	export default {
 		data() {
 			return {
@@ -49,12 +57,15 @@
 				isSearch: false, //是否搜索
 				orderType: '', //类型
 				search: '',
+				id: '', //订单id
 			};
 		},
 		components: {
 			merchantTabbar,
 			merchantTabs,
-			scrollOrderSwiperItem
+			scrollOrderSwiperItem,
+			UniPopup,
+			UniPopupDialog
 		},
 		onReady() {
 			// 获取顶部电量状态栏高度
@@ -64,6 +75,11 @@
 				}
 			});
 		},
+		onShow() {
+			if (this.$store.state.isOrderState) {
+				this.$refs.orderItem[this.defaultIndex].queryList(1, 10)
+			}
+		},
 		methods: {
 
 			// input框 获得焦点事件
@@ -72,7 +88,6 @@
 			},
 			// 失去焦点事件
 			blur() {
-				console.log(111)
 				this.isSearch = false
 			},
 
@@ -107,9 +122,38 @@
 				}
 			},
 
+			// 打开取消订单弹窗
+			openPopup(id) {
+				this.id = id
+				this.$refs.popup.open()
+			},
+
+			// 弹窗点击取消
+			close(done) {
+				// TODO 做一些其他的事情，before-close 为true的情况下，手动执行 done 才会关闭对话框
+				// ...
+				done()
+			},
+			// 弹窗点击确认
+			confirm(done, value) {
+				this.apiput('api/v1/store/order/cancel_order/' + this.id).then(res => {
+					if (res.status == 200) {
+						//订单取消成功后 执行子页面方法
+						this.$refs.orderItem[this.defaultIndex].queryList(1, 10)
+					} else {
+						uni.showToast({
+							title: res.massage,
+							icon: 'none'
+						})
+					}
+					done()
+				});
+			},
+
 
 			// tabbar点击
 			tabbarClick(index) {
+
 				this.activeIndex = index
 				switch (index) {
 					case 0: //首页

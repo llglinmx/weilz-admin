@@ -164,13 +164,13 @@
 				<view class="box-content-list-li">
 					<view class="box-content-list-li-title">会员数据共通</view>
 					<view class="box-content-list-li-info">
-						<switch :checked='isCommon' @change="switch1Change2" color="#07C160" />
+						<switch style="transform: scale(0.7);" :checked='isCommon' @change="switch1Change2" color="#07C160" />
 					</view>
 				</view>
 				<view class="box-content-list-li">
 					<view class="box-content-list-li-title">门店提成</view>
 					<view class="box-content-list-li-info">
-						<switch :checked='isCommission' @change="switch1Change3" color="#07C160" />
+						<switch style="transform: scale(0.7);" :checked='isCommission' @change="switch1Change3" color="#07C160" />
 					</view>
 				</view>
 

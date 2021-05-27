@@ -113,7 +113,7 @@
 					<swiper class="swiper-box" :current="defaultIndex" @change="tabChange">
 						<swiper-item class="swiper-box-item-list">
 							<view class="box-content-data-list-main">
-								<view class="box-content-data-list-main-item" v-for="(item,index) in 10"
+								<view class="box-content-data-list-main-item" v-for="(item,index) in 20"
 									@click="refundDetails">
 									<view class="box-content-data-list-main-item-left">
 										<view class="list-main-item-left-text">订单号：DSH35693596738</view>

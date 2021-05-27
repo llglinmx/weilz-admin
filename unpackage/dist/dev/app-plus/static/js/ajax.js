@@ -4,7 +4,8 @@ const httpClient = {
 	request: function(method, url, data) {
 		var headers = {
 			"Content-Type": "application/x-www-form-urlencoded",
-			"Authorization": uni.getStorageSync("UToken")
+			"Authorization": uni.getStorageSync("UToken"),
+			'Content-Language':95
 		};
 
 		return new Promise((resolve, reject) => {
@@ -13,7 +14,6 @@ const httpClient = {
 					mask: true
 				});
 			
-
 			uni.request({
 				url: url,
 				header: headers,
@@ -22,8 +22,6 @@ const httpClient = {
 				dataType: 'json',
 				success: function(res) {
 					uni.hideLoading()
-					// console.log("接口获取原始数据：-------------------",res.data)
-					// console.log('状态码为：'+res.statusCode)
 					if (res.statusCode == 402) {
 						uni.showToast({
 							icon: 'none',

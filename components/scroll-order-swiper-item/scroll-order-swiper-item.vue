@@ -16,7 +16,10 @@
 					<view class="box-content-order-list-li" v-for="(item,index) in dataList" :key="item.id">
 						<view class="box-content-order-list-li-top">
 							<view class="order-list-li-top-title">订单号{{item.out_trade_no}}</view>
-							<view class="order-list-li-top-msg">{{item.status_des}}</view>
+							<view class="order-list-li-top-msg" v-if="item.status==-2&&item.use_status==-1">已失效</view>
+							<view class="order-list-li-top-msg" v-if="item.status==-1&&item.use_status==-1">未支付</view>
+							<view class="order-list-li-top-msg" v-if="item.status==1&&item.use_status==-1">待核销</view>
+							<view class="order-list-li-top-msg"  v-if="item.status==1&&item.use_status==1">已核销</view>
 						</view>
 						<view class="box-content-order-list-li-wrap">
 							<view class="order-list-li-wrap-item" v-for="(i,j) in 1">
@@ -78,13 +81,13 @@
 									￥<text>{{item.amount}}</text></view>
 							</view>
 							<view class="box-content-order-list-li-footer-btn">
-								<view class="order-list-li-footer-all-btn btn-hollow flex-center" v-if="item.status!=1"
-									@click="orderDetails">查看详情</view>
-								<view class="order-list-li-footer-all-btn btn-hollow flex-center" v-if="item.status==1">
+								<view class="order-list-li-footer-all-btn btn-hollow flex-center" v-if="item.status==1&&item.use_status==1"
+									@click.stop="orderDetails(item)">查看详情</view>
+								<view class="order-list-li-footer-all-btn btn-hollow flex-center" v-if="item.status==1&&item.use_status==-1" @click.stop="cancelOrder(item)">
 									取消订单
 								</view>
-								<view class="order-list-li-footer-all-btn btn-fill flex-center" v-if="item.status==1"
-									@click="writeOffDetails(item)">确认核销</view>
+								<view class="order-list-li-footer-all-btn btn-fill flex-center" v-if="item.status==1&&item.use_status==-1"
+									@click.stop="writeOffDetails(item)">去核销</view>
 							</view>
 						</view>
 					</view>
@@ -92,21 +95,24 @@
 			</view>
 
 		</z-paging>
+		
 	</view>
 </template>
 
 <script>
 	import zPaging from "../z-paging/components/z-paging/z-paging.vue"
+	
 	export default {
 		data() {
 			return {
 				dataList: [],
 				firstLoaded: false,
 				isLoad: true,
+				id:'',
 			}
 		},
 		components: {
-			zPaging
+			zPaging,
 		},
 		props: {
 			tabIndex: {
@@ -144,13 +150,6 @@
 		},
 		methods: {
 			queryList(pageNo, pageSize) {
-				//组件加载时会自动触发此方法，因此默认页面加载时会自动触发，无需手动调用
-				//这里的pageNo和pageSize会自动计算好，直接传给服务器即可
-				//模拟请求服务器获取分页数据，请替换成自己的网络请求
-				// this.$request.queryList(pageNo, pageSize, this.tabIndex + 1, (data) => {
-				// 	this.$refs.paging.complete(data);
-				// 	this.firstLoaded = true;
-				// })
 				var page = {
 					num: pageNo,
 					size: pageSize,
@@ -181,16 +180,22 @@
 					}
 				});
 			},
+			// 取消订单
+			cancelOrder(item){
+				this.$emit('openPopup',item.id)
+			},
+			
 			// 待核销详情
 			writeOffDetails(item) {
+				this.$store.commit('upOrderState',false)
 				uni.navigateTo({
 					url: "../../merchantOrder/toBeWrittenOff/toBeWrittenOff?id="+item.id
 				})
 			},
 			// 查看详情
-			orderDetails() {
+			orderDetails(id) {
 				uni.navigateTo({
-					url: "../../merchantOrder/orderDetails/orderDetails"
+					url: "../../merchantOrder/orderDetails/orderDetails?id="+id
 				})
 			},
 

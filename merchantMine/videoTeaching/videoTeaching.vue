@@ -71,7 +71,8 @@
 						</view>
 					</swiper-item>
 					<swiper-item class="swiper-box-item-list">
-						<view class="box-content-main-list" v-if="isData">
+						<view class="box-content-main-list" v-if="isData" style="padding: 0 40rpx;
+				box-sizing: border-box;">
 							<view class="box-content-main-list-li" v-for="(item,index) in hotList" :key="item.id"
 								@click="massageDetails(item.id)">
 								<view class="box-content-main-list-li-image">
@@ -129,7 +130,7 @@
 				circular: true,
 				isData: false,
 				isLoad: true,
-				isType: '',
+				isType: 1,
 			};
 		},
 		components: {
@@ -158,7 +159,7 @@
 				this.apiget('api/v1/store/Video_tutorial', vuedata).then(res => {
 					if (res.status == 200) {
 						this.menuList = res.data.video_list
-						if (res.data.member_list.length != 0) {
+						if (res.data.length != 0 && res.data.member_list.length != 0) {
 							this.isData = true
 							if (this.tabsIndex == 0) {
 								this.newestList = res.data.member_list
@@ -451,8 +452,7 @@
 			.box-content-main {
 				flex: 1;
 				overflow-y: scroll;
-				padding: 0 40rpx;
-				box-sizing: border-box;
+
 
 				.box-content-main-swiper {
 					height: 100%;
@@ -469,6 +469,7 @@
 							display: flex;
 							flex-wrap: wrap;
 							overflow-y: scroll;
+
 
 							.box-content-main-list-li {
 								width: 320rpx;

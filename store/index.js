@@ -30,6 +30,7 @@ const store = new Vuex.Store({
 		isAddPackageCard: false, //是否有添加套餐卡
 		isAddGift: false, //是否有添加礼品卡
 		isAddAccount:false,//是否有添加账号
+		isOrderState:false,//用于判断订单是否取消或核销
 	},
 	mutations: {
 		//用于判断是否添加地址 等同于发送监听
@@ -72,6 +73,9 @@ const store = new Vuex.Store({
 		},
 		upAddAccount(state, bool) {
 			state.isAddAccount = bool
+		},
+		upOrderState(state, bool) {
+			state.isOrderState = bool
 		},
 	},
 	actions: {}

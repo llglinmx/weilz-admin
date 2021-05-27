@@ -87,8 +87,16 @@
 			// 滑动切换列表
 			tabChange(e) {
 				this.defaultIndex = e.detail.current
+				this.changeIndex(this.defaultIndex)
 			},
-
+			changeIndex(index){
+				switch (index){
+					case 0:
+						break;
+					case 1:
+						break;
+				}
+			},
 
 		}
 	}

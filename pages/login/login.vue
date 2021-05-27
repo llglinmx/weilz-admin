@@ -33,8 +33,10 @@
 				</view>
 				<view class="box-content-list-msg">忘记密码</view>
 			</view>
-			<view class="box-content-btn flex-center" @click="confirmLogin" :class="isAll?'btn-active':''">同意协议并登录
-			</view>
+			<view class="box-content-btn box-content-btn-blue flex-center" @click="confirmLogin" :class="isAll?'btn-active':''"
+				v-if="this.isType==1">同意协议并登录</view>
+			<view class="box-content-btn box-content-btn-green flex-center" @click="confirmLogin" :class="isAll?'btn-active-green':''"
+				v-if="this.isType==0">同意协议并登录</view>
 			<view class="box-content-text">
 				登录代表你已同意
 				<text>《用户协议》</text>
@@ -158,9 +160,9 @@
 					} else {
 						if (this.codeVal == this.code) { //判断输入的验证码是否一致
 							if (this.isType == 0) {
-								this.technicianLogin(); //登录
+								this.technicianLogin(); //技师登录
 							} else {
-								this.businessLogin()
+								this.businessLogin() //商家登录
 							}
 
 						} else {
@@ -373,7 +375,6 @@
 				width: 630rpx;
 				height: 88rpx;
 				margin-top: 118rpx;
-				background: #CEEBFF;
 				box-shadow: 0rpx 10rpx 20rpx rgba(93, 189, 254, 0.15);
 				border-radius: 15rpx;
 				color: #fff;
@@ -381,8 +382,20 @@
 				transition: 0.3s;
 			}
 
+			.box-content-btn-blue {
+				background: #CEEBFF;
+			}
+
+			.box-content-btn-green {
+				background: #5bf3b6;
+			}
+
 			.btn-active {
 				background: #5DBDFE;
+			}
+
+			.btn-active-green {
+				background: #26bf82 !important;
 			}
 
 			.box-content-text {

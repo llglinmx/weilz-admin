@@ -1,7 +1,7 @@
 <template>
 	<view class="box">
 		<view class="box-head" :style="{paddingTop:barHeight+'px'}">
-			<nav-title-white navTitle="服务中"></nav-title-white>
+			<nav-title-white navTitle="订单详情"></nav-title-white>
 		</view>
 		<view class="box-content">
 			<view class="box-content-appointment-room">
@@ -30,13 +30,13 @@
 			<view class="box-content-order-info">
 				<view class="box-content-order-info-title">订单信息</view>
 				<view class="box-content-order-list-li-wrap">
-					<view class="order-list-li-wrap-item" v-for="(i,j) in 3">
+					<view class="order-list-li-wrap-item" v-for="(i,j) in 1">
 						<view class="order-list-li-wrap-item-image">
 							<image src="../../static/images/001.png" mode="aspectFill"></image>
 						</view>
 						<view class="order-list-li-wrap-item-info">
 							<view class="order-list-li-wrap-item-info-top">
-								<view class="wrap-item-info-top-text">泰式古法按摩</view>
+								<view class="wrap-item-info-top-text">{{orderInfo.reserve_name}}</view>
 								<view class="wrap-item-info-top-msg">￥298.00</view>
 							</view>
 							<view class="order-list-li-wrap-item-info-box">
@@ -53,43 +53,45 @@
 					<view class="box-content-order-info-main-item">
 						<view class="box-content-order-info-main-item-title">订单编号：</view>
 						<view class="box-content-order-info-main-item-text">
-							<text>400199110070101</text>
+							<text>{{orderInfo.out_trade_no}}</text>
 							<text style="color: #5DBDFE;">复制</text>
 						</view>
 					</view>
 					<view class="box-content-order-info-main-item">
 						<view class="box-content-order-info-main-item-title">下单时间：</view>
 						<view class="box-content-order-info-main-item-text">
-							<text>2021-01-13 10:35:11</text>
+							<text>{{orderInfo.createtime}}</text>
 						</view>
 					</view>
 					<view class="box-content-order-info-main-item">
 						<view class="box-content-order-info-main-item-title">服务方式：</view>
 						<view class="box-content-order-info-main-item-text">
-							<text>到店服务</text>
+							<text v-if="orderInfo.service_type==1">到店服务</text>
+							<text v-if="orderInfo.service_type==2">上门服务</text>
 						</view>
 					</view>
 					<view class="box-content-order-info-main-item">
 						<view class="box-content-order-info-main-item-title">支付方式：</view>
 						<view class="box-content-order-info-main-item-text">
-							<text>余额支付</text>
+							<text v-if="orderInfo.pay_type==1">微信支付</text>
+							<text v-if="orderInfo.pay_type==2">余额支付</text>
 						</view>
 					</view>
 				</view>
 				<view class="box-content-order-info-text">
 					<view class="box-content-order-info-text-list">
 						<view class="box-content-order-info-text-list-title">项目总价</view>
-						<view class="box-content-order-info-text-list-price">￥358.00</view>
+						<view class="box-content-order-info-text-list-price">￥{{orderInfo.payable}}</view>
 					</view>
-					<view class="box-content-order-info-text-list">
+					<!-- <view class="box-content-order-info-text-list">
 						<view class="box-content-order-info-text-list-title">使用优惠券</view>
 						<view class="box-content-order-info-text-list-price">￥100.00</view>
-					</view>
+					</view> -->
 				</view>
 				<view class="box-content-order-info-price">
 					<view class="box-content-order-info-price-text">实付款：</view>
 					<view class="present-price">
-						￥<text>396.00</text>
+						￥<text>{{orderInfo.amount}}</text>
 					</view>
 				</view>
 			</view>
@@ -98,26 +100,26 @@
 				<view class="box-content-text-title">门店信息</view>
 				<view class="box-content-text-list">
 					<view class="box-content-text-list-title">门店</view>
-					<view class="box-content-text-list-msg">印象诗意·悠然SPA</view>
+					<view class="box-content-text-list-msg">{{orderInfo.store_name}}</view>
 				</view>
 			</view>
 			<view class="box-content-text">
 				<view class="box-content-text-title">下单用户信息</view>
 				<view class="box-content-text-list">
 					<view class="box-content-text-list-title">用户昵称</view>
-					<view class="box-content-text-list-msg">上善若水</view>
+					<view class="box-content-text-list-msg" v-if="orderInfo&&orderInfo.member_info&&orderInfo.member_info.nickname">{{orderInfo.member_info.nickname}}</view>
 				</view>
 				<view class="box-content-text-list">
 					<view class="box-content-text-list-title">用户名</view>
-					<view class="box-content-text-list-msg">王二麻子</view>
+					<view class="box-content-text-list-msg" v-if="orderInfo&&orderInfo.member_info&&orderInfo.member_info.name">{{orderInfo.member_info.name}}</view>
 				</view>
 				<view class="box-content-text-list">
 					<view class="box-content-text-list-title">手机号码</view>
-					<view class="box-content-text-list-msg">1888888888</view>
+					<view class="box-content-text-list-msg"  v-if="orderInfo&&orderInfo.member_info&&orderInfo.member_info.mobile">{{orderInfo.member_info.mobile}}</view>
 				</view>
 				<view class="box-content-text-list">
 					<view class="box-content-text-list-title">邮箱</view>
-					<view class="box-content-text-list-msg">4488@163.com</view>
+					<view class="box-content-text-list-msg"  v-if="orderInfo&&orderInfo.member_info&&orderInfo.member_info.email">{{orderInfo.member_info.email}}</view>
 				</view>
 			</view>
 
@@ -125,48 +127,57 @@
 				<view class="box-content-text-title">紧急联系人</view>
 				<view class="box-content-text-list">
 					<view class="box-content-text-list-title">姓名</view>
-					<view class="box-content-text-list-msg">王二麻子</view>
+					<view class="box-content-text-list-msg"  v-if="orderInfo&&orderInfo.member_info&&orderInfo.member_info.urgency_name">{{orderInfo.member_info.urgency_name}}</view>
 				</view>
 				<view class="box-content-text-list">
 					<view class="box-content-text-list-title">联系电话</view>
-					<view class="box-content-text-list-msg">1888888888</view>
+					<view class="box-content-text-list-msg" v-if="orderInfo&&orderInfo.member_info&&orderInfo.member_info.urgency_mobile">{{orderInfo.member_info.urgency_mobile}}</view>
 				</view>
 				<view class="box-content-text-list">
 					<view class="box-content-text-list-title">关系</view>
-					<view class="box-content-text-list-msg">朋友</view>
+					<view class="box-content-text-list-msg" v-if="orderInfo&&orderInfo.member_info&&orderInfo.member_info.urgency_relation">{{orderInfo.member_info.urgency_relation}}</view>
 				</view>
 			</view>
 			<view class="box-content-text">
 				<view class="box-content-text-title">用户健康信息</view>
-				<view class="box-content-text-list">
+				<view class="box-content-text-list" v-if="orderInfo&&orderInfo.member_info&&orderInfo.member_info.sex">
 					<view class="box-content-text-list-title">性别</view>
-					<view class="box-content-text-list-msg">男</view>
+					<view class="box-content-text-list-msg" v-if="orderInfo.member_info.sex==1">男</view>
+					<view class="box-content-text-list-msg" v-if="orderInfo.member_info.sex==2">女</view>
+					<view class="box-content-text-list-msg" v-if="orderInfo.member_info.sex==0">保密</view>
 				</view>
 				<view class="box-content-text-list">
 					<view class="box-content-text-list-title">年龄</view>
-					<view class="box-content-text-list-msg">18</view>
+					<view class="box-content-text-list-msg"  v-if="orderInfo&&orderInfo.member_info&&orderInfo.member_info.age">{{orderInfo.member_info.age}}</view>
 				</view>
 				<view class="box-content-text-list">
 					<view class="box-content-text-list-title">过往病例</view>
-					<view class="box-content-text-list-msg">无</view>
+					<view class="box-content-text-list-msg"  v-if="orderInfo&&orderInfo.member_info&&orderInfo.member_info.cottoms">{{orderInfo.member_info.cottoms}}</view>
 				</view>
 				<view class="box-content-text-list">
 					<view class="box-content-text-list-title">过敏病例</view>
-					<view class="box-content-text-list-msg">芒果过敏</view>
+					<view class="box-content-text-list-msg" v-if="orderInfo&&orderInfo.member_info&&orderInfo.member_info.allergy">{{orderInfo.member_info.allergy}}</view>
 				</view>
 				<view class="box-content-text-list">
 					<view class="box-content-text-list-title">有无手术</view>
-					<view class="box-content-text-list-msg">无</view>
+					<view class="box-content-text-list-msg" v-if="orderInfo&&orderInfo.member_info&&orderInfo.member_info.operation">{{orderInfo.member_info.operation==1?'无':'有'}}</view>
+				</view>
+				<view class="box-content-text-list">
+					<view class="box-content-text-list-title">是否怀孕</view>
+					<view class="box-content-text-list-msg" v-if="orderInfo&&orderInfo.member_info&&orderInfo.member_info.fetation">{{orderInfo.member_info.fetation==1?'否':'是'}}</view>
 				</view>
 				<view class="box-content-text-list">
 					<view class="box-content-text-list-title">注意事项</view>
-					<view class="box-content-text-list-msg">无</view>
+					<view class="box-content-text-list-msg" v-if="orderInfo&&orderInfo.member_info&&orderInfo.member_info.announcements">{{orderInfo.member_info.announcements}}</view>
 				</view>
 			</view>
 		</view>
 		<view class="box-footer">
-			<view class="flex-center cancel">取消订单</view>
-			<view class="box-font-btn flex-center">服务结束</view>
+			<view class="flex-center cancel" v-if="orderInfo.status==-1&&orderInfo.use_status==-1">订单未支付</view>
+			<view class="flex-center cancel" v-if="orderInfo.status==1&&orderInfo.use_status==-1">取消订单</view>
+			<view class="flex-center cancel" v-if="orderInfo.status==-2&&orderInfo.use_status==-1">订单已失效</view>
+			<view class="box-font-btn flex-center" v-if="orderInfo.status==1&&orderInfo.use_status==-1">服务结束</view>
+			<view class="box-font-btn flex-center" v-if="orderInfo.status==1&&orderInfo.use_status==1">服务已完成</view>
 		</view>
 	</view>
 </template>
@@ -177,6 +188,9 @@
 		data() {
 			return {
 				barHeight: 0, //顶部电量导航栏高度
+				orderInfo: {
+
+				}
 			};
 		},
 		components: {
@@ -190,8 +204,23 @@
 				}
 			});
 		},
+		onLoad(options) {
+			this.getOrderDetails(options.id)
+		},
 		methods: {
-
+			// 获取订单详情 
+			getOrderDetails(id) {
+				this.apiget('api/v1/store/order/' + id).then(res => {
+					if (res.status == 200) {
+						this.orderInfo = res.data.data
+					} else {
+						uni.showToast({
+							title: res.massage,
+							icon: 'none'
+						})
+					}
+				});
+			}
 		}
 	}
 </script>
@@ -261,7 +290,8 @@
 								text-align-last: justify;
 								text-align: justify;
 							}
-							.msg::after{
+
+							.msg::after {
 								position: absolute;
 								top: 0;
 								bottom: 0;
@@ -392,7 +422,6 @@
 				}
 
 				.box-content-order-info-text {
-					height: 136rpx;
 					padding: 30rpx 0;
 					box-sizing: border-box;
 					display: flex;

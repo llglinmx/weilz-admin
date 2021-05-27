@@ -24,10 +24,14 @@
 				:refresher-angle-enable-change-continued="false" :touchmove-propagation-enabled="true"
 				:use-custom-refresher="true" style="height: 100%;">
 				<view class="box-content-order-list">
-					<view class="order-list-li" v-for="(item,index) in dataList" :key="index">
+					<view class="order-list-li" v-for="(item,index) in dataList" :key="index" @click.stop="orderDetails(item.id)">
 						<view class="order-list-li-top">
 							<view class="order-list-li-top-title">订单号{{item.out_trade_no}}</view>
-							<view class="order-list-li-top-msg" v-if="item.status==1">待核销</view>
+							<view class="order-list-li-top-msg" v-if="item.use_status==-1&&item.status==-1">未支付</view>
+							<view class="order-list-li-top-msg" v-if="item.use_status==-1&&item.status==-2">已失效</view>
+							<view class="order-list-li-top-msg" v-if="item.use_status==-1&&item.status==1">待核销</view>
+							<view class="order-list-li-top-msg" v-if="item.use_status==1&&item.status==1">已核销</view>
+							<!-- <view class="order-list-li-top-msg" v-if="item.use_status==1&&item.status==-2">已失效</view> -->
 						</view>
 						<view class="order-list-li-info">
 							<view class="order-list-li-info-wrap">
@@ -67,10 +71,14 @@
 									</view>
 								</view>
 								<view class="order-list-li-info-footer-all-btn">
-									<view class="order-list-li-info-footer-btn flex-center" @click="cancelOrder">取消订单
+									<view class="order-list-li-info-footer-btn flex-center"
+										v-if="item.use_status==-1&&item.status==1" @click.stop="cancelOrder(item.id)">
+										取消订单
 									</view>
-									<view class="order-list-li-info-footer-btn flex-center" @click="confirmWriteOff">
-										确认核销</view>
+									<view class="order-list-li-info-footer-btn flex-center"
+										v-if="item.use_status==-1&&item.status==1"
+										@click.stop="writeOffDetails(item.id)">
+										去核销</view>
 								</view>
 							</view>
 						</view>
@@ -85,6 +93,10 @@
 		<view class="box-footer">
 			<merchant-tabbar @tabbarClick="tabbarClick" :activeIndex="activeIndex"></merchant-tabbar>
 		</view>
+		<uni-popup ref="popup" type="dialog">
+			<uni-popup-dialog type="warn" mode='base' title="警告" content="你确定要取消此订单吗？" :duration="2000"
+				:before-close="true" @close="close" @confirm="confirm"></uni-popup-dialog>
+		</uni-popup>
 	</view>
 </template>
 
@@ -93,6 +105,9 @@
 	import loading from '../../components/loading-merchant/loading-merchant.vue'
 	import noData from '../../components/no-data/no-data.vue'
 	import zPaging from '../../components/z-paging/components/z-paging/z-paging.vue'
+	import UniPopup from "../../components/uni-popup/uni-popup.vue"
+	import UniPopupDialog from "../../components/uni-popup/uni-popup-dialog.vue"
+
 	export default {
 		data() {
 			return {
@@ -111,17 +126,17 @@
 						title: "已核销",
 						number: "0"
 					}, {
-						title: "申请退款",
+						title: "已取消",
 						number: "0"
 					},
 					{
 						title: "已退款",
 						number: "0"
 					}
-
 				],
 				isData: false,
 				isLoad: true,
+				id: '',
 			};
 		},
 		components: {
@@ -129,7 +144,8 @@
 			loading,
 			noData,
 			zPaging,
-
+			UniPopup,
+			UniPopupDialog
 		},
 		onShow() {
 
@@ -143,7 +159,7 @@
 			});
 		},
 		onLoad() {
-
+			this.merchantHomeInfo()
 		},
 		methods: {
 
@@ -164,33 +180,71 @@
 						if (res.data != 0 && res.data.data.length != 0) {
 							this.isData = true
 							let list = res.data.data
-							this.$refs.paging1.complete(list);
+							this.$refs.paging1.addData(list);
 							return false;
 						}
 						this.isData = false
 						this.isLoad = false
-
 					}
 				});
 			},
 
 			// 取消订单
-			cancelOrder() {
-				uni.showToast({
-					title: "取消订单",
-					icon: "none"
-				})
-			},
-			// 确认核销
-			confirmWriteOff() {
-				uni.showToast({
-					title: "确认核销",
-					icon: "none"
-				})
+			cancelOrder(id) {
+				this.id = id
+				this.$refs.popup.open()
 			},
 
+			// 弹窗点击取消
+			close(done) {
+				// TODO 做一些其他的事情，before-close 为true的情况下，手动执行 done 才会关闭对话框
+				// ...
+				done()
+			},
+			// 弹窗点击确认
+			confirm(done, value) {
 
+				this.apiput('api/v1/store/order/cancel_order/' + this.id).then(res => {
+					if (res.status == 200) {
+						//订单取消成功后 
+						this.queryList(1, 10)
+						this.merchantHomeInfo()
+					} else {
+						uni.showToast({
+							title: res.massage,
+							icon: 'none'
+						})
+					}
+					done()
+				});
 
+			},
+			// 商家主页信息
+			merchantHomeInfo() {
+				this.apiget('api/v1/store/admin_info/store_home' + this.id).then(res => {
+					if (res.status == 200) {
+						this.options[0].number = res.data.payment_num
+						this.options[1].number = res.data.written_off_num
+						this.options[2].number = res.data.written_on_num
+						this.options[3].number = res.data.cancelled_num
+						this.options[4].number = res.data.refunded_num
+					}
+				});
+			},
+
+			// 待核销详情
+			writeOffDetails(id) {
+				this.$store.commit('upOrderState', false)
+				uni.navigateTo({
+					url: "../../merchantOrder/toBeWrittenOff/toBeWrittenOff?id=" + id
+				})
+			},
+			// 查看详情
+			orderDetails(id) {
+				uni.navigateTo({
+					url: "../../merchantOrder/orderDetails/orderDetails?id=" + id
+				})
+			},
 			// tabbar点击
 			tabbarClick(index) {
 				this.activeIndex = index

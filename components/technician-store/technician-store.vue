@@ -5,7 +5,6 @@
 		<z-paging ref="paging" :auto-clean-list-when-reload="false" :auto-scroll-to-top-when-reload="false"
 			:refresher-threshold="80" :use-custom-refresher="true" :touchmove-propagation-enabled='true'
 			:refresher-status.sync="refresherStatus" @query="queryList" :list.sync="dataList" style="height: 100%;">
-
 			<view class="box-content-main">
 				<view class="box-content-main-content-tabs">
 					<view class="box-content-main-item flex-center" v-for="(item,index) in screenList"
@@ -17,17 +16,16 @@
 				</view>
 
 				<view class="box-content-statistical-chart">
-					<mpvue-echarts :echarts="echarts" :onInit="lineInit" canvasId="line" ref="lineChart">
-					</mpvue-echarts>
+					<l-echart ref="chart"></l-echart>
 				</view>
 				<view class="box-content-data-title" style="z-index: 100;position: sticky;top :0;">
 					<view class="box-content-data-title-item flex-center">{{totalNum}}位技师</view>
 					<view class="box-content-data-title-item flex-center">总收入(元)</view>
 					<view class="box-content-data-title-item flex-center">预约次数</view>
 				</view>
-				<view class="box-content-data" v-if="dataList.length>0">
+				<view class="box-content-data" v-if="goodsList.length>0">
 					<view class="box-content-data-list">
-						<view class="box-content-data-list-li" v-for="(item,index) in dataList" :key='item.id'
+						<view class="box-content-data-list-li" v-for="(item,index) in goodsList" :key='item.id'
 							@click="storeDetail(item.id)">
 							<view class="box-content-data-list-li-item flex-center">
 								<text style="margin-left: 10rpx;">{{item.name}}</text>
@@ -35,7 +33,7 @@
 							<view class="box-content-data-list-li-item flex-center">{{item.order_sum}}
 							</view>
 							<view class="box-content-data-list-li-item">
-								<text>258</text>
+								<text>{{item.service_num}}</text>
 								<text class="iconfont icongengduo icon-font"
 									style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
 							</view>
@@ -43,9 +41,9 @@
 					</view>
 
 				</view>
-				<view class="box-content-data" v-if="dataList.length==0">
+				<view class="box-content-data" v-if="goodsList.length==0">
 					<loading v-if="isLoad"></loading>
-					<no-data v-if="dataList.length<=0&&!isLoad"></no-data>
+					<no-data v-if="goodsList.length<=0&&!isLoad"></no-data>
 				</view>
 				<view class="box-content-data-drop-down" :style="{height:open?'560rpx':'0'}">
 					<view class="box-content-data-drop-down-li" v-for="(item,index) in downList"
@@ -59,23 +57,57 @@
 </template>
 
 <script>
-	import * as echarts from '@/components/echarts/echarts.simple.min.js';
-	import mpvueEcharts from '@/components/mpvue-echarts/src/echarts.vue';
 	import loading from '../../components/loading-merchant/loading-merchant.vue'
 	import noData from '../../components/no-data/no-data.vue'
 	import zPaging from '../../components/z-paging/components/z-paging/z-paging.vue'
+	import * as echarts from '../../uni_modules/lime-echart/components/lime-echart/echarts.js';
+	import lEchart from '../../uni_modules/lime-echart/components/lime-echart/index.vue'
+
 	export default {
 		data() {
 			return {
 				totalNum: 0,
 				isLoad: true,
 				dataList: [],
+				goodsList: [],
 				refresherStatus: 0,
 				sum: 1,
 				open: false,
 				echarts: echarts,
 				storeList: [],
 				downList: [],
+				option: {
+					tooltip: {
+						trigger: 'axis',
+						axisPointer: {
+							// 坐标轴指示器，坐标轴触发有效
+							type: 'line' // 默认为直线，可选为：'line' | 'shadow'
+						},
+						confine: true
+					},
+					legend: {
+						data: ['热度', '正面', '负面']
+					},
+					grid: {
+						left: 0,
+						right: 10,
+						bottom: 10,
+						top: 10,
+						containLabel: true
+					},
+					xAxis: {
+						type: 'category',
+						data: [0, 0, 0, 0, 0, 0, 0]
+					},
+					yAxis: {
+						type: 'value'
+					},
+					series: [{
+						data: [0, 0, 0, 0, 0, 0, 0],
+						type: 'line',
+						smooth: true
+					}]
+				},
 				screenList: [{
 						name: '本周',
 						isCheck: false
@@ -114,71 +146,14 @@
 				}, ],
 
 				screenIndex: -1,
-				line: {
-					title: {
-						text: 'ECharts 入门示例',
-						subtext: '纯属虚构',
-						x: 'center'
-					},
-					textStyle: {
-						color: '#999', //配置文字颜色
-						fontSize: '18',
-					},
-					// color: ['#5DBDFE', '#FF8366', '#FFDB3A'],
-					legend: {
-						data: ['订单数', '销售额', '新增用户'],
-						show: true,
-						bottom: '5%'
-					},
-					tooltip: {
-						trigger: 'none',
-						show: false,
-					},
-					xAxis: {
-						type: 'category',
-						boundaryGap: false, //x轴两边不留空白
-						data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-					},
-					yAxis: {
-						type: 'value',
-					},
-					calculable: false,
-					grid: {
-						top: '5%',
-						left: '0',
-						right: '5%',
-						bottom: '0',
-						containLabel: true,
-						height: "90%"
-					},
 
-					series: [{
-							type: 'line',
-							smooth: true,
-							data: [125, 200, 362, 369, 358, 159, 258],
-							color: ['#5DBDFE'], //折线条的颜色
-						},
-						{
-							type: 'line',
-							smooth: true,
-							data: [500, 632, 360, 258, 852, 254, 369],
-							color: ['#FF8366'], //折线条的颜色
-						},
-						{
-							type: 'line',
-							smooth: true,
-							data: [300, 35, 584, 365, 752, 853, 654],
-							color: ['#FFDB3A'], //折线条的颜色
-						}
-					]
-				}
 			}
 		},
 		components: {
-			mpvueEcharts,
 			loading,
 			noData,
 			zPaging,
+			lEchart
 		},
 		onLoad() {
 
@@ -244,18 +219,6 @@
 				this.open = false
 			},
 
-			// 
-			lineInit(canvas, width, height) {
-				let lineChart = echarts.init(canvas, null, {
-					width: width,
-					height: height
-				})
-				canvas.setChart(lineChart)
-
-				lineChart.setOption(this.line)
-
-				return lineChart
-			},
 
 			// 门店详情
 			storeDetail(id) {
@@ -266,20 +229,40 @@
 
 			queryList(pageNo, pageSize) {
 				this.getTechnicianStatistics(pageNo, pageSize)
+				this.getTechnicianStatisticsTable(pageNo, pageSize)
 			},
 			//获取技师统计信息
 			getTechnicianStatistics(num, size) {
 				var vuedata = {
 					page_index: num, // 请求页数，
 					each_page: size, // 请求条数
+					switch_type: 1
 				}
 				this.apiget('api/v1/store/Statistics', vuedata).then(res => {
 					if (res.status == 200) {
-						if (res.data.list.length != 0) {
-							this.storeList = res.data.list
-							this.$refs.paging.addData(res.data.list)
+						if (res.data.length != 0) {
+							this.storeList = res.data
+							this.$refs.paging.addData(res.data)
+							this.option.xAxis.data = []
+							var arrs = []
+							// 循环截取字符串
+							res.data[0].date.forEach(e => {
+								this.option.xAxis.data.push(e.slice(5))
+							})
+							res.data.map(item => {
+								var s;
+								var d = []
+								item.data.forEach(ele => {
+									s = {
+										type: 'line',
+										smooth: true,
+										data: d,
+										// color: ['#5DBDFE'], //折线条的颜色
+									}
+									d.push(ele == null ? 0 : ele)
+								})
+								arrs.push(s)
 
-							res.data.list.map(item => {
 								var str = {
 									name: item.name,
 									isCheck: false,
@@ -287,6 +270,7 @@
 								}
 								this.storeMenuList2.push(str)
 							})
+							this.option.series = arrs
 
 							this.screenList.forEach(item => {
 								item.isCheck = false
@@ -298,9 +282,7 @@
 								return item;
 							}, []);
 
-
 							this.open = false
-							this.totalNum = res.data.total_rows
 						}
 						if (this.sum == 1) { //只需加载一次
 							// 初始赋值
@@ -313,14 +295,45 @@
 							this.screenList[2].name = this.storeMenuList3[0].name
 							this.storeMenuList3[0].isCheck = true
 						}
-						
+
 						this.sum++
 						this.isLoad = false
+						this.initEcharts()
 					}
 				});
 			},
 
+			getTechnicianStatisticsTable(num, size) {
+				var vuedata = {
+					page_index: num, // 请求页数，
+					each_page: size, // 请求条数
+					switch_type: 2
+				}
+				this.apiget('api/v1/store/Statistics', vuedata).then(res => {
+					if (res.status == 200) {
+						if (res.data.length != 0) {
+							this.goodsList = res.data.list
+							this.totalNum = res.data.total_rows
+						}
+					}
+				});
+			},
+
+			// 初始化图表
+			initEcharts() {
+				this.$refs.chart.init(config => {
+					const {
+						canvas
+					} = config;
+					const chart = echarts.init(canvas, null, config);
+					canvas.setChart(chart);
+					chart.setOption(this.option);
+					// 需要把 chart 返回
+					return chart;
+				});
+			},
 		}
+
 	}
 </script>
 

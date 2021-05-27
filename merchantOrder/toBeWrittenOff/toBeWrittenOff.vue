@@ -74,10 +74,10 @@
 						<view class="box-content-order-info-text-list-title">项目总价</view>
 						<view class="box-content-order-info-text-list-price">￥{{orderDetails.amount}}</view>
 					</view>
-					<view class="box-content-order-info-text-list">
+				<!-- 	<view class="box-content-order-info-text-list">
 						<view class="box-content-order-info-text-list-title">使用优惠券</view>
 						<view class="box-content-order-info-text-list-price">￥100.00</view>
-					</view>
+					</view> -->
 				</view>
 				<view class="box-content-order-info-price">
 					<view class="box-content-order-info-price-text">实付款：</view>
@@ -167,18 +167,27 @@
 			</view>
 		</view>
 		<view class="box-footer">
-			<view class="flex-center cancel">取消订单</view>
-			<view class="box-font-btn flex-center">确认核销</view>
+			<view class="flex-center cancel" @click="cancelOrder" v-if="orderDetails.status!=-2">取消订单</view>
+			<view class="flex-center cancel" v-if="orderDetails.status==-2&&orderDetails.use_status==-1">订单已失效</view>
+			<view class="box-font-btn flex-center" @click="confirmWriteOff" v-if="orderDetails.status==1&&orderDetails.use_status==-1">确认核销</view>
 		</view>
+		<uni-popup ref="popup" type="dialog">
+			<uni-popup-dialog type="warn" mode='base' title="警告"
+				content="你确定要取消此订单吗" :duration="2000" :before-close="true"
+				@close="close" @confirm="confirm"></uni-popup-dialog>
+		</uni-popup>
 	</view>
 </template>
 
 <script>
 	import navTitleWhite from "../../components/nav-title-white/nav-title-white.vue"
+	import UniPopup from "../../components/uni-popup/uni-popup.vue"
+	import UniPopupDialog from "../../components/uni-popup/uni-popup-dialog.vue"
 	export default {
 		data() {
 			return {
 				barHeight: 0, //顶部电量导航栏高度
+				id:'',
 				orderDetails: {
 					out_trade_no: '',
 					store_name: '',
@@ -209,7 +218,9 @@
 			};
 		},
 		components: {
-			navTitleWhite
+			navTitleWhite,
+			UniPopup,
+			UniPopupDialog
 		},
 		onReady() {
 			// 获取顶部电量状态栏高度
@@ -220,6 +231,7 @@
 			});
 		},
 		onLoad(options) {
+			this.id = options.id
 			this.getDetails(options.id)
 		},
 		methods: {
@@ -229,6 +241,56 @@
 					if (res.status == 200) {
 						this.orderDetails = res.data.data
 						this.memberInfo = res.data.data.member_info
+					}
+				});
+			},
+			// 取消订单
+			cancelOrder(){
+				this.$refs.popup.open()
+			},
+			// 弹窗点击取消
+			close(done) {
+				// TODO 做一些其他的事情，before-close 为true的情况下，手动执行 done 才会关闭对话框
+				// ...
+				done()
+			},
+			confirm(done, value) {
+				this.apiput('api/v1/store/order/cancel_order/' + this.id).then(res => {
+					if (res.status == 200) {
+						this.$store.commit('upOrderState',true)
+						uni.showToast({
+							title:"订单取消成功",
+							icon:"none"
+						})
+						uni.navigateBack({
+							delta:1
+						})
+					} else {
+						uni.showToast({
+							title: res.massage,
+							icon: 'none'
+						})
+					}
+					done()
+				});
+			},
+			// 确认核销接口
+			confirmWriteOff(){
+				this.apiput('api/v1/store/order/write_off/' + this.id).then(res => {
+					if (res.status == 200) {
+						this.$store.commit('upOrderState',true)
+						uni.showToast({
+							title:"订单核销成功",
+							icon:"none"
+						})
+						uni.navigateBack({
+							delta:1
+						})
+					} else {
+						uni.showToast({
+							title: res.massage,
+							icon: 'none'
+						})
 					}
 				});
 			},
@@ -405,7 +467,6 @@
 				}
 
 				.box-content-order-info-text {
-					height: 136rpx;
 					padding: 30rpx 0;
 					box-sizing: border-box;
 					display: flex;
