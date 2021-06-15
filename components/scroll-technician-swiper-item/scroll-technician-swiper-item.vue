@@ -30,8 +30,8 @@
 								<view class="box-content-main-list-li-top-info-msg">手机号：{{item.mobile}}
 								</view>
 								<view class="box-content-main-list-li-top-info-wrap">
-									<view class="list-li-top-info-wrap-item">60分钟</view>
-									<view class="list-li-top-info-wrap-item">背部按摩</view>
+									<!-- <view class="list-li-top-info-wrap-item">60分钟</view>
+									<view class="list-li-top-info-wrap-item">背部按摩</view> -->
 								</view>
 							</view>
 						</view>
@@ -61,9 +61,6 @@
 </template>
 
 <script>
-	import zPaging from "../z-paging/components/z-paging/z-paging.vue"
-	import UniPopup from "../../components/uni-popup/uni-popup.vue"
-	import UniPopupDialog from "../../components/uni-popup/uni-popup-dialog.vue"
 	export default {
 		data() {
 			return {
@@ -73,11 +70,7 @@
 				id: ''
 			}
 		},
-		components: {
-			zPaging,
-			UniPopup,
-			UniPopupDialog
-		},
+
 		props: {
 			tabIndex: {
 				type: Number,
@@ -99,7 +92,7 @@
 				type: String,
 				default: ''
 			},
-			store:{}
+			store: {}
 		},
 		watch: {
 			currentIndex: {
@@ -118,13 +111,6 @@
 		},
 		methods: {
 			queryList(pageNo, pageSize) {
-				//组件加载时会自动触发此方法，因此默认页面加载时会自动触发，无需手动调用
-				//这里的pageNo和pageSize会自动计算好，直接传给服务器即可
-				//模拟请求服务器获取分页数据，请替换成自己的网络请求
-				// this.$request.queryList(pageNo, pageSize, this.tabIndex + 1, (data) => {
-				// 	this.$refs.paging.complete(data);
-				// 	this.firstLoaded = true;
-				// })
 				this.getDataList(pageNo, pageSize)
 			},
 
@@ -134,15 +120,18 @@
 				var vuedata = {
 					page_index: num, // 请求页数，
 					each_page: size, // 请求条数
-					store:this.store,
+					store: this.store,
+					keyword: this.search,
 				}
 				this.apiget('api/v1/store/engineer', vuedata).then(res => {
 					if (res.status == 200) {
+						let list = []
 						if (res.data.length != 0) {
-							let list = res.data.member
-							let totalSize = res.data.total_rows
+							list = res.data.member
 							this.$refs.paging.addData(list);
 							this.firstLoaded = true;
+						} else {
+							this.$refs.paging.addData(list);
 						}
 						this.isLoad = false
 					} else {

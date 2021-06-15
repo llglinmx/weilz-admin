@@ -14,7 +14,7 @@
 							<view class="box-content-list-main-top">
 								<view class="box-content-list-main-top-title"
 									:class="item.state==2?'box-content-list-main-top-after':''">{{item.title}}</view>
-								<view class="box-content-list-main-top-text">{{item.content}}</view>
+								<view class="box-content-list-main-top-text" v-html="item.content"></view>
 							</view>
 							<view class="box-content-list-main-bottom">
 								<view class="list-main-bottom-title">点击查看</view>
@@ -36,10 +36,7 @@
 </template>
 
 <script>
-	import navTitleBalck from "../../components/nav-title-balck/nav-title-balck.vue"
-	import loading from '../../components/loading-merchant/loading-merchant.vue'
-	import noData from '../../components/no-data/no-data.vue'
-	import zPaging from '../../components/z-paging/components/z-paging/z-paging.vue'
+
 	export default {
 		data() {
 			return {
@@ -49,12 +46,7 @@
 				isLoad: true,
 			};
 		},
-		components: {
-			navTitleBalck,
-			loading,
-			noData,
-			zPaging,
-		},
+
 		onReady() {
 			// 获取顶部电量状态栏高度
 			uni.getSystemInfo({

@@ -33,7 +33,8 @@
 								<view class="box-content-main-list-li-top-info-wrap">
 									<view class="list-li-top-info-wrap-item">{{item.service_time}}分钟</view>
 									<view class="list-li-top-info-wrap-item" v-for="(j,i) in item.format" :key='j.id'>
-										{{j.name}}</view>
+										{{j.name}}
+									</view>
 								</view>
 								<view class="box-content-main-list-li-top-info-stock">已售：{{item.sold}}</view>
 								<view class="box-content-main-list-li-top-info-price">
@@ -82,9 +83,6 @@
 </template>
 
 <script>
-	import zPaging from "../z-paging/components/z-paging/z-paging.vue"
-	import UniPopup from "../../components/uni-popup/uni-popup.vue"
-	import UniPopupDialog from "../../components/uni-popup/uni-popup-dialog.vue"
 	export default {
 		data() {
 			return {
@@ -99,11 +97,7 @@
 			prop: 'isChoice',
 			event: 'lonIsChoice'
 		},
-		components: {
-			zPaging,
-			UniPopup,
-			UniPopupDialog
-		},
+
 		props: {
 			tabIndex: {
 				type: Number,
@@ -117,7 +111,7 @@
 					return 0
 				}
 			},
-			store:{},
+			store: {},
 			isChoice: {
 				type: Boolean
 			},
@@ -153,14 +147,6 @@
 		},
 		methods: {
 			queryList(pageNo, pageSize) {
-				//组件加载时会自动触发此方法，因此默认页面加载时会自动触发，无需手动调用
-				//这里的pageNo和pageSize会自动计算好，直接传给服务器即可
-				//模拟请求服务器获取分页数据，请替换成自己的网络请求
-				// this.$request.queryList(pageNo, pageSize, this.tabIndex + 1, (data) => {
-				// 	this.$refs.paging.complete(data);
-				// 	this.firstLoaded = true;
-				// })
-
 				this.getDataList(pageNo, pageSize)
 			},
 
@@ -170,22 +156,21 @@
 				var vuedata = {
 					page_index: num, // 请求页数，
 					each_page: size, // 请求条数
-					store_id:this.store,
+					store_id: this.store,
+					keyword: this.search,
 				}
 				this.apiget('api/v1/store/service_reservation/index', vuedata).then(res => {
 					if (res.status == 200) {
-						if (res.data.data.length != 0) {
-							let list = res.data.data
+						let list = []
 
-							list.map(item => {
-								item.isOpen = false
-								item.isCheck = false
-							})
+						list = res.data.data
+						list.map(item => {
+							item.isOpen = false
+							item.isCheck = false
+						})
+						this.$refs.paging.addData(list);
+						this.firstLoaded = true;
 
-							let totalSize = res.data.total_rows
-							this.$refs.paging.addData(list);
-							this.firstLoaded = true;
-						}
 						this.isLoad = false
 					}
 				});
@@ -289,10 +274,12 @@
 
 			// 编辑
 			projectEdit(item) {
+				console.log(this.store)
 				this.$store.commit('upAddProject', false)
 				var str = {
 					id: item.id,
-					type: 'edit'
+					type: 'edit',
+					store: this.store
 				}
 				uni.navigateTo({
 					url: "../addProject/addProject?data=" + JSON.stringify(str)

@@ -21,7 +21,7 @@
 				</view> -->
 				<view class="shop-list">
 					<view class="shop-list-li flex-center" v-for="(item,index) in menuList" :key="index"
-						@click="menuListClick(index)">
+						@click="menuListClick(item.id)">
 						<image :src="item.image" mode="aspectFill"></image>
 						<text>{{item.title}}</text>
 					</view>
@@ -43,33 +43,41 @@
 			return {
 				barHeight: 0, //顶部电量导航栏高度
 				activeIndex: 4, //当前tabbar所在页面
-				menuList: [{
-						title: "进货订单",
-						image: "../../static/images/mine-icon1.png"
-					},
+				menuList: [
+					// {
+					// 	title: "进货订单",
+					// 	image: "../../static/images/mine-icon1.png",
+					// 	id:0
+					// },
 					{
 						title: "客户管理",
-						image: "../../static/images/mine-icon2.png"
+						image: "../../static/images/mine-icon2.png",
+						id:1
 					},
-					{
-						title: "视频教学",
-						image: "../../static/images/mine-icon3.png"
-					},
+					// {
+					// 	title: "视频教学",
+					// 	image: "../../static/images/mine-icon3.png",
+					// 	id:2
+					// },
 					{
 						title: "营销管理",
-						image: "../../static/images/mine-icon4.png"
+						image: "../../static/images/mine-icon4.png",
+						id:3
 					},
 					{
 						title: "统计信息",
-						image: "../../static/images/mine-icon5.png"
+						image: "../../static/images/mine-icon5.png",
+						id:4
 					},
 					{
 						title: "推荐",
-						image: "../../static/images/mine-icon6.png"
+						image: "../../static/images/mine-icon6.png",
+						id:5
 					},
 					{
 						title: "账号管理",
-						image: "../../static/images/mine-icon6.png"
+						image: "../../static/images/mine-icon6.png",
+						id:6
 					},
 				],
 				infoData: {
@@ -112,14 +120,13 @@
 			},
 			// 设置
 			setClick() {
-				console.log(11)
 				uni.navigateTo({
 					url: "../../merchantMine/set/set"
 				})
 			},
 			// 列表点击
-			menuListClick(index) {
-				switch (index) {
+			menuListClick(id) {
+				switch (id) {
 					case 0: //进货订单
 						uni.navigateTo({
 							url: "../../merchantMine/purchaseOrder/purchaseOrder"
@@ -268,8 +275,7 @@
 					flex: 1;
 					overflow-y: scroll;
 					display: flex;
-					align-items: center;
-					// justify-content: center;
+
 					padding: 0 40rpx;
 					box-sizing: border-box;
 					flex-wrap: wrap;

@@ -17,20 +17,14 @@
 </template>
 
 <script>
-	import navTitleBalck from "../../components/nav-title-balck/nav-title-balck.vue"
-	import UniPopup from "../../components/uni-popup/uni-popup.vue"
-	import UniPopupDialog from "../../components/uni-popup/uni-popup-dialog.vue"
+
 	export default {
 		data() {
 			return {
 				barHeight: 0, //顶部电量导航栏高度
 			};
 		},
-		components: {
-			navTitleBalck,
-			UniPopup,
-			UniPopupDialog
-		},
+
 		onReady() {
 			// 获取顶部电量状态栏高度
 			uni.getSystemInfo({
@@ -61,11 +55,9 @@
 							duration: 1000,
 							title: "退出成功"
 						});
-						setTimeout(function() {
-							uni.reLaunch({
-								url: "../../pages/login/login?type=business"
-							})
-						}, 500);
+						uni.reLaunch({
+							url: "../../pages/login/login?type=business"
+						})
 					}
 					done()
 				});

@@ -35,10 +35,7 @@
 			</view>
 
 			<view class="box-content-list">
-				<view class="box-content-list-li">
-					<view class="box-content-list-li-title">营业时间</view>
-					<view class="box-content-list-li-text">{{infoData.plan_date}}</view>
-				</view>
+
 				<view class="box-content-list-li">
 					<view class="box-content-list-li-title">电话号码</view>
 					<view class="box-content-list-li-text">{{infoData.mobile}}</view>
@@ -53,6 +50,53 @@
 						<text style="color: #333;">{{infoData.address}}</text>
 						<text class="iconfont icondingwei1 icon-font"
 							style="color: #26BF82;font-size: 48rpx;margin-top: 4rpx;"></text>
+					</view>
+				</view>
+			</view>
+			<view class="box-content-introduce">
+				<view class="box-content-introduce-title">营业时间</view>
+				<view class="box-content-introduce-text" v-for="(item,index) in businessHours" :key='index'>
+					<view class="box-content-introduce-text-box" v-if="item.mon_status==1" style="display: flex;align-items: center;">
+						<view>周一：</view>
+						<view v-for="ele in item.mon_times" style="margin-right: 10rpx;">
+							{{ele.start}}-{{ele.end}}
+						</view>
+					</view>
+					<view class="box-content-introduce-text-box" v-if="item.tues_status==1" style="display: flex;align-items: center;">
+						<view>周二：</view>
+						<view v-for="ele in item.tues_times" style="margin-right: 10rpx;">
+							{{ele.start}}-{{ele.end}}
+						</view>
+					</view>
+					<view class="box-content-introduce-text-box" v-if="item.wed_status==1" style="display: flex;align-items: center;">
+						<view>周三：</view>
+						<view v-for="ele in item.wed_times" style="margin-right: 10rpx;">
+							{{ele.start}}-{{ele.end}}
+						</view>
+					</view>
+					<view class="box-content-introduce-text-box" v-if="item.thur_status==1" style="display: flex;align-items: center;">
+						<view>周四：</view>
+						<view v-for="ele in item.thur_times" style="margin-right: 10rpx;">
+							{{ele.start}}-{{ele.end}}
+						</view>
+					</view>
+					<view class="box-content-introduce-text-box" v-if="item.fri_status==1" style="display: flex;align-items: center;">
+						<view>周五：</view>
+						<view v-for="ele in item.fri_times" style="margin-right: 10rpx;">
+							{{ele.start}}-{{ele.end}}
+						</view>
+					</view>
+					<view class="box-content-introduce-text-box" v-if="item.sat_status==1" style="display: flex;align-items: center;">
+						<view>周六：</view>
+						<view v-for="ele in item.sat_times" style="margin-right: 10rpx;">
+							{{ele.start}}-{{ele.end}}
+						</view>
+					</view>
+					<view class="box-content-introduce-text-box" v-if="item.sun_status==1" style="display: flex;align-items: center;">
+						<view>周日：</view>
+						<view v-for="ele in item.sun_times" style="margin-right: 10rpx;">
+							{{ele.start}}-{{ele.end}}
+						</view>
 					</view>
 				</view>
 			</view>
@@ -109,7 +153,8 @@
 					mobile: '',
 					duty_paragraph: '',
 					bimg: {}
-				}
+				},
+				businessHours: [],
 			};
 		},
 		components: {
@@ -154,6 +199,30 @@
 				this.apiget('api/v1/store/store_information/' + id, {}).then(res => {
 					if (res.status == 200) {
 						this.infoData = res.data.member
+						this.businessHours = JSON.parse(res.data.member.plan_date)
+						this.businessHours.map(item => {
+							if (item.mon_status == 1) {
+								item.mon_times = JSON.parse(item.mon_times)
+							}
+							if (item.tues_status == 1) {
+								item.tues_times = JSON.parse(item.tues_times)
+							}
+							if (item.wed_status == 1) {
+								item.wed_times = JSON.parse(item.wed_times)
+							}
+							if (item.thur_status == 1) {
+								item.thur_times = JSON.parse(item.thur_times)
+							}
+							if (item.fri_status == 1) {
+								item.fri_times = JSON.parse(item.fri_times)
+							}
+							if (item.sat_status == 1) {
+								item.sat_times = JSON.parse(item.sat_times)
+							}
+							if (item.sun_status == 1) {
+								item.sun_times = JSON.parse(item.sun_times)
+							}
+						})
 					}
 				});
 			},
@@ -325,6 +394,9 @@
 				.box-content-introduce-text {
 					font-size: 26rpx;
 					color: #666;
+					.box-content-introduce-text-box{
+						margin-bottom: 10rpx;
+					}
 				}
 			}
 

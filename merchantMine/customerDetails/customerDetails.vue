@@ -12,11 +12,11 @@
 						</view>
 						<view class="box-content-user-info-top-leval">
 							<image src="../../static/images/grade-yellow.png" mode="aspectFill"></image>
-							<text>钻石会员</text>
+							<text>{{infoData.level_name}}</text>
 						</view>
 					</view>
 					<view class="box-content-user-info-bottom">
-						上次到店 2020-12-20 18:40
+						上次到店 {{infoData.last_time_to_store}}
 					</view>
 				</view>
 				<view class="box-content-user-image">
@@ -51,10 +51,7 @@
 </template>
 
 <script>
-	import navTitleBalck from "../../components/nav-title-balck/nav-title-balck.vue"
-	import btnSkyBlue from "../../components/btn-sky-blue/btn-sky-blue.vue"
-	import UniPopup from "../../components/uni-popup/uni-popup.vue"
-	import UniPopupDialog from "../../components/uni-popup/uni-popup-dialog.vue"
+
 	export default {
 		data() {
 			return {
@@ -82,12 +79,7 @@
 				}
 			};
 		},
-		components: {
-			navTitleBalck,
-			btnSkyBlue,
-			UniPopup,
-			UniPopupDialog
-		},
+
 		onLoad(options) {
 			this.getCustomerDetails(options.id)
 		},

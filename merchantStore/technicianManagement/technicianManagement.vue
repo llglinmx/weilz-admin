@@ -8,19 +8,32 @@
 				<view class="box-head-title">技师管理</view>
 				<view class="box-head-ico flex-center">
 					<text class="iconfont iconsousuo1 icon-font"
-						style="color: #5DBDFE;font-size: 52rpx;margin-top: 4rpx;"></text>
+						style="color: #5DBDFE;font-size: 52rpx;margin-top: 4rpx;" @click="showSearch"
+						v-if="!isSearch"></text>
+					<text class="iconfont iconcuowu icon-font" style="color: #5DBDFE;font-size: 52rpx;margin-top: 4rpx;"
+						@click="closeSearch" v-if="isSearch"></text>
 				</view>
 			</view>
-			<view class="box-head-tabs">
+			<view class="box-head-tabs" style="display: none;">
 				<merchant-tabs ref="boxTabs" :tabData="tabsList" :activeIndex="defaultIndex" @tabClick='tabClick' />
 			</view>
 		</view>
 		<view class="box-content">
+			<view class="box-content-search"
+				:style="{height:isSearch?'auto':'0',padding:isSearch?'30rpx 40rpx':'0 40rpx'}">
+				<view class="box-content-search-box">
+					<input :focus="isFocus" type="text" @keydown.enter="searchChange" v-model.trim="searchVal"
+						placeholder="请输入需要搜索的内容" />
+					<text class="iconfont iconsousuo1 icon-font" style="color: #999;font-size: 48rpx;margin-top: 4rpx;"
+						@click="searchChange"></text>
+				</view>
+			</view>
 			<view class="box-content-wrap">
 				<view class="box-content-wrap-item">
 					<swiper class="swiper-box" :current="defaultIndex" @change="tabChange">
 						<swiper-item class="swiper-box-item-list" v-for="(item,index) in tabsList" :key='index'>
-							<scroll-technician-swiper-item ref="tech" :store='id' :tabIndex="index" :currentIndex="defaultIndex">
+							<scroll-technician-swiper-item ref="tech" :search="searchVal" :store='id' :tabIndex="index"
+								:currentIndex="defaultIndex">
 							</scroll-technician-swiper-item>
 						</swiper-item>
 					</swiper>
@@ -48,8 +61,12 @@
 			return {
 				barHeight: 0, //顶部电量导航栏高度
 				defaultIndex: 0, //当前滑动的页面
-				tabsList: ["全职技师 0", "临时技师 0"],
-				id:'',
+				tabsList: ["全职技师"],
+				// tabsList: ["全职技师 0", "临时技师 0"],
+				id: '',
+				searchVal:'',
+				isSearch: false,
+				isFocus: false,
 			};
 		},
 		components: {
@@ -67,12 +84,11 @@
 			});
 		},
 		onLoad(options) {
-			this.id=options.id
+			this.id = options.id
 		},
 		onShow() {
-			console.log(this.$store.state.isAddTechhnician)
 			if (this.$store.state.isAddTechhnician) {
-				this.$refs.tech[this.defaultIndex].getDataList(1, 10)
+				this.$refs.tech[this.defaultIndex].getDataList(1, 20)
 			}
 		},
 		methods: {
@@ -90,8 +106,22 @@
 					storeId: this.id
 				}
 				uni.navigateTo({
-					url:"../../merchantStore/newTechnician/newTechnician?data="+JSON.stringify(str)
+					url: "../../merchantStore/newTechnician/newTechnician?data=" + JSON.stringify(str)
 				})
+			},
+			// 显示搜索框
+			showSearch() {
+				this.isSearch = true
+				this.isFocus = true
+			},
+			// 隐藏搜索框
+			closeSearch() {
+				this.isSearch = false
+				this.isFocus = false
+			},
+			// 搜索
+			searchChange() {
+				this.$refs.tech[this.defaultIndex].getDataList(1, 20)
 			},
 
 
@@ -146,6 +176,32 @@
 		.box-content {
 			flex: 1;
 			overflow-y: scroll;
+
+			.box-content-search {
+				padding: 0 40rpx;
+				box-sizing: border-box;
+				background: #fff;
+				overflow: hidden;
+				transition: 0.3s;
+
+				.box-content-search-box {
+					display: flex;
+					height: 68rpx;
+					padding: 0 20rpx;
+					background: #F7F7F7;
+					opacity: 1;
+					border-radius: 34rpx;
+					box-sizing: border-box;
+
+					input {
+						padding-left: 10rpx;
+						height: 100%;
+						flex: 1;
+						font-size: 28rpx;
+						box-sizing: border-box;
+					}
+				}
+			}
 
 			.box-content-wrap {
 				height: 100%;

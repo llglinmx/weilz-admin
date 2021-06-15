@@ -9,10 +9,10 @@ const httpClient = {
 		};
 
 		return new Promise((resolve, reject) => {
-				uni.showLoading({
-					title: "加载中",
-					mask: true
-				});
+				// uni.showLoading({
+				// 	title: "Loading...",
+				// 	mask: true
+				// });
 			
 			uni.request({
 				url: url,
@@ -21,7 +21,7 @@ const httpClient = {
 				method: method,
 				dataType: 'json',
 				success: function(res) {
-					uni.hideLoading()
+					// uni.hideLoading()
 					if (res.statusCode == 402) {
 						uni.showToast({
 							icon: 'none',
@@ -58,7 +58,7 @@ const httpClient = {
 					}
 				},
 				fail: function(err) {
-					uni.hideLoading()
+					// uni.hideLoading()
 					reject(err)
 				}
 			})

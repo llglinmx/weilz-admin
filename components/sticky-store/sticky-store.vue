@@ -60,9 +60,6 @@
 </template>
 
 <script>
-	import loading from '../../components/loading-merchant/loading-merchant.vue'
-	import noData from '../../components/no-data/no-data.vue'
-	import zPaging from '../../components/z-paging/components/z-paging/z-paging.vue'
 
 	import * as echarts from '../../uni_modules/lime-echart/components/lime-echart/echarts.js';
 	import lEchart from '../../uni_modules/lime-echart/components/lime-echart/index.vue'
@@ -155,12 +152,7 @@
 
 			}
 		},
-		components: {
-			loading,
-			noData,
-			zPaging,
-			lEchart
-		},
+
 		mounted() {
 
 		},

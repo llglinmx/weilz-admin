@@ -7,8 +7,8 @@
 					<view class="box-head-search-box-icon"
 						:class="isSearch?'box-head-search-box-icon-active':'box-head-search-box-icon-no-active'">
 						<text class="iconfont iconsousuo1 icon-font"
-							style="color: #999;font-size: 40rpx;margin-top: 4rpx;"></text>
-						<input type="text" value="" @focus="focus" @blur="blur" placeholder="搜索订单号、预约信息" />
+							style="color: #999;font-size: 40rpx;margin-top: 4rpx;" @click="searchClick"></text>
+						<input type="text" v-model.trim="searchVal" @focus="focus" @blur="blur" @keydown.enter="searchClick" placeholder="搜索订单号、预约信息" />
 					</view>
 				</view>
 			</view>
@@ -21,9 +21,8 @@
 				<view class="box-content-wrap-item">
 					<swiper class="swiper-box" :current="defaultIndex" @change="tabChange">
 						<swiper-item class="swiper-box-item-list" v-for="(item,index) in tabsList" :key="index">
-							<scroll-order-swiper-item ref='orderItem' @openPopup='openPopup' :search="search"
-								:orderType="orderType" :tabIndex="index" :currentIndex="defaultIndex">
-							</scroll-order-swiper-item>
+							<scroll-order-swiper-item :key='index' ref='orderItem' @openPopup='openPopup' :search="searchVal"
+								:orderType="orderType" :tabIndex="index" :currentIndex="defaultIndex" />
 						</swiper-item>
 					</swiper>
 				</view>
@@ -34,39 +33,28 @@
 		</view>
 
 		<uni-popup ref="popup" type="dialog">
-			<uni-popup-dialog type="warn" mode='base' title="警告"
-				content="你确定要取消此订单吗?" :duration="2000" :before-close="true"
-				@close="close" @confirm="confirm"></uni-popup-dialog>
+			<uni-popup-dialog type="warn" mode='base' title="警告" content="你确定要取消此订单吗?" :duration="2000"
+				:before-close="true" @close="close" @confirm="confirm"></uni-popup-dialog>
 		</uni-popup>
 	</view>
 </template>
 
 <script>
-	import merchantTabbar from "../../components/merchant-tabbar/merchant-tabbar.vue"
-	import merchantTabs from "../../components/merchant-tabs/merchant-tabs.vue"
-	import scrollOrderSwiperItem from '../../components/scroll-order-swiper-item/scroll-order-swiper-item.vue'
-	import UniPopup from "../../components/uni-popup/uni-popup.vue"
-	import UniPopupDialog from "../../components/uni-popup/uni-popup-dialog.vue"
+
 	export default {
 		data() {
 			return {
 				barHeight: 0, //顶部电量导航栏高度
 				activeIndex: 1, //当前tabbar所在页面
 				defaultIndex: 0, //当前滑动的页面
-				tabsList: ["订单管理", "预约订单", "打赏记录", "积分兑换", "买单记录"],
+				tabsList: ["订单管理", "预约订单", "打赏记录", "套餐订单", "礼品卡订单", '门店提现'],
 				isSearch: false, //是否搜索
-				orderType: '', //类型
-				search: '',
+				orderType: 0, //类型
+				searchVal:'',//搜索内容
 				id: '', //订单id
 			};
 		},
-		components: {
-			merchantTabbar,
-			merchantTabs,
-			scrollOrderSwiperItem,
-			UniPopup,
-			UniPopupDialog
-		},
+
 		onReady() {
 			// 获取顶部电量状态栏高度
 			uni.getSystemInfo({
@@ -77,7 +65,7 @@
 		},
 		onShow() {
 			if (this.$store.state.isOrderState) {
-				this.$refs.orderItem[this.defaultIndex].queryList(1, 10)
+				this.$refs.orderItem[this.defaultIndex].queryList(1, 20)
 			}
 		},
 		methods: {
@@ -89,6 +77,10 @@
 			// 失去焦点事件
 			blur() {
 				this.isSearch = false
+			},
+			// 搜索点击
+			searchClick(){
+				this.$refs.orderItem[this.defaultIndex].queryList(1, 20)
 			},
 
 
@@ -105,19 +97,22 @@
 			changeIndex(index) {
 				switch (index) {
 					case 0:
-						this.orderType = ''
+						this.orderType = 0
 						break;
 					case 1:
-						this.orderType = 5
+						this.orderType = 1
 						break;
 					case 2:
 						this.orderType = 2
 						break;
 					case 3:
-						this.orderType = 4
+						this.orderType = 5
 						break;
 					case 4:
 						this.orderType = 6
+						break;
+					case 5:
+						this.orderType = 8
 						break;
 				}
 			},

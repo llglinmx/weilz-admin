@@ -25,12 +25,7 @@
 </template>
 
 <script>
-	import merchantTabs from "../../components/merchant-tabs/merchant-tabs.vue"
-	import navTitleBalck from "../../components/nav-title-balck/nav-title-balck.vue"
-	import loading from '../../components/loading/loading.vue'
-	import noData from '../../components/no-data/no-data.vue'
-	import zPaging from '../../components/z-paging/components/z-paging/z-paging.vue'
-	import scrollRecommendMerchantItem from '../../components/scroll-recommend-merchant-item/scroll-recommend-merchant-item.vue'
+
 	export default {
 		data() {
 			return {
@@ -41,14 +36,7 @@
 				typeId: ''
 			};
 		},
-		components: {
-			merchantTabs,
-			navTitleBalck,
-			loading,
-			noData,
-			zPaging,
-			scrollRecommendMerchantItem
-		},
+
 		onReady() {
 			// 获取顶部电量状态栏高度
 			uni.getSystemInfo({

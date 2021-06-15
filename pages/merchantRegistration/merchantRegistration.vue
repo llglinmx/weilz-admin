@@ -249,14 +249,7 @@
 </template>
 
 <script>
-	import navTitleBalck from "../../components/nav-title-balck/nav-title-balck.vue"
-	import uniSteps from "../../uni_modules/uni-steps/components/uni-steps/uni-steps.vue"
-	import selectAddress from '../../components/select-address/select-address.vue'
-	import businessHours from "../../components/business-hours/business-hours.vue"
-	import popupListSelect from '../../components/popup-list-select/popup-list-select.vue'
-	import btnSkyBlue from "../../components/btn-sky-blue/btn-sky-blue.vue"
-	import UniPopup from "../../components/uni-popup/uni-popup.vue"
-	import UniPopupDialog from "../../components/uni-popup/uni-popup-dialog.vue"
+
 	import {
 		pathToBase64,
 		base64ToPath
@@ -321,15 +314,7 @@
 				}
 			};
 		},
-		components: {
-			navTitleBalck,
-			uniSteps,
-			btnSkyBlue,
-			UniPopup,
-			UniPopupDialog,
-			selectAddress,
-			businessHours
-		},
+
 		onReady() {
 			// 获取顶部电量状态栏高度
 			uni.getSystemInfo({

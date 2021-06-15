@@ -101,12 +101,6 @@
 </template>
 
 <script>
-	import merchantTabbar from "../../components/merchant-tabbar/merchant-tabbar.vue"
-	import loading from '../../components/loading-merchant/loading-merchant.vue'
-	import noData from '../../components/no-data/no-data.vue'
-	import zPaging from '../../components/z-paging/components/z-paging/z-paging.vue'
-	import UniPopup from "../../components/uni-popup/uni-popup.vue"
-	import UniPopupDialog from "../../components/uni-popup/uni-popup-dialog.vue"
 
 	export default {
 		data() {
@@ -139,14 +133,7 @@
 				id: '',
 			};
 		},
-		components: {
-			merchantTabbar,
-			loading,
-			noData,
-			zPaging,
-			UniPopup,
-			UniPopupDialog
-		},
+
 		onShow() {
 
 		},

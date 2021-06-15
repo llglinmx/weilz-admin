@@ -329,7 +329,25 @@
 					"enablePullDownRefresh": false
 				}
 
-			}]
+			}    ,{
+                    "path" : "projectClassification/projectClassification",
+                    "style" :                                                                                    
+                {
+                    "navigationBarTitleText": "项目分类",
+                    "enablePullDownRefresh": false
+                }
+                
+                }
+                ,{
+                    "path" : "addClassification/addClassification",
+                    "style" :                                                                                    
+                {
+                    "navigationBarTitleText": "新增分类",
+                    "enablePullDownRefresh": false
+                }
+                
+                }
+            ]
 		}, {
 			"root": "merchantMall",
 			"pages": []

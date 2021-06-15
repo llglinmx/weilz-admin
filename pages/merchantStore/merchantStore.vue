@@ -6,8 +6,8 @@
 					<view class="box-head-search-box-icon"
 						:class="isSearch?'box-head-search-box-icon-active':'box-head-search-box-icon-no-active'">
 						<text class="iconfont iconsousuo1 icon-font"
-							style="color: #999;font-size: 40rpx;margin-top: 4rpx;"></text>
-						<input type="text" value="" @focus="focus" @blur="blur" placeholder="搜索门店" />
+							style="color: #999;font-size: 40rpx;margin-top: 4rpx;" @click="getStore(1,20)"></text>
+						<input type="text"  @keydown.enter="getStore(1,20)" v-model.trim="searchVal" @focus="focus" @blur="blur" placeholder="搜索门店" />
 					</view>
 				</view>
 			</view>
@@ -60,7 +60,7 @@
 			</view>
 		</view>
 		<view class="box-content" :style="{display:!isData?'block':'none'}">
-			<loading v-if="isLoad" />
+			<loading-merchant v-if="isLoad" />
 			<no-data v-if="!isLoad" />
 		</view>
 		<view class="box-footer">
@@ -70,10 +70,7 @@
 </template>
 
 <script>
-	import merchantTabbar from "../../components/merchant-tabbar/merchant-tabbar.vue"
-	import loading from '../../components/loading-merchant/loading-merchant.vue'
-	import noData from '../../components/no-data/no-data.vue'
-	import zPaging from '../../components/z-paging/components/z-paging/z-paging.vue'
+
 	export default {
 
 		data() {
@@ -83,15 +80,11 @@
 				isSearch: false, //是否搜索
 				dataList: [],
 				isData: false,
-				isLoad: true
+				isLoad: true,
+				searchVal:'',
 			};
 		},
-		components: {
-			merchantTabbar,
-			loading,
-			noData,
-			zPaging,
-		},
+
 		onReady() {
 			// 获取顶部电量状态栏高度
 			uni.getSystemInfo({
@@ -105,7 +98,7 @@
 		},
 		onShow() {
 			if(this.$store.state.isAddStore){
-				this.getStore(1,10)
+				this.getStore(1,20)
 			}
 		},
 		methods: {
@@ -148,6 +141,7 @@
 				let vuedata = {
 					page_index: num, // 请求页数，
 					each_page: size, // 请求条数
+					keyword: this.searchVal, //搜索
 				}
 				this.apiget('api/v1/store/store_information', vuedata).then(res => {
 					if (res.status == 200) {

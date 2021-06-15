@@ -31,6 +31,7 @@ const store = new Vuex.Store({
 		isAddGift: false, //是否有添加礼品卡
 		isAddAccount:false,//是否有添加账号
 		isOrderState:false,//用于判断订单是否取消或核销
+		isClassification:false,//是否添加分类
 	},
 	mutations: {
 		//用于判断是否添加地址 等同于发送监听
@@ -76,6 +77,9 @@ const store = new Vuex.Store({
 		},
 		upOrderState(state, bool) {
 			state.isOrderState = bool
+		},
+		upAddClassification(state, bool){
+			state.isClassification = bool
 		},
 	},
 	actions: {}

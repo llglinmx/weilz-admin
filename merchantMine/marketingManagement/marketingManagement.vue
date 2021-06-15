@@ -289,14 +289,7 @@
 </template>
 
 <script>
-	import navTitleBalck from "../../components/nav-title-balck/nav-title-balck.vue"
-	import merchantTabs from "../../components/merchant-tabs/merchant-tabs.vue"
-	import btnSkyBlue from "../../components/btn-sky-blue/btn-sky-blue.vue"
-	import loading from '../../components/loading-merchant/loading-merchant.vue'
-	import noData from '../../components/no-data/no-data.vue'
-	import zPaging from '../../components/z-paging/components/z-paging/z-paging.vue'
-	import UniPopup from "../../components/uni-popup/uni-popup.vue"
-	import UniPopupDialog from "../../components/uni-popup/uni-popup-dialog.vue"
+
 	export default {
 		data() {
 			return {
@@ -320,16 +313,7 @@
 				deleteIndex: -1,
 			};
 		},
-		components: {
-			navTitleBalck,
-			merchantTabs,
-			btnSkyBlue,
-			loading,
-			noData,
-			zPaging,
-			UniPopup,
-			UniPopupDialog
-		},
+
 		onReady() {
 			// 获取顶部电量状态栏高度
 			uni.getSystemInfo({

@@ -116,7 +116,7 @@
 </template>
 
 <script>
-	import zPaging from "../z-paging/components/z-paging/z-paging.vue"
+
 	export default {
 		data() {
 			return {
@@ -125,9 +125,7 @@
 				isLoad: true,
 			}
 		},
-		components: {
-			zPaging
-		},
+
 		props: {
 			tabIndex: {
 				type: Number,

@@ -27,7 +27,7 @@
 				startTime: '',
 				endTime: '',
 				hours: [],
-				minutes: []
+				minutes: [],
 			};
 		},
 		props: {
@@ -39,6 +39,13 @@
 			// 	type: Array,
 			// 	default: []
 			// }
+		},
+		watch:{
+			visible(val){
+				if(!val){
+					this.value = [0,1]
+				}
+			},
 		},
 		mounted() {
 			this.getHour()

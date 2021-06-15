@@ -1,18 +1,14 @@
 <template>
 	<view class="box">
 		<view class="box-head" :style="{paddingTop:barHeight+'px'}">
-			<nav-title-balck navTitle="新增技师"></nav-title-balck>
+			<nav-title-balck :navTitle="type=='add'?'新增技师':'编辑技师'"></nav-title-balck>
 		</view>
 		<view class="box-content">
 			<view class="box-content-list">
-				<view class="box-content-list-li" @click="selectStore">
+				<view class="box-content-list-li">
 					<view class="box-content-list-li-title">门店</view>
 					<view class="box-content-list-li-info">
-						<view class="box-content-list-li-info-text">{{storeName==''?'请选择门店':storeName}}</view>
-						<view class="box-content-list-li-info-more">
-							<text class="iconfont icongengduo icon-font"
-								style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
-						</view>
+						<view class="box-content-list-li-info-text">{{storeName}}</view>
 					</view>
 				</view>
 				<view class="box-content-list-li" @click="storeCategoryOpen">
@@ -36,9 +32,9 @@
 					</view>
 				</view>
 				<view class="box-content-list-li" @click="platformOpen">
-					<view class="box-content-list-li-title">平台分类</view>
+					<view class="box-content-list-li-title">项目分类</view>
 					<view class="box-content-list-li-info">
-						<view class="box-content-list-li-info-text">{{platformName==''?'请选择平台分类':platformName}}</view>
+						<view class="box-content-list-li-info-text">{{platformName==''?'请选择项目分类':platformName}}</view>
 						<view class="box-content-list-li-info-more">
 							<text class="iconfont icongengduo icon-font"
 								style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
@@ -47,7 +43,13 @@
 				</view>
 				<view class="box-content-list-li">
 					<view class="box-content-list-li-title">手机号</view>
-					<view class="box-content-list-li-info">
+					<view class="box-content-list-li-info" style="display: flex;">
+						<view class="box-content-list-li-info-area-code" @click="isAreaCode=true">
+							<text>+{{from.mobile_code}}</text>
+							<text class="iconfont iconxiangxiajiantou"
+								style="font-size: 24rpx;margin-left: 10rpx;transition: 0.3s;"
+								:style="{transform: isAreaCode?'rotate(180deg)':'rotate(0deg)'}"></text>
+						</view>
 						<view class="box-content-list-li-info-input">
 							<input type="number" v-model.trim="from.mobile" placeholder="请输入手机号码" />
 						</view>
@@ -84,16 +86,16 @@
 					<view class="box-content-list-li-info">
 						<view class="box-content-list-li-info-check">
 							<view class="box-content-list-li-info-check-box" @click="currency(true)">
-								<text class="iconfont iconxuanzhong icon-font" style="color: #07C160;font-size: 48rpx;"
+								<text class="iconfont iconxuanzhong icon-font" style="color: #07C160;font-size: 42rpx;"
 									v-if="isCurr"></text>
-								<text class="iconfont iconweixuanzhong1 icon-font" style="color: #ccc;font-size: 48rpx;"
+								<text class="iconfont iconweixuanzhong1 icon-font" style="color: #ccc;font-size: 42rpx;"
 									v-else></text>
 								<text>是</text>
 							</view>
 							<view class="box-content-list-li-info-check-box" @click="currency(false)">
-								<text class="iconfont iconxuanzhong icon-font" style="color: #07C160;font-size: 48rpx;"
+								<text class="iconfont iconxuanzhong icon-font" style="color: #07C160;font-size: 42rpx;"
 									v-if="!isCurr"></text>
-								<text class="iconfont iconweixuanzhong1 icon-font" style="color: #ccc;font-size: 48rpx;"
+								<text class="iconfont iconweixuanzhong1 icon-font" style="color: #ccc;font-size: 42rpx;"
 									v-else></text>
 								<text>否</text>
 							</view>
@@ -173,16 +175,7 @@
 						<view class="box-content-list-li-info-msg">%</view>
 					</view>
 				</view>
-				<view class="box-content-list-li" @click="timeOpen">
-					<view class="box-content-list-li-title">工作时间表</view>
-					<view class="box-content-list-li-info">
-						<view class="box-content-list-li-info-text">{{timeName==''?'请选择工作时间表':timeName}}</view>
-						<view class="box-content-list-li-info-more">
-							<text class="iconfont icongengduo icon-font"
-								style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
-						</view>
-					</view>
-				</view>
+
 				<view class="box-content-list-li" v-if="type=='add'" @click="userOpen">
 					<view class="box-content-list-li-title">用户绑定</view>
 					<view class="box-content-list-li-info">
@@ -227,37 +220,29 @@
 			<btn-sky-blue btnName="确认提交" @btnClick="confirmAdd" v-if="type=='add'" />
 			<btn-sky-blue btnName="确认修改" @btnClick="confirmEdit" v-if="type=='edit'" />
 		</view>
-		<popup-list-select :skid='from.store' @cancel="storePopup" @confirm="storeConfirm" :visible='visible'
-			:dataList="storeList">
-		</popup-list-select>
 
-		<popup-list-select :skid='from.store_cid' @cancel="storeCategoryPopup" @confirm="storeCategoryConfirm"
-			:visible='isStore' :dataList="storeCategoryList">
-		</popup-list-select>
+		<popup-list-select :skid='from.mobile_code_id' @cancel="areaCancel" @confirm="areaConfirm" :visible='isAreaCode'
+			:dataList="areaCodeList" />
+
+		<popup-list-select :skid='from.storeCategory' @cancel="storeCategoryPopup" @confirm="storeCategoryConfirm"
+			:visible='isStore' :dataList="storeCategoryList" />
+
 		<popup-list-select :skid='from.platform' @cancel="platformPopup" @confirm="platformConfirm"
-			:visible='isPlatform' :dataList="platformList">
-		</popup-list-select>
+			:visible='isPlatform' :dataList="platformList" />
 
 		<popup-list-select :skid='from.service' @cancel="projectPopup" @confirm="projectConfirm" :visible='isProject'
-			:dataList="projectList">
-		</popup-list-select>
+			:dataList="projectList" />
 
 		<popup-list-select :skid='from.grade' @cancel="gradePopup" @confirm="gradeConfirm" :visible='isGrade'
-			:dataList="gradeList">
-		</popup-list-select>
-
-
-		<popup-list-select :skid='from.schedule' @cancel="timePopup" @confirm="timeConfirm" :visible='isTime'
-			:dataList="timeList">
-		</popup-list-select>
+			:dataList="gradeList" />
 
 		<popup-list-select :skid='from.uids' @cancel="userPopup" @confirm="userConfirm" :visible='isUser'
-			:dataList="userList">
-		</popup-list-select>
+			:dataList="userList" />
 
 		<popup-list-select :skid='from.status' @cancel="statePopup" @confirm="stateConfirm" :visible='isState'
-			:dataList="stateList">
-		</popup-list-select>
+			:dataList="stateList" />
+
+
 	</view>
 </template>
 
@@ -271,27 +256,30 @@
 	} from '../../js_sdk/mmmm-image-tools/index.js'
 	import uploadImage from "../../js_sdk/oss/uploadOSS.js";
 
+	import {
+		areaCodeList
+	} from '../../static/js/publicFile.js'
+
 	export default {
 		data() {
 			return {
 				barHeight: 0, //顶部电量导航栏高度
 				id: '',
-				type: '',
+				store: '',
+				type: 'add',
 				isCurr: false, //是否会开车
-				visible: false,
 				isStore: false,
 				isPlatform: false,
 				isProject: false,
 				isGrade: false,
-				isTime: false,
 				isUser: false,
 				isState: false,
-				storeList: [],
+				isAreaCode: false,
+				areaCodeList: [],
 				storeCategoryList: [],
 				platformList: [],
 				projectList: [],
 				gradeList: [],
-				timeList: [],
 				userList: [],
 				stateList: [{
 						name: '启用',
@@ -320,6 +308,8 @@
 					simg: '', //工作招聘
 					photo: [], //
 					mobile: '',
+					mobile_code: '86', //区号
+					mobile_code_id: '', //区号id
 					email: '',
 					status: '',
 					service: '', //服务项目
@@ -333,7 +323,6 @@
 					license_id: '', //执照id
 					license_img: '', //执照图片
 					status: -1, //状态
-					schedule: '', //时间表·
 					uid: '', //用户id
 				}
 			};
@@ -352,39 +341,39 @@
 			});
 		},
 		onLoad(options) {
+			var data = JSON.parse(options.data)
+			this.store = data.storeId
+			this.getPlatform()
+
 			this.getStore()
 			this.getStoreCategory()
-			this.getPlatform()
+
 			this.getProject()
 			this.getGrad()
-			this.getTimeTable()
+
 			this.getUser();
 
-			var data = JSON.parse(options.data)
+
 			if (data.type == 'add') {
-				this.id = data.storeId
 				this.type = 'add'
 			} else if (data.type == 'edit') {
 				this.type = 'edit'
 				this.id = data.id
 				this.getDetails(data.id)
 			}
+			this.areaCodeList = areaCodeList
 		},
 
 
 		methods: {
-			// 选择门店
-			selectStore() {
-				this.visible = true
+
+			// 区号取消按钮
+			areaCancel(e) {
+				this.isAreaCode = e
 			},
-			// 门店关闭弹窗
-			storePopup(e) {
-				this.visible = e
-			},
-			// 门店弹窗选择确认
-			storeConfirm(e) {
-				this.from.store = e.id
-				this.storeName = e.name
+
+			areaConfirm(e) {
+				this.from.mobile_code = e.name
 			},
 
 			// 选择门店分类
@@ -401,15 +390,15 @@
 				this.storeCategoryName = e.name
 			},
 
-			// 选择平台分类
+			// 选择项目分类
 			platformOpen() {
 				this.isPlatform = true
 			},
-			// 平台分类关闭弹窗
+			// 项目分类关闭弹窗
 			platformPopup(e) {
 				this.isPlatform = e
 			},
-			// 平台分类弹窗选择确认
+			// 项目分类弹窗选择确认
 			platformConfirm(e) {
 				this.from.platform = e.id
 				this.platformName = e.name
@@ -443,19 +432,6 @@
 				this.gradeName = e.name
 			},
 
-			// 选择工作时间表
-			timeOpen() {
-				this.isTime = true
-			},
-			// 工作时间表关闭弹窗
-			timePopup(e) {
-				this.isTime = e
-			},
-			// 工作时间表弹窗选择确认
-			timeConfirm(e) {
-				this.from.schedule = e.id
-				this.timeName = e.name
-			},
 
 
 			// 选择用户
@@ -495,11 +471,12 @@
 			// 确认提交按钮
 			confirmAdd() {
 				var vuedata = {
-					store: this.from.store, //门店id
+					store: this.store, //门店id
 					store_cid: this.from.storeCategory, //门店分类id
 					name: this.from.name, //技师名称
-					cid: this.from.platform, //技师分类ID
+					cid: this.from.platform, //项目分类ID
 					mobile: this.from.mobile, //手机号
+					mobile_code: this.from.mobile_code, //区号
 					email: this.from.email, //邮箱
 					service: this.from.service, //服务项目
 					Language_skills: this.from.Language_skills, //语言
@@ -511,14 +488,12 @@
 					photo: JSON.stringify(this.from.photo), //工作照片
 					service_fee: this.from.service_fee, //项目服务费
 					fee: this.from.fee, //技师提成
-					schedule: this.from.schedule, // 工作时间表
 					uid: this.from.uid, // 选择用户
 					status: this.from.status, //状态
 					ordersort: this.from.ordersort, //排序
 					content: this.from.content, //详情
 				}
 				console.log(vuedata)
-
 				// return false;
 				this.apipost('api/v1/store/engineer/add', vuedata).then(res => {
 					if (res.status == 200) {
@@ -546,8 +521,9 @@
 					store: this.from.store, //门店id
 					store_cid: this.from.storeCategory, //门店分类id
 					name: this.from.name, //技师名称
-					cid: this.from.platform, //技师分类ID
+					cid: this.from.platform, //项目分类ID
 					mobile: this.from.mobile, //手机号
+					mobile_code: this.from.mobile_code, //区号
 					email: this.from.email, //邮箱
 					service: this.from.service, //服务项目
 					Language_skills: this.from.Language_skills, //语言
@@ -559,7 +535,6 @@
 					photo: JSON.stringify(this.from.photo), //工作照片
 					service_fee: this.from.service_fee, //项目服务费
 					fee: this.from.fee, //技师提成
-					schedule: this.from.schedule, // 工作时间表
 					status: this.from.status, //状态
 					ordersort: this.from.ordersort, //排序
 					content: this.from.content, //详情
@@ -677,6 +652,7 @@
 						this.from.platform = data.cid
 						this.from.name = data.name
 						this.from.mobile = data.mobile
+						this.from.mobile_code = data.mobile_code
 						this.from.email = data.mail
 						this.from.service = data.service
 						this.from.Language_skills = data.Language_skills
@@ -695,17 +671,20 @@
 						this.from.ordersort = data.sort
 						this.from.content = data.content
 
-						this.storeList.forEach(item => {
-							if (item.id == data.store) {
-								this.storeName = item.name
+
+						areaCodeList.forEach(item => {
+							if (item.name == data.mobile_code) {
+								this.from.mobile_code_id = item.id
 							}
 						})
+
 
 						this.storeCategoryList.forEach(item => {
 							if (item.id == data.store_cid) {
 								this.storeCategoryName = item.name
 							}
 						})
+
 						this.platformList.forEach(item => {
 							if (item.id == data.cid) {
 								this.platformName = item.name
@@ -725,12 +704,6 @@
 
 						this.isCurr = data.drive_card == 1 ? true : false
 
-						this.timeList.forEach(item => {
-							if (item.id == data.schedule) {
-								this.timeName = item.name
-							}
-						})
-
 
 						this.stateList.forEach(item => {
 							if (item.id == data.status) {
@@ -747,7 +720,11 @@
 			getStore() {
 				this.apiget('api/v1/store/store_information', {}).then(res => {
 					if (res.status == 200) {
-						this.storeList = res.data.member
+						res.data.member.forEach(item => {
+							if (item.id == this.store) {
+								this.storeName = item.name
+							}
+						})
 					}
 				});
 			},
@@ -762,10 +739,12 @@
 					}
 				});
 			},
-			// 获取平台分类
+
+			// 获取项目分类
 			getPlatform() {
 				this.apiget('pc/category/category_type', {
-					type: 12
+					type: 2,
+					store: this.store
 				}).then(res => {
 					if (res.status == 200) {
 						this.platformList = res.data
@@ -790,14 +769,7 @@
 					}
 				});
 			},
-			// 获取时间表
-			getTimeTable() {
-				this.apiget('api/v1/store/engineer/schedule', {}).then(res => {
-					if (res.status == 200) {
-						this.timeList = res.data
-					}
-				});
-			},
+
 			// 获取用户
 			getUser() {
 				this.apiget('api/v1/store/engineer/member_info', {}).then(res => {
@@ -919,6 +891,18 @@
 
 								text {}
 							}
+						}
+
+						.box-content-list-li-info-area-code {
+							display: flex;
+							align-items: center;
+							justify-content: center;
+							width: 100rpx;
+							height: 46rpx;
+							margin-right: 10rpx;
+							border: 1rpx solid #333;
+							border-radius: 30rpx;
+							font-size: 24rpx;
 						}
 					}
 				}

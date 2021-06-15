@@ -53,7 +53,7 @@
 
 			<view class="box-content-main">
 				<view class="box-content-main-top">
-					<view>添加图片<text style="font-size: 24rpx;color: #999;margin-left: 10rpx;">(990*556)</text></view>
+					<view>门店图片<text style="font-size: 24rpx;color: #999;margin-left: 10rpx;">(990*556)</text></view>
 				</view>
 				<view class="box-content-main-image-list">
 					<view class="box-content-main-image-list-li" :class="index==0?'list-li-affter':''"
@@ -70,8 +70,85 @@
 				</view>
 			</view>
 
+			<view class="box-content-main-schedule-list">
+				<view class="box-content-main-schedule-list-title">营业时间</view>
+				<view class="box-content-main-schedule-list-li" v-for="(item,index) in dataList" :key="index">
+					<view class="box-content-main-schedule-list-li-title">
+						<view class="box-content-main-schedule-list-li-title-left">
+							<text>{{item.title}}</text>
+						</view>
+						<view class="box-content-main-schedule-list-li-title-right">
+							<switch :checked='item.isCheck' color="#26BF81" style="transform:scale(0.7)"
+								@change="switch1Change($event,index)" />
+						</view>
+
+					</view>
+					<view class="box-content-main-schedule-list-li-wrap">
+						<view class="schedule-list-li-wrap-item" v-for="(i,j) in item.data" :key="j">
+							<view class="schedule-list-li-wrap-item-add flex-center" @click="addTime(index,j)">
+								<text class="iconfont iconjia icon-font" style="color: #ccc;font-size: 28rpx"></text>
+							</view>
+							<view class="schedule-list-li-wrap-item-text flex-center"
+								@click="timeOpen(index,j,'start')">
+								<text v-if="i.start!=''">{{i.start}}</text>
+								<text v-if="i.start==''" style="color: #999;">开始时间</text>
+							</view>
+							<view class="schedule-list-li-wrap-item-connect flex-center">
+								<text class="iconfont iconjian icon-font" style="color: #ccc;font-size: 24rpx"></text>
+							</view>
+							<view class="schedule-list-li-wrap-item-text flex-center" @click="timeOpen(index,j,'end')">
+								<text v-if="i.end!=''">{{i.end}}</text>
+								<text v-if="i.end==''" style="color: #999;">结束时间</text>
+								<!-- <text>{{i.random}}</text> -->
+							</view>
+
+							<view class="schedule-list-li-wrap-item-del flex-center">
+								<text class="iconfont iconcuowu icon-font" style="color: #ccc;font-size: 52rpx"
+									@click="deleteTime(index,j)" :style="{display:j==0?'none':'block'}"></text>
+							</view>
+
+						</view>
+					</view>
+				</view>
+			</view>
 
 			<view class="box-content-list">
+				<view class="box-content-list-li" @click="isAreaCode=true">
+					<view class="box-content-list-li-title">区号</view>
+					<view class="box-content-list-li-info">
+						<view class="box-content-list-li-info-text">{{from.mobile_code==''?'请选择区号':from.mobile_code}}
+						</view>
+						<view class="box-content-list-li-info-more">
+							<text class="iconfont icongengduo icon-font"
+								style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
+						</view>
+					</view>
+				</view>
+				<view class="box-content-list-li" @click="location">
+					<view class="box-content-list-li-title">地址</view>
+					<view class="box-content-list-li-info">
+						<view class="box-content-list-li-info-text ">
+							<view class="box-content-list-li-info-text-address">
+								{{from.address==''?'请定位具体地址':from.address}}
+							</view>
+						</view>
+						<view class="box-content-list-li-info-more">
+							<text class="iconfont icongengduo icon-font"
+								style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
+						</view>
+					</view>
+				</view>
+				<view class="box-content-list-li" @click="isLanguageShow =true">
+					<view class="box-content-list-li-title">语言</view>
+					<view class="box-content-list-li-info">
+						<view class="box-content-list-li-info-text">{{from.languageName==''?'请选择语言':from.languageName}}
+						</view>
+						<view class="box-content-list-li-info-more">
+							<text class="iconfont icongengduo icon-font"
+								style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
+						</view>
+					</view>
+				</view>
 				<view class="box-content-list-li">
 					<view class="box-content-list-li-title">门店电话</view>
 					<view class="box-content-list-li-info">
@@ -80,18 +157,31 @@
 						</view>
 					</view>
 				</view>
-				<view class="box-content-list-li" @click="businessHours">
-					<view class="box-content-list-li-title">营业时间</view>
+				<view class="box-content-list-li">
+					<view class="box-content-list-li-title">邮箱</view>
 					<view class="box-content-list-li-info">
-						<view class="box-content-list-li-info-text">{{from.plan_date==''?'请选择营业时间':from.plan_date}}
+						<view class="box-content-list-li-info-input">
+							<input type="text" v-model.trim="from.email" placeholder="请输入邮箱" />
 						</view>
-						<view class="box-content-list-li-info-more">
-							<text class="iconfont icongengduo icon-font"
-								style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
+					</view>
+				</view>
+				<view class="box-content-list-li">
+					<view class="box-content-list-li-title">邮编</view>
+					<view class="box-content-list-li-info">
+						<view class="box-content-list-li-info-input">
+							<input type="number" v-model.trim="from.postcode" placeholder="请输入邮编" />
 						</view>
 					</view>
 				</view>
 
+				<view class="box-content-list-li">
+					<view class="box-content-list-li-title">税号</view>
+					<view class="box-content-list-li-info">
+						<view class="box-content-list-li-info-input">
+							<input type="number" v-model.trim="from.duty_paragraph" placeholder="请输入税号" />
+						</view>
+					</view>
+				</view>
 				<view class="box-content-list-li" style="padding:30rpx 0;height: auto;align-items: flex-start;">
 					<view class="box-content-list-li-title">预约方式</view>
 					<view class="box-content-list-li-info" style="flex-direction: column;">
@@ -137,24 +227,6 @@
 					</view>
 				</view>
 
-				<view class="box-content-list-li" @click="location">
-					<view class="box-content-list-li-title">地址</view>
-					<view class="box-content-list-li-info">
-						<view class="box-content-list-li-info-text">{{from.address==''?'请定位具体地址':from.address}}</view>
-						<view class="box-content-list-li-info-more">
-							<text class="iconfont icongengduo icon-font"
-								style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
-						</view>
-					</view>
-				</view>
-				<view class="box-content-list-li">
-					<view class="box-content-list-li-title">税号</view>
-					<view class="box-content-list-li-info">
-						<view class="box-content-list-li-info-input">
-							<input type="number" v-model.trim="from.duty_paragraph" placeholder="请输入税号" />
-						</view>
-					</view>
-				</view>
 				<!-- <view class="box-content-list-li">
 					<view class="box-content-list-li-title">客服功能</view>
 					<view class="box-content-list-li-info">
@@ -164,13 +236,15 @@
 				<view class="box-content-list-li">
 					<view class="box-content-list-li-title">会员数据共通</view>
 					<view class="box-content-list-li-info">
-						<switch style="transform: scale(0.7);" :checked='isCommon' @change="switch1Change2" color="#07C160" />
+						<switch style="transform: scale(0.7);" :checked='isCommon' @change="switch1Change2"
+							color="#07C160" />
 					</view>
 				</view>
 				<view class="box-content-list-li">
 					<view class="box-content-list-li-title">门店提成</view>
 					<view class="box-content-list-li-info">
-						<switch style="transform: scale(0.7);" :checked='isCommission' @change="switch1Change3" color="#07C160" />
+						<switch style="transform: scale(0.7);" :checked='isCommission' @change="switch1Change3"
+							color="#07C160" />
 					</view>
 				</view>
 
@@ -200,16 +274,7 @@
 							class="box-content-list-item-info-image" mode="aspectFill"></image>
 					</view>
 				</view>
-				<view class="box-content-list-li" @click="stateOpen">
-					<view class="box-content-list-li-title">状态</view>
-					<view class="box-content-list-li-info">
-						<view class="box-content-list-li-info-text">{{from.stateName==''?'请选择状态':from.stateName}}</view>
-						<view class="box-content-list-li-info-more">
-							<text class="iconfont icongengduo icon-font"
-								style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
-						</view>
-					</view>
-				</view>
+
 				<view class="box-content-list-li" style="padding:30rpx 0;height: auto;align-items: flex-start;">
 					<view class="box-content-list-li-title">详情</view>
 					<view class="box-content-list-li-info" style="margin-left: 0;">
@@ -223,18 +288,18 @@
 			<btn-sky-blue btnName="确认添加" @btnClick="confirmAdd" v-if="isType=='add'" />
 			<btn-sky-blue btnName="确认修改" @btnClick="confirmEdit" v-if="isType=='edit'" />
 		</view>
-		<!-- <select-address :visible="visible" :dataList="addressList" @cancel='regionCancel' /> -->
+
 		<select-address :visible="visible" @cancel='regionCancel' @confirm='regionConfirm' />
 
-		<popup-list-select @cancel="categoryCancel" @confirm="categoryConfirm" :visible='isCategory'
-			:dataList="categoryList">
-		</popup-list-select>
+		<popup-list-select :skid='from.pid' @cancel="categoryCancel" @confirm="categoryConfirm" :visible='isCategory'
+			:dataList="categoryList" />
+		<select-time @cancel='cancelTime' :visible='isShow' @confirm='timeConfirm' />
 
-		<business-hours @cancel="hoursCancel" @confirm="hoursConfirm" :visible='isShow'>
-		</business-hours>
+		<popup-list-select :skid='from.mobile_code_id' @cancel="areaCancel" @confirm="areaConfirm" :visible='isAreaCode'
+			:dataList="areaCodeList" />
 
-		<popup-list-select @cancel="stateCancel" @confirm="stateConfirm" :visible='isState' :dataList="stateList">
-		</popup-list-select>
+		<popup-list-select :skid='from.language' @cancel="languageCancel" @confirm="languageConfirm"
+			:visible='isLanguageShow' :dataList="languageList" />
 	</view>
 </template>
 
@@ -243,7 +308,11 @@
 	import btnSkyBlue from "../../components/btn-sky-blue/btn-sky-blue.vue"
 	import selectAddress from '../../components/select-address/select-address.vue'
 	import popupListSelect from '../../components/popup-list-select/popup-list-select.vue'
-	import businessHours from "../../components/business-hours/business-hours.vue"
+	
+	import {
+		areaCodeList
+	} from '../../static/js/publicFile.js'
+
 
 	import {
 		pathToBase64,
@@ -262,6 +331,7 @@
 				visible: false,
 				addressList: [],
 				categoryList: [],
+				languageList: [],
 				isCategory: false,
 				id: '',
 				timeList: [{
@@ -284,9 +354,12 @@
 						state: 0
 					},
 				],
+				areaCodeList: [],
 				isState: false,
 				isCommon: false,
 				isCommission: false,
+				isAreaCode: false,
+				isLanguageShow: false,
 				from: {
 					name: '', //门店名称
 					regionName: '', //区域名称
@@ -295,6 +368,12 @@
 					stateName: '',
 					simg: '', //门店图标
 					bimg: '', //门店封面
+					email: '', //邮箱
+					postcode: '', //邮编
+					language: '', //语言
+					languageName: '', //语言名称
+					mobile_code: '', //区号
+					mobile_code_id: '', //区号id
 					mobile: '', //门店电话
 					plan_date: '', //营业时间
 					country: '', //国家id
@@ -316,14 +395,82 @@
 				},
 				imageList: [],
 				isShow: false,
+				codeKey: 0,
+				dataList: [{
+						title: "周一",
+						type: "mon_times",
+						isCheck: false,
+						data: [{
+							start: '',
+							end: '',
+						}, ],
+					},
+					{
+						title: "周二",
+						type: "tues_times",
+						isCheck: false,
+						data: [{
+							start: '',
+							end: '',
+						}, ],
+					},
+					{
+						title: "周三",
+						type: "wed_times",
+						isCheck: false,
+						data: [{
+							start: '',
+							end: '',
+						}, ],
+					},
+					{
+						title: "周四",
+						type: "thur_times",
+						isCheck: false,
+						data: [{
+							start: '',
+							end: '',
+						}, ],
+					},
+					{
+						title: "周五",
+						type: "fri_times",
+						isCheck: false,
+						data: [{
+							start: '',
+							end: '',
+						}, ],
+					},
+					{
+						title: "周六",
+						type: "sat_times",
+						isCheck: false,
+						data: [{
+							start: '',
+							end: '',
+						}, ],
+					}, {
+						title: "周日",
+						type: "sun_times",
+						isCheck: false,
+						data: [{
+							start: '',
+							end: '',
+						}, ],
+					},
+				],
 			};
+		},
+		filters: {
+			basic(val) { //去除最后一个字符
+				return val.substring(0, val.length - 1);
+			},
 		},
 		components: {
 			navTitleBalck,
 			btnSkyBlue,
 			selectAddress,
 			popupListSelect,
-			businessHours
 		},
 
 		onReady() {
@@ -336,7 +483,7 @@
 		},
 		onLoad(options) {
 			this.getCategory()
-
+			this.getLanguageList()
 			let data = JSON.parse(options.data)
 			this.isType = data.type
 			if (data.type == "edit") {
@@ -346,6 +493,7 @@
 			} else if (data.type == "add") {
 				this.title = "添加门店"
 			}
+			this.areaCodeList = areaCodeList
 		},
 		onShow() {
 			var arr = Object.keys(this.$store.state.mapObj);
@@ -360,6 +508,80 @@
 
 		methods: {
 
+			// switch 开关
+			switch1Change(e, index) {
+				var bool = e.detail.value
+				this.dataList[index].isCheck = bool ? true : false
+			},
+			// 添加时间
+			addTime(index, idx) {
+				// index 第一级下标 idx 第二级下标
+				let str = {
+					start: '',
+					end: '',
+				}
+
+				if (this.dataList[index].isCheck) {
+					this.dataList[index].data.splice(idx + 1, 0, str) // 当前点击的后一位添加
+					return false;
+				}
+				uni.showToast({
+					title: "该时间未开启,不能选择时间",
+					icon: "none"
+				})
+			},
+
+			// 删除添加的日程时间
+			deleteTime(index, idx) {
+				if (this.dataList[index].data.length <= 1) {
+					uni.showToast({
+						title: "不能再删了，至少保留一个",
+						icon: "none"
+					})
+					return false;
+				}
+				this.dataList[index].data.splice(idx, 1) // 当前点击位置删除
+			},
+
+			// 时间弹出层打开
+			timeOpen(index, idx, type) {
+				this.indexOne = index
+				this.indexTwo = idx
+				this.timeType = type
+				if (this.dataList[index].isCheck) {
+					this.isShow = true
+					return false
+				}
+				uni.showToast({
+					title: "该时间未开启,不能选择时间",
+					icon: "none"
+				})
+			},
+			// 时间弹出层取消事件
+			cancelTime(e) {
+				this.isShow = e
+			},
+			// 时间弹出层确认事件
+			timeConfirm(e) {
+				if (this.timeType == 'start') { //开始时间
+					this.dataList[this.indexOne].data[this.indexTwo].start = e.hour + ':' + e.minute
+				} else { //结束时间
+					this.dataList[this.indexOne].data[this.indexTwo].end = e.hour + ':' + e.minute
+				}
+			},
+
+			// 语言 取消事件
+			languageCancel(e) {
+				this.isLanguageShow = e
+			},
+			// 语言确定事件
+			languageConfirm(e) {
+				this.from.language = e.id
+				this.from.languageName = e.name
+			},
+
+
+
 			// 选择区域
 			selectRegion() {
 				this.visible = true
@@ -370,14 +592,11 @@
 			},
 			// 区域确定按钮
 			regionConfirm(e) {
-				console.log(e)
 				this.from.country = e.country_id
 				this.from.province = e.province_id
 				this.from.city = e.city_id
 				this.from.district = e.area_id
-
 				this.from.regionName = e.country_name + e.province_name + e.city_name + e.area_name
-
 			},
 
 			// 选择类别点击
@@ -394,19 +613,16 @@
 				this.from.categoryName = e.name
 			},
 
-			// 选择状态点击
-			stateOpen() {
-				this.isState = true
+
+			// 区号取消按钮
+			areaCancel(e) {
+				this.isAreaCode = e
 			},
-			// 状态取消按钮
-			stateCancel(e) {
-				this.isState = e
+
+			areaConfirm(e) {
+				this.from.mobile_code = e.name
 			},
-			// 状态确定按钮
-			stateConfirm(e) {
-				this.from.status = e.state
-				this.from.stateName = e.name
-			},
+
 
 			// 预约方式
 			currency(index) {
@@ -475,13 +691,87 @@
 
 			// 确认添加按钮
 			confirmAdd() {
+				var arr = []
+				this.dataList.forEach(item => {
+					switch (item.type) {
+						case 'mon_times': //周一
+							if (item.isCheck) {
+								let str = {
+									mon_times: JSON.stringify(item.data),
+									mon_status: 1
+								}
+								arr.push(str)
+							}
+
+							break;
+						case 'tues_times': //周二
+							if (item.isCheck) {
+								let str = {
+									tues_times: JSON.stringify(item.data),
+									tues_status: 1
+								}
+								arr.push(str)
+							}
+							break;
+						case 'wed_times': //周三
+							if (item.isCheck) {
+								let str = {
+									wed_times: JSON.stringify(item.data),
+									wed_status: 1
+								}
+								arr.push(str)
+							}
+							break;
+						case 'thur_times': //周四
+							if (item.isCheck) {
+								let str = {
+									thur_times: JSON.stringify(item.data),
+									thur_status: 1
+								}
+								arr.push(str)
+							}
+							break;
+						case 'fri_times': //周五
+							if (item.isCheck) {
+								let str = {
+									fri_times: JSON.stringify(item.data),
+									fri_status: 1
+								}
+								arr.push(str)
+							}
+							break;
+						case 'sat_times': //周六
+							if (item.isCheck) {
+								let str = {
+									sat_times: JSON.stringify(item.data),
+									sat_status: 1
+								}
+								arr.push(str)
+							}
+							break;
+						case 'sun_times': //周日
+							if (item.isCheck) {
+								let str = {
+									sun_times: JSON.stringify(item.data),
+									sun_status: 1
+								}
+								arr.push(str)
+							}
+							break;
+					}
+				})
+
 				var vuedata = {
 					name: this.from.name,
 					pid: this.from.pid,
 					simg: this.from.simg,
 					bimg: this.imageList.join(','),
 					mobile: this.from.mobile,
-					plan_date: this.from.plan_date,
+					mobile_code: this.from.mobile_code, //区号
+					plan_date: JSON.stringify(arr),
+					email: this.from.email, //邮箱
+					postcode: this.from.postcode, //邮编
+					language: this.from.language, //语言
 					schedule: this.from.schedule,
 					status: this.from.status,
 					store_member: this.from.common,
@@ -490,8 +780,8 @@
 					card_sale: this.from.card_sale,
 					content: this.from.content,
 					address: this.from.address,
-					longitude: this.from.longitude,
-					latitude: this.from.latitude,
+					longitude_baidu: this.from.longitude,
+					latitude_baidu: this.from.latitude,
 					business_license: this.from.business_license,
 					other_licenses: this.from.other_licenses,
 				}
@@ -515,18 +805,91 @@
 						})
 					}
 				})
-				console.log(vuedata)
 			},
 
 			// 确认修改
 			confirmEdit() {
+				var arr = []
+				this.dataList.forEach(item => {
+					switch (item.type) {
+						case 'mon_times': //周一
+							if (item.isCheck) {
+								let str = {
+									mon_times: JSON.stringify(item.data),
+									mon_status: 1
+								}
+								arr.push(str)
+							}
+
+							break;
+						case 'tues_times': //周二
+							if (item.isCheck) {
+								let str = {
+									tues_times: JSON.stringify(item.data),
+									tues_status: 1
+								}
+								arr.push(str)
+							}
+							break;
+						case 'wed_times': //周三
+							if (item.isCheck) {
+								let str = {
+									wed_times: JSON.stringify(item.data),
+									wed_status: 1
+								}
+								arr.push(str)
+							}
+							break;
+						case 'thur_times': //周四
+							if (item.isCheck) {
+								let str = {
+									thur_times: JSON.stringify(item.data),
+									thur_status: 1
+								}
+								arr.push(str)
+							}
+							break;
+						case 'fri_times': //周五
+							if (item.isCheck) {
+								let str = {
+									fri_times: JSON.stringify(item.data),
+									fri_status: 1
+								}
+								arr.push(str)
+							}
+							break;
+						case 'sat_times': //周六
+							if (item.isCheck) {
+								let str = {
+									sat_times: JSON.stringify(item.data),
+									sat_status: 1
+								}
+								arr.push(str)
+							}
+							break;
+						case 'sun_times': //周日
+							if (item.isCheck) {
+								let str = {
+									sun_times: JSON.stringify(item.data),
+									sun_status: 1
+								}
+								arr.push(str)
+							}
+							break;
+					}
+				})
+
 				var vuedata = {
 					name: this.from.name,
 					pid: this.from.pid,
 					simg: this.from.simg,
 					bimg: this.imageList.join(','),
 					mobile: this.from.mobile,
-					plan_date: this.from.plan_date,
+					mobile_code: this.from.mobile_code, //区号
+					plan_date: JSON.stringify(arr),
+					email: this.from.email, //邮箱
+					postcode: this.from.postcode, //邮编
+					language: this.from.language, //语言
 					schedule: this.from.schedule,
 					status: this.from.status,
 					store_member: this.from.common,
@@ -540,6 +903,7 @@
 					business_license: this.from.business_license,
 					other_licenses: this.from.other_licenses,
 				}
+
 
 				this.apiput('api/v1/store/store_information/edit/' + this.id, vuedata).then(res => {
 					if (res.status == 200) {
@@ -611,12 +975,12 @@
 							let file = item;
 							let suffix = res.tempFiles[index].name.split('.').pop();
 							// #endif
-						
+
 							// #ifdef APP-PLUS
 							let file = item;
 							let suffix = res.tempFiles[index].path.split('.').pop();
 							// #endif
-						
+
 							// 获取阿里云oss 信息
 							this.apiget('app/oss/url', {}).then(ress => {
 								if (ress.status == 200) {
@@ -635,7 +999,6 @@
 					}
 				});
 			},
-
 
 			// 删除图片
 			delImage(index) {
@@ -723,7 +1086,6 @@
 			getInfo(id) {
 				this.apiget('api/v1/store/store_information/' + id, {}).then(res => {
 					if (res.status == 200) {
-
 						this.from.name = res.data.member.name
 						this.from.pid = res.data.member.pid
 						this.from.categoryName = res.data.member.class_name
@@ -733,6 +1095,11 @@
 						this.from.content = res.data.member.content
 						this.from.simg = res.data.member.simg
 						this.from.mobile = res.data.member.mobile
+						this.from.mobile_code = res.data.member.mobile_code
+						this.from.postcode = res.data.member.postcode
+						this.from.email = res.data.member.email
+						this.from.language = res.data.member.language
+
 						this.from.plan_date = res.data.member.plan_date
 						this.from.card_sale = res.data.member.card_sale
 						this.from.schedule = res.data.member.schedule
@@ -744,10 +1111,12 @@
 						this.imageList = res.data.member.bimg
 						this.from.bimg = res.data.member.bimg.join(',')
 
+
 						// 时间段
 						this.timeList.forEach(item => {
 							item.isCurr = false
 						})
+
 						if (res.data.member.schedule == 1) {
 							this.timeList[0].isCurr = true
 						} else {
@@ -756,14 +1125,64 @@
 
 						this.from.common = res.data.member.store_member
 						this.isCommon = res.data.member.store_member == 1 ? true : false
-						
+
 						this.from.commission = res.data.member.fee_status
 						this.isCommission = res.data.member.fee_status == 1 ? true : false
 
-						this.from.stateName = res.data.member.status == 1 ? "启用" : '关闭'
 
 						this.isDiscount = res.data.member.card_sale == 1 ? true : false
 
+						this.languageList.forEach(item => {
+							if (item.id == res.data.member.language) {
+								this.from.languageName = item.name
+							}
+						})
+
+						var arrs = this.areaCodeList
+						this.areaCodeList = []
+						this.codeKey++
+						this.$nextTick(() => {
+							this.areaCodeList = arrs
+							arrs.forEach(item => {
+								if (item.name == res.data.member.mobile_code) {
+									this.from.mobile_code_id = item.id
+									this.areaCodeList = arrs
+								}
+							})
+						})
+						
+						
+						var date = JSON.parse(res.data.member.plan_date)
+						for (var k in date) {
+							if (date[k].mon_status == 1) {
+								this.dataList[0].data = JSON.parse(date[k].mon_times)
+								this.dataList[0].isCheck = true
+							}
+							if (date[k].tues_status == 1) {
+								this.dataList[1].data = JSON.parse(date[k].tues_times)
+								this.dataList[1].isCheck = true
+							}
+							if (date[k].wed_status == 1) {
+								this.dataList[2].data = JSON.parse(date[k].wed_times)
+								this.dataList[2].isCheck = true
+							}
+							if (date[k].thur_status == 1) {
+								this.dataList[3].data = JSON.parse(date[k].thur_times)
+								this.dataList[3].isCheck = true
+							}
+							if (date[k].fri_status == 1) {
+								this.dataList[4].data = JSON.parse(date[k].fri_times)
+								this.dataList[4].isCheck = true
+							}
+							if (date[k].sat_status == 1) {
+								this.dataList[5].data = JSON.parse(date[k].sat_times)
+								this.dataList[5].isCheck = true
+							}
+							if (date[k].sun_status == 1) {
+								this.dataList[6].data = JSON.parse(date[k].sun_times)
+								this.dataList[6].isCheck = true
+							}
+						}
 					}
 				});
 			},
@@ -790,6 +1209,15 @@
 					}
 				});
 			},
+
+			// 请求语言列表
+			getLanguageList() {
+				this.apiget('language', {}).then(res => {
+					if (res.status == 200) {
+						this.languageList = res.data.lng.reverse()
+					}
+				});
+			},
 		}
 	}
 </script>
@@ -808,6 +1236,88 @@
 		.box-content {
 			flex: 1;
 			overflow-y: scroll;
+
+			.box-content-main-schedule-list {
+				margin-top: 20rpx;
+				padding: 0 40rpx 30rpx;
+				box-sizing: border-box;
+				background: #fff;
+
+				.box-content-main-schedule-list-title {
+					padding-top: 30rpx;
+					font-size: 28rpx;
+				}
+
+				.box-content-main-schedule-list-li {
+					.box-content-main-schedule-list-li-title {
+						display: flex;
+						align-items: center;
+						justify-content: space-between;
+						padding: 20rpx 0;
+						color: #333;
+
+						.box-content-main-schedule-list-li-title-left {
+							display: flex;
+							align-items: center;
+							font-size: 28rpx;
+
+							text {
+								margin-right: 20rpx;
+								font-size: 30rpx;
+							}
+						}
+
+						.box-content-main-schedule-list-li-title-left {}
+
+
+					}
+
+					.box-content-main-schedule-list-li-wrap {
+						.schedule-list-li-wrap-item:first-child {
+							margin-top: 0;
+						}
+
+						.schedule-list-li-wrap-item {
+							display: flex;
+							align-items: center;
+							margin-top: 20rpx;
+
+							.schedule-list-li-wrap-item-add {
+								width: 40rpx;
+								height: 40rpx;
+								border: 1rpx solid #CCCCCC;
+								border-radius: 10rpx;
+								margin-right: 10rpx;
+							}
+
+							.schedule-list-li-wrap-item-text {
+								display: flex;
+								align-items: center;
+								width: 220rpx;
+								height: 60rpx;
+								margin: 0 10rpx;
+								border: 2rpx solid #EDEDED;
+								border-radius: 10rpx;
+								font-size: 28rpx;
+
+								.icon-font {
+									margin-right: 10rpx;
+								}
+
+							}
+
+							.schedule-list-li-wrap-item-connect {}
+
+							.schedule-list-li-wrap-item-del {
+								margin-left: 20rpx;
+								width: 40rpx;
+								height: 40rpx;
+							}
+
+						}
+					}
+				}
+			}
 
 			.box-content-list {
 				margin-top: 20rpx;
@@ -843,6 +1353,13 @@
 						.box-content-list-li-info-text {
 							font-size: 28rpx;
 							color: #000;
+
+							.box-content-list-li-info-text-address {
+								width: 380rpx;
+								overflow: hidden;
+								text-overflow: ellipsis;
+								white-space: nowrap;
+							}
 						}
 
 						.box-content-list-li-info-more {}

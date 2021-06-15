@@ -115,11 +115,7 @@
 </template>
 
 <script>
-	import technicianTabbar from "../../components/technician-tabbar/technician-tabbar.vue"
-	import UniPopup from "../../components/uni-popup/uni-popup.vue"
-	import loading from '../../components/loading/loading.vue'
-	import noData from '../../components/no-data/no-data.vue'
-	import zPaging from '../../components/z-paging/components/z-paging/z-paging.vue'
+
 	export default {
 		data() {
 			return {
@@ -171,13 +167,7 @@
 			this.orderList();
 			this.getInfo()
 		},
-		components: {
-			technicianTabbar,
-			UniPopup,
-			loading,
-			noData,
-			zPaging,
-		},
+
 		methods: {
 
 			// 获取个人信息

@@ -19,7 +19,7 @@
 							<view class="order-list-li-top-msg" v-if="item.status==-2&&item.use_status==-1">已失效</view>
 							<view class="order-list-li-top-msg" v-if="item.status==-1&&item.use_status==-1">未支付</view>
 							<view class="order-list-li-top-msg" v-if="item.status==1&&item.use_status==-1">待核销</view>
-							<view class="order-list-li-top-msg"  v-if="item.status==1&&item.use_status==1">已核销</view>
+							<view class="order-list-li-top-msg" v-if="item.status==1&&item.use_status==1">已核销</view>
 						</view>
 						<view class="box-content-order-list-li-wrap">
 							<view class="order-list-li-wrap-item" v-for="(i,j) in 1">
@@ -29,9 +29,11 @@
 								<view class="order-list-li-wrap-item-info">
 									<view class="order-list-li-wrap-item-info-top">
 										<view class="wrap-item-info-top-text" v-if="item.service_name==null">
-											{{item.reserve_name}}</view>
+											{{item.reserve_name}}
+										</view>
 										<view class="wrap-item-info-top-text" v-if="item.reserve_name==null">
-											{{item.service_name}}</view>
+											{{item.service_name}}
+										</view>
 										<view class="wrap-item-info-top-msg">￥{{item.service_price}}</view>
 									</view>
 									<view class="order-list-li-wrap-item-info-box">
@@ -81,39 +83,37 @@
 									￥<text>{{item.amount}}</text></view>
 							</view>
 							<view class="box-content-order-list-li-footer-btn">
-								<view class="order-list-li-footer-all-btn btn-hollow flex-center" v-if="item.status==1&&item.use_status==1"
-									@click.stop="orderDetails(item)">查看详情</view>
-								<view class="order-list-li-footer-all-btn btn-hollow flex-center" v-if="item.status==1&&item.use_status==-1" @click.stop="cancelOrder(item)">
+								<view class="order-list-li-footer-all-btn btn-hollow flex-center"
+									v-if="item.status==1&&item.use_status==1" @click.stop="orderDetails(item)">查看详情
+								</view>
+								<view class="order-list-li-footer-all-btn btn-hollow flex-center"
+									v-if="item.status==1&&item.use_status==-1" @click.stop="cancelOrder(item)">
 									取消订单
 								</view>
-								<view class="order-list-li-footer-all-btn btn-fill flex-center" v-if="item.status==1&&item.use_status==-1"
-									@click.stop="writeOffDetails(item)">去核销</view>
+								<view class="order-list-li-footer-all-btn btn-fill flex-center"
+									v-if="item.status==1&&item.use_status==-1" @click.stop="writeOffDetails(item)">去核销
+								</view>
 							</view>
 						</view>
 					</view>
 				</view>
 			</view>
-
 		</z-paging>
-		
 	</view>
 </template>
 
 <script>
-	import zPaging from "../z-paging/components/z-paging/z-paging.vue"
-	
+
 	export default {
 		data() {
 			return {
 				dataList: [],
 				firstLoaded: false,
 				isLoad: true,
-				id:'',
+				id: '',
 			}
 		},
-		components: {
-			zPaging,
-		},
+
 		props: {
 			tabIndex: {
 				type: Number,
@@ -169,33 +169,31 @@
 				}
 				this.apiget('api/v1/store/order', vuedata).then(res => {
 					if (res.status == 200) {
-						if (res.data.data.length != 0) {
-							let list = res.data.data
+						let list = res.data.data
 
-							let totalSize = res.data.total_rows
-							this.$refs.paging.addData(list);
-							this.firstLoaded = true;
-						}
+						this.firstLoaded = true;
+						this.$refs.paging.addData(list);
+
 						this.isLoad = false
 					}
 				});
 			},
 			// 取消订单
-			cancelOrder(item){
-				this.$emit('openPopup',item.id)
+			cancelOrder(item) {
+				this.$emit('openPopup', item.id)
 			},
-			
+
 			// 待核销详情
 			writeOffDetails(item) {
-				this.$store.commit('upOrderState',false)
+				this.$store.commit('upOrderState', false)
 				uni.navigateTo({
-					url: "../../merchantOrder/toBeWrittenOff/toBeWrittenOff?id="+item.id
+					url: "../../merchantOrder/toBeWrittenOff/toBeWrittenOff?id=" + item.id
 				})
 			},
 			// 查看详情
 			orderDetails(id) {
 				uni.navigateTo({
-					url: "../../merchantOrder/orderDetails/orderDetails?id="+id
+					url: "../../merchantOrder/orderDetails/orderDetails?id=" + id
 				})
 			},
 

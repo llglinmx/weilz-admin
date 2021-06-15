@@ -21,7 +21,8 @@
 				</view>
 			</view>
 
-			<view class="box-content-list" v-for="(item,index) in menuList" :key="index" @click="menuListClick(index)">
+			<view class="box-content-list" v-for="(item,index) in menuList" :key="index"
+				@click="menuListClick(item.id)">
 				<view class="box-content-list-item">
 					<view class="box-content-list-item-left">
 						<view class="box-content-list-item-left-image">
@@ -49,10 +50,7 @@
 </template>
 
 <script>
-	import navTitleBalck from "../../components/nav-title-balck/nav-title-balck.vue"
-	import score from '../../components/score/score.vue'
-	import UniPopup from "../../components/uni-popup/uni-popup.vue"
-	import UniPopupDialog from "../../components/uni-popup/uni-popup-dialog.vue"
+
 	export default {
 		data() {
 			return {
@@ -60,27 +58,38 @@
 				id: '',
 				menuList: [{
 						title: "门店二维码",
-						image: "../../static/images/store-code-ico.png"
+						image: "../../static/images/store-code-ico.png",
+						id: 0
 					},
 					{
 						title: "项目管理",
-						image: "../../static/images/store-project-ico.png"
+						image: "../../static/images/store-project-ico.png",
+						id: 1
+					},
+					{
+						title: "项目分类",
+						image: "../../static/images/store-room-ico.png",
+						id: 2
 					},
 					{
 						title: "技师管理",
-						image: "../../static/images/store-technician-ico.png"
+						image: "../../static/images/store-technician-ico.png",
+						id: 3
 					},
 					{
 						title: "排班表",
-						image: "../../static/images/store-scheduling-ico.png"
+						image: "../../static/images/store-scheduling-ico.png",
+						id: 4
 					},
 					{
 						title: "技师招聘",
-						image: "../../static/images/store-recruit-ico.png"
+						image: "../../static/images/store-recruit-ico.png",
+						id: 5
 					},
 					{
 						title: "房间管理",
-						image: "../../static/images/store-room-ico.png"
+						image: "../../static/images/store-room-ico.png",
+						id: 6
 					},
 				],
 				infoData: {
@@ -91,12 +100,7 @@
 				}
 			};
 		},
-		components: {
-			navTitleBalck,
-			score,
-			UniPopup,
-			UniPopupDialog
-		},
+
 		onReady() {
 			// 获取顶部电量状态栏高度
 			uni.getSystemInfo({
@@ -158,23 +162,28 @@
 							url: "../projectManagement/projectManagement?id=" + this.id
 						})
 						break;
-					case 2: //技师管理
+					case 2: //项目分类
+						uni.navigateTo({
+							url: '../projectClassification/projectClassification?id=' + this.id
+						})
+						break;
+					case 3: //技师管理
 						uni.navigateTo({
 							url: "../technicianManagement/technicianManagement?id=" + this.id
 						})
 						break;
-					case 3: //排班表
+					case 4: //排班表
 						uni.navigateTo({
 							url: "../schedule/schedule?id=" + this.id
 						})
 						break;
-					case 4: //技师招聘
+					case 5: //技师招聘
 						this.$store.commit("upAdd", false)
 						uni.navigateTo({
 							url: "../technicianRecruit/technicianRecruit?id=" + this.id
 						})
 						break;
-					case 5: //房间管理
+					case 6: //房间管理
 						uni.navigateTo({
 							url: "../roomManagement/roomManagement?id=" + this.id
 						})
@@ -193,7 +202,7 @@
 	}
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 	.box {
 		display: flex;
 		flex-direction: column;

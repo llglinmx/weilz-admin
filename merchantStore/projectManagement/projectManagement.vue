@@ -14,7 +14,7 @@
 						:style="{display:isChoice?'block':'none'}" @click="cancelChoice"></text>
 				</view>
 			</view>
-			<view class="box-head-tabs">
+			<view class="box-head-tabs" v-if="false">
 				<merchant-tabs ref="boxTabs" :tabData="tabsList" :activeIndex="defaultIndex" @tabClick='tabClick' />
 			</view>
 		</view>
@@ -22,9 +22,10 @@
 			<view class="box-content-search"
 				:style="{height:isSearch?'auto':'0',padding:isSearch?'30rpx 40rpx':'0 40rpx'}">
 				<view class="box-content-search-box">
-					<input type="text" placeholder="请输入需要搜索的内容" />
-					<text class="iconfont iconsousuo1 icon-font"
-						style="color: #999;font-size: 48rpx;margin-top: 4rpx;"></text>
+					<input type="text" :focus="isFocus" @keydown.enter="searchChange" v-model.trim="searchVal"
+						placeholder="请输入需要搜索的内容" />
+					<text class="iconfont iconsousuo1 icon-font" style="color: #999;font-size: 48rpx;margin-top: 4rpx;"
+						@click="searchChange"></text>
 				</view>
 			</view>
 
@@ -33,8 +34,9 @@
 					<swiper class="swiper-box" :current="defaultIndex" @change="tabChange">
 						<swiper-item class="swiper-box-item-list" v-for="(item,index) in tabsList" :key="item.id">
 							<scroll-project-management-item ref="check" v-model="isChoice" :isChoice='isChoice'
-								:isSearch='isSearch' @closeSearch='closeSearchBox' @selectAll='selectCilck'
-								:isSelectAll='isSelectAll' :store='id' :tabIndex="index" :currentIndex="defaultIndex">
+								:isSearch='isSearch' :search='searchVal' @closeSearch='closeSearchBox'
+								@selectAll='selectCilck' :isSelectAll='isSelectAll' :store='id' :tabIndex="index"
+								:currentIndex="defaultIndex">
 							</scroll-project-management-item>
 						</swiper-item>
 					</swiper>
@@ -65,32 +67,22 @@
 </template>
 
 <script>
-	import navTitleBalck from "../../components/nav-title-balck/nav-title-balck.vue"
-	import merchantTabs from "../../components/merchant-tabs/merchant-tabs.vue"
-	import btnSkyBlue from "../../components/btn-sky-blue/btn-sky-blue.vue"
-	import scrollProjectManagementItem from '../../components/scroll-project-management-item/scroll-project-management-item.vue'
-	import UniPopup from "../../components/uni-popup/uni-popup.vue"
-	import UniPopupDialog from "../../components/uni-popup/uni-popup-dialog.vue"
 	export default {
 		data() {
 			return {
 				id: '',
 				barHeight: 0, //顶部电量导航栏高度
 				defaultIndex: 0, //当前滑动的页面
-				tabsList: ["出售中 0", "仓库中 0", "已售罄 0"],
+				// tabsList: ["出售中 0", "仓库中 0", "已售罄 0"],
+				tabsList: ["出售中 0"],
 				isChoice: false, //是否多选
 				isSelectAll: false, //是否全选
 				isSearch: false, //是否搜索
+				searchVal: '',
+				isFocus: false,
 			};
 		},
-		components: {
-			navTitleBalck,
-			merchantTabs,
-			btnSkyBlue,
-			scrollProjectManagementItem,
-			UniPopup,
-			UniPopupDialog
-		},
+
 		onReady() {
 			// 获取顶部电量状态栏高度
 			uni.getSystemInfo({
@@ -104,7 +96,7 @@
 		},
 		onShow() {
 			if (this.$store.state.isAddProject) {
-				this.$refs.check[this.defaultIndex].getDataList(1, 10)
+				this.$refs.check[this.defaultIndex].getDataList(1, 20)
 			}
 		},
 		methods: {
@@ -115,6 +107,10 @@
 				})
 			},
 
+			// 搜索
+			searchChange() {
+				this.$refs.check[this.defaultIndex].getDataList(1, 20)
+			},
 
 			// 全选删除
 			deleteBtn() {
@@ -134,8 +130,10 @@
 
 			// 搜索按钮
 			searchCilck() {
-				this.isSearch = true;
+				this.isSearch = !this.isSearch;
+				this.isFocus = this.isSearch
 			},
+
 			closeSearchBox(bool) {
 				this.isSearch = bool
 				console.log('传回来的值：' + bool)

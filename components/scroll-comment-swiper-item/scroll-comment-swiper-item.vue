@@ -66,7 +66,7 @@
 </template>
 
 <script>
-	import zPaging from "../z-paging/components/z-paging/z-paging.vue"
+
 	export default {
 		data() {
 			return {
@@ -77,9 +77,7 @@
 				typeIndex: 0, //当前选择的评论类型
 			}
 		},
-		components: {
-			zPaging
-		},
+
 		props: {
 			tabIndex: {
 				type: Number,

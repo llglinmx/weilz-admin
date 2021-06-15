@@ -13,40 +13,62 @@
 			<view class="box-content-title">{{title}}</view>
 			<view class="box-content-list">
 				<view class="box-content-list-li">
-					<input type="number" @input="accountChange" :focus="isFocus" v-model.trim="accountNumber"
-						placeholder="手机号/邮箱" confirm-type="done" />
-				</view>
-				<view class="box-content-list-li">
-					<input type="number" @input="passwordChange" :password="!isShowPassword" v-model.trim="password"
-						placeholder="请输入密码" confirm-type="done" />
-					<text class="iconfont iconxianshimima icon-font" style="color: #ccc;" @click="showPass"
-						v-if="!isShowPassword"></text>
-					<text class="iconfont iconyincangmima icon-font" style="color: #ccc;" @click="showPass"
-						v-if="isShowPassword"></text>
+					<view class="box-content-list-li-area-code" @click="isState = true">
+						<text>+{{stateName}}</text>
+						<text :class="isState?'icon-font-active':''" class="iconfont icon-font iconxiangxiajiantou"
+							style="font-size: 32rpx;margin-left: 10rpx;"></text>
+					</view>
+					<view class="box-content-list-li-input">
+						<input type="number" @input="accountChange" :focus="isFocus" v-model.trim="accountNumber"
+							placeholder="请输入账号" confirm-type="done" />
+					</view>
+
 				</view>
 				<view class="box-content-list-li" style="padding:20rpx 0;">
-					<input type="number" @input="verificationCode" v-model.trim="codeVal" placeholder="请输入右侧验证码"
+					<input type="number" @input="verificationCode" v-model.trim="SMSCodeVal" placeholder="请输入验证码"
 						confirm-type="done" />
-					<view class="code-box" @click="getCode">
-						<image :src="codeImage" mode="aspectFill"></image>
+					<view class="code-box" hover-class="hover-class">
+						<text v-if="!codeShow" @click="showCodePopup">发送验证码</text>
+						<text v-if="codeShow">{{count}}s</text>
 					</view>
 				</view>
-				<view class="box-content-list-msg">忘记密码</view>
 			</view>
-			<view class="box-content-btn box-content-btn-blue flex-center" @click="confirmLogin" :class="isAll?'btn-active':''"
-				v-if="this.isType==1">同意协议并登录</view>
-			<view class="box-content-btn box-content-btn-green flex-center" @click="confirmLogin" :class="isAll?'btn-active-green':''"
-				v-if="this.isType==0">同意协议并登录</view>
+			<view class="box-content-btn box-content-btn-blue flex-center" @click="confirmLogin"
+				:class="isAll?'btn-active':''" v-if="this.isType==1">同意协议并登录</view>
+			<view class="box-content-btn box-content-btn-green flex-center" @click="confirmLogin"
+				:class="isAll?'btn-active-green':''" v-if="this.isType==0">同意协议并登录</view>
 			<view class="box-content-text">
 				登录代表你已同意
 				<text>《用户协议》</text>
 				<text>《隐私保护政策》</text>
 			</view>
 		</view>
+		<uni-popup ref="popup" type="dialog">
+			<view class="popup-box-code">
+				<view class="popup-box-code-header">
+					<text class="iconfont iconcuowu" style="font-size: 48rpx;" @click="closePopup"></text>
+				</view>
+				<view class="popup-box-code-center">
+					<view class="popup-box-code-center-input">
+						<input type="number" :focus="showPopupBottom" v-model.trim="codeVal" placeholder="请输入右侧验证码"
+							confirm-type="done" />
+					</view>
+					<view class="popup-box-code-center-image">
+						<image :src="codeImage" mode="aspectFill" @click="getCode"></image>
+					</view>
+				</view>
+				<view class="popup-box-code-footer flex-center" @click="sendCodeVal">发送验证码</view>
+			</view>
+		</uni-popup>
+		<popup-list-select @cancel="statePopup" @confirm="stateConfirm" :visible='isState' :dataList="areaCodeList" />
 	</view>
 </template>
 
 <script>
+	import {
+		areaCodeList
+	} from '../../static/js/publicFile.js'
+
 	export default {
 		data() {
 			return {
@@ -61,7 +83,15 @@
 				codeVal: '', // 验证码
 				isShowPassword: false, //是否显示密码
 				isFocus: true, //自动获取焦点
-				title: '商家登录'
+				title: '商家登录',
+				stateName: 86,
+				isState: false,
+				areaCodeList: [],
+				SMSCodeVal: '',
+				codeShow: false,
+				count: '',
+				showPopupBottom: false, //自动获取焦点
+				sms_code_id: '12345',
 			};
 		},
 		components: {
@@ -86,6 +116,7 @@
 		onLoad(options) {
 
 			this.isType = options.type == 'technician' ? 0 : 1
+			this.areaCodeList = areaCodeList
 
 			if (options.type == 'technician') {
 				this.title = "技师登录"
@@ -112,36 +143,81 @@
 		},
 
 		methods: {
+
+			// 区号关闭弹窗
+			statePopup(e) {
+				this.isState = e
+			},
+			// 区号弹窗选择确认
+			stateConfirm(e) {
+				this.stateName = e.name
+			},
+
+
 			// 监听输入账号
 			accountChange() {
-				if (this.accountNumber != '' && this.password != '' && this.codeVal != '') {
+				if (this.accountNumber != '' && this.SMSCodeVal != '') {
 					this.isAll = true
 				} else {
 					this.isAll = false
 				}
 			},
 
-			//监听输入密码
-			passwordChange() {
-				if (this.accountNumber != '' && this.password != '' && this.codeVal != '') {
-					this.isAll = true
-				} else {
-					this.isAll = false
-				}
-			},
-
-			// 验证码款
+			// 验证码
 			verificationCode() {
-				if (this.accountNumber != '' && this.password != '' && this.codeVal != '') {
+				if (this.accountNumber != '' && this.SMSCodeVal != '') {
 					this.isAll = true
 				} else {
 					this.isAll = false
 				}
 			},
+
+			// 发送验证码
+			sendCodeVal() {
+				var vuedata = {
+					areaCode: this.stateName, //区号
+					member_mobile: this.accountNumber, //账号
+					code: this.codeVal,
+					code_id: this.codeId,
+				}
+				if (this.code == this.codeVal) {
+					//获取短信验证码
+					this.apipost('login/sendsms', vuedata).then(res => {
+						if (res.status == 200) {
+							uni.showToast({
+								title: "验证码发送成功",
+								icon: "none"
+							})
+							this.sms_code_id = res.data.sms_code_id
+							this.$refs.popup.close()
+							const TIME_COUNT = 60;
+							if (!this.timer) {
+								this.count = TIME_COUNT;
+								this.codeShow = true;
+								this.timer = setInterval(() => {
+									if (this.count > 0 && this.count <= TIME_COUNT) {
+										this.count--;
+									} else {
+										this.codeShow = false;
+										clearInterval(this.timer);
+										this.timer = null;
+									}
+								}, 1000);
+							}
+						}
+					});
+					return false
+				}
+				uni.showToast({
+					title: "验证码输入错误，请重新输入",
+					icon: "none"
+				})
+
+			},
+
 
 			// 确认登录
 			confirmLogin() {
-				var reg = /^1[3|4|5|7|8][0-9]{9}$/; //验证规则
 				this.isFocus = false
 				if (!this.isAll) {
 					uni.showToast({
@@ -149,45 +225,25 @@
 						icon: "none"
 					})
 				} else {
-					if (!reg.test(this.accountNumber)) { // 判断手机号是否正确
-						uni.showToast({
-							title: "请输入正确的手机号",
-							icon: "none"
-						})
-						this.$nextTick(function() {
-							this.isFocus = true
-						});
+					if (this.isType == 0) {
+						this.technicianLogin(); //技师登录
 					} else {
-						if (this.codeVal == this.code) { //判断输入的验证码是否一致
-							if (this.isType == 0) {
-								this.technicianLogin(); //技师登录
-							} else {
-								this.businessLogin() //商家登录
-							}
-
-						} else {
-							uni.showToast({
-								title: "验证码错误，请重新输入",
-								icon: "none"
-							})
-						}
-						// uni.navigateTo({
-						// 	url: "../../pagesIndexTwo/binDingPhone/binDingPhone"
-						// })
+						this.businessLogin() //商家登录
 					}
-
 				}
 
 			},
+
+
 			// 技师登录
 			technicianLogin() {
 				var vuedata = {
-					code: this.codeVal,
-					code_id: this.codeId,
+					areaCode: this.stateName, //区号
 					username: this.accountNumber,
-					password: this.password,
+					sms_code: this.SMSCodeVal,
+					sms_code_id: this.sms_code_id,
 				}
-				this.apipost('engineerlogin', vuedata).then(res => {
+				this.apipost('engineerlogin/mobile', vuedata).then(res => {
 					if (res.status == 200) {
 						uni.setStorageSync('UToken', res.data.member.token);
 						uni.setStorageSync('isLoginType', 'technician');
@@ -213,12 +269,12 @@
 			// 商家登录
 			businessLogin() {
 				var vuedata = {
-					code: this.codeVal,
-					code_id: this.codeId,
+					areaCode: this.stateName, //区号
 					username: this.accountNumber,
-					password: this.password,
+					sms_code: this.SMSCodeVal,
+					sms_code_id: this.sms_code_id,
 				}
-				this.apipost('storelogin', vuedata).then(res => {
+				this.apipost('storelogin/mobile', vuedata).then(res => {
 					if (res.status == 200) {
 						uni.setStorageSync('UToken', res.data.member.token);
 						uni.setStorageSync('isLoginType', 'business');
@@ -242,7 +298,34 @@
 				});
 			},
 
+			// 显示输入验证按弹出层
+			showCodePopup() {
+				//获取短信验证码
+				var Reg = /^[1][34578][0-9]{9}$/;
+				if (this.accountNumber != '') {
+					// 正则验证
+					if (Reg.test(this.accountNumber)) {
+						this.$refs.popup.open()
+						this.showPopupBottom = true
+						return false
+					}
+					uni.showToast({
+						title: "手机号格式错误，请重新输入",
+						icon: "none"
+					})
+					return false;
+				}
+				uni.showToast({
+					title: '请输入账号',
+					icon: "none"
+				})
 
+			},
+
+			// 关闭弹出层
+			closePopup() {
+				this.$refs.popup.close()
+			},
 
 			// 点击注册 跳转到 注册页面
 			register() {
@@ -318,6 +401,7 @@
 			box-sizing: border-box;
 			font-family: Source Han Sans CN;
 			font-weight: 400;
+			background: #fff;
 
 			.box-content-title {
 				padding: 60rpx 0;
@@ -350,24 +434,53 @@
 					display: flex;
 					align-items: center;
 
-					input {
-						height: 100%;
-						margin-right: 20rpx;
-						flex: 1;
-						font-size: 32rpx;
-					}
-
-					.code-box {
+					.box-content-list-li-area-code {
+						padding: 10rpx;
+						box-sizing: border-box;
 						display: flex;
-						width: 200rpx;
-						height: 80rpx;
+						align-items: center;
+						justify-content: center;
+						// width: 100rpx;
+						font-size: 32rpx;
+						line-height: 30rpx;
 
-						image {
-							width: 100%;
-							height: 100%;
+						.icon-font {
+							transition: 0.3s;
+						}
+
+						.icon-font-active {
+							transform: rotate(180deg);
 						}
 					}
 
+					.box-content-list-li-input {
+						height: 100%;
+						margin-left: 20rpx;
+						flex: 1;
+
+						input {
+							width: 100%;
+							height: 100%;
+							font-size: 32rpx;
+						}
+					}
+
+
+					.code-box {
+						display: flex;
+						align-items: center;
+						justify-content: center;
+						width: 200rpx;
+						height: 80rpx;
+						border: 1rpx solid #EEEEEE;
+						font-size: 28rpx;
+						color: #666;
+						border-radius: 10rpx;
+					}
+
+					.hover-class {
+						background: #eee;
+					}
 				}
 			}
 
@@ -413,5 +526,64 @@
 		}
 
 		.box-footer {}
+
+		.popup-box-code {
+			width: 550rpx;
+			height: 320rpx;
+			padding: 20rpx 30rpx 30rpx;
+			box-sizing: border-box;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			background: #fff;
+			border-radius: 10rpx;
+
+			.popup-box-code-header {
+				width: 100%;
+				display: flex;
+				justify-content: flex-end;
+				margin-bottom: 20rpx;
+			}
+
+			.popup-box-code-center {
+				display: flex;
+
+				.popup-box-code-center-input {
+					flex: 1;
+					background: #F7F7F7;
+					padding: 0 20rpx;
+					box-sizing: border-box;
+
+					input {
+						width: 100%;
+						height: 100%;
+						font-size: 28rpx;
+					}
+				}
+
+				.popup-box-code-center-image {
+					margin-left: 20rpx;
+					width: 180rpx;
+					height: 80rpx;
+
+					image {
+						width: 100%;
+						height: 100%;
+					}
+				}
+
+			}
+
+			.popup-box-code-footer {
+				width: 100%;
+				height: 80rpx;
+				margin-top: 20rpx;
+				background: #FF8366;
+				font-size: 32rpx;
+				color: #fff;
+				border-radius: 10rpx;
+			}
+		}
 	}
 </style>

@@ -1,4 +1,4 @@
-<template>
+s<template>
 	<view class="box">
 		<view class="box-head" :style="{paddingTop:barHeight+'px'}">
 			<nav-title-balck :navTitle="title"></nav-title-balck>
@@ -15,21 +15,9 @@
 					</view>
 				</view>
 				<view class="box-content-list-li" @click="platformOpen">
-					<view class="box-content-list-li-title">平台分类</view>
+					<view class="box-content-list-li-title">项目分类</view>
 					<view class="box-content-list-li-info">
-						<view class="box-content-list-li-info-text">{{platformName==''?'请选择平台分类':platformName}}</view>
-						<view class="box-content-list-li-info-more">
-							<text class="iconfont icongengduo icon-font"
-								style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
-						</view>
-					</view>
-				</view>
-				<view class="box-content-list-li" @click="storeCategoryOpen">
-					<view class="box-content-list-li-title">门店分类</view>
-					<view class="box-content-list-li-info">
-						<view class="box-content-list-li-info-text">
-							{{storeCategoryName==''?'请选择门店分类':storeCategoryName}}
-						</view>
+						<view class="box-content-list-li-info-text">{{platformName==''?'请选择项目分类':platformName}}</view>
 						<view class="box-content-list-li-info-more">
 							<text class="iconfont icongengduo icon-font"
 								style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
@@ -110,6 +98,63 @@
 						</view>
 					</view>
 				</view>
+				<view class="box-content-list-li"
+					style="height: auto;padding: 30rpx 0;box-sizing: border-box; align-items: baseline;">
+					<view class="box-content-list-li-title" style="width: 100rpx;">自定义服务</view>
+					<view class="box-content-list-li-info"
+						style="margin-left: 0;flex-direction: column;align-items: baseline;">
+						<view class="box-content-list-li-info-norms" v-for="(item,index) in customServiceList"
+							:key="index">
+							<view class="list-li-info-norms-add flex-center" @click="addCustomService(index)">
+								<text class="iconfont iconjia icon-font" style="color: #ccc;font-size: 24rpx"></text>
+							</view>
+							<view class="list-li-info-norms-text">
+								<input type="text" v-model.trim="item.name" placeholder="服务名称" />
+							</view>
+							<view class="list-li-info-norms-reduce flex-center">
+								<text class="iconfont iconjian icon-font" style="color: #ccc;font-size: 24rpx"></text>
+							</view>
+							<view class="list-li-info-norms-price"
+								style="display: flex;align-items: center;font-size: 24rpx;padding: 0;overflow: hidden;">
+								<input style="flex: 1;" type="number" v-model.trim="item.content" placeholder="分钟" />
+								<text class="flex-center"
+									style="width: 80rpx;height: 100%;background: #ededed;">分钟</text>
+							</view>
+							<view class="list-li-info-norms-del flex-center">
+								<text class="iconfont iconcuowu icon-font" style="color: #ccc;font-size: 52rpx"
+									@click="deleteCustomService(index)"
+									:style="{display:index==0?'none':'block'}"></text>
+							</view>
+						</view>
+					</view>
+				</view>
+				<view class="box-content-list-li"
+					style="height: auto;padding: 30rpx 0;box-sizing: border-box; align-items: baseline;">
+					<view class="box-content-list-li-title" style="width: 100rpx;">自定义环境</view>
+					<view class="box-content-list-li-info"
+						style="margin-left: 0;flex-direction: column;align-items: baseline;">
+						<view class="box-content-list-li-info-norms" v-for="(item,index) in customEnvironmentList"
+							:key="index">
+							<view class="list-li-info-norms-add flex-center" @click="addCustomEnvironment(index)">
+								<text class="iconfont iconjia icon-font" style="color: #ccc;font-size: 24rpx"></text>
+							</view>
+							<view class="list-li-info-norms-text">
+								<input type="text" v-model.trim="item.name" placeholder="环境名称" />
+							</view>
+							<view class="list-li-info-norms-reduce flex-center">
+								<text class="iconfont iconjian icon-font" style="color: #ccc;font-size: 24rpx"></text>
+							</view>
+							<view class="list-li-info-norms-price">
+								<input type="text" v-model.trim="item.content" placeholder="环境内容" />
+							</view>
+							<view class="list-li-info-norms-del flex-center">
+								<text class="iconfont iconcuowu icon-font" style="color: #ccc;font-size: 52rpx"
+									@click="deleteCustomEnvironment(index)"
+									:style="{display:index==0?'none':'block'}"></text>
+							</view>
+						</view>
+					</view>
+				</view>
 			</view>
 
 			<view class="box-content-list">
@@ -118,16 +163,16 @@
 					<view class="box-content-list-li-info">
 						<view class="box-content-list-li-info-check">
 							<view class="box-content-list-li-info-check-box" @click="currency(true)">
-								<text class="iconfont iconxuanzhong icon-font" style="color: #07C160;font-size: 48rpx;"
+								<text class="iconfont iconxuanzhong icon-font" style="color: #07C160;font-size: 36rpx;"
 									v-if="isCurr"></text>
-								<text class="iconfont iconweixuanzhong1 icon-font" style="color: #ccc;font-size: 48rpx;"
+								<text class="iconfont iconweixuanzhong1 icon-font" style="color: #ccc;font-size: 36rpx;"
 									v-else></text>
 								<text>时间范围</text>
 							</view>
 							<view class="box-content-list-li-info-check-box" @click="currency(false)">
-								<text class="iconfont iconxuanzhong icon-font" style="color: #07C160;font-size: 48rpx;"
+								<text class="iconfont iconxuanzhong icon-font" style="color: #07C160;font-size: 36rpx;"
 									v-if="!isCurr"></text>
-								<text class="iconfont iconweixuanzhong1 icon-font" style="color: #ccc;font-size: 48rpx;"
+								<text class="iconfont iconweixuanzhong1 icon-font" style="color: #ccc;font-size: 36rpx;"
 									v-else></text>
 								<text>不限时间</text>
 							</view>
@@ -152,12 +197,11 @@
 						</view>
 					</view>
 				</view>
-				<view class="box-content-list-li">
+				<view class="box-content-list-li" style="padding:30rpx 0;height: auto;align-items: flex-start;">
 					<view class="box-content-list-li-title">详情</view>
-					<view class="box-content-list-li-info">
-						<view class="box-content-list-li-info-input">
-							<input type="text" v-model.trim="from.content" placeholder="请输入详情" />
-						</view>
+					<view class="box-content-list-li-info" style="margin-left: 0;">
+						<textarea class="box-content-list-li-info-textarea" v-model.trim="from.content"
+							placeholder="请输入详情" />
 					</view>
 				</view>
 			</view>
@@ -166,17 +210,13 @@
 			<btn-sky-blue btnName="确认添加" @btnClick="confirmAdd" v-if="this.type=='add'" />
 			<btn-sky-blue btnName="确认修改" @btnClick="confirmEdit" v-if="this.type=='edit'" />
 		</view>
-		<popup-list-select :skid='from.cid' @cancel="storeCategoryPopup" @confirm="storeCategoryConfirm"
-			:visible='isStore' :dataList="storeCategoryList">
-		</popup-list-select>
+
 
 		<popup-list-select :skid='from.store_cid' @cancel="platformPopup" @confirm="platformConfirm"
-			:visible='isPlatform' :dataList="platformList">
-		</popup-list-select>
-
+			:visible='isPlatform' :dataList="platformList" />
 		<popup-list-select :skid='from.status' @cancel="statePopup" @confirm="stateConfirm" :visible='isState'
-			:dataList="stateList">
-		</popup-list-select>
+			:dataList="stateList" />
+
 	</view>
 </template>
 
@@ -184,6 +224,7 @@
 	import navTitleBalck from "../../components/nav-title-balck/nav-title-balck.vue"
 	import btnSkyBlue from "../../components/btn-sky-blue/btn-sky-blue.vue"
 	import popupListSelect from '../../components/popup-list-select/popup-list-select.vue'
+import {areaCodeList} from '../../static/js/publicFile.js'
 
 	import {
 		pathToBase64,
@@ -202,16 +243,14 @@
 				storeId: '',
 				isStore: false,
 				isPlatform: false,
-				storeCategoryName: '',
 				platformName: '',
 				storeCategoryList: [],
 				platformList: [],
 				imageList: [],
 				from: {
 					name: '', //项目名称
-					storeId: this.storeId, //门店id
-					cid: '', //平台分类id
-					store_cid: '', //门店分类id
+					storeId: '', //门店id
+					cid: '', //项目分类id
 					simg: '', //封面图
 					bimg: '', //图片
 					price: '', //价格
@@ -225,19 +264,19 @@
 				},
 				isState: false,
 				stateName: '',
-				stateList: [{
-						name: '启用',
-						id: 1
-					},
-					{
-						name: '关闭',
-						id: 0
-					},
-				],
+				stateList: [],
 				normsList: [{
 					"name": '',
 					"price": ''
 				}],
+				customServiceList: [{
+					name: '',
+					content: 15
+				}],
+				customEnvironmentList: [{
+					name: '',
+					content: ''
+				}]
 			};
 		},
 		components: {
@@ -254,24 +293,35 @@
 			});
 		},
 		onLoad(options) {
-			this.getStoreCategory()
-			this.getPlatform()
 			var data = JSON.parse(options.data)
 			this.type = data.type
+
 			if (data.type == 'add') {
 				this.title = '添加项目'
 				this.storeId = data.id
 			} else if (data.type == 'edit') {
 				this.id = data.id
 				this.title = '编辑项目'
+				this.storeId = data.store
 				this.getDetalis()
 			}
+			this.getPlatform()
 		},
-		methods: {
+		mounted() {
+			this.stateList = stateList
+		},
 
+		methods: {
 			// 选择平台分类
 			platformOpen() {
-				this.isPlatform = true
+				if (this.platformList.length != 0) {
+					this.isPlatform = true
+				} else {
+					uni.showToast({
+						title: '暂无项目分类',
+						icon: 'none'
+					})
+				}
 			},
 			// 平台分类关闭弹窗
 			platformPopup(e) {
@@ -282,19 +332,7 @@
 				this.from.cid = e.id
 				this.platformName = e.name
 			},
-			// 选择门店分类
-			storeCategoryOpen() {
-				this.isStore = true
-			},
-			// 门店分类关闭弹窗
-			storeCategoryPopup(e) {
-				this.isStore = e
-			},
-			// 门店分类弹窗选择确认
-			storeCategoryConfirm(e) {
-				this.from.store_cid = e.id
-				this.storeCategoryName = e.name
-			},
+
 
 			// 状态
 			stateOpen() {
@@ -318,11 +356,63 @@
 
 			// 确认添加按钮
 			confirmAdd() {
+				var specifications = []
+				var customService = []
+				var customEnvironment = []
+
+				this.normsList.forEach(item => {
+					if (item.name != '' && item.price != '') {
+						specifications.push(item)
+					}
+				})
+
+				this.customServiceList.forEach(item => {
+					if (item.name != '' && item.content != '') {
+						customService.push(item)
+					}
+				})
+				this.customEnvironmentList.forEach(item => {
+					if (item.name != '' && item.content != '') {
+						customEnvironment.push(item)
+					}
+				})
+
+				if (this.from.name == '') {
+					uni.showToast({
+						title: '请输入项目名称',
+						icon: 'none'
+					})
+					return false;
+				}
+
+				if (this.from.cid == '') {
+					uni.showToast({
+						title: '请选择项目分类',
+						icon: 'none'
+					})
+					return false;
+				}
+				if (this.from.price == '') {
+					uni.showToast({
+						title: '请输入价格',
+						icon: 'none'
+					})
+					return false;
+				}
+
+				if (this.from.service_time == '') {
+					uni.showToast({
+						title: '请输入项目时长',
+						icon: 'none'
+					})
+					return false;
+				}
+
 				var vuedata = {
 					name: this.from.name, //项目名称
 					store: this.storeId, //门店id
 					cid: this.from.cid, //平台分类id
-					store_cid: this.from.store_cid, //门店分类id
+
 					simg: this.imageList.length != 0 ? this.imageList[0] : '', //封面图
 					bimg: this.imageList.length != 0 ? this.imageList.join(',') : '', //图片
 					price: this.from.price, //价格
@@ -331,10 +421,11 @@
 					order_usage_time: this.isCurr ? 1 : -1, //下单使用时间（-1不限，1时间范围）
 					status: this.from.status, //状态
 					sort: this.from.sort, //排序
-					format: JSON.stringify(this.normsList), //规格
+					format: JSON.stringify(specifications), //规格
+					custom_services: JSON.stringify(customService), //自定义服务
+					custom_environment: JSON.stringify(customEnvironment), //自定义环境
 					content: this.from.content, //详情
 				}
-				console.log(vuedata)
 				// return false
 				this.apipost('api/v1/store/service_reservation/add', vuedata).then(res => {
 					if (res.status == 200) {
@@ -358,11 +449,62 @@
 			},
 			// 确认修改
 			confirmEdit() {
+
+				var specifications = []
+				var customService = []
+				var customEnvironment = []
+
+				this.normsList.forEach(item => {
+					if (item.name != '' && item.price != '') {
+						specifications.push(item)
+					}
+				})
+
+				this.customServiceList.forEach(item => {
+					if (item.name != '' && item.content != '') {
+						customService.push(item)
+					}
+				})
+				this.customEnvironmentList.forEach(item => {
+					if (item.name != '' && item.content != '') {
+						customEnvironment.push(item)
+					}
+				})
+				if (this.from.name == '') {
+					uni.showToast({
+						title: '请输入项目名称',
+						icon: 'none'
+					})
+					return false;
+				}
+
+				if (this.from.cid == '') {
+					uni.showToast({
+						title: '请选择项目分类',
+						icon: 'none'
+					})
+					return false;
+				}
+				if (this.from.price == '') {
+					uni.showToast({
+						title: '请输入价格',
+						icon: 'none'
+					})
+					return false;
+				}
+
+				if (this.from.service_time == '') {
+					uni.showToast({
+						title: '请输入项目时长',
+						icon: 'none'
+					})
+					return false;
+				}
 				var vuedata = {
 					name: this.from.name, //项目名称
 					store: this.storeId, //门店id
-					cid: this.from.cid, //平台分类id
-					store_cid: this.from.store_cid, //门店分类id
+					cid: this.from.cid, //项目分类id
+
 					simg: this.imageList.length != 0 ? this.imageList[0] : '', //封面图
 					bimg: this.imageList.length != 0 ? this.imageList.join(',') : '', //图片
 					price: this.from.price, //价格
@@ -371,7 +513,9 @@
 					order_usage_time: this.isCurr ? 1 : -1, //下单使用时间（-1不限，1时间范围）
 					status: this.from.status, //状态
 					sort: this.from.sort, //排序
-					format: JSON.stringify(this.normsList), //规格
+					format: JSON.stringify(specifications), //规格
+					custom_services: JSON.stringify(customService), //自定义服务
+					custom_environment: JSON.stringify(customEnvironment), //自定义环境
 					content: this.from.content, //详情
 				}
 				this.apiput('api/v1/store/service_reservation/edit/' + this.id, vuedata).then(res => {
@@ -445,7 +589,6 @@
 					"price": '',
 				}
 				this.normsList.splice(index + 1, 0, str) // 当前点击的后一位添加
-
 			},
 
 
@@ -455,21 +598,39 @@
 			},
 
 
-			// 获取门店类别
-			getStoreCategory() {
-				this.apiget('pc/category/category_type', {
-					type: 11,
-					level: 1
-				}).then(res => {
-					if (res.status == 200) {
-						this.storeCategoryList = res.data
-					}
-				});
+			// 添加自定义服务
+			addCustomService(index) {
+				let str = {
+					"name": '',
+					"content": 15,
+				}
+				this.customServiceList.splice(index + 1, 0, str) // 当前点击的后一位添加
 			},
+			// 删除自定义服务
+			deleteCustomService(index) {
+				this.customServiceList.splice(index, 1) // 当前点击位置删除
+			},
+
+
+			// 添加自定义环境
+			addCustomEnvironment(index) {
+				let str = {
+					"name": '',
+					"content": '',
+				}
+				this.customEnvironmentList.splice(index + 1, 0, str) // 当前点击的后一位添加
+			},
+			// 删除自定义环境
+			deleteCustomEnvironment(index) {
+				this.customEnvironmentList.splice(index, 1) // 当前点击位置删除
+			},
+
+
 			// 获取平台分类
 			getPlatform() {
 				this.apiget('pc/category/category_type', {
-					type: 12
+					type: 2,
+					store: this.storeId
 				}).then(res => {
 					if (res.status == 200) {
 						this.platformList = res.data
@@ -484,7 +645,7 @@
 						this.from.name = data.name
 						this.storeId = data.store
 						this.from.cid = data.cid
-						this.from.store_cid = data.store_cid
+
 						this.from.price = data.price
 						this.from.o_price = data.o_price
 						this.imageList = data.bimg
@@ -498,15 +659,19 @@
 
 						this.from.format = data.format
 						this.normsList = data.format
+						
+						if (JSON.parse(data.custom_services).length != 0) {
+							this.customServiceList = JSON.parse(data.custom_services)
+						}
+						if (JSON.parse(data.custom_environment).length != 0) {
+							this.customEnvironmentList = JSON.parse(data.custom_environment)
+
+						}
+
+
 						this.from.sort = data.sort
 						this.from.content = data.content
 
-
-						this.storeCategoryList.forEach(item => {
-							if (item.id == data.store_cid) {
-								this.storeCategoryName = item.name
-							}
-						})
 
 						this.platformList.forEach(item => {
 							if (item.id == data.cid) {
@@ -666,6 +831,13 @@
 							}
 						}
 
+						.box-content-list-li-info-textarea {
+							width: 100%;
+							max-height: 180rpx;
+							padding: 0 20rpx 0 0;
+							box-sizing: border-box;
+							font-size: 28rpx;
+						}
 
 					}
 				}

@@ -26,9 +26,7 @@
 </template>
 
 <script>
-	import navTitleBalck from "../../components/nav-title-balck/nav-title-balck.vue"
-	import UniPopup from "../../components/uni-popup/uni-popup.vue"
-	import UniPopupDialog from "../../components/uni-popup/uni-popup-dialog.vue"
+
 	export default {
 		data() {
 			return {
@@ -67,11 +65,7 @@
 				],
 			};
 		},
-		components: {
-			navTitleBalck,
-			UniPopup,
-			UniPopupDialog
-		},
+
 		onLoad(options) {
 			this.getDetails(options.id)
 			this.id = options.id

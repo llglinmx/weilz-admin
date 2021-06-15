@@ -54,11 +54,7 @@
 </template>
 
 <script>
-	import navTitleBalck from "../../components/nav-title-balck/nav-title-balck.vue"
-	import btnSkyBlue from "../../components/btn-sky-blue/btn-sky-blue.vue"
-	import loading from '../../components/loading-merchant/loading-merchant.vue'
-	import noData from '../../components/no-data/no-data.vue'
-	import zPaging from '../../components/z-paging/components/z-paging/z-paging.vue'
+
 	export default {
 		data() {
 			return {
@@ -69,13 +65,7 @@
 				isLoad: true,
 			};
 		},
-		components: {
-			navTitleBalck,
-			btnSkyBlue,
-			loading,
-			noData,
-			zPaging,
-		},
+
 		onReady() {
 			// 获取顶部电量状态栏高度
 			uni.getSystemInfo({

@@ -8,7 +8,7 @@
 			<view class="popup-box-content">
 				<picker-view :indicator-style="indicatorStyle" :value="value" @change="bindChange" class="picker-view">
 					<picker-view-column>
-						<view class="item" v-for="(item,index) in dataList" :key="index">{{item.name||item}}</view>
+						<view class="item" v-for="(item,index) in arrData" :key="index">{{item.name}}</view>
 					</picker-view-column>
 				</picker-view>
 			</view>
@@ -24,6 +24,7 @@
 				indicatorStyle: `height: 80rpx;`,
 				value: [0],
 				index: 0,
+				arrData: []
 			};
 		},
 		props: {
@@ -37,21 +38,26 @@
 				default: ''
 			}
 		},
-		mounted() {
-			// 是否有传入id
-			var that = this
-			setTimeout(() => {
-				if (that.skid != '') {
-					that.value = []
-					that.dataList.forEach((item, index) => {
-						if (item.id == that.skid) {
-							// console.log('获取到列表id：' + item.id)
-							that.value.push(index)
-							that.index = index
+		watch: {
+			dataList(newVal) {
+				this.arrData = newVal
+			},
+			skid(id) {
+				if (id != '') {
+					this.value = []
+					this.arrData.forEach((item, index) => {
+						if (item.id == id) {
+							this.value.push(index)
+							this.index = index
 						}
 					})
 				}
-			}, 1000)
+
+			},
+		},
+
+		mounted() {
+			this.arrData = this.dataList
 		},
 		methods: {
 			bindChange(e) {

@@ -160,11 +160,7 @@
 </template>
 
 <script>
-	import navTitle from "../../components/nav-title-balck/nav-title-balck.vue"
-	import steps from "../../uni_modules/uni-steps/components/uni-steps/steps.vue"
-	import btnSkyBlue from "../../components/btn-sky-blue/btn-sky-blue.vue"
-	import UniPopup from "../../components/uni-popup/uni-popup.vue"
-	import UniPopupDialog from "../../components/uni-popup/uni-popup-dialog.vue"
+
 	export default {
 		data() {
 			return {
@@ -197,13 +193,7 @@
 				setCountdown: null,
 			};
 		},
-		components: {
-			navTitle,
-			steps,
-			btnSkyBlue,
-			UniPopup,
-			UniPopupDialog
-		},
+
 		onReady() {
 			// 获取顶部电量状态栏高度
 			uni.getSystemInfo({

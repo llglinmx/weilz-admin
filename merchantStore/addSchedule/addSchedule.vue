@@ -117,7 +117,6 @@
 									<text class="iconfont iconcuowu icon-font" style="color: #ccc;font-size: 52rpx"
 										@click="deleteTime(index,j)" :style="{display:j==0?'none':'block'}"></text>
 								</view>
-
 							</view>
 						</view>
 					</view>
@@ -127,20 +126,14 @@
 		<view class="box-footer">
 			<btn-sky-blue btnName="确认提交" @btnClick="confirm" />
 		</view>
-		<popup-list-select :skid='from.engineer_id' @cancel="engineerCancel" @confirm="engineerCconfirm"
-			:visible='visible' :dataList="engineerList">
-		</popup-list-select>
+		<technician-list-select :skid='from.engineer_id' @cancel="engineerCancel" @confirm="engineerConfirm"
+			:visible='visible' :dataList="engineerList" />
+
 		<select-time @cancel='cancelTime' :visible='isTime' @confirm='timeConfirm' />
 	</view>
 </template>
 
 <script>
-	import navTitleBalck from "../../components/nav-title-balck/nav-title-balck.vue"
-	import btnSkyBlue from "../../components/btn-sky-blue/btn-sky-blue.vue"
-	import popupListSelect from '../../components/popup-list-select/popup-list-select.vue'
-	import selectTime from '@/components/select-time/select-time.vue';
-	import schedulingCalendar from "../../components/scheduling-calendar/scheduling-calendar.vue"
-
 	const getYearMonthDay = (date) => {
 		let year = date.getFullYear();
 		let month = date.getMonth();
@@ -259,13 +252,7 @@
 				return val.substring(0, val.length - 1);
 			},
 		},
-		components: {
-			navTitleBalck,
-			btnSkyBlue,
-			selectTime,
-			popupListSelect,
-			schedulingCalendar
-		},
+
 		onReady() {
 			// 获取顶部电量状态栏高度
 			uni.getSystemInfo({
@@ -296,11 +283,11 @@
 			engineerCancel(e) {
 				this.visible = e
 			},
-			// 选择技师取消按钮
-			engineerCconfirm(e) {
-				this.from.engineer_id = e.id
-				this.engineerName = e.name
+			// 选择技师确定按钮
+			engineerConfirm(e) {
+				console.log(e.engineer_id)
 			},
+
 
 			// 时间弹出层打开
 			timeOpen(index, idx, type) {
@@ -558,6 +545,9 @@
 				}).then(res => {
 					if (res.status == 200) {
 						this.engineerList = res.data.member
+						this.engineerList.map(item => {
+							item.isCheck = false
+						})
 					}
 				});
 			},

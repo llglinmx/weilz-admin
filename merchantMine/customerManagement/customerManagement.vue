@@ -38,7 +38,7 @@
 									</view>
 									<view class="box-content-main-list-li-info-left-bottom">
 										<text>消费 {{item.consumption_money.amount}}元</text>
-										<text>上次到店 2020-12-20 18:40</text>
+										<text>上次到店 {{item.last_time_to_store}}</text>
 									</view>
 								</view>
 								<view class="box-content-main-list-li-info-more">
@@ -62,10 +62,7 @@
 </template>
 
 <script>
-	import navTitleBalck from "../../components/nav-title-balck/nav-title-balck.vue"
-	import loading from '../../components/loading-merchant/loading-merchant.vue'
-	import noData from '../../components/no-data/no-data.vue'
-	import zPaging from '../../components/z-paging/components/z-paging/z-paging.vue'
+
 	export default {
 		data() {
 			return {
@@ -77,12 +74,7 @@
 				search: ''
 			};
 		},
-		components: {
-			navTitleBalck,
-			loading,
-			noData,
-			zPaging,
-		},
+
 
 		onReady() {
 			// 获取顶部电量状态栏高度
@@ -94,7 +86,7 @@
 		},
 		onShow() {
 			if (this.$store.state.isDeleteCustomer) {
-				this.getCustomer(1, 10)
+				this.getCustomer(1, 210)
 			}
 		},
 		methods: {
@@ -108,17 +100,20 @@
 				var vuedata = {
 					page_index: num, // 请求页数，
 					each_page: size, // 请求条数
+					keyword: this.search
 				}
 				this.apiget('api/v1/store/user_list/index', vuedata).then(res => {
 					if (res.status == 200) {
-						if (res.data.length != 0) {
+						let list = []
+						if (res.data) {
 							this.isData = true
-							let list = res.data.member
+							list = res.data.member
 							this.$refs.paging1.complete(list);
 							return false;
 						}
 						this.isData = false
 						this.isLoad = false
+						this.$refs.paging1.complete(list);
 
 					}
 				});
@@ -143,9 +138,7 @@
 			},
 			// 点击搜索
 			searchClick() {
-				if (this.search != '') {
-					this.getCustomer(1, 10)
-				}
+				this.getCustomer(1, 20)
 			},
 
 			// 客户详情

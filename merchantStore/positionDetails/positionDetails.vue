@@ -76,9 +76,7 @@
 </template>
 
 <script>
-	import navTitleWhite from "../../components/nav-title-white/nav-title-white.vue"
-	import UniPopup from "../../components/uni-popup/uni-popup.vue"
-	import UniPopupDialog from "../../components/uni-popup/uni-popup-dialog.vue"
+
 	export default {
 		data() {
 			return {
@@ -98,11 +96,7 @@
 				}
 			};
 		},
-		components: {
-			navTitleWhite,
-			UniPopup,
-			UniPopupDialog
-		},
+
 		onReady() {
 			// 获取顶部电量状态栏高度
 			uni.getSystemInfo({
