@@ -52,10 +52,7 @@
 </template>
 
 <script>
-	import navTitleBalck from "../../components/nav-title-balck/nav-title-balck.vue"
-	import merchantTabs from "../../components/merchant-tabs/merchant-tabs.vue"
-	import btnSkyBlue from "../../components/btn-sky-blue/btn-sky-blue.vue"
-	import scrollTechnicianSwiperItem from "../../components/scroll-technician-swiper-item/scroll-technician-swiper-item.vue"
+
 	export default {
 		data() {
 			return {
@@ -69,12 +66,7 @@
 				isFocus: false,
 			};
 		},
-		components: {
-			navTitleBalck,
-			merchantTabs,
-			btnSkyBlue,
-			scrollTechnicianSwiperItem
-		},
+
 		onReady() {
 			// 获取顶部电量状态栏高度
 			uni.getSystemInfo({

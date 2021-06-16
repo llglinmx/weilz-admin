@@ -6,8 +6,8 @@
 				<text class="confirm" @click="confirm">确定</text>
 			</view>
 			<view class="popup-box-content">
-				<picker-view :indicator-style="indicatorStyle" :value="value" @change="bindChange" class="picker-view">
-					<picker-view-column v-for="(i,j) in dataList">
+				<picker-view :indicator-style="indicatorStyle" :value="value" @change="bindChange" class="picker-view" :key='keyVal'>
+					<picker-view-column v-for="(i,j) in dataList" :key='j'>
 						<view class="item" v-for="(item,index) in i.data" :key="index">{{item.name||item}}</view>
 					</picker-view-column>
 				</picker-view>
@@ -18,16 +18,17 @@
 
 <script>
 	export default {
-		name: "popup-list-select",
+		name: "select-time",
 		data() {
 			return {
 				indicatorStyle: `height: 80rpx;`,
-				value: [0, 1],
+				value: [0, 0],
 				dataList: [],
 				startTime: '',
 				endTime: '',
 				hours: [],
 				minutes: [],
+				keyVal:0
 			};
 		},
 		props: {
@@ -35,17 +36,52 @@
 				type: Boolean,
 				default: false
 			},
-			// dataList: {
-			// 	type: Array,
-			// 	default: []
-			// }
+			checkStart:{
+				// type:Object,
+				// default:{start:'',end:''}
+			},
+			checkEnd:{}
 		},
 		watch:{
 			visible(val){
-				if(!val){
-					this.value = [0,1]
+				this.keyVal++
+				this.value = [0,0]
+				this.hours = this.dataList[0].data[this.value[0]]
+				this.minutes = this.dataList[1].data[this.value[1]]
+			},
+			
+			checkStart(val){
+				this.value[0] = 0
+				if(val!=''){
+					console.log(val)
+					let sp = val.split(':')[0]
+					this.dataList[0].data.forEach((item,index)=>{
+						var split1 = item.split(' ')[0]
+						if(sp==split1){
+							this.value[0] = index
+						}
+					})
 				}
 			},
+			checkEnd(val){
+				this.value[0] = 0
+				this.value[1] = 0
+				if(val!=''){
+					let sp = val.split(':')
+					this.dataList[0].data.forEach((item,index)=>{
+						var split1 = item.split(' ')
+						if(sp[0]==split1[0]){
+							this.value[0] = index
+						}
+					})
+					this.dataList[1].data.forEach((item,index)=>{
+						let split2 = item.split(' ')
+						if(sp[1]==split2[0]){
+							this.value[1] = index
+						}
+					})
+				}
+			}
 		},
 		mounted() {
 			this.getHour()

@@ -86,11 +86,11 @@
 						image: "../../static/images/store-recruit-ico.png",
 						id: 5
 					},
-					{
-						title: "房间管理",
-						image: "../../static/images/store-room-ico.png",
-						id: 6
-					},
+					// {
+					// 	title: "房间管理",
+					// 	image: "../../static/images/store-room-ico.png",
+					// 	id: 6
+					// },
 				],
 				infoData: {
 					name: '',

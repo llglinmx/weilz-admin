@@ -16,7 +16,7 @@
 					<view class="box-content-main-list-li" v-for="(item,index) in dataList" :key="item.id">
 						<view class="box-content-main-list-li-top">
 							<view class="box-content-main-list-li-top-image">
-								<image v-if="item.photo!=null&&item.photo!=''" :src="item.photo[0].name"
+								<image v-if="item.simg!=null&&item.simg!=''" :src="item.simg"
 									mode="aspectFill"></image>
 								<text class="flex-center" v-if="tabIndex==1">临时技师</text>
 							</view>
@@ -54,8 +54,7 @@
 			</view>
 		</z-paging>
 		<uni-popup ref="popup" type="dialog">
-			<uni-popup-dialog type="warn" mode='base' title="警告" content="你确定要删除该技师吗？" :duration="2000"
-				:before-close="true" @close="close" @confirm="confirm"></uni-popup-dialog>
+			<uni-popup-dialog type="warn" mode='base' title="警告" content="你确定要删除该技师吗？" :duration="2000" @confirm="confirm"></uni-popup-dialog>
 		</uni-popup>
 	</view>
 </template>
@@ -148,10 +147,7 @@
 				this.id = id
 				this.$refs.popup.open()
 			},
-			// 弹窗点击取消
-			close(done) {
-				done()
-			},
+
 			// 弹窗点击确认
 			confirm(done, value) {
 				this.apidelte('api/v1/store/engineer/del/' + this.id, {}).then(res => {

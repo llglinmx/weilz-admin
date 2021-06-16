@@ -246,12 +246,23 @@
 		onLoad(options) {
 			var data = JSON.parse(options.data)
 			this.title = data.year + '年' + data.month + '月' + data.day + "日预约日程"
-
-			console.log(this.title)
+			this.getSchedulingInfo(data)
 		},
 		methods: {
 			isTime(initTime, state, end) {
-				console.log(initTime, state, end)
+				// console.log(initTime, state, end)
+			},
+
+			getSchedulingInfo(e) {
+				this.apiget('api/v1/store/engineer/engineer_schedule', {
+					store: e.store,
+					date:( e.year + '-' + e.month + '-' + e.day),
+					ids: e.engineer_id
+				}).then(res => {
+					if (res.status == 200) {
+						
+					}
+				});
 			},
 		}
 	}
@@ -326,11 +337,11 @@
 						padding: 20rpx;
 						box-sizing: border-box;
 						border-radius: 10rpx;
-						
+
 						// background: rgba(78,196,148,0.1);
 						// color: #26BF81;
-						
-						background: rgba(248,148,148,0.1);
+
+						background: rgba(248, 148, 148, 0.1);
 						color: #FF6363;
 
 						.box-content-list-li-info-wrap {

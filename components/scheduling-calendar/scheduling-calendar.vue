@@ -157,7 +157,35 @@
 					}
 					arr.push(obj)
 				}
-				// console.log(arr)
+				let YY = arr[0].day.getFullYear()
+				let MM = (arr[0].day.getMonth() + 1) < 10 ? '0' + (arr[0].day.getMonth() + 1) : (arr[0].day.getMonth() + 1)
+				let SS = arr[0].day.getDate() < 10 ? '0' + arr[0].day.getDate() : arr[0].day.getDate()
+
+				let endYY = arr[arr.length - 1].day.getFullYear()
+				let endMM = (arr[arr.length - 1].day.getMonth() + 1) < 10 ? '0' + (arr[arr.length - 1].day.getMonth() +
+					1) : (arr[arr.length - 1].day.getMonth() + 1)
+				let endSS = arr[arr.length - 1].day.getDate() < 10 ? '0' + arr[arr.length - 1].day.getDate() : arr[arr
+					.length - 1].day.getDate()
+
+				let startTime = YY + '-' + MM + '-' + SS //开始日期
+				let endTime = endYY + '-' + endMM + '-' + endSS //结束日期
+				let currenY = new Date().getFullYear()
+				let currenM = new Date().getMonth() + 1
+				let currenS = new Date().getDate()
+				let weeks = new Date().getDay();
+
+				let currentDate = currenY + '-' + (currenM < 10 ? '0' + currenM : currenM) + '-' + (currenS < 10 ? '0' +
+					currenS : currenS) //当前日期
+
+				this.$emit('initChange', {
+					startTime: startTime,
+					endTime: endTime,
+					currentDate: currentDate,
+					year: currenY,
+					month: (currenM < 10 ? '0' + currenM : currenM),
+					day: (currenS < 10 ? '0' + currenS : currenS),
+					week: '星期' + this.weeks[weeks]
+				}) //导出一个自定义事件
 				return arr
 			}
 		},
@@ -206,6 +234,7 @@
 				} = getYearMonthDay(date);
 				return year === y && month === m && day === d;
 			},
+			
 			clickDate(date) { // 点击日期
 				let {
 					year,
@@ -218,9 +247,10 @@
 					day
 				};
 				this.$emit('calendarTap', {
-					year,
-					month,
-					day
+					year:year,
+					month:month+1,
+					day:day,
+					week:'星期'+this.weeks[date.getDay()]
 				})
 			},
 			prevMonth() { // 上一月

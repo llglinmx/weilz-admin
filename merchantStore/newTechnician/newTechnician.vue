@@ -141,16 +141,35 @@
 							class="box-content-list-item-info-image" mode="aspectFill"></image>
 					</view>
 				</view>
+
 				<view class="box-content-list-item">
 					<view class="box-content-list-item-text">
-						工作照片<text>(110*80)</text>
+						封面照片<text>(110*80)</text>
 					</view>
-					<view class="box-content-list-item-info" @click="upImage">
+					<view class="box-content-list-item-info" @click="upSimg">
 						<view class="box-content-list-item-info-icon flex-center" v-if="from.simg==''">
 							<text class="iconfont icontupian icon-font" style="color: #fff;font-size: 50rpx;"></text>
 						</view>
 						<image :src="from.simg" v-if="from.simg!=''" class="box-content-list-item-info-image"
 							mode="aspectFill"></image>
+					</view>
+				</view>
+			</view>
+			<view class="box-content-main">
+				<view class="box-content-main-top">
+					<view>工作图片<text style="font-size: 24rpx;color: #999;margin-left: 10rpx;">(990*556)</text></view>
+				</view>
+				<view class="box-content-main-image-list">
+					<view class="box-content-main-image-list-li" :class="index==0?'list-li-affter':''"
+						v-for="(item,index) in from.photo" :key="index">
+						<image :src="item.name" mode="aspectFill"></image>
+						<text class="close flex-center" @click="delImage(index)">
+							<text class="iconfont iconcuowu icon-font" style="color: #fff;font-size: 36rpx"></text>
+						</text>
+					</view>
+					<view class="box-content-main-image-list-up flex-center" @click="upCoverPhoto"
+						v-if="from.photo.length<3">
+						<text class="iconfont iconcuowu icon-font" style="color: #ddd;font-size: 90rpx"></text>
 					</view>
 				</view>
 			</view>
@@ -206,12 +225,11 @@
 					</view>
 				</view>
 
-				<view class="box-content-list-li">
+				<view class="box-content-list-li" style="padding:30rpx 0;height: auto;align-items: flex-start;">
 					<view class="box-content-list-li-title">详情</view>
-					<view class="box-content-list-li-info">
-						<view class="box-content-list-li-info-input">
-							<input type="text" v-model.trim="from.content" placeholder="请输入详情" />
-						</view>
+					<view class="box-content-list-li-info" style="margin-left: 0;">
+						<textarea class="box-content-list-li-info-textarea" v-model.trim="from.content"
+							placeholder="请输入详情" />
 					</view>
 				</view>
 			</view>
@@ -230,7 +248,7 @@
 		<popup-list-select :skid='from.platform' @cancel="platformPopup" @confirm="platformConfirm"
 			:visible='isPlatform' :dataList="platformList" />
 
-		<popup-list-select :skid='from.service' @cancel="projectPopup" @confirm="projectConfirm" :visible='isProject'
+		<project-list-select :skid='from.service' @cancel="projectPopup" @confirm="projectConfirm" :visible='isProject'
 			:dataList="projectList" />
 
 		<popup-list-select :skid='from.grade' @cancel="gradePopup" @confirm="gradeConfirm" :visible='isGrade'
@@ -298,6 +316,7 @@
 				timeName: '',
 				userName: '',
 				stateName: '',
+				imageList:[],
 				from: {
 					name: '',
 					store: '', //门店id
@@ -305,7 +324,7 @@
 					storeCategory: '',
 					platform: '', //技师分类ID
 					grade: '', //技师等级
-					simg: '', //工作招聘
+					simg: '', //封面照片
 					photo: [], //
 					mobile: '',
 					mobile_code: '86', //区号
@@ -414,6 +433,7 @@
 			},
 			// 服务项目弹窗选择确认
 			projectConfirm(e) {
+				console.log(e)
 				this.from.service = e.id
 				this.projectName = e.name
 			},
@@ -485,6 +505,7 @@
 					service_times: this.from.service_times, //工龄
 					license_id: this.from.license_id, //执照id
 					license_img: this.from.license_img, //执照图片
+					simg: this.from.simg, //封面图片
 					photo: JSON.stringify(this.from.photo), //工作照片
 					service_fee: this.from.service_fee, //项目服务费
 					fee: this.from.fee, //技师提成
@@ -532,6 +553,7 @@
 					service_times: this.from.service_times, //工龄
 					license_id: this.from.license_id, //执照id
 					license_img: this.from.license_img, //执照图片
+					simg: this.from.simg, //封面图片
 					photo: JSON.stringify(this.from.photo), //工作照片
 					service_fee: this.from.service_fee, //项目服务费
 					fee: this.from.fee, //技师提成
@@ -560,23 +582,24 @@
 				})
 			},
 
-			// 上传工作照片
-			upImage() {
+
+// 上传封面图片
+			upCoverPhoto() {
 				uni.chooseImage({
-					count: 1, //默认100
+					count: 3, //默认100
 					sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
 					success: (res) => {
-						pathToBase64(res.tempFilePaths[0]).then((data) => {
-							this.from.simg = data
-							const path = 'avatar/';
+
+						res.tempFilePaths.forEach((item, index) => {
+							const path = 'images/';
 							// #ifdef H5
-							let file = res.tempFilePaths[0];
-							let suffix = res.tempFiles[0].name.split('.').pop();
+							let file = item;
+							let suffix = res.tempFiles[index].name.split('.').pop();
 							// #endif
 
 							// #ifdef APP-PLUS
-							let file = res.tempFilePaths[0];
-							let suffix = res.tempFiles[0].path.split('.').pop();
+							let file = item;
+							let suffix = res.tempFiles[index].path.split('.').pop();
 							// #endif
 
 							// 获取阿里云oss 信息
@@ -589,8 +612,6 @@
 									}
 									// 上传图片
 									uploadImage(obj, file, path, suffix, result => {
-										// this.from.simg = result
-										this.from.photo = []
 										var str = {
 											name: result,
 											content: []
@@ -602,6 +623,10 @@
 						})
 					}
 				});
+			},
+			// 删除图片
+			delImage(index) {
+				this.from.photo.splice(index, 1)
 			},
 
 			// 上传执照照片
@@ -642,6 +667,46 @@
 				});
 			},
 
+			// 上传封面照片
+			upSimg() {
+				uni.chooseImage({
+					count: 1, //默认100
+					sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
+					success: (res) => {
+						pathToBase64(res.tempFilePaths[0]).then((data) => {
+							this.from.simg = data
+							const path = 'avatar/';
+							// #ifdef H5
+							let file = res.tempFilePaths[0];
+							let suffix = res.tempFiles[0].name.split('.').pop();
+							// #endif
+
+							// #ifdef APP-PLUS
+							let file = res.tempFilePaths[0];
+							let suffix = res.tempFiles[0].path.split('.').pop();
+							// #endif
+
+							// 获取阿里云oss 信息
+							this.apiget('app/oss/url', {}).then(ress => {
+								if (ress.status == 200) {
+									var obj = {
+										accessid: ress.data.accessid,
+										policy: ress.data.policy,
+										signature: ress.data.signature,
+									}
+									// 上传图片
+									uploadImage(obj, file, path, suffix, result => {
+										this.from.simg = result
+									});
+								}
+							});
+						})
+					}
+				});
+			},
+
+
+
 			// 获取详情
 			getDetails(id) {
 				this.apiget('api/v1/store/engineer/' + id, {}).then(res => {
@@ -662,8 +727,10 @@
 						this.from.license_id = data.license_id
 						this.from.license_img = data.license_img
 
-						this.from.simg = data.photo[0].name
-						this.from.photo = data.photo[0].name
+						this.from.simg = data.simg
+
+						this.from.photo = data.photo
+
 						this.from.service_fee = data.service_fee
 						this.from.fee = data.fee
 						this.from.schedule = data.schedule
@@ -691,11 +758,18 @@
 							}
 						})
 
-						this.projectList.forEach(item => {
-							if (item.id == data.service) {
-								this.projectName = item.name
-							}
+						var arrs = data.service.split(',')
+						var str = ''
+						this.projectList.map(item => {
+							arrs.map(ele => {
+								if (item.id == ele) {
+									str += item.name + ';'
+									item.isCheck = true
+								}
+							})
 						})
+						this.projectName = str.substr(0, str.length - 1)
+
 						this.gradeList.forEach(item => {
 							if (item.id == data.level) {
 								this.gradeName = item.name
@@ -797,6 +871,97 @@
 			flex: 1;
 			overflow-y: scroll;
 
+			.box-content-main {
+				margin-top: 20rpx;
+				padding-left: 40rpx;
+				box-sizing: border-box;
+				background: #fff;
+
+				.box-content-main-top {
+					display: flex;
+					align-items: center;
+					justify-content: space-between;
+					padding-right: 40rpx;
+					box-sizing: border-box;
+					height: 80rpx;
+					border-bottom: 1rpx solid #ededed;
+					color: #333;
+					font-size: 28rpx;
+
+					.box-content-main-top-title {}
+
+					.box-content-main-top-add {
+						width: 40rpx;
+						height: 40rpx;
+						border: 2rpx solid #CCCCCC;
+						border-radius: 10rpx;
+
+						.icon-font {
+							transform: rotate(135deg);
+						}
+					}
+				}
+
+				.box-content-main-image-list {
+					display: flex;
+					align-items: center;
+					padding: 40rpx 0 70rpx;
+					box-sizing: border-box;
+
+					.list-li-affter {
+						position: relative;
+					}
+
+					.list-li-affter::after {
+						position: absolute;
+						bottom: -44rpx;
+						left: 0;
+						right: 0;
+						margin: auto;
+						content: "封面";
+						font-size: 24rpx;
+						text-align: center;
+						color: #333;
+					}
+
+					.box-content-main-image-list-li {
+						position: relative;
+						width: 160rpx;
+						height: 160rpx;
+						margin-right: 30rpx;
+
+						image {
+							width: 160rpx;
+							height: 160rpx;
+							border-radius: 10rpx;
+						}
+
+						.close {
+							position: absolute;
+							right: -20rpx;
+							top: -20rpx;
+							width: 40rpx;
+							height: 40rpx;
+							background: rgba(0, 0, 0, 0.4);
+							border-radius: 50%;
+						}
+					}
+
+					.box-content-main-image-list-up {
+						width: 156rpx;
+						height: 156rpx;
+						border: 2rpx dashed #DDDDDD;
+						border-radius: 10rpx;
+
+						.icon-font {
+							transform: rotate(45deg);
+						}
+					}
+				}
+
+
+			}
+
 			.box-content-list {
 				margin-top: 20rpx;
 				padding-left: 40rpx;
@@ -810,8 +975,8 @@
 				.box-content-list-li {
 					display: flex;
 					align-items: center;
-					height: 100rpx;
-					padding-right: 40rpx;
+					min-height: 100rpx;
+					padding: 20rpx 40rpx 20rpx 0;
 					box-sizing: border-box;
 					border-bottom: 1rpx solid #ededed;
 
@@ -903,6 +1068,14 @@
 							border: 1rpx solid #333;
 							border-radius: 30rpx;
 							font-size: 24rpx;
+						}
+
+						.box-content-list-li-info-textarea {
+							width: 100%;
+							max-height: 180rpx;
+							padding: 0 20rpx 0 0;
+							box-sizing: border-box;
+							font-size: 28rpx;
 						}
 					}
 				}

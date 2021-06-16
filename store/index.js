@@ -30,6 +30,7 @@ const store = new Vuex.Store({
 		isAddPackageCard: false, //是否有添加套餐卡
 		isAddGift: false, //是否有添加礼品卡
 		isAddAccount:false,//是否有添加账号
+		isAddSchedule:false,//是否有添加排班表
 		isOrderState:false,//用于判断订单是否取消或核销
 		isClassification:false,//是否添加分类
 	},
@@ -75,6 +76,11 @@ const store = new Vuex.Store({
 		upAddAccount(state, bool) {
 			state.isAddAccount = bool
 		},
+		
+		upAddSchedule(state, bool) {
+			state.isAddSchedule = bool
+		},
+		
 		upOrderState(state, bool) {
 			state.isOrderState = bool
 		},

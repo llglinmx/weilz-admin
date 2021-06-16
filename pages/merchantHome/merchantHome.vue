@@ -87,7 +87,7 @@
 			</z-paging>
 		</view>
 		<view class="box-content" :style="{display:!isData?'block':'none'}">
-			<loading v-if="isLoad" />
+			<loading-merchant v-if="isLoad" />
 			<no-data v-if="!isLoad" />
 		</view>
 		<view class="box-footer">

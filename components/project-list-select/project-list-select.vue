@@ -46,7 +46,6 @@
 		},
 		watch: {
 			dataList(newVal) {
-				console.log(newVal)
 				this.arrData = newVal
 			},
 			skid(id) {
@@ -82,13 +81,15 @@
 			// 确定
 			confirm() {
 				var str = ''
+				var name=''
 				this.arrData.map((item) => {
 					if (item.isCheck) {
 						str += item.id + ','
+						name += item.name + ';'
 					}
 				})
 
-				this.$emit('confirm', {engineer_id:str.substr(0, str.length - 1) })
+				this.$emit('confirm', {id:str.substr(0, str.length - 1),name:name.substr(0, name.length - 1), })
 				this.cancel()
 			},
 
@@ -146,6 +147,7 @@
 
 			.popup-box-content {
 				flex: 1;
+				overflow-y: scroll;
 
 				.popup-box-content-list {
 					padding: 0 30rpx;

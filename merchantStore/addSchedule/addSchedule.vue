@@ -5,10 +5,14 @@
 		</view>
 		<view class="box-content">
 			<view class="box-content-list">
-				<view class="box-content-list-li" @click="selectOpen">
+				<view class="box-content-list-li" @click="titleType=='add' && selectOpen()">
 					<view class="box-content-list-li-title">技师</view>
 					<view class="box-content-list-li-info">
-						<view class="box-content-list-li-info-text">{{engineerName==''?'请选择技师':engineerName}}</view>
+						<view class="box-content-list-li-info-text"
+							style="margin-right: 20rpx;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;">
+							{{engineerName==''?'请选择技师':engineerName}}
+						</view>
+
 						<view class="box-content-list-li-info-more">
 							<text class="iconfont icongengduo icon-font"
 								style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
@@ -40,28 +44,12 @@
 						</view>
 					</view>
 				</view>
-				<view class="box-content-list-li">
-					<view class="box-content-list-li-title">预约开始天数</view>
-					<view class="box-content-list-li-info">
-						<view class="box-content-list-li-info-input">
-							<input type="number" v-model.trim="from.time_start" placeholder="请输入开始天数" />
-							<text>天</text>
-						</view>
-					</view>
-				</view>
-				<view class="box-content-list-li">
-					<view class="box-content-list-li-title">预约结束天数</view>
-					<view class="box-content-list-li-info">
-						<view class="box-content-list-li-info-input">
-							<input type="number" v-model.trim="from.time_end" placeholder="请输入结束天数" />
-							<text>天</text>
-						</view>
-					</view>
-				</view>
+
 				<view class="box-content-list-li">
 					<view class="box-content-list-li-title">状态</view>
 					<view class="box-content-list-li-info">
-						<switch :checked='isState' color="#26BF81" @change="switchState" />
+						<switch :checked='isState' style="transform: scale(0.7);" color="#26BF81"
+							@change="switchState" />
 					</view>
 				</view>
 			</view>
@@ -91,8 +79,8 @@
 								</view>
 								<view class="schedule-list-li-wrap-item-text flex-center"
 									@click="timeOpen(index,j,'start')">
-									<text v-if="i.startTime!=''">{{i.startTime}}</text>
-									<text v-if="i.startTime==''" style="color: #999;">开始时间</text>
+									<text v-if="i.start!=''">{{i.start}}</text>
+									<text v-if="i.start==''" style="color: #999;">开始时间</text>
 								</view>
 								<view class="schedule-list-li-wrap-item-connect flex-center">
 									<text class="iconfont iconjian icon-font"
@@ -100,8 +88,8 @@
 								</view>
 								<view class="schedule-list-li-wrap-item-text flex-center"
 									@click="timeOpen(index,j,'end')">
-									<text v-if="i.endTime!=''">{{i.endTime}}</text>
-									<text v-if="i.endTime==''" style="color: #999;">结束时间</text>
+									<text v-if="i.end!=''">{{i.end}}</text>
+									<text v-if="i.end==''" style="color: #999;">结束时间</text>
 									<!-- <text>{{i.random}}</text> -->
 								</view>
 								<view class="schedule-list-li-wrap-item-connect flex-center">
@@ -124,12 +112,14 @@
 			</view>
 		</view>
 		<view class="box-footer">
-			<btn-sky-blue btnName="确认提交" @btnClick="confirm" />
+			<btn-sky-blue :btnName="titleType=='add'?'确认提交':'确认修改'" @btnClick="confirm" />
 		</view>
-		<technician-list-select :skid='from.engineer_id' @cancel="engineerCancel" @confirm="engineerConfirm"
+
+		<popup-list-select :skid='from.engineer_id' @cancel="engineerCancel" @confirm="engineerConfirm"
 			:visible='visible' :dataList="engineerList" />
 
-		<select-time @cancel='cancelTime' :visible='isTime' @confirm='timeConfirm' />
+		<select-time :checkStart='timesArr.start' :checkEnd='timesArr.end' @cancel='cancelTime' :visible='isTime'
+			@confirm='timeConfirm'/>
 	</view>
 </template>
 
@@ -170,81 +160,93 @@
 					name: '', //排班名称
 					rest: '', //休息日期
 					interval: '', //分钟数
-					time_start: '', //开始天数
-					time_end: '', //结束天数
 					status: -1, //状态
 				},
 				dataList: [{
 						title: "周一",
 						number: "",
+						statusName: 'mon_status',
 						isCheck: false,
 						data: [{
-							startTime: '',
-							endTime: '',
-							member: ''
+							start: '',
+							end: '',
+							member: '10'
 						}, ],
 					},
 					{
 						title: "周二",
 						number: "",
+						statusName: 'tues_status',
 						isCheck: false,
 						data: [{
-							startTime: '',
-							endTime: '',
-							member: ''
+							start: '',
+							end: '',
+							member: '10'
 						}, ],
 					},
 					{
 						title: "周三",
 						number: "",
+						statusName: 'wed_status',
 						isCheck: false,
 						data: [{
-							startTime: '',
-							endTime: '',
-							member: ''
+							start: '',
+							end: '',
+							member: '10'
 						}, ],
 					},
 					{
 						title: "周四",
 						number: "",
+						statusName: 'thur_status',
 						isCheck: false,
 						data: [{
-							startTime: '',
-							endTime: '',
-							member: ''
+							start: '',
+							end: '',
+							member: '10'
 						}, ],
 					},
 					{
 						title: "周五",
 						number: "",
+						statusName: 'fri_status',
 						isCheck: false,
 						data: [{
-							startTime: '',
-							endTime: '',
-							member: ''
+							start: '',
+							end: '',
+							member: '10'
 						}, ],
 					},
 					{
 						title: "周六",
 						number: "",
+						statusName: 'sat_status',
 						isCheck: false,
 						data: [{
-							startTime: '',
-							endTime: '',
-							member: ''
+							start: '',
+							end: '',
+							member: '10'
 						}, ],
 					}, {
 						title: "周日",
 						number: "",
+						statusName: 'sun_status',
 						isCheck: false,
 						data: [{
-							startTime: '',
-							endTime: '',
-							member: ''
+							start: '',
+							end: '',
+							member: '10'
 						}, ],
 					},
 				],
-				extraData: []
+				extraData: [],
+				engineer_id: '',
+				scheduleId: '',
+				timesArr: {
+					start: '',
+					end: ''
+				},
+				timeKey: 0
 			};
 		},
 		filters: {
@@ -263,21 +265,30 @@
 		},
 		onLoad(options) {
 			var data = JSON.parse(options.data)
-			this.id = data.id
 
-			this.getTechniciany()
-			if (data.type = 'add') {
+			if (data.type == 'add') {
 				this.titleType = 'add'
+				this.id = data.id
+				this.getTechniciany()
 			} else {
 				this.titleType = 'edit'
-
+				this.engineer_id = data.engineer_id
+				this.scheduleId = data.scheduleId
+				this.getDetails(data.engineer_id)
 			}
 			this.getYear()
 		},
 		methods: {
 			// 选择技师
 			selectOpen() {
-				this.visible = true
+				if (this.engineerList.length != 0) {
+					this.visible = true
+					return false
+				}
+				uni.showToast({
+					title: "暂无技师需要排班",
+					icon: 'none'
+				})
 			},
 			// 选择技师取消按钮
 			engineerCancel(e) {
@@ -285,7 +296,8 @@
 			},
 			// 选择技师确定按钮
 			engineerConfirm(e) {
-				console.log(e.engineer_id)
+				this.engineerName = e.name
+				this.from.engineer_id = e.id
 			},
 
 
@@ -294,6 +306,16 @@
 				this.indexOne = index
 				this.indexTwo = idx
 				this.timeType = type
+
+				switch (type) {
+					case 'start':
+						this.timesArr.start = this.dataList[index].data[idx].start
+						break;
+					case 'end':
+						this.timesArr.end = this.dataList[index].data[idx].end
+						break;
+				}
+
 
 				if (this.dataList[index].isCheck) {
 					this.isTime = true
@@ -327,9 +349,9 @@
 			// 时间弹出层确认事件
 			timeConfirm(e) {
 				if (this.timeType == 'start') { //开始时间
-					this.dataList[this.indexOne].data[this.indexTwo].startTime = e.hour + ':' + e.minute
+					this.dataList[this.indexOne].data[this.indexTwo].start = e.hour + ':' + e.minute
 				} else { //结束时间
-					this.dataList[this.indexOne].data[this.indexTwo].endTime = e.hour + ':' + e.minute
+					this.dataList[this.indexOne].data[this.indexTwo].end = e.hour + ':' + e.minute
 				}
 			},
 
@@ -404,9 +426,9 @@
 			addTime(index, idx) {
 				// index 第一级下标 idx 第二级下标
 				let str = {
-					startTime: '',
-					endTime: '',
-					member: ''
+					start: '',
+					end: '',
+					member: '10'
 				}
 
 				if (this.dataList[index].isCheck) {
@@ -439,56 +461,56 @@
 
 				this.dataList[0].data.forEach(item => {
 					var str = {
-						start: item.startTime,
-						end: item.endTime,
+						start: item.start,
+						end: item.end,
 						member: item.member
 					}
 					monday.push(str)
 				})
 				this.dataList[1].data.forEach(item => {
 					var str = {
-						start: item.startTime,
-						end: item.endTime,
+						start: item.start,
+						end: item.end,
 						member: item.member
 					}
 					tuesday.push(str)
 				})
 				this.dataList[2].data.forEach(item => {
 					var str = {
-						start: item.startTime,
-						end: item.endTime,
+						start: item.start,
+						end: item.end,
 						member: item.member
 					}
 					wednesday.push(str)
 				})
 				this.dataList[3].data.forEach(item => {
 					var str = {
-						start: item.startTime,
-						end: item.endTime,
+						start: item.start,
+						end: item.end,
 						member: item.member
 					}
 					thursday.push(str)
 				})
 				this.dataList[4].data.forEach(item => {
 					var str = {
-						start: item.startTime,
-						end: item.endTime,
+						start: item.start,
+						end: item.end,
 						member: item.member
 					}
 					friday.push(str)
 				})
 				this.dataList[5].data.forEach(item => {
 					var str = {
-						start: item.startTime,
-						end: item.endTime,
+						start: item.start,
+						end: item.end,
 						member: item.member
 					}
 					saturday.push(str)
 				})
 				this.dataList[6].data.forEach(item => {
 					var str = {
-						start: item.startTime,
-						end: item.endTime,
+						start: item.start,
+						end: item.end,
 						member: item.member
 					}
 					sunday.push(str)
@@ -501,8 +523,6 @@
 					name: this.from.name, //排班名称
 					interval: this.from.interval, //分钟数
 					rest: this.from.rest, //休息日期
-					time_start: this.from.time_start, //开始天数
-					time_end: this.from.time_end, //结束天数
 					status: this.isState ? 1 : -1, //状态,//状态
 					mon_status: this.dataList[0].isCheck ? 1 : -1, //周一是否开启
 					tues_status: this.dataList[1].isCheck ? 1 : -1, //周二是否开启
@@ -510,8 +530,8 @@
 					thur_status: this.dataList[3].isCheck ? 1 : -1, //周四是否开启
 					fri_status: this.dataList[4].isCheck ? 1 : -1, //周五是否开启
 					sat_status: this.dataList[5].isCheck ? 1 : -1, //周六是否开启
-					mon_status: this.dataList[6].isCheck ? 1 : -1, //周日是否开启
-					sun_status: this.dataList[0].isCheck ? JSON.stringify(monday) : '', //周一
+					sun_status: this.dataList[6].isCheck ? 1 : -1, //周日是否开启
+					mon_times: this.dataList[0].isCheck ? JSON.stringify(monday) : '', //周一
 					tues_times: this.dataList[1].isCheck ? JSON.stringify(tuesday) : '', //周二
 					wed_times: this.dataList[2].isCheck ? JSON.stringify(wednesday) : '', //周三
 					thur_times: this.dataList[3].isCheck ? JSON.stringify(thursday) : '', //周四
@@ -519,12 +539,17 @@
 					sat_times: this.dataList[5].isCheck ? JSON.stringify(saturday) : '', //周六
 					sun_times: this.dataList[6].isCheck ? JSON.stringify(sunday) : '', //周日
 				}
-				this.addScheduling(vuedata)
+				if (this.titleType == 'add') {
+					this.addScheduling(vuedata)
+				} else {
+					this.editScheduling(vuedata)
+				}
 			},
 			// 添加排班
 			addScheduling(data) {
 				this.apipost('api/v1/store/schedule/add', data).then(res => {
 					if (res.status == 200) {
+						this.$store.commit('upAddSchedule', true)
 						uni.showToast({
 							title: '排班表添加成功',
 							icon: 'none'
@@ -533,7 +558,34 @@
 							uni.navigateBack({
 								delta: 1
 							})
-						}, 500)
+						}, 13)
+					} else {
+						uni.showToast({
+							title: res.message,
+							icon: 'none'
+						})
+					}
+				});
+			},
+			// 修改排班
+			editScheduling(data) {
+				this.apiput('api/v1/store/schedule/edit/' + this.scheduleId, data).then(res => {
+					if (res.status == 200) {
+						this.$store.commit('upAddSchedule', true)
+						uni.showToast({
+							title: '排班表修改成功',
+							icon: 'none'
+						})
+						setTimeout(() => {
+							uni.navigateBack({
+								delta: 1
+							})
+						}, 13)
+					} else {
+						uni.showToast({
+							title: res.message,
+							icon: 'none'
+						})
 					}
 				});
 			},
@@ -542,12 +594,12 @@
 			getTechniciany() {
 				this.apiget('api/v1/store/engineer', {
 					store: this.id,
+					schedule: 1
 				}).then(res => {
 					if (res.status == 200) {
-						this.engineerList = res.data.member
-						this.engineerList.map(item => {
-							item.isCheck = false
-						})
+						if (res.data.length != 0) {
+							this.engineerList = res.data.member
+						}
 					}
 				});
 			},
@@ -624,7 +676,117 @@
 
 				return arr
 			},
+			// 获取排班详情
+			getDetails(id) {
+				this.apiget('api/v1/store/schedule/' + id, {}).then(res => {
+					if (res.status == 200) {
+						this.from.engineer_id = res.data.schedule.engineer_id
+						this.from.name = res.data.schedule.name
+						this.from.rest = res.data.schedule.rest
+						this.from.interval = res.data.schedule.interval
+						this.from.status = res.data.schedule.status
 
+						this.engineerName = res.data.schedule.engineer_name
+						this.isState = res.data.schedule.status == 1 ? true : false
+
+						let dataObj = res.data.schedule
+
+						this.dataList.map(item => {
+							switch (item.statusName) {
+								case "mon_status": //周一
+									item.isCheck = dataObj.mon_status == 1 ? true : false
+									if (dataObj.mon_times) {
+										item.data = dataObj.mon_times
+									}
+									break;
+								case "tues_status": //周二
+									item.isCheck = dataObj.tues_status == 1 ? true : false
+									if (dataObj.tues_times) {
+										item.data = dataObj.tues_times
+									}
+									break;
+								case "wed_status": //周三
+									item.isCheck = dataObj.wed_status == 1 ? true : false
+									if (dataObj.wed_times) {
+										item.data = dataObj.wed_times
+									}
+									break;
+								case "thur_status": //周四
+									item.isCheck = dataObj.thur_status == 1 ? true : false
+									if (dataObj.thur_times) {
+										item.data = dataObj.thur_times
+									}
+									break;
+								case "fri_status": //周五
+									item.isCheck = dataObj.fri_status == 1 ? true : false
+									if (dataObj.fri_times) {
+										item.data = dataObj.fri_times
+									}
+									break;
+								case "sat_status": //周六
+									item.isCheck = dataObj.sat_status == 1 ? true : false
+									if (dataObj.sat_times) {
+										item.data = dataObj.sat_times
+									}
+									break;
+								case "sun_status": //周日
+									item.isCheck = dataObj.sun_status == 1 ? true : false
+									if (dataObj.sun_times) {
+										item.data = dataObj.sun_times
+									}
+									break;
+							}
+						})
+
+
+						this.extraData.map(ele => {
+							var w = new Date(ele.day).getDay() //获取星期 0（周日） 到 6（周六） 之间的一个整数。
+							this.dataList.map(item => {
+								switch (item.statusName) {
+									case "mon_status": //周一
+										if (w == 1) {
+											ele.data.value = item.isCheck ? '上班' : '未排班'
+										}
+										break;
+									case "tues_status": //周二
+										if (w == 2) {
+											ele.data.value = item.isCheck ? '上班' : '未排班'
+										}
+										break;
+									case "wed_status": //周三
+										if (w == 3) {
+											ele.data.value = item.isCheck ? '上班' : '未排班'
+										}
+										break;
+									case "thur_status": //周四
+										if (w == 4) {
+											ele.data.value = item.isCheck ? '上班' : '未排班'
+										}
+										break;
+									case "fri_status": //周五
+										if (w == 5) {
+											ele.data.value = item.isCheck ? '上班' : '未排班'
+										}
+										break;
+									case "sat_status": //周六
+										if (w == 6) {
+											ele.data.value = item.isCheck ? '上班' : '未排班'
+										}
+										break;
+									case "sun_status": //周日
+										if (w == 0) {
+											ele.data.value = item.isCheck ? '上班' : '未排班'
+										}
+										break;
+								}
+							})
+						})
+
+
+					}
+
+				})
+			},
 
 		}
 	}

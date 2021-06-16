@@ -13,12 +13,12 @@
 						<swiper-item class="swiper-box-item-list">
 							<view class="box-content-main">
 								<view class="box-content-main-calendar">
-									<scheduling-calendar />
+									<scheduling-calendar @initChange='getSchedule' @calendarTap='teamDateClick' />
 								</view>
 								<view class="box-content-main-wrap-text">
 									<view class="box-content-main-wrap-text-left">
-										<text>2021年02月12日</text>
-										<text style="margin-left: 10rpx;">周五</text>
+										<text>{{infoData.year}}年{{infoData.month}}月{{infoData.day}}</text>
+										<text style="margin-left: 10rpx;">{{infoData.week}}</text>
 									</view>
 									<view class="box-content-main-wrap-text-right">
 										<text>查看当日预约</text>
@@ -28,8 +28,8 @@
 								</view>
 								<view class="box-content-main-wrap-msg">上班人员有：</view>
 								<view class="box-content-main-wrap-list">
-									<view class="box-content-main-wrap-list-li flex-center" v-for="(item,index) in 10"
-										:key="index">张小小</view>
+									<view class="box-content-main-wrap-list-li flex-center"
+										v-for="(item,index) in personnelList" :key="item.id">{{item.name}}</view>
 								</view>
 							</view>
 						</swiper-item>
@@ -46,35 +46,44 @@
 								<view class="box-content-main-calendar">
 									<scheduling-calendar @calendarTap="personalSchedulingInfo" />
 								</view>
-								<view class="box-content-main-appointment-info">
+								<view class="box-content-main-appointment-info" v-if="isShow">
 									<view class="box-content-main-appointment-info-top">
 										<view class="appointment-info-top-title">
-											<text>2021年02月12日</text>
-											<text>周五</text>
+											<text>{{staffData.year}}年{{staffData.month}}月{{staffData.day}}</text>
+											<text style="margin-left: 10rpx;">{{staffData.week}}</text>
 										</view>
-										<view class="appointment-info-top-text">
+										<view class="appointment-info-top-text" @click="technicianAppointment">
 											<text>查看当日预约</text>
 											<text class="iconfont icongengduo icon-font"
 												style="color: #45B3FE;font-size: 28rpx;margin-top: 4rpx;"></text>
 										</view>
 									</view>
 									<view class="box-content-main-appointment-info-text" style="margin-top: 30rpx;">
-										门店名称：罗约蓝池·温泉SPA
+										门店名称：{{storeData.name}}
 									</view>
-									<view class="box-content-main-appointment-info-text">
-										上班时间：09:00-22:00
+									<view class="box-content-main-appointment-info-text"
+										style="display: flex;flex-wrap: wrap;" v-if="dataTimeList.length!=0">
+										<text>上班时间：</text>
+										<text v-for="(item,index) in dataTimeList" :key='index'
+											style="margin-right: 10rpx;">{{item.start}}-{{item.end}}</text>
+									</view>
+									<view class="box-content-main-appointment-info-text"
+										style="display: flex;flex-wrap: wrap;" v-if="dataTimeList.length==0">
+										<text>上班时间：</text>
+										<text>未排班</text>
 									</view>
 								</view>
-								<view class="box-content-main-appointment-wrap">
+
+								<view class="box-content-main-appointment-wrap" v-if="isShow">
 									<view class="box-content-main-appointment-wrap-title">当月累计</view>
 									<view class="box-content-main-appointment-wrap-list">
 										<view class="appointment-wrap-list-item">
 											<text class="dot" style="background: #45B3FE"></text>
-											<text>正常排班 24 天</text>
+											<text>正常排班 {{arrData.working_days}} 天</text>
 										</view>
 										<view class="appointment-wrap-list-item">
 											<text class="dot" style="background: #FF8366;"></text>
-											<text>休息班次 6 天</text>
+											<text>休息班次 {{arrData.rest_days}} 天</text>
 										</view>
 									</view>
 								</view>
@@ -85,39 +94,43 @@
 			</view>
 		</view>
 		<view class="box-footer">
-			<btn-sky-blue btnName="添加排班表" @btnClick="addSchedule" />
+			<btn-sky-blue v-if="defaultIndex==0" btnName="添加排班表" @btnClick="addSchedule" />
+			<btn-sky-blue v-if="!isShow&&defaultIndex==1" btnName="添加排班表" @btnClick="addSchedule" />
+			<btn-sky-blue v-if="isShow&&defaultIndex==1" btnName="编辑排班表" @btnClick="editSchedule" />
 		</view>
-		<popup-list-select :skid='engineer_id' @cancel="engineerCancel" @confirm="engineerCconfirm"
-			:visible='visible' :dataList="engineerList">
-		</popup-list-select>
+		<popup-list-select :skid='engineer_id' @cancel="engineerCancel" @confirm="engineerCconfirm" :visible='visible'
+			:dataList="engineerList" />
 	</view>
 </template>
 
 <script>
-	import merchantTabs from "../../components/merchant-tabs/merchant-tabs.vue"
-	import navTitleBalck from "../../components/nav-title-balck/nav-title-balck.vue"
-	import schedulingCalendar from "../../components/scheduling-calendar/scheduling-calendar.vue"
-	import popupListSelect from '../../components/popup-list-select/popup-list-select.vue'
-	
 	export default {
 		data() {
 			return {
 				barHeight: 0, //顶部电量导航栏高度
 				tabsList: ["团队排班表", "员工排班表"],
-				defaultIndex: 1, //当前滑动的页面
-				id:'',
-				visible:false,
+				defaultIndex: 0, //当前滑动的页面
+				id: '',
+				visible: false,
 				engineerList: [],
+				personnelList: [],
+				dataTimeList: [],
 				engineerName: '',
 				engineer_id: '', //技师id
+				infoData: {},
+				staffData: {},
+				dataObj: {},
+				staffObj: {},
+				storeData: {},
+				arrData: {
+					working_days: 0,
+					rest_days: 0
+				},
+				isShow: false,
+				scheduleId:''
 			};
 		},
-		components: {
-			merchantTabs,
-			navTitleBalck,
-			schedulingCalendar,
-			popupListSelect
-		},
+
 		onReady() {
 			// 获取顶部电量状态栏高度
 			uni.getSystemInfo({
@@ -126,12 +139,40 @@
 				}
 			});
 		},
+		onShow() {
+			if (this.$store.state.isAddSchedule) {
+				this.apiget('api/v1/store/engineer/schedule_list', {
+					store: this.id,
+					start_time: this.infoData.startTime,
+					end_time: this.infoData.endTime,
+					engineer: this.engineer_id,
+				}).then(res => {
+					if (res.status == 200) {
+						if (res.data.length != 0) {
+							this.isShow = true
+							this.scheduleId = res.data.schedule
+							var list = res.data.schedule_time
+							this.staffObj = res.data.schedule_time
+							for (let key in list) {
+								if (key == this.staffData.currentDate) {
+									this.dataTimeList = list[key]
+								}
+							}
+						}else{
+							this.isShow = false
+						}
+					
+					}
+				});
+			}
+		},
 		onLoad(options) {
 			this.id = options.id
 			this.getTechniciany()
+			this.getStoreInfo(this.id)
 		},
 		methods: {
-			
+
 			// 选择技师
 			selectOpen() {
 				this.visible = true
@@ -144,32 +185,118 @@
 			engineerCconfirm(e) {
 				this.engineer_id = e.id
 				this.engineerName = e.name
+
+				this.apiget('api/v1/store/engineer/schedule_list', {
+					store: this.id,
+					start_time: this.infoData.startTime,
+					end_time: this.infoData.endTime,
+					engineer: e.id,
+				}).then(res => {
+					if (res.status == 200) {
+						if (res.data.length != 0) {
+							this.isShow = true
+							this.scheduleId = res.data.schedule
+							var list = res.data.schedule_time
+							this.staffObj = res.data.schedule_time
+							for (let key in list) {
+								if (key == this.staffData.currentDate) {
+									this.dataTimeList = list[key]
+								}
+							}
+						}else{
+							this.isShow = false
+						}
+					
+					}
+				});
+				this.apiget('api/v1/store/engineer/schedule_list', {
+					store: this.id,
+					engineer: e.id,
+					current_time: this.staffData.year + '-' + this.staffData.month + '-' + this.staffData.day
+				}).then(res => {
+					if (res.status == 200) {
+						if (res.data.length != 0) {
+							this.arrData = res.data
+						}
+					}
+				});
+
 			},
-			
-			
+
+
 			// 添加排班表
 			addSchedule() {
-				var str={
-					type:'add',
-					id:this.id,
+				var str = {
+					type: 'add',
+					id: this.id,
 				}
+				this.$store.commit('upAddSchedule', false)
 				uni.navigateTo({
-					url: "../addSchedule/addSchedule?data="+JSON.stringify(str)
+					url: "../addSchedule/addSchedule?data=" + JSON.stringify(str)
 				})
 			},
+			// 编辑排班表
+			editSchedule() {
+				var str = {
+					type: 'edit',
+					engineer_id: this.engineer_id,
+					scheduleId:this.scheduleId
+				}
+				this.$store.commit('upAddSchedule', false)
+				uni.navigateTo({
+					url: "../addSchedule/addSchedule?data=" + JSON.stringify(str)
+				})
+			},
+
+
+			// 团队排班表日期点击
+			teamDateClick(e) {
+				this.infoData = e
+				let dataTime = e.year + '-' + (e.month < 10 ? '0' + e.month : e.month) + '-' + (e.day < 10 ? '0' + e.day :
+					e.day)
+				for (let key in this.dataObj) {
+					if (key == dataTime) {
+						this.personnelList = this.dataObj[key]
+					}
+				}
+			},
+
 
 			// 员工 排班表  点击日期
 			personalSchedulingInfo(e) {
+				this.staffData = e
+				let dataTime = e.year + '-' + (e.month < 10 ? '0' + e.month : e.month) + '-' + (e.day < 10 ? '0' + e.day :
+					e.day)
+				for (let key in this.staffObj) {
+					if (key == dataTime) {
+						this.dataTimeList = this.staffObj[key]
+					}
+				}
+
+				this.apiget('api/v1/store/engineer/schedule_list', {
+					store: this.id,
+					engineer: this.engineer_id,
+					current_time: dataTime
+				}).then(res => {
+					if (res.status == 200) {
+						this.arrData = res.data
+					}
+				});
+			},
+			// 查看技师当日预约
+			technicianAppointment() {
 				var str = {
-					year: e.year,
-					month: e.month,
-					day: e.day
+					year: this.staffData.year,
+					month: this.staffData.month,
+					day: this.staffData.day,
+					engineer_id: this.engineer_id,
+					store: this.id,
 				}
 				uni.navigateTo({
-					url: "../personalSchedulingInfo/personalSchedulingInfo?data=" +JSON.stringify(str)
+					url: "../personalSchedulingInfo/personalSchedulingInfo?data=" + JSON.stringify(str)
 				})
-
 			},
+
 
 			// tabs 点击
 			tabClick(e) {
@@ -180,17 +307,29 @@
 				this.$refs.boxTabs.tabToIndex(e.detail.current)
 				this.defaultIndex = e.detail.current
 			},
-			
+
 			// 获取排班表
-			getSchedule() {
-				this.apiget('api/v1/store/schedule', {
+			getSchedule(e) {
+				this.infoData = e
+				this.staffData = e
+				this.apiget('api/v1/store/engineer/schedule_list', {
 					store: this.id,
+					start_time: e.startTime,
+					end_time: e.endTime,
 				}).then(res => {
 					if (res.status == 200) {
-						
+						this.dataObj = res.data
+
+						var list = res.data
+						for (let key in list) {
+							if (key == e.currentDate) {
+								this.personnelList = list[key]
+							}
+						}
 					}
 				});
 			},
+
 			//获取技师
 			getTechniciany() {
 				this.apiget('api/v1/store/engineer', {
@@ -198,6 +337,13 @@
 				}).then(res => {
 					if (res.status == 200) {
 						this.engineerList = res.data.member
+					}
+				});
+			},
+			getStoreInfo(id) {
+				this.apiget('api/v1/store/store_information/' + id, {}).then(res => {
+					if (res.status == 200) {
+						this.storeData = res.data.member
 					}
 				});
 			},
