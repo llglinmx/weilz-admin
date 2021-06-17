@@ -13,26 +13,31 @@
 			<!-- list数据，建议像下方这样在item外层套一个view，而非直接for循环item，因为slot插入有数量限制 -->
 			<view class="box-content-order" v-if="dataList.length>0">
 				<view class="box-content-order-list">
-					<view class="box-content-order-list-li" v-for="(item,index) in 10" :key="index"
-						@click="writeOffDetails">
+					<view class="box-content-order-list-li" v-for="(item,index) in dataList" :key="index">
 						<view class="box-content-order-list-li-top">
-							<view class="order-list-li-top-title">订单号DU199110074026</view>
-							<view class="order-list-li-top-msg">待核销</view>
+							<view class="order-list-li-top-title">订单号:{{item.out_trade_no}}</view>
+							<view class="order-list-li-top-msg" v-if="item.status==1&&item.use_status==-1">待核销</view>
+							<view class="order-list-li-top-msg" v-if="item.status==-1&&item.use_status==-1">待支付</view>
+							<view class="order-list-li-top-msg" v-if="item.status==2&&item.use_status==-1">已退款</view>
+							<view class="order-list-li-top-msg" v-if="item.status==-2&&item.use_status==-1">订单已失效</view>
+							<view class="order-list-li-top-msg" v-if="item.status==1&&item.use_status==1&&item.comment_status==-1">已核销</view>
+							<view class="order-list-li-top-msg"
+								v-if="item.status==1&&item.use_status==1&&item.comment_status==1">已评价</view>
 						</view>
 						<view class="box-content-order-list-li-wrap">
-							<view class="order-list-li-wrap-item" v-for="(i,j) in 3">
+							<view class="order-list-li-wrap-item" v-for="(i,j) in 1">
 								<view class="order-list-li-wrap-item-image">
 									<image src="../../static/images/001.png" mode="aspectFill"></image>
 								</view>
 								<view class="order-list-li-wrap-item-info">
 									<view class="order-list-li-wrap-item-info-top">
-										<view class="wrap-item-info-top-text">泰式古法按摩</view>
-										<view class="wrap-item-info-top-msg">￥298.00</view>
+										<view class="wrap-item-info-top-text">{{item.reserve_name}}</view>
+										<view class="wrap-item-info-top-msg">￥{{item.amount}}</view>
 									</view>
-									<view class="order-list-li-wrap-item-info-box">
+									<view class="order-list-li-wrap-item-info-box" v-if="false">
 										<view class="order-list-li-wrap-item-info-box-list">
 											<view class="order-list-li-wrap-item-info-box-list-li" v-for="(s,k) in 2">
-												泰式按摩</view>
+												腿部按摩</view>
 										</view>
 										<view class="order-list-li-wrap-item-info-box-number">x1</view>
 									</view>
@@ -45,20 +50,20 @@
 								<view class="order-list-li-appointment-info-wrap-item">
 									<view class="order-list-li-appointment-info-wrap-item-title">预 约 人：</view>
 									<view class="order-list-li-appointment-info-wrap-item-text">
-										<text>庄女士</text>
-										<text>13812345678</text>
+										<text>{{item.name}}</text>
+										<text>{{item.mobile}}</text>
 									</view>
 								</view>
 								<view class="order-list-li-appointment-info-wrap-item">
 									<view class="order-list-li-appointment-info-wrap-item-title">预约门店： </view>
 									<view class="order-list-li-appointment-info-wrap-item-text">
-										<text> 罗约蓝池·温泉SPA</text>
+										<text> {{item.store_name}}</text>
 									</view>
 								</view>
 								<view class="order-list-li-appointment-info-wrap-item">
-									<view class="order-list-li-appointment-info-wrap-item-title">买家留言：</view>
+									<view class="order-list-li-appointment-info-wrap-item-title">备注信息：</view>
 									<view class="order-list-li-appointment-info-wrap-item-text">
-										<text>暂无留言</text>
+										<text>{{item.content}}</text>
 									</view>
 								</view>
 
@@ -69,9 +74,10 @@
 								<view class="box-content-order-list-li-footer-text-msg">实付款：</view>
 								<view class="box-content-order-list-li-footer-text-price">￥<text>332.70</text></view>
 							</view>
-							<view class="box-content-order-list-li-footer-btn">
-								<view class="order-list-li-footer-all-btn btn-hollow flex-center">取消订单</view>
-								<view class="order-list-li-footer-all-btn btn-fill flex-center">确认核销</view>
+							<view class="box-content-order-list-li-footer-btn"
+								v-if="item.status==1&&item.use_status==-1">
+								<view class="order-list-li-footer-all-btn btn-fill flex-center"
+									@click="writeOffDetails(item.id)">确认核销</view>
 							</view>
 						</view>
 					</view>
@@ -83,7 +89,6 @@
 </template>
 
 <script>
-
 	export default {
 		data() {
 			return {
@@ -120,11 +125,9 @@
 				handler(newVal) {
 					if (newVal === this.tabIndex) {
 						//懒加载，当滑动到当前的item时，才去加载
-						if (!this.firstLoaded) {
-							this.$nextTick(() => {
-								this.$refs.paging.reload();
-							})
-						}
+						this.$nextTick(() => {
+							this.$refs.paging.reload();
+						})
 					}
 				},
 				immediate: true
@@ -132,46 +135,40 @@
 		},
 		methods: {
 			queryList(pageNo, pageSize) {
-				//组件加载时会自动触发此方法，因此默认页面加载时会自动触发，无需手动调用
-				//这里的pageNo和pageSize会自动计算好，直接传给服务器即可
-				//模拟请求服务器获取分页数据，请替换成自己的网络请求
-				// this.$request.queryList(pageNo, pageSize, this.tabIndex + 1, (data) => {
-				// 	this.$refs.paging.complete(data);
-				// 	this.firstLoaded = true;
-				// })
 				var page = {
 					num: pageNo,
 					size: pageSize,
 
 				}
-				this.getDataList(page)
+				this.getDataList(pageNo, pageSize)
 			},
 
 
 			// 获取数据
-			getDataList(page) {
+			getDataList(num, size) {
 				var vuedata = {
-					page_index: page.num, // 请求页数，
-					each_page: page.size, // 请求条数
+					page_index: num, // 请求页数，
+					each_page: size, // 请求条数
 					status: this.orderType,
 					keyword: this.search,
 				}
 				this.apiget('api/v1/engineer/order', vuedata).then(res => {
 					if (res.status == 200) {
+						let list = []
 						if (res.data.member.length != 0) {
-							let list = res.data.member
-							let totalSize = res.data.total_rows
-							this.$refs.paging.addData(list);
-							this.firstLoaded = true;
+							list = res.data.member
 						}
+						this.$refs.paging.addData(list);
 						this.isLoad = false
 					}
 				});
 			},
-			// 查看券码 
-			viewCouponCode(item) {
-				this.$emit('couponCode', item.id)
-			}
+			// 待核销详情
+			writeOffDetails(id) {
+				uni.navigateTo({
+					url: "../../technicianOrder/toBeWrittenOff/toBeWrittenOff?id=" + id
+				})
+			},
 		}
 	}
 </script>

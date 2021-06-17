@@ -16,14 +16,15 @@
 			</view>
 		</view>
 		<view class="box-content">
-			<view class="box-content-check" v-if="defaultIndex==0 && couponList.length!=0">
-				<view class="box-content-check-wrap flex-center">
-					<text>选择门店</text>
+			<view class="box-content-check" v-if="defaultId==0 && couponList.length!=0">
+				<view class="box-content-check-wrap flex-center" @click="visible = true">
+					<text>{{couponStoreName}}</text>
 					<text class="iconfont iconxiangxiajiantou icon-font"
-						style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
+					:style="{transform: visible?'rotate(180deg)':'rotate(0deg)'}"
+						style="color: #999;font-size: 32rpx;margin-top: 4rpx;transition: 0.3s;"></text>
 				</view>
 			</view>
-			<view class="box-content-check" v-if="defaultIndex==2 && cardList.length!=0">
+			<view class="box-content-check" v-if="defaultId==2 && cardList.length!=0">
 				<view class="box-content-check-wrap flex-center">
 					<text>选择门店</text>
 					<text class="iconfont iconxiangxiajiantou icon-font"
@@ -104,12 +105,12 @@
 								</z-paging>
 							</view>
 							<view class="box-content-main" :style="{display:!isCouponData?'block':'none'}">
-								<loading v-if="isCouponLoad" />
+								<loading-merchant v-if="isCouponLoad" />
 								<no-data v-if="!isCouponLoad" />
 							</view>
 
 						</swiper-item>
-						<swiper-item class="swiper-box-item-list"></swiper-item>
+						<swiper-item class="swiper-box-item-list" v-if="false"></swiper-item>
 						<swiper-item class="swiper-box-item-list">
 							<view class="box-content-main" :style="{display:isCardData?'block':'none'}">
 								<z-paging ref="paging3" @query="cardQueryList" :list.sync="cardList"
@@ -170,11 +171,11 @@
 								</z-paging>
 							</view>
 							<view class="box-content-main" :style="{display:!isCardData?'block':'none'}">
-								<loading v-if="isCardLoad" />
+								<loading-merchant v-if="isCardLoad" />
 								<no-data v-if="!isCardLoad" />
 							</view>
 						</swiper-item>
-						<swiper-item class="swiper-box-item-list">
+						<swiper-item class="swiper-box-item-list" v-if="false">
 							<view class="box-content-main" :style="{display:isGiftData?'block':'none'}">
 								<z-paging ref="paging4" @query="giftQueryList" :list.sync="giftList"
 									loading-more-no-more-text="已经到底了" :refresher-angle-enable-change-continued="false"
@@ -256,50 +257,72 @@
 								</z-paging>
 							</view>
 							<view class="box-content-main" :style="{display:!isGiftData?'block':'none'}">
-								<loading v-if="isGiftLoad" />
+								<loading-merchant v-if="isGiftLoad" />
 								<no-data v-if="!isGiftLoad" />
 							</view>
 						</swiper-item>
-						<swiper-item class="swiper-box-item-list"></swiper-item>
+						<swiper-item class="swiper-box-item-list" v-if=""></swiper-item>
 
 					</swiper>
 				</view>
 			</view>
 		</view>
 		<view class="box-footer">
-			<view class="btn-1" v-if="defaultIndex==0">
+			<view class="btn-1" v-if="defaultId==0">
 				<btn-sky-blue btnName="新增优惠券" @btnClick="addBtn('coupon')" />
 			</view>
-			<view class="btn-2" v-if="defaultIndex==1">
+			<view class="btn-2" v-if="defaultId==1">
 				<btn-sky-blue btnName="新增兑换券" />
 			</view>
-			<view class="btn-2" v-if="defaultIndex==2">
+			<view class="btn-2" v-if="defaultId==2">
 				<btn-sky-blue btnName="添加套餐卡" @btnClick="addBtn('set-meal')" />
 			</view>
-			<view class="btn-2" v-if="defaultIndex==3">
+			<view class="btn-2" v-if="defaultId==3">
 				<btn-sky-blue btnName="添加礼品卡" @btnClick="addBtn('gift')" />
 			</view>
 		</view>
+		<popup-list-select @cancel="storeCancel" @confirm="storeConfirm" :visible='visible' :dataList="storeList" />
 
 		<uni-popup ref="popup" type="dialog">
-			<uni-popup-dialog type="warn" mode='base' title="警告" :content="content" :duration="2000"
-				:before-close="true" @close="close" @confirm="confirm"></uni-popup-dialog>
+			<uni-popup-dialog type="warn" mode='base' title="警告" :content="content" :duration="2000" @confirm="confirm">
+			</uni-popup-dialog>
 		</uni-popup>
 	</view>
 </template>
 
 <script>
-
 	export default {
 		data() {
 			return {
 				barHeight: 0, //顶部电量导航栏高度
 				defaultIndex: 0, //当前滑动的页面
 				content: '你确定要删除此项吗?',
-				tabsList: ["优惠券", "兑换券", "套餐卡", "礼品卡", "储值卡"],
+				tabsList: [{
+						name: '优惠券',
+						id: 0
+					},
+					// {
+					// 	name: '兑换券',
+					// 	id: 1
+					// },
+					{
+						name: '套餐卡',
+						id: 2
+					},
+					// {
+					// 	name: '礼品卡',
+					// 	id: 3
+					// },
+					// {
+					// 	name: '储值卡',
+					// 	id: 4
+					// },
+				],
+				defaultId: 0,
 				couponList: [],
 				cardList: [],
 				giftList: [],
+				storeList: [],
 				PageNumber: 1, // 请求页数，
 				PageLimt: 10, // 请求条数
 
@@ -311,6 +334,9 @@
 				isGiftLoad: true,
 				id: '',
 				deleteIndex: -1,
+				visible: false,
+				couponStoreId:'',
+				couponStoreName:'全部门店',
 			};
 		},
 
@@ -323,7 +349,7 @@
 			});
 		},
 		onLoad() {
-
+			this.getStoreList()
 		},
 		onShow() {
 			if (this.$store.state.isAddCoupon) {
@@ -340,6 +366,18 @@
 
 		methods: {
 
+			// 优惠券选择门店取消事件
+			storeCancel(e) {
+				this.visible = e
+			},
+			// 优惠券选择门店确认事件
+			storeConfirm(e) {
+				this.couponStoreId = e.id
+				this.couponStoreName = e.name
+				this.getCoupon(1,20)
+			},
+
+
 			// 优惠券上拉 下拉
 			couponQueryList(pageNo, pageSize) {
 				this.getCoupon(pageNo, pageSize)
@@ -350,6 +388,7 @@
 				var vuedata = {
 					page_index: num, // 请求页数，
 					each_page: size, // 请求条数
+					store_id:this.couponStoreId,
 				}
 				this.apiget('api/v1/store/coupon/index', vuedata).then(res => {
 					if (res.status == 200) {
@@ -444,6 +483,25 @@
 				});
 			},
 
+			// 获取门店列表
+			getStoreList() {
+				var vuedata = {
+					page_index: 1, // 请求页数，
+					each_page: 50, // 请求条数
+				}
+				this.apiget('api/v1/store/store_information', vuedata).then(res => {
+					if (res.status == 200) {
+						if (res.data.length != 0) {
+							this.storeList = res.data.member
+							this.storeList.unshift({
+								name:'全部门店',
+								id:''
+							})
+						}
+					}
+				});
+			},
+
 			// 礼品卡展开 收起
 			openClose(index) {
 				this.giftList[index].isOpen = !this.giftList[index].isOpen
@@ -486,25 +544,19 @@
 			},
 
 
-			// 弹窗点击取消
-			close(done) {
-				// TODO 做一些其他的事情，before-close 为true的情况下，手动执行 done 才会关闭对话框
-				// ...
-				done()
-			},
 			// 弹窗点击确认
-			confirm(done, value) {
+			confirm() {
 				switch (this.defaultIndex) {
 					case 0:
-						this.deleteCoupon(done)
+						this.deleteCoupon()
 						break;
 					case 1:
 						break;
 					case 2:
-						this.deleteCard(done)
+						this.deleteCard()
 						break;
 					case 3:
-						this.deleteGift(done)
+						this.deleteGift()
 						break;
 					case 4:
 						break;
@@ -514,46 +566,46 @@
 			},
 
 			// 优惠券删除
-			deleteCoupon(done) {
+			deleteCoupon() {
 				this.apidelte('api/v1/store/coupon/del/' + this.id, {}).then(res => {
 					if (res.status == 200) {
-						this.couponList.splice(this.deleteIndex, 1)
 						this.getCoupon(1, 10)
+						this.couponList.splice(this.deleteIndex, 1)
 						uni.showToast({
 							title: "优惠券删除成功",
 							icon: "none"
 						})
 					}
-					done()
+					this.$refs.popup.close()
 				});
 			},
 
-			// 礼品卡删除
-			deleteCard(done) {
+			// 套餐卡删除
+			deleteCard() {
 				this.apidelte('api/v1/store/card/del/' + this.id, {}).then(res => {
 					if (res.status == 200) {
+						this.getCard(1, 20)
 						this.cardList.splice(this.deleteIndex, 1)
 						uni.showToast({
 							title: "套餐卡删除成功",
 							icon: "none"
 						})
-						this.getCard(1, 20)
+						this.$refs.popup.close()
 					}
-					done()
 				});
 			},
 
 			// 礼品卡删除
-			deleteGift(done) {
-				done()
+			deleteGift() {
 				this.apidelte('api/v1/store/gift/del/' + this.id, {}).then(res => {
 					if (res.status == 200) {
+						this.giftList(1, 10)
 						this.giftList.splice(this.deleteIndex, 1)
 						uni.showToast({
 							title: "礼品卡删除成功",
 							icon: "none"
 						})
-						this.giftList(1, 10)
+						this.$refs.popup.close()
 					}
 				});
 			},
@@ -568,12 +620,14 @@
 			// 滑动切换列表
 			tabChange(e) {
 				this.$refs.boxTabs.tabToIndex(e.detail.current)
+
 				this.defaultIndex = e.detail.current
 				this.changeIndex(this.defaultIndex)
 			},
 
 			changeIndex(index) {
-				switch (index) {
+				this.defaultId = this.tabsList[index].id
+				switch (this.defaultId) {
 					case 0:
 						this.getCoupon(1, 20)
 						break;
@@ -678,6 +732,8 @@
 		}
 
 		.box-content {
+			display: flex;
+			flex-direction: column;
 			flex: 1;
 			overflow-y: scroll;
 
@@ -701,7 +757,7 @@
 			}
 
 			.box-content-wrap {
-				height: 100%;
+				flex: 1;
 				overflow-y: scroll;
 
 				.box-content-wrap-item {

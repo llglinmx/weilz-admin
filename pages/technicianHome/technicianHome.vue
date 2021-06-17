@@ -9,8 +9,9 @@
 					<view class="box-head-top-user-info-name">{{userInfo.name}}</view>
 				</view>
 				<view class="box-head-top-user-info-language" @click="clickLanguage">
-					<text class="iconfont iconyuyan icon-font" style="color: #fff;font-size: 28rpx;"></text>
-					<text class="box-head-top-user-info-language-text">EN</text>
+					<text class="iconfont iconyuyan icon-font"
+						style="color: #fff;font-size: 32rpx;margin-top: 4rpx;"></text>
+					<text class="box-head-top-user-info-language-text">{{languageName}}</text>
 				</view>
 			</view>
 			<view class="box-head-bottom">
@@ -30,7 +31,11 @@
 					<view class="order-list-li" v-for="(item,index) in dataList" :key="index">
 						<view class="order-list-li-top">
 							<view class="order-list-li-top-title">订单号{{item.out_trade_no}}</view>
-							<view class="order-list-li-top-msg">待核销</view>
+							<view class="order-list-li-top-msg" v-if="item.status==1&&item.use_status==-1">待核销</view>
+							<view class="order-list-li-top-msg" v-if="item.status==-1&&item.use_status==-1">待支付</view>
+							<view class="order-list-li-top-msg" v-if="item.status==2&&item.use_status==-1">已退款</view>
+							<view class="order-list-li-top-msg" v-if="item.status==-2&&item.use_status==-1">订单已失效</view>
+							<view class="order-list-li-top-msg" v-if="item.status==1&&item.use_status==1">已核销</view>
 						</view>
 						<view class="order-list-li-info">
 							<view class="order-list-li-info-wrap">
@@ -44,7 +49,7 @@
 								<view class="order-list-li-info-wrap-item">
 									<view class="order-list-li-info-wrap-item-title">服务</view>
 									<view class="order-list-li-info-wrap-item-msg">
-										<text>泰式按摩</text>
+										<text>{{item.reserve_name}}</text>
 									</view>
 								</view>
 								<view class="order-list-li-info-wrap-item">
@@ -56,8 +61,7 @@
 								<view class="order-list-li-info-wrap-item">
 									<view class="order-list-li-info-wrap-item-title">时间</view>
 									<view class="order-list-li-info-wrap-item-msg">
-										<text>2020/10/12 15:00-16:00</text>
-
+										<text>{{item.plan_date}} {{item.plan_start}}-{{item.plan_end}}</text>
 									</view>
 								</view>
 							</view>
@@ -65,13 +69,13 @@
 								<view class="order-list-li-info-footer-price">
 									<view class="order-list-li-info-footer-price-msg">实付款：</view>
 									<view class="order-list-li-info-footer-present-price">
-										￥<text>332.70</text>
+										￥<text>{{item.amount}}</text>
 									</view>
 								</view>
-								<view class="order-list-li-info-footer-all-btn">
-									<view class="order-list-li-info-footer-btn flex-center" @click="cancelOrder">取消订单
-									</view>
-									<view class="order-list-li-info-footer-btn flex-center" @click="confirmWriteOff">
+								<view class="order-list-li-info-footer-all-btn"
+									v-if="item.status==1&&item.use_status==-1">
+									<view class="order-list-li-info-footer-btn flex-center"
+										@click="confirmWriteOff(item.id)">
 										确认核销</view>
 								</view>
 							</view>
@@ -85,8 +89,10 @@
 			<no-data v-if="!isLoad" />
 		</view>
 		<view class="box-footer">
-			<technician-tabbar @tabbarClick="tabbarClick" :activeIndex="activeIndex"></technician-tabbar>
+			<technician-tabbar ref="tabBarRef" @tabbarClick="tabbarClick" :activeIndex="activeIndex">
+			</technician-tabbar>
 		</view>
+
 		<!-- 选择语言弹出层 -->
 		<uni-popup ref="popup" type="center" :maskClick="false">
 			<view class="popup-box">
@@ -115,30 +121,32 @@
 </template>
 
 <script>
-
 	export default {
 		data() {
 			return {
 				barHeight: 0, //顶部电量导航栏高度,
 				activeIndex: 0, //当前tabbar所在页面
 				textList: ['中文', "英语", "俄语", "法语", "德语"],
-				selectIndex: 0, //当前选择的语言
 				dataList: [],
 				options: [{
 						title: "待核销",
-						number: "0"
+						number: "0",
+						id: 0
 					},
 					{
 						title: "已核销",
-						number: "0"
+						number: "0",
+						id: 1
 					},
 					{
-						title: "已退款",
-						number: "0"
+						title: "今日预约",
+						number: "0",
+						id: 2
 					},
 					{
 						title: "已评价",
-						number: "0"
+						number: "0",
+						id: 3
 					},
 				],
 				userInfo: {
@@ -147,6 +155,12 @@
 				},
 				isData: false,
 				isLoad: true,
+				selectIndex: 0, //当前选择的语言
+				LanguageID: '',
+				LanguageCode: '',
+				selectIndex: 0, //当前选择的语言
+				languageName: 'EN',
+
 			}
 		},
 		onReady() {
@@ -158,13 +172,12 @@
 			});
 		},
 		onShow() {
-			const sys = uni.getSystemInfoSync();
-			var Heigh = sys.windowHeight
-			this.mesHeight = (Heigh - 180) * 2
+			if (this.$store.state.isOrderState) {
+				this.orderList(1, 20)
+			}
 		},
 		onLoad() {
 			this.languageList();
-			this.orderList();
 			this.getInfo()
 		},
 
@@ -176,8 +189,22 @@
 				this.apiget('api/v1/engineer/info', vuedata).then(res => {
 					if (res.status == 200) {
 						this.userInfo = res.data.engineer
-						
-						this.options[0].number = res.data.engineer.not_verification_order
+						this.options.map(item => {
+							switch (item.id) {
+								case 0:
+									item.number = res.data.engineer.not_verification_order
+									break;
+								case 1:
+									// item.number = res.data.written_off_num
+									break;
+								case 2:
+									item.number = res.data.engineer.booking_today_num
+									break;
+								case 3:
+									// item.number = res.data.cancelled_num
+									break;
+							}
+						})
 					}
 				});
 			},
@@ -191,7 +218,6 @@
 			// 订单列表
 			orderList(num, size) {
 				var vuedata = {
-					status:1,
 					page_index: num, // 请求页数，
 					each_page: size, // 请求条数
 				}
@@ -201,7 +227,6 @@
 							this.isData = true
 							let list = res.data.member
 							this.$refs.paging1.complete(list);
-							console.log(res)
 							return false;
 						}
 						this.isData = false
@@ -210,17 +235,13 @@
 					}
 				});
 			},
-			
-			
-			
-			
+
+
+
+
 			// 打开切换语言
 			clickLanguage() {
 				this.$refs.popup.open()
-				this.textList.forEach(item => {
-					item.default = '-1'
-				})
-				this.textList[this.selectIndex].default = 1
 			},
 			// 选择语言
 			selectLanguage(id, index) {
@@ -228,6 +249,9 @@
 					item.default = '-1'
 				})
 				this.textList[index].default = 1
+				this.selectIndex = index
+				this.LanguageID = this.textList[index].id
+				this.LanguageCode = this.textList[index].code
 			},
 			// 选择语言 关闭
 			closeLanguage() {
@@ -235,6 +259,11 @@
 			},
 			// 语言选择确定按钮
 			confirmBtn() {
+				this.languageName = this.textList[this.selectIndex].name
+				uni.setStorageSync('isTechnicianSelectLanguage', true);
+				uni.setStorageSync('technicianLanguageId', this.LanguageID);
+				uni.setStorageSync('technicianLanguageCode', this.LanguageCode);
+				this.$refs.tabBarRef.languageChange()
 				this.$refs.popup.close()
 			},
 
@@ -243,30 +272,40 @@
 				this.apiget('language', {}).then(res => {
 					if (res.status == 200) {
 						this.textList = res.data.lng.reverse()
-						this.textList.forEach((item, index) => {
-							if (item.default == 1) { //判断默认选中语言包
-								this.selectIndex = index
-							}
-						})
+						var langId = uni.getStorageSync('technicianLanguageId');
+
+						if (langId) {
+							this.textList.forEach((item, index) => {
+								if (item.id == langId) { //判断默认选中语言包
+									this.textList.forEach(item => {
+										item.default = '-1'
+									})
+									this.textList[index].default = 1
+									this.languageName = item.name
+								}
+							})
+						} else {
+							this.textList.forEach((item, index) => {
+								if (item.default == 1) { //判断默认选中语言包
+									this.selectIndex = index
+									this.languageName = item.name
+								}
+							})
+						}
 					}
 				});
 			},
 
 
-			// 取消订单
-			cancelOrder() {
-				uni.showToast({
-					title: "取消订单",
-					icon: "none"
-				})
-			},
+
 			// 确认核销
-			confirmWriteOff() {
-				uni.showToast({
-					title: "确认核销",
-					icon: "none"
+			confirmWriteOff(id) {
+				this.$store.commit('upOrderState', false)
+				uni.navigateTo({
+					url: "../../technicianOrder/toBeWrittenOff/toBeWrittenOff?id=" + id
 				})
 			},
+
 
 
 			// tabbar点击
@@ -481,25 +520,13 @@
 								display: flex;
 
 								.order-list-li-info-footer-btn {
-									font-size: 28rpx;
-									border-radius: 32rpx;
-								}
-
-								.order-list-li-info-footer-btn:nth-child(1) {
-									width: 174rpx;
-									height: 58rpx;
-									border: 1rpx solid #666666;
-									opacity: 1;
-									color: #666;
-
-								}
-
-								.order-list-li-info-footer-btn:nth-child(2) {
 									width: 176rpx;
 									height: 60rpx;
 									background: #26BF82;
 									margin-left: 20rpx;
 									color: #fff;
+									font-size: 28rpx;
+									border-radius: 32rpx;
 								}
 							}
 						}

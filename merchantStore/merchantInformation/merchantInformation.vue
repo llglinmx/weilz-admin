@@ -116,9 +116,7 @@
 </template>
 
 <script>
-	import navTitleBalck from "../../components/nav-title-balck/nav-title-balck.vue"
-	import btnSkyBlue from "../../components/btn-sky-blue/btn-sky-blue.vue"
-	import score from '../../components/score/score.vue'
+
 	import mixins from '../../static/js/mixins.js'
 	export default {
 		mixins: [mixins],
@@ -157,12 +155,7 @@
 				businessHours: [],
 			};
 		},
-		components: {
-			navTitleBalck,
-			btnSkyBlue,
-			score,
 
-		},
 		onReady() {
 			// 获取顶部电量状态栏高度
 			uni.getSystemInfo({

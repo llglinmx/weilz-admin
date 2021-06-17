@@ -32,9 +32,6 @@
 </template>
 
 <script>
-	import navTitleBalck from "../../components/nav-title-balck/nav-title-balck.vue"
-	import stickyStore from '../../components/sticky-store/sticky-store.vue'
-	import stickyTechnician from '../../components/technician-store/technician-store.vue'
 
 	export default {
 		data() {
@@ -47,11 +44,7 @@
 
 			}
 		},
-		components: {
-			navTitleBalck,
-			stickyTechnician,
-			stickyStore
-		},
+
 		onReady() {
 			// 获取顶部电量状态栏高度
 			uni.getSystemInfo({

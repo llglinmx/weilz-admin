@@ -44,21 +44,21 @@
 				barHeight: 0, //顶部电量导航栏高度
 				activeIndex: 4, //当前tabbar所在页面
 				menuList: [
-					// {
-					// 	title: "进货订单",
-					// 	image: "../../static/images/mine-icon1.png",
-					// 	id:0
-					// },
+					{
+						title: "进货订单",
+						image: "../../static/images/mine-icon1.png",
+						id:0
+					},
 					{
 						title: "客户管理",
 						image: "../../static/images/mine-icon2.png",
 						id:1
 					},
-					// {
-					// 	title: "视频教学",
-					// 	image: "../../static/images/mine-icon3.png",
-					// 	id:2
-					// },
+					{
+						title: "视频教学",
+						image: "../../static/images/mine-icon3.png",
+						id:2
+					},
 					{
 						title: "营销管理",
 						image: "../../static/images/mine-icon4.png",

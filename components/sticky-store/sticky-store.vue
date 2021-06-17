@@ -17,8 +17,7 @@
 				</view>
 
 				<view class="box-content-statistical-chart">
-					<l-echart ref="chart"></l-echart>
-
+					<l-echart ref="chart" />
 				</view>
 				<view class="box-content-data-title" style="z-index: 100;position: sticky;top :0;">
 					<view class="box-content-data-title-item flex-center">{{totalNum }}家门店
@@ -60,7 +59,6 @@
 </template>
 
 <script>
-
 	import * as echarts from '../../uni_modules/lime-echart/components/lime-echart/echarts.js';
 	import lEchart from '../../uni_modules/lime-echart/components/lime-echart/index.vue'
 
@@ -151,6 +149,9 @@
 				screenIndex: -1,
 
 			}
+		},
+		components: {
+			lEchart
 		},
 
 		mounted() {
@@ -318,7 +319,7 @@
 
 				});
 			},
-// 初始化图表
+			// 初始化图表
 			initEcharts() {
 				this.$refs.chart.init(config => {
 					const {

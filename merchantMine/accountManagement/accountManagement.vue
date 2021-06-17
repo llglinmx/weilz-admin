@@ -6,13 +6,13 @@
 		<view class="box-content">
 			<view class="box-content-search">
 				<view class="box-content-search-box">
-					<view class="box-content-search-box-ico" :class="isSearch?'box-content-search-box-ico-active':''">
+					<view class="box-content-search-box-ico" @click="storeList(1, 10)" :class="isSearch?'box-content-search-box-ico-active':''">
 						<text class="iconfont iconsousuo1 icon-font"
 							style="color: #999;font-size: 40rpx;margin-top: 4rpx;"></text>
 					</view>
 					<view class="box-content-search-box-input"
 						:class="isSearch?'box-content-search-box-input-active':''">
-						<input type="text" @focus="focus" @blur="blur" placeholder="搜索门店名称、账号" />
+						<input type="text" @keydown.enter="storeList(1, 10)" v-model.trim="searchVal" @focus="focus" @blur="blur" placeholder="搜索门店名称、账号" />
 					</view>
 				</view>
 			</view>
@@ -63,6 +63,7 @@
 				dataList: [],
 				isData: false,
 				isLoad: true,
+				searchVal:''
 			};
 		},
 
@@ -93,6 +94,7 @@
 				var vuedata = {
 					page_index: num, // 请求页数，
 					each_page: size, // 请求条数
+					keyword:this.searchVal,
 				}
 				this.apiget('api/v1/store/admin', vuedata).then(res => {
 					if (res.status == 200) {

@@ -10,6 +10,7 @@ const mixins = {
 	methods: {
 		// 预览图片多张
 		previewImg(imageList, index) {
+			console.log(imageList,index)
 			let imgsArray = [];
 
 			if(Array.isArray(imageList)) {
@@ -17,11 +18,10 @@ const mixins = {
 			} else {
 				imgsArray.push(imageList)
 			}
-
 			uni.previewImage({
 				current: index,
 				urls: imgsArray,
-				// loop: true
+				loop: true
 			});
 		}
 	}

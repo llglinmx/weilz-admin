@@ -37,9 +37,9 @@
 						<view class="order-list-li-wrap-item-info">
 							<view class="order-list-li-wrap-item-info-top">
 								<view class="wrap-item-info-top-text">{{orderInfo.reserve_name}}</view>
-								<view class="wrap-item-info-top-msg">￥298.00</view>
+								<view class="wrap-item-info-top-msg">￥{{orderInfo.payable}}</view>
 							</view>
-							<view class="order-list-li-wrap-item-info-box">
+							<view class="order-list-li-wrap-item-info-box" v-if="false">
 								<view class="order-list-li-wrap-item-info-box-list">
 									<view class="order-list-li-wrap-item-info-box-list-li" v-for="(s,k) in 2">泰式按摩
 									</view>

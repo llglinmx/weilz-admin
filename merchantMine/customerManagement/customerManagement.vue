@@ -51,7 +51,7 @@
 				</z-paging>
 			</view>
 			<view class="box-content-main" :style="{display:!isData?'block':'none'}">
-				<loading v-if="isLoad" />
+				<loading-merchant v-if="isLoad" />
 				<no-data v-if="!isLoad" />
 			</view>
 		</view>
@@ -105,14 +105,14 @@
 				this.apiget('api/v1/store/user_list/index', vuedata).then(res => {
 					if (res.status == 200) {
 						let list = []
-						if (res.data) {
+						this.isLoad = false
+						if (res.data.length!=0) {
 							this.isData = true
 							list = res.data.member
 							this.$refs.paging1.complete(list);
 							return false;
 						}
 						this.isData = false
-						this.isLoad = false
 						this.$refs.paging1.complete(list);
 
 					}

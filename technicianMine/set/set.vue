@@ -10,8 +10,7 @@
 			<view class="box-footer-btn flex-center" @click="logOut">退出登录</view>
 		</view>
 		<uni-popup ref="popup" type="dialog">
-			<uni-popup-dialog type="warn" mode='base' title="警告" content="你确定要退出登录吗？" :duration="2000"
-				:before-close="true" @close="close" @confirm="confirm"></uni-popup-dialog>
+			<uni-popup-dialog type="warn" mode='base' title="警告" content="你确定要退出登录吗？" :duration="2000" @confirm="confirm"></uni-popup-dialog>
 		</uni-popup>
 	</view>
 </template>
@@ -38,14 +37,9 @@
 			logOut() {
 				this.$refs.popup.open()
 			},
-			// 弹窗点击取消
-			close(done) {
-				// TODO 做一些其他的事情，before-close 为true的情况下，手动执行 done 才会关闭对话框
-				// ...
-				done()
-			},
+
 			// 弹窗点击确认
-			confirm(done, value) {
+			confirm() {
 				var data = {}
 				this.apiput('api/v1/logout', data).then(res => {
 					if (res.status == 200) {
@@ -61,7 +55,7 @@
 							})
 						}, 500);
 					}
-					done()
+					this.$refs.popup.close()
 				});
 			},
 		}

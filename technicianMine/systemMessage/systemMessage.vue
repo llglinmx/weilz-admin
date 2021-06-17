@@ -14,7 +14,7 @@
 							<view class="box-content-list-main-top">
 								<view class="box-content-list-main-top-title"
 									:class="item.state==2?'box-content-list-main-top-after':''">{{item.title}}</view>
-								<view class="box-content-list-main-top-text">{{item.content}}</view>
+								<view class="box-content-list-main-top-text" v-html="item.content"></view>
 							</view>
 							<view class="box-content-list-main-bottom">
 								<view class="list-main-bottom-title">点击查看</view>

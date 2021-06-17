@@ -52,6 +52,11 @@
 			tabbarClick(index) {
 				this.$emit("tabbarClick",index)
 			},
+			// 语言接口
+			languageChange(){
+				// 请求语言写这里
+				console.log("切换语言")
+			},
 		}
 	}
 </script>

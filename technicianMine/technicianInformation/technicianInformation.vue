@@ -12,12 +12,12 @@
 		<view class="box-content">
 			<view class="box-content-wrap-info">
 				<view class="box-content-wrap-info-user">
-					<view class="box-content-wrap-info-user-image">
-						<image src="../../static/images/001.png" mode="aspectFill"></image>
+					<view class="box-content-wrap-info-user-image" @click="previewImg(imageList,0)">
+						<image :src="imageList[0]" mode="aspectFill"></image>
 						<view class="box-content-wrap-info-user-image-toast">
 							<text class="iconfont icontupian icon-font"
 								style="color: #fff;font-size: 24rpx;margin-top: 4rpx;"></text>
-							<text style="margin-left: 8rpx;">4</text>
+							<text style="margin-left: 8rpx;">{{userInfo.photo.length}}</text>
 						</view>
 					</view>
 					<view class="box-content-wrap-info-user-main">
@@ -41,7 +41,7 @@
 					语言技能：{{userInfo.Language_skills}}
 				</view>
 				<view class="box-content-wrap-info-text">兴趣爱好：{{userInfo.hobby}}</view>
-				<view class="box-content-wrap-info-text">执照ID：<text style="color: #26BF82;">查看图片</text></view>
+				<view class="box-content-wrap-info-text">执照ID：<text style="color: #26BF82;" @click="previewImg(userInfo.simg,0)">查看图片</text></view>
 			</view>
 
 			<view class="box-content-store">
@@ -78,12 +78,12 @@
 
 			<view class="box-content-work-record">
 				<view class="box-content-work-record-title">工作记录</view>
-				<view class="box-content-work-record-list">
-					<view class="box-content-work-record-list-li" v-for="(item,index) in 5">
-						<view class="box-content-work-record-list-li-time">2019.04.01 - 2019.08.31</view>
+				<view class="box-content-work-record-list" v-if="userInfo.work_record">
+					<view class="box-content-work-record-list-li" v-for="(item,index) in userInfo.work_record" :key='index'>
+						<view class="box-content-work-record-list-li-time">{{item.begin_time}} - {{item.end_time}}</view>
 						<view class="box-content-work-record-list-li-text">
-							<text>The prime泰鼎盛</text>
-							<text>按摩技师</text>
+							<text>{{item.store_name}}</text>
+							<text>{{item.Job_title}}</text>
 						</view>
 					</view>
 				</view>
@@ -111,22 +111,25 @@
 </template>
 
 <script>
+	import mixins from '../../static/js/mixins.js'
 	export default {
+		mixins: [mixins],
 		data() {
 			return {
 				barHeight: 0, //顶部电量导航栏高度
-				userInfo:{
-					name:'',
-					level_name:'',
-					comment:'',
-					sex:1,
-					hobby:'',
-					Language_skills:'',
-					mail:'',
-					mobile:'',
-					service_times:'',
-					photo:[],
+				userInfo: {
+					name: '',
+					level_name: '',
+					comment: '',
+					sex: 1,
+					hobby: '',
+					Language_skills: '',
+					mail: '',
+					mobile: '',
+					service_times: '',
+					photo: [],
 				},
+				imageList: [],
 			};
 		},
 		components: {
@@ -144,17 +147,22 @@
 			this.getInfo()
 		},
 		methods: {
-			
+
 			// 获取个人信息
 			getInfo() {
 				let vuedata = {}
 				this.apiget('api/v1/engineer/info', vuedata).then(res => {
 					if (res.status == 200) {
 						this.userInfo = res.data.engineer
+						this.imageList = []
+						
+						res.data.engineer.photo.forEach(item => {
+							this.imageList.push(item.name)
+						})
 					}
 				});
 			},
-			
+
 			//返回
 			Gback() {
 				uni.navigateBack({

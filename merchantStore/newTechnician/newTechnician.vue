@@ -167,8 +167,7 @@
 							<text class="iconfont iconcuowu icon-font" style="color: #fff;font-size: 36rpx"></text>
 						</text>
 					</view>
-					<view class="box-content-main-image-list-up flex-center" @click="upCoverPhoto"
-						v-if="from.photo.length<3">
+					<view class="box-content-main-image-list-up flex-center" @click="upCoverPhoto" v-if="from.photo.length<3">
 						<text class="iconfont iconcuowu icon-font" style="color: #ddd;font-size: 90rpx"></text>
 					</view>
 				</view>
@@ -316,7 +315,7 @@
 				timeName: '',
 				userName: '',
 				stateName: '',
-				imageList:[],
+				imageList: [],
 				from: {
 					name: '',
 					store: '', //门店id
@@ -583,7 +582,7 @@
 			},
 
 
-// 上传封面图片
+			// 上传封面图片
 			upCoverPhoto() {
 				uni.chooseImage({
 					count: 3, //默认100
@@ -728,8 +727,12 @@
 						this.from.license_img = data.license_img
 
 						this.from.simg = data.simg
-
-						this.from.photo = data.photo
+						
+						if (!data.photo) {
+							this.from.photo = []
+						} else {
+							this.from.photo = data.photo
+						}
 
 						this.from.service_fee = data.service_fee
 						this.from.fee = data.fee

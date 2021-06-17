@@ -84,7 +84,7 @@
 							</view>
 							<view class="box-content-order-list-li-footer-btn">
 								<view class="order-list-li-footer-all-btn btn-hollow flex-center"
-									v-if="item.status==1&&item.use_status==1" @click.stop="orderDetails(item)">查看详情
+									v-if="item.status==1&&item.use_status==1" @click.stop="orderDetails(item.id)">查看详情
 								</view>
 								<view class="order-list-li-footer-all-btn btn-hollow flex-center"
 									v-if="item.status==1&&item.use_status==-1" @click.stop="cancelOrder(item)">

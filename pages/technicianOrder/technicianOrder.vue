@@ -2,13 +2,14 @@
 	<view class="box">
 		<view class="box-head" :style="{paddingTop:barHeight+'px'}">
 			<view class="box-head-nav"></view>
-			<view class="box-head-search">
+			<view class="box-head-search" style="margin-top: 20rpx;">
 				<view class="box-head-search-box">
 					<view class="box-head-search-box-icon"
 						:class="isSearch?'box-head-search-box-icon-active':'box-head-search-box-icon-no-active'">
 						<text class="iconfont iconsousuo1 icon-font"
-							style="color: #999;font-size: 40rpx;margin-top: 4rpx;"></text>
-						<input type="text" value="" @focus="focus" @blur="blur" placeholder="搜索订单号、预约信息" />
+							style="color: #999;font-size: 40rpx;margin-top: 4rpx;" @click="searchChange"></text>
+						<input type="text" @keydown.enter="searchChange" v-model.trim="searchVal" @focus="focus"
+							@blur="blur" placeholder="搜索订单号、预约信息" />
 					</view>
 				</view>
 			</view>
@@ -21,7 +22,8 @@
 				<view class="box-content-wrap-item">
 					<swiper class="swiper-box" :current="defaultIndex" @change="tabChange">
 						<swiper-item class="swiper-box-item-list" v-for="(item,index) in tabsList" :key="index">
-							<scroll-tab-swiper-item :search='searchVal' :tabIndex="index" :orderType='status' :currentIndex="defaultIndex">
+							<scroll-tab-swiper-item ref='orderRef' :search='searchVal' :tabIndex="index"
+								:orderType='status' :currentIndex="defaultIndex">
 							</scroll-tab-swiper-item>
 						</swiper-item>
 
@@ -47,7 +49,7 @@
 				tabsList: ["全部订单", "待核销", "已核销", "已退款", "已评价"],
 				isSearch: false, //是否搜索
 				status: '', //订单类型
-				searchVal:'',
+				searchVal: '',
 			};
 		},
 		components: {
@@ -62,6 +64,11 @@
 				}
 			});
 		},
+		onShow() {
+			if (this.$store.state.isOrderState) {
+				this.$refs.orderRef[this.defaultIndex].getDataList(1, 20)
+			}
+		},
 		methods: {
 			// input框 获得焦点事件
 			focus() {
@@ -69,15 +76,12 @@
 			},
 			// 失去焦点事件
 			blur() {
-				console.log(111)
 				this.isSearch = false
 			},
 
-			// 待核销详情
-			writeOffDetails() {
-				uni.navigateTo({
-					url: "../../technicianOrder/toBeWrittenOff/toBeWrittenOff"
-				})
+			// 搜索
+			searchChange() {
+				this.$refs.orderRef[this.defaultIndex].getDataList(1, 20)
 			},
 
 			// tabs 点击

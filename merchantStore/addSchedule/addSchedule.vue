@@ -1,4 +1,4 @@
-<template>
+s<template>
 	<view class="box">
 		<view class="box-head" :style="{paddingTop:barHeight+'px'}">
 			<nav-title-balck :navTitle="titleType=='add'?'添加排班表':'编辑排班表'"></nav-title-balck>
@@ -118,8 +118,8 @@
 		<popup-list-select :skid='from.engineer_id' @cancel="engineerCancel" @confirm="engineerConfirm"
 			:visible='visible' :dataList="engineerList" />
 
-		<select-time :checkStart='timesArr.start' :checkEnd='timesArr.end' @cancel='cancelTime' :visible='isTime'
-			@confirm='timeConfirm'/>
+		<select-time :isType="timeType" :checkStart='timesArr.start' :checkEnd='timesArr.end' @cancel='cancelTime' :visible='isTime'
+			@confirm='timeConfirm' />
 	</view>
 </template>
 
@@ -170,7 +170,7 @@
 						data: [{
 							start: '',
 							end: '',
-							member: '10'
+							member: '5'
 						}, ],
 					},
 					{
@@ -181,7 +181,7 @@
 						data: [{
 							start: '',
 							end: '',
-							member: '10'
+							member: '5'
 						}, ],
 					},
 					{
@@ -192,7 +192,7 @@
 						data: [{
 							start: '',
 							end: '',
-							member: '10'
+							member: '5'
 						}, ],
 					},
 					{
@@ -203,7 +203,7 @@
 						data: [{
 							start: '',
 							end: '',
-							member: '10'
+							member: '5'
 						}, ],
 					},
 					{
@@ -214,7 +214,7 @@
 						data: [{
 							start: '',
 							end: '',
-							member: '10'
+							member: '5'
 						}, ],
 					},
 					{
@@ -225,7 +225,7 @@
 						data: [{
 							start: '',
 							end: '',
-							member: '10'
+							member: '5'
 						}, ],
 					}, {
 						title: "周日",
@@ -235,7 +235,7 @@
 						data: [{
 							start: '',
 							end: '',
-							member: '10'
+							member: '5'
 						}, ],
 					},
 				],
@@ -306,7 +306,6 @@
 				this.indexOne = index
 				this.indexTwo = idx
 				this.timeType = type
-
 				switch (type) {
 					case 'start':
 						this.timesArr.start = this.dataList[index].data[idx].start
@@ -315,7 +314,6 @@
 						this.timesArr.end = this.dataList[index].data[idx].end
 						break;
 				}
-
 
 				if (this.dataList[index].isCheck) {
 					this.isTime = true
@@ -428,7 +426,7 @@
 				let str = {
 					start: '',
 					end: '',
-					member: '10'
+					member: '5'
 				}
 
 				if (this.dataList[index].isCheck) {
@@ -571,11 +569,11 @@
 			editScheduling(data) {
 				this.apiput('api/v1/store/schedule/edit/' + this.scheduleId, data).then(res => {
 					if (res.status == 200) {
-						this.$store.commit('upAddSchedule', true)
 						uni.showToast({
 							title: '排班表修改成功',
 							icon: 'none'
 						})
+						this.$store.commit('upAddSchedule', true)
 						setTimeout(() => {
 							uni.navigateBack({
 								delta: 1

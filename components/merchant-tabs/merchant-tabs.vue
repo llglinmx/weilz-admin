@@ -5,7 +5,7 @@
 				<view class="_tab-item-box" :class="[defaultConfig.itemWidth ? '_clamp' : '_flex']">
 					<block v-for="(item, index) in tabList" :key="index">
 						<view class="_item" :id="'_tab_'+index" :class="{ '_active': activeIndex === index }" :style="{color: activeIndex == index ? defaultConfig.activeColor : defaultConfig.color, 'width': defaultConfig.itemWidth ? defaultConfig.itemWidth + 'rpx' : ''}"
-						 @click="tabClick(index)">{{ item[defaultConfig.key] || item }}</view>
+						 @click="tabClick(index)">{{ item[defaultConfig.key] || item||item.name }}</view>
 					</block>
 				</view>
 				<view class="_underline" :style="{

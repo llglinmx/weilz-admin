@@ -44,7 +44,8 @@
 							</view>
 							<view class="box-content-main">
 								<view class="box-content-main-calendar">
-									<scheduling-calendar @calendarTap="personalSchedulingInfo" />
+									<scheduling-calendar :isChange="true" @schedulingChange='getTabChange'
+										@calendarTap="personalSchedulingInfo" />
 								</view>
 								<view class="box-content-main-appointment-info" v-if="isShow">
 									<view class="box-content-main-appointment-info-top">
@@ -94,11 +95,11 @@
 			</view>
 		</view>
 		<view class="box-footer">
-			<btn-sky-blue v-if="defaultIndex==0" btnName="添加排班表" @btnClick="addSchedule" />
-			<btn-sky-blue v-if="!isShow&&defaultIndex==1" btnName="添加排班表" @btnClick="addSchedule" />
+			<btn-sky-blue v-if="defaultIndex==0" btnName="添加排班表"  key='0' @btnClick="addSchedule" />
+			<btn-sky-blue v-if="!isShow&&defaultIndex==1" btnName="添加排班表" key='1' @btnClick="addSchedule" />
 			<btn-sky-blue v-if="isShow&&defaultIndex==1" btnName="编辑排班表" @btnClick="editSchedule" />
 		</view>
-		<popup-list-select :skid='engineer_id' @cancel="engineerCancel" @confirm="engineerCconfirm" :visible='visible'
+		<popup-list-select :skid='engineer_id' @cancel="engineerCancel" @confirm="engineerConfirm" :visible='visible'
 			:dataList="engineerList" />
 	</view>
 </template>
@@ -127,7 +128,7 @@
 					rest_days: 0
 				},
 				isShow: false,
-				scheduleId:''
+				scheduleId: ''
 			};
 		},
 
@@ -158,10 +159,10 @@
 									this.dataTimeList = list[key]
 								}
 							}
-						}else{
+						} else {
 							this.isShow = false
 						}
-					
+
 					}
 				});
 			}
@@ -181,8 +182,8 @@
 			engineerCancel(e) {
 				this.visible = e
 			},
-			// 选择技师取消按钮
-			engineerCconfirm(e) {
+			// 选择技师确定按钮
+			engineerConfirm(e) {
 				this.engineer_id = e.id
 				this.engineerName = e.name
 
@@ -203,10 +204,10 @@
 									this.dataTimeList = list[key]
 								}
 							}
-						}else{
+						} else {
 							this.isShow = false
 						}
-					
+
 					}
 				});
 				this.apiget('api/v1/store/engineer/schedule_list', {
@@ -240,7 +241,7 @@
 				var str = {
 					type: 'edit',
 					engineer_id: this.engineer_id,
-					scheduleId:this.scheduleId
+					scheduleId: this.scheduleId
 				}
 				this.$store.commit('upAddSchedule', false)
 				uni.navigateTo({
@@ -329,6 +330,34 @@
 					}
 				});
 			},
+
+			// 上个月 下个月切换监听
+			getTabChange(e) {
+
+				this.infoData = e
+				this.apiget('api/v1/store/engineer/schedule_list', {
+					store: this.id,
+					start_time: this.infoData.startTime,
+					end_time: this.infoData.endTime,
+					engineer: this.engineer_id,
+				}).then(res => {
+					if (res.status == 200) {
+						if (res.data.length != 0) {
+							this.scheduleId = res.data.schedule
+							var list = res.data.schedule_time
+							this.staffObj = res.data.schedule_time
+
+							for (let key in list) {
+								if (key == this.staffData.currentDate) {
+									this.dataTimeList = list[key]
+								}
+							}
+						}
+
+					}
+				});
+			},
+
 
 			//获取技师
 			getTechniciany() {

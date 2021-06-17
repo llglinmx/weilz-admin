@@ -35,7 +35,7 @@
 			<view class="box-content-main">
 				<view class="box-content-main-list">
 					<view class="box-content-main-list-li" v-for="(item,index) in menuList" :key="index"
-						@click="menuClick(index)">
+						@click="menuClick(index,item.id)">
 						<view class="box-content-main-list-li-info">
 							<text :class="item.style" class="iconfont icon-font"
 								:style="{fontSize:item.size+'rpx',color:item.color}"></text>
@@ -64,7 +64,7 @@
 				activeIndex: 2, //当前tabbar所在页面
 				typeList: [{
 						text: '待核销',
-						image: '../../static/images/technician-mine-icon1.png'
+						image: '../../static/images/technician-mine-icon1.png',
 					},
 					{
 						text: '已核销',
@@ -83,47 +83,55 @@
 						image: '../../static/images/technician-mine-icon5.png'
 					},
 				],
-				menuList: [{
-						text: "收益统计",
-						size: '48',
-						style: "iconshouyitongji",
-						color: "#26BF82"
-					},
+				menuList: [
+					// {
+					// 	text: "收益统计",
+					// 	size: '48',
+					// 	style: "iconshouyitongji",
+					// 	color: "#26BF82",
+					// 	id: 0
+					// },
 					{
 						text: "日程安排",
 						size: '48',
 						style: "iconrichenganpai",
-						color: "#26BF82"
+						color: "#26BF82",
+						id: 1
 					},
 					{
 						text: "客户评价",
 						size: '48',
 						style: "iconkehupingjia",
-						color: "#FFDB3A"
+						color: "#FFDB3A",
+						id: 2
 					},
 					{
 						text: "技师信息",
 						size: '48',
 						style: "iconjishixinxi",
-						color: "#4CB6FE"
+						color: "#4CB6FE",
+						id: 3
 					},
-					{
-						text: "收益提成",
-						size: '48',
-						style: "iconshouyiticheng",
-						color: "#26BF82"
-					},
+					// {
+					// 	text: "收益提成",
+					// 	size: '48',
+					// 	style: "iconshouyiticheng",
+					// 	color: "#26BF82",
+					// 	id: 4
+					// },
 					{
 						text: "推荐消息",
 						size: '48',
 						style: "icontuijianxiaoxi",
-						color: "#4CB6FE"
+						color: "#4CB6FE",
+						id: 5
 					},
 					{
 						text: "招聘信息",
 						size: '48',
 						style: "iconzhaopinxinxi",
-						color: "#FFDB3A"
+						color: "#FFDB3A",
+						id: 6
 					},
 				],
 				userInfo: {
@@ -177,9 +185,9 @@
 			},
 
 			// 菜单点击
-			menuClick(index) {
+			menuClick(index, id) {
 				// 
-				switch (index) {
+				switch (id) {
 					// 收益统计
 					case 0:
 						uni.navigateTo({

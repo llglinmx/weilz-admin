@@ -500,7 +500,7 @@
 			}
 
 			.box-content-btn-green {
-				background: #5bf3b6;
+				background: #72eaba;
 			}
 
 			.btn-active {

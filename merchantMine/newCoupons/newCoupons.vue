@@ -122,7 +122,7 @@
 				<view class="box-content-list-li">
 					<view class="box-content-list-li-title">发放状态</view>
 					<view class="box-content-list-li-info">
-						<switch :checked="isState" @change="switch1Change" color="#07C160" />
+						<switch :checked="isState" style="transform: scale(0.7);" @change="switch1Change" color="#07C160" />
 					</view>
 				</view>
 

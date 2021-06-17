@@ -3,11 +3,12 @@
 		<view class="box-head" :style="{paddingTop:barHeight+'px'}">
 			<view class="box-head-top">
 				<view class="box-head-top-user-info">
-					<view class="box-head-top-user-info-name">蓝池美容美体有限公司</view>
+					<view class="box-head-top-user-info-name">{{infoData.company}}</view>
 				</view>
-				<view class="box-head-top-user-info-language">
-					<text class="iconfont iconyuyan icon-font" style="color: #fff;font-size: 28rpx;"></text>
-					<text class="box-head-top-user-info-language-text">EN</text>
+				<view class="box-head-top-user-info-language" @click="languageCheck">
+					<text class="iconfont iconyuyan icon-font"
+						style="color: #fff;font-size: 32rpx;margin-top: 4rpx;"></text>
+					<text class="box-head-top-user-info-language-text">{{languageName}}</text>
 				</view>
 			</view>
 			<view class="box-head-bottom">
@@ -24,7 +25,8 @@
 				:refresher-angle-enable-change-continued="false" :touchmove-propagation-enabled="true"
 				:use-custom-refresher="true" style="height: 100%;">
 				<view class="box-content-order-list">
-					<view class="order-list-li" v-for="(item,index) in dataList" :key="index" @click.stop="orderDetails(item.id)">
+					<view class="order-list-li" v-for="(item,index) in dataList" :key="index"
+						@click.stop="orderDetails(item.id)">
 						<view class="order-list-li-top">
 							<view class="order-list-li-top-title">订单号{{item.out_trade_no}}</view>
 							<view class="order-list-li-top-msg" v-if="item.use_status==-1&&item.status==-1">未支付</view>
@@ -91,17 +93,39 @@
 			<no-data v-if="!isLoad" />
 		</view>
 		<view class="box-footer">
-			<merchant-tabbar @tabbarClick="tabbarClick" :activeIndex="activeIndex"></merchant-tabbar>
+			<merchant-tabbar ref="tabBarRef" @tabbarClick="tabbarClick" :activeIndex="activeIndex"></merchant-tabbar>
 		</view>
 		<uni-popup ref="popup" type="dialog">
 			<uni-popup-dialog type="warn" mode='base' title="警告" content="你确定要取消此订单吗？" :duration="2000"
-				:before-close="true" @close="close" @confirm="confirm"></uni-popup-dialog>
+				@confirm="confirm"></uni-popup-dialog>
+		</uni-popup>
+		<!-- 选择语言弹出层 -->
+		<uni-popup ref="languagePopup" type="center" :maskClick="false">
+			<view class="popup-box-main">
+				<view class="popup-list-box">
+					<view class="popup-title">
+						选择语言
+					</view>
+					<view class="popup-list">
+						<view class="popup-list-li" v-for="(item,index) in textList"
+							@click="selectLanguage(item.id,index)" :key="index"
+							:class="item.default==1?'popup-list-li-active':''">
+							<text>{{item.name}}</text>
+							<text class="iconfont icondagou icon-font" style="color:#5DBDFE;font-size: 40rpx;"
+								v-if="item.default==1"></text>
+						</view>
+					</view>
+					<view class="popup-btn" @click="confirmBtn">确认</view>
+				</view>
+				<view class="popup-close flex-center" @click="closeLanguage">
+					<text class="iconfont iconcuowu icon-font" style="color:#fff;font-size: 48rpx;"></text>
+				</view>
+			</view>
 		</uni-popup>
 	</view>
 </template>
 
 <script>
-
 	export default {
 		data() {
 			return {
@@ -110,33 +134,42 @@
 				dataList: [],
 				options: [{
 						title: "待付款",
-						number: "0"
+						number: "0",
+						id: 0
 					},
 					{
 						title: "待核销",
-						number: "0"
+						number: "0",
+						id: 1
 					},
 					{
 						title: "已核销",
-						number: "0"
+						number: "0",
+						id: 2
 					}, {
 						title: "已取消",
-						number: "0"
+						number: "0",
+						id: 3
 					},
 					{
 						title: "已退款",
-						number: "0"
+						number: "0",
+						id: 4
 					}
 				],
 				isData: false,
 				isLoad: true,
 				id: '',
+				infoData: {},
+				textList: [],
+				LanguageID: '',
+				LanguageCode: '',
+				selectIndex: 0, //当前选择的语言
+				languageName: 'EN',
 			};
 		},
 
-		onShow() {
 
-		},
 		onReady() {
 			// 获取顶部电量状态栏高度
 			uni.getSystemInfo({
@@ -147,6 +180,8 @@
 		},
 		onLoad() {
 			this.merchantHomeInfo()
+			this.getInfo()
+			this.languageList()
 		},
 		methods: {
 
@@ -182,15 +217,9 @@
 				this.$refs.popup.open()
 			},
 
-			// 弹窗点击取消
-			close(done) {
-				// TODO 做一些其他的事情，before-close 为true的情况下，手动执行 done 才会关闭对话框
-				// ...
-				done()
-			},
+
 			// 弹窗点击确认
 			confirm(done, value) {
-
 				this.apiput('api/v1/store/order/cancel_order/' + this.id).then(res => {
 					if (res.status == 200) {
 						//订单取消成功后 
@@ -210,11 +239,38 @@
 			merchantHomeInfo() {
 				this.apiget('api/v1/store/admin_info/store_home' + this.id).then(res => {
 					if (res.status == 200) {
-						this.options[0].number = res.data.payment_num
-						this.options[1].number = res.data.written_off_num
-						this.options[2].number = res.data.written_on_num
-						this.options[3].number = res.data.cancelled_num
-						this.options[4].number = res.data.refunded_num
+						this.options.map(item => {
+							switch (item.id) {
+								case 0:
+									item.number = res.data.payment_num
+									break;
+								case 1:
+									item.number = res.data.written_off_num
+									break;
+								case 2:
+									item.number = res.data.written_on_num
+									break;
+								case 3:
+									item.number = res.data.cancelled_num
+									break;
+								case 4:
+									item.number = res.data.refunded_num
+									break;
+							}
+						})
+					}
+					// 判断是否有选择语言
+					var isSelectLanguage = uni.getStorageSync('isStoreSelectLanguage');
+					if (!isSelectLanguage) {
+						this.languageCheck()
+					}
+				});
+			},
+			// 获取商家信息
+			getInfo() {
+				this.apiget('api/v1/store/admin_info', {}).then(res => {
+					if (res.status == 200) {
+						this.infoData = res.data
 					}
 				});
 			},
@@ -260,6 +316,64 @@
 						break;
 				}
 
+			},
+			// 点击切换语言
+			languageCheck() {
+				this.$refs.languagePopup.open()
+			},
+			// 选择语言
+			selectLanguage(id, index) {
+				this.textList.forEach(item => {
+					item.default = '-1'
+				})
+				this.textList[index].default = 1
+				this.selectIndex = index
+				this.LanguageID = this.textList[index].id
+				this.LanguageCode = this.textList[index].code
+			},
+
+			// 选择语言 关闭
+			closeLanguage() {
+				this.$refs.languagePopup.close()
+			},
+
+			// 语言选择确定按钮
+			confirmBtn() {
+				this.languageName = this.textList[this.selectIndex].name
+				uni.setStorageSync('isStoreSelectLanguage', true);
+				uni.setStorageSync('storeLanguageId', this.LanguageID);
+				uni.setStorageSync('storeLanguageCode', this.LanguageCode);
+				this.$refs.tabBarRef.languageChange()
+				this.$refs.languagePopup.close()
+			},
+
+			// 请求语言列表
+			languageList() {
+				this.apiget('language', {}).then(res => {
+					if (res.status == 200) {
+						this.textList = res.data.lng.reverse()
+						var langId = uni.getStorageSync('storeLanguageId');
+
+						if (langId) {
+							this.textList.forEach((item, index) => {
+								if (item.id == langId) { //判断默认选中语言包
+									this.textList.forEach(item => {
+										item.default = '-1'
+									})
+									this.textList[index].default = 1
+									this.languageName = item.name
+								}
+							})
+						} else {
+							this.textList.forEach((item, index) => {
+								if (item.default == 1) { //判断默认选中语言包
+									this.selectIndex = index
+									this.languageName = item.name
+								}
+							})
+						}
+					}
+				});
 			},
 		}
 	}
@@ -467,5 +581,89 @@
 		}
 
 		.box-footer {}
+
+		.popup-box-main {
+			position: relative;
+			width: 570rpx;
+			// height: 704rpx;
+			padding: 0 60rpx;
+			box-sizing: border-box;
+			background: #fff;
+			border-radius: 20rpx;
+
+			.popup-list-box {
+				height: 100%;
+				display: flex;
+				flex-direction: column;
+
+				.popup-title {
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					height: 128rpx;
+					font-size: 36rpx;
+					font-family: Source Han Sans CN;
+					font-weight: 400;
+					color: #000000;
+					text-align: center;
+				}
+
+				.popup-list {
+					flex: 1;
+					overflow: auto;
+
+					.popup-list-li {
+						position: relative;
+						display: flex;
+						align-items: center;
+						justify-content: center;
+						height: 80rpx;
+						margin-bottom: 20rpx;
+						background: #F7F7F7;
+						transition: 0.2s;
+
+						text {}
+
+						.icon-font {
+							position: absolute;
+							right: 30rpx;
+							top: 0;
+							bottom: 0;
+							margin: auto;
+						}
+					}
+
+					.popup-list-li-active {
+						color: #5DBDFE !important;
+						background: #d8ecfd !important;
+					}
+
+					.popup-list-li:last-child {
+						margin-bottom: 0;
+					}
+				}
+
+				.popup-btn {
+					margin: 20rpx 0 50rpx;
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					height: 88rpx;
+					background: #5DBDFE;
+					border-radius: 15rpx;
+					color: #fff;
+				}
+			}
+
+			.popup-close {
+				position: absolute;
+				top: -28rpx;
+				right: -28rpx;
+				width: 56rpx;
+				height: 56rpx;
+				border-radius: 50%;
+				background: #5DBDFE;
+			}
+		}
 	}
 </style>

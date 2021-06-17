@@ -4,7 +4,7 @@
 		<!-- 此处为了让reload时不自动滚动到顶部，需要设置auto-clean-list-when-reload和auto-scroll-to-top-when-reload为false，即在reload时关闭自动清空数组和自动滚动到顶部 -->
 		<z-paging ref="paging" :auto-clean-list-when-reload="false" :auto-scroll-to-top-when-reload="false"
 			:refresher-threshold="80" :use-custom-refresher="true" :touchmove-propagation-enabled='true'
-			:refresher-status.sync="refresherStatus" @query="queryList" :list.sync="dataList" style="height: 100%;">
+			:refresher-status.sync="refresherStatus" @query="queryList" :list.sync="dataList">
 			<view class="box-content-main">
 				<view class="box-content-main-content-tabs">
 					<view class="box-content-main-item flex-center" v-for="(item,index) in screenList"

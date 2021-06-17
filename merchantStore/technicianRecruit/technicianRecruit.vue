@@ -178,8 +178,7 @@
 			</view>
 		</popup-layer>
 		<uni-popup ref="popup" type="dialog">
-			<uni-popup-dialog type="warn" mode='base' title="警告" content="你确定要删除此条招聘信息吗？" :duration="2000"
-				:before-close="true" @close="close" @confirm="confirm"></uni-popup-dialog>
+			<uni-popup-dialog type="warn" mode='base' title="警告" content="你确定要删除此条招聘信息吗？" :duration="2000" @confirm="confirm"></uni-popup-dialog>
 		</uni-popup>
 	</view>
 </template>
@@ -397,10 +396,7 @@
 					url: "../releaseRecruitment/releaseRecruitment?id=" + id
 				})
 			},
-			// 弹窗点击取消
-			close(done) {
-				done()
-			},
+
 			// 弹窗点击确认
 			confirm(done, value) {
 				this.apidelte('api/v1/store/recruitment/del/' + this.skid, {}).then(res => {
@@ -639,6 +635,9 @@
 														font-size: 34rpx;
 														font-weight: 500;
 														color: #000;
+														overflow: hidden;
+														text-overflow: ellipsis;
+														white-space: nowrap;
 													}
 
 													.box-content-seek-list-li-info-top-text-title-score {

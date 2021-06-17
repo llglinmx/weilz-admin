@@ -6,7 +6,8 @@
 				<text class="confirm" @click="confirm">确定</text>
 			</view>
 			<view class="popup-box-content">
-				<picker-view :indicator-style="indicatorStyle" :value="value" @change="bindChange" class="picker-view" :key='keyVal'>
+				<picker-view :indicator-style="indicatorStyle" :value="value" @change="bindChange" class="picker-view"
+					:key='keyVal'>
 					<picker-view-column v-for="(i,j) in dataList" :key='j'>
 						<view class="item" v-for="(item,index) in i.data" :key="index">{{item.name||item}}</view>
 					</picker-view-column>
@@ -28,7 +29,7 @@
 				endTime: '',
 				hours: [],
 				minutes: [],
-				keyVal:0
+				keyVal: 0
 			};
 		},
 		props: {
@@ -36,52 +37,34 @@
 				type: Boolean,
 				default: false
 			},
-			checkStart:{
+			checkStart: {
 				// type:Object,
 				// default:{start:'',end:''}
 			},
-			checkEnd:{}
+			checkEnd: {},
+			isType: {}
 		},
-		watch:{
-			visible(val){
+		watch: {
+			visible(val) {
 				this.keyVal++
-				this.value = [0,0]
+				this.value = [0, 0]
 				this.hours = this.dataList[0].data[this.value[0]]
 				this.minutes = this.dataList[1].data[this.value[1]]
-			},
-			
-			checkStart(val){
-				this.value[0] = 0
-				if(val!=''){
-					console.log(val)
-					let sp = val.split(':')[0]
-					this.dataList[0].data.forEach((item,index)=>{
-						var split1 = item.split(' ')[0]
-						if(sp==split1){
-							this.value[0] = index
+
+				switch (this.isType) {
+					case 'start':
+						if (this.checkStart) {
+							this.changeStart(this.checkStart)
 						}
-					})
+						break;
+					case 'end':
+						if (this.checkEnd) {
+							this.changeEnd(this.checkEnd)
+						}
+						break;
 				}
 			},
-			checkEnd(val){
-				this.value[0] = 0
-				this.value[1] = 0
-				if(val!=''){
-					let sp = val.split(':')
-					this.dataList[0].data.forEach((item,index)=>{
-						var split1 = item.split(' ')
-						if(sp[0]==split1[0]){
-							this.value[0] = index
-						}
-					})
-					this.dataList[1].data.forEach((item,index)=>{
-						let split2 = item.split(' ')
-						if(sp[1]==split2[0]){
-							this.value[1] = index
-						}
-					})
-				}
-			}
+
 		},
 		mounted() {
 			this.getHour()
@@ -102,9 +85,9 @@
 				var hour = this.hours.split(' ');
 				var minute = this.minutes.split(' ');
 
-				var str={
-					hour:hour[0],
-					minute:minute[0]
+				var str = {
+					hour: hour[0],
+					minute: minute[0]
 				}
 				
 				this.$emit('confirm', str)
@@ -144,6 +127,44 @@
 				this.minutes = this.dataList[1].data[1]
 			},
 
+			changeStart(val) {
+				this.value[0] = 0
+				this.value[1] = 0
+				if (val != '') {
+					let sp = val.split(':')
+					this.dataList[0].data.forEach((item, index) => {
+						var split1 = item.split(' ')
+						if (sp[0] == split1[0]) {
+							this.value[0] = index
+						}
+					})
+					this.dataList[1].data.forEach((item, index) => {
+						let split2 = item.split(' ')
+						if (sp[1] == split2[0]) {
+							this.value[1] = index
+						}
+					})
+				}
+			},
+			changeEnd(val) {
+				this.value[0] = 0
+				this.value[1] = 0
+				if (val != '') {
+					let sp = val.split(':')
+					this.dataList[0].data.forEach((item, index) => {
+						var split1 = item.split(' ')
+						if (sp[0] == split1[0]) {
+							this.value[0] = index
+						}
+					})
+					this.dataList[1].data.forEach((item, index) => {
+						let split2 = item.split(' ')
+						if (sp[1] == split2[0]) {
+							this.value[1] = index
+						}
+					})
+				}
+			}
 		}
 	}
 </script>

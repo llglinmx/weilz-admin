@@ -152,14 +152,11 @@
 			<view class="box-footer-btn-edit flex-center" @click="release" v-if="!isEdit">发布</view>
 			<view class="box-footer-btn-edit flex-center" @click="modify" v-if="isEdit">修改</view>
 		</view>
-		<popup-list-select @cancel="cancelPopup" @confirm="confirmPopup" :visible='visible' :dataList="storeList">
-		</popup-list-select>
+		<popup-list-select @cancel="cancelPopup" @confirm="confirmPopup" :visible='visible' :dataList="storeList" />
 		<popup-list-select @cancel="categoryCancel" @confirm="categoryConfirm" :visible='isCategory'
-			:dataList="categoryList">
-		</popup-list-select>
+			:dataList="categoryList" />
 		<popup-list-select @cancel="workingCancel" @confirm="workingConfirm" :visible='isWorking'
-			:dataList="workingYearsList">
-		</popup-list-select>
+			:dataList="workingYearsList" />
 	</view>
 </template>
 
@@ -273,7 +270,27 @@
 				isCategory: false,
 				categoryName: '',
 				categoryList: [],
-				workingYearsList: ["不限", '1-2年', '2-4年', '5-8年', '10年以上'],
+				workingYearsList: [{
+						name: '不限',
+						id: 0
+					},
+					{
+						name: '1-2年',
+						id: 4
+					},
+					{
+						name: '2-4 年',
+						id: 3
+					},
+					{
+						name: '5-8年',
+						id: 2
+					},
+					{
+						name: '10年以上',
+						id: 1
+					}
+				],
 				isWorking: false,
 			};
 		},
@@ -442,7 +459,7 @@
 			},
 			// 工龄确定按钮
 			workingConfirm(e) {
-				this.from.serviceYear = e
+				this.from.serviceYear = e.name
 			},
 
 			// 是否公开
