@@ -20,7 +20,7 @@
 										<text>{{infoData.year}}年{{infoData.month}}月{{infoData.day}}</text>
 										<text style="margin-left: 10rpx;">{{infoData.week}}</text>
 									</view>
-									<view class="box-content-main-wrap-text-right">
+									<view class="box-content-main-wrap-text-right"  @click="teamAppointment">
 										<text>查看当日预约</text>
 										<text class="iconfont icongengduo icon-font"
 											style="color: #45B3FE;font-size: 28rpx;margin-top: 4rpx;"></text>
@@ -284,6 +284,19 @@
 					}
 				});
 			},
+			// 查看团队排班当日预约
+			teamAppointment(){
+				var str = {
+					year: this.staffData.year,
+					month: this.staffData.month,
+					day: this.staffData.day,
+					store: this.id,
+				}
+				uni.navigateTo({
+					url: "../teamSchedulingInfo/teamSchedulingInfo?data=" + JSON.stringify(str)
+				})
+			},
+			
 			// 查看技师当日预约
 			technicianAppointment() {
 				var str = {

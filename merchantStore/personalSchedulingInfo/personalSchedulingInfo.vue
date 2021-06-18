@@ -7,29 +7,31 @@
 			<view class="box-content-wrap">
 				<view class="box-content-wrap-user">
 					<view class="box-content-wrap-user-image">
-						<image src="../../static/images/userImage.png" mode="aspectFill"></image>
+						<image :src="listArr.simg" mode="aspectFill"></image>
 					</view>
-					<view class="box-content-wrap-user-text">张小小</view>
+					<view class="box-content-wrap-user-text">{{listArr.name}}</view>
 				</view>
 			</view>
 			<view class="box-content-list">
-				<view class="box-content-list-li" v-for="(item,index) in timeList" :key="index">
+				<view class="box-content-list-li" v-for="(item,index) in timeList" :key="index"
+					:style="{marginBottom:isCheckChange(item.time,item.data.startTime,item.data.endTime)?'20rpx':0}">
 					<view class="box-content-list-li-time">{{item.time}}</view>
-					<view class="box-content-list-li-info">
-						<view class="box-content-list-li-info-wrap">
-							<view class="list-li-info-wrap-item" v-for="(i,j) in item.data"
-								:class="[{bgColor:isTime(item.time,i.startTime,i.endTime)}]">
+					<view class="box-content-list-li-info" v-show="item.isShow"
+						:class="[{bgColorRed:isCheck(item.status)}]">
+						<view class="box-content-list-li-info-wrap"
+							:style="{display:item.isFlag?'block':'none'}">
+							<view class="list-li-info-wrap-item">
 								<text class="iconfont iconshizhong icon-font" style="font-size: 28rpx;"></text>
-								<text>{{i.startTime}}-{{i.endTime}}AM</text>
+								<text>{{item.data.startTime}}-{{item.data.endTime}}AM</text>
 							</view>
-							<view class="list-li-info-wrap-item" v-for="(i,j) in item.data">
+							<view class="list-li-info-wrap-item">
 								<text class="iconfont icon70BasicIcons-all-05 icon-font"
 									style="font-size: 28rpx;"></text>
-								<text>{{i.personnel}}</text>
+								<text>{{item.data.personnel}}</text>
 							</view>
-							<view class="list-li-info-wrap-item" v-for="(i,j) in item.data" :key="index">
+							<view class="list-li-info-wrap-item">
 								<text class="iconfont icondingdan1 icon-font" style="font-size: 28rpx;"></text>
-								<text>{{i.content}}</text>
+								<text>{{item.data.content}}</text>
 							</view>
 						</view>
 					</view>
@@ -43,197 +45,19 @@
 </template>
 
 <script>
-	import navTitleBalck from "../../components/nav-title-balck/nav-title-balck.vue"
+	import {
+		timeList
+	} from '../../static/js/publicFile.js'
 	export default {
 		data() {
 			return {
 				barHeight: 0, //顶部电量导航栏高度
 				title: '2021年02月12日预约日程',
-				timeList: [{
-						time: '09:00',
-						data: [{
-							startTime: '09:00',
-							endTime: '09:30',
-							personnel: '赵女士',
-							content: '脸部护肤 30分钟'
-						}, ]
-					},
-					{
-						time: '09:30',
-						data: [{
-							startTime: '09:30',
-							endTime: '10:30',
-							personnel: '赵女士',
-							content: '脸部护肤 60分钟'
-						}, ]
-					},
-					{
-						time: '10:00',
-						data: [{
-							startTime: '09:30',
-							endTime: '10:30',
-							personnel: '赵女士',
-							content: '脸部护肤 60分钟'
-						}, ]
-					},
-					{
-						time: '10:30',
-						data: [{
-							startTime: '09:30',
-							endTime: '10:30',
-							personnel: '赵女士',
-							content: '脸部护肤 60分钟'
-						}, ]
-					},
-					{
-						time: '11:00',
-						data: [{
-							startTime: '11:00',
-							endTime: '13:30',
-							personnel: '张女士',
-							content: '脸部护肤 150分钟'
-						}, ]
-					},
-					{
-						time: '11:30',
-						data: [{
-							startTime: '11:00',
-							endTime: '13:30',
-							personnel: '张女士',
-							content: '脸部护肤 150分钟'
-						}, ]
-					},
-					{
-						time: '12:00',
-						data: [{
-							startTime: '11:00',
-							endTime: '13:30',
-							personnel: '张女士',
-							content: '脸部护肤 150分钟'
-						}, ]
-					},
-					{
-						time: '12:30',
-						data: [{
-							startTime: '11:00',
-							endTime: '13:30',
-							personnel: '张女士',
-							content: '脸部护肤 150分钟'
-						}, ]
-					},
-					{
-						time: '13:00',
-						data: [{
-							startTime: '11:00',
-							endTime: '13:30',
-							personnel: '张女士',
-							content: '脸部护肤 150分钟'
-						}, ]
-					},
-					{
-						time: '13:30',
-						data: [{
-							startTime: '11:00',
-							endTime: '13:30',
-							personnel: '张女士',
-							content: '脸部护肤 150分钟'
-						}, ]
-					},
-					{
-						time: '14:00',
-						data: [{
-							startTime: '14:00',
-							endTime: '14:30',
-							personnel: '章女士',
-							content: '脸部护肤 30分钟'
-						}, ]
-					},
-					{
-						time: '14:30',
-						data: [{
-							startTime: '14:00',
-							endTime: '14:30',
-							personnel: '章女士',
-							content: '脸部护肤 30分钟'
-						}, ]
-					},
-					{
-						time: '15:00',
-						data: [{
-							startTime: '15:00',
-							endTime: '16:30',
-							personnel: '李女士',
-							content: '脸部护肤 90分钟'
-						}, ]
-					},
-					{
-						time: '15:30',
-						data: [{
-							startTime: '15:00',
-							endTime: '16:30',
-							personnel: '李女士',
-							content: '脸部护肤 90分钟'
-						}, ]
-					},
-					{
-						time: '16:00',
-						data: [{
-							startTime: '15:00',
-							endTime: '16:30',
-							personnel: '李女士',
-							content: '脸部护肤 90分钟'
-						}, ]
-					},
-					{
-						time: '16:30',
-						data: [{
-							startTime: '15:00',
-							endTime: '16:30',
-							personnel: '李女士',
-							content: '脸部护肤 90分钟'
-						}, ]
-					},
-					{
-						time: '17:00',
-						data: [{
-							startTime: '17:00',
-							endTime: '18:30',
-							personnel: '吴女士',
-							content: '脸部护肤90分钟'
-						}, ]
-					},
-					{
-						time: '17:30',
-						data: [{
-							startTime: '17:00',
-							endTime: '18:30',
-							personnel: '吴女士',
-							content: '脸部护肤90分钟'
-						}, ]
-					},
-					{
-						time: '18:00',
-						data: [{
-							startTime: '17:00',
-							endTime: '18:30',
-							personnel: '吴女士',
-							content: '脸部护肤90分钟'
-						}, ]
-					},
-					{
-						time: '18:30',
-						data: [{
-							startTime: '17:00',
-							endTime: '18:30',
-							personnel: '吴女士',
-							content: '脸部护肤90分钟'
-						}, ]
-					},
-				]
+				timeList: [],
+				dataArr: {},
+				listArr: {},
+				startNum: 0,
 			};
-		},
-		components: {
-			navTitleBalck
 		},
 		onReady() {
 			// 获取顶部电量状态栏高度
@@ -245,24 +69,102 @@
 		},
 		onLoad(options) {
 			var data = JSON.parse(options.data)
+			this.dataArr = data
 			this.title = data.year + '年' + data.month + '月' + data.day + "日预约日程"
-			this.getSchedulingInfo(data)
+
+			this.initChange()
 		},
 		methods: {
-			isTime(initTime, state, end) {
-				// console.log(initTime, state, end)
+			isCheck(status) {
+				var bool = status == 1 ? true : false
+				return bool
+			},
+
+			isCheckChange(initTime, start, end) {
+				let spInit = initTime.split(':')
+				let spEnd = end.split(':')
+				var bool = false
+				if (spInit[0] == spEnd[0]) {
+					bool = true
+				}
+				return bool
+			},
+
+			isEnd(initTime, start, end) {
+
+				let spInit = initTime.split(':')
+				let spStart = start.split(':')
+
+				if (spInit[0] == spStart[0]) {
+					// bool = true
+				}
+				var bool = true
+				return bool
+			},
+
+			// 初始获取时间
+			initChange() {
+				timeList.forEach(item => {
+					var str = {
+						time: item.time,
+						isShow: false,
+						status: '-1',
+						isFlag: false,
+						data: {
+							startTime: '09:00',
+							endTime: '09:30',
+							personnel: '赵女士',
+							content: '脸部护肤 30分钟'
+						}
+					}
+					this.timeList.push(str)
+				})
+				this.getSchedulingInfo(this.dataArr)
 			},
 
 			getSchedulingInfo(e) {
 				this.apiget('api/v1/store/engineer/engineer_schedule', {
 					store: e.store,
-					date:( e.year + '-' + e.month + '-' + e.day),
+					date: (e.year + '-' + e.month + '-' + e.day),
 					ids: e.engineer_id
 				}).then(res => {
 					if (res.status == 200) {
-						
+						var list = res.data[0]
+						this.listArr = res.data[0]
+						var flag = false
+						if (list.order_info.length != 0) {
+
+							list.order_info.map(ele => {
+								this.timeList.map(item => {
+									let init = this.timeChange(item.time)
+									let start = this.timeChange(ele.plan_start)
+									let end = this.timeChange(ele.plan_end)
+									if (init >= start && init <= end) {
+										item.data.startTime = ele.plan_start
+										item.data.endTime = ele.plan_end
+										item.status = ele.use_status
+										item.data.personnel = ele.name
+										item.data.content = ele.reserve_name + ' ' + (end -
+											start) + '分钟'
+										item.isShow = true
+
+										if (this.startNum != start) {
+											item.isFlag = true
+										}
+										this.startNum = start
+									}
+								})
+							})
+							console.log(this.timeList)
+						}
 					}
 				});
+			},
+
+			timeChange(item) {
+				var t = item.split(':');
+				var times = 60 * parseInt(t[0]) + parseInt(t[1])
+				return times
 			},
 		}
 	}
@@ -303,6 +205,7 @@
 						image {
 							width: 64rpx;
 							height: 64rpx;
+							border-radius: 50%;
 						}
 					}
 
@@ -356,7 +259,11 @@
 								}
 							}
 						}
+					}
 
+					.bgColorRed {
+						background: #CEEBFF;
+						color: #5DBDFE;
 					}
 				}
 

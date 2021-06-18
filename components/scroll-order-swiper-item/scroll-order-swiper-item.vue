@@ -55,8 +55,8 @@
 									<view class="order-list-li-appointment-info-wrap-item-title">预 约 人：
 									</view>
 									<view class="order-list-li-appointment-info-wrap-item-text">
-										<text>{{item.member_name}}</text>
-										<text>{{item.member_mobile}}</text>
+										<text>{{item.name}}</text>
+										<text>{{item.mobile}}</text>
 									</view>
 								</view>
 								<view class="order-list-li-appointment-info-wrap-item">

@@ -17,7 +17,7 @@
 			<view class="box-content-order-info">
 				<view class="box-content-order-info-title">订单信息</view>
 				<view class="box-content-order-list-li-wrap">
-					<view class="order-list-li-wrap-item" v-for="(i,j) in 3">
+					<view class="order-list-li-wrap-item" v-for="(i,j) in 1">
 						<view class="order-list-li-wrap-item-image">
 							<image src="../../static/images/001.png" mode="aspectFill"></image>
 						</view>
@@ -32,7 +32,7 @@
 								<view class="wrap-item-info-top-msg">￥{{orderDetails.payable}}</view>
 							</view>
 							<view class="order-list-li-wrap-item-info-box">
-								<view class="order-list-li-wrap-item-info-box-list">
+								<view class="order-list-li-wrap-item-info-box-list" v-if="false">
 									<view class="order-list-li-wrap-item-info-box-list-li" v-for="(s,k) in 2">泰式按摩
 									</view>
 								</view>
@@ -72,17 +72,17 @@
 				<view class="box-content-order-info-text">
 					<view class="box-content-order-info-text-list">
 						<view class="box-content-order-info-text-list-title">项目总价</view>
-						<view class="box-content-order-info-text-list-price">￥{{orderDetails.amount}}</view>
+						<view class="box-content-order-info-text-list-price">￥{{orderDetails.payable}}</view>
 					</view>
-				<!-- 	<view class="box-content-order-info-text-list">
-						<view class="box-content-order-info-text-list-title">使用优惠券</view>
-						<view class="box-content-order-info-text-list-price">￥100.00</view>
-					</view> -->
+					<view class="box-content-order-info-text-list" style="margin-top: 20rpx;">
+						<view class="box-content-order-info-text-list-title">技师服务费</view>
+						<view class="box-content-order-info-text-list-price">￥{{orderDetails.member_fee}}</view>
+					</view>
 				</view>
 				<view class="box-content-order-info-price">
 					<view class="box-content-order-info-price-text">实付款：</view>
 					<view class="present-price">
-						￥<text>396.00</text>
+						￥<text>{{orderDetails.amount}}</text>
 					</view>
 				</view>
 			</view>
@@ -169,23 +169,21 @@
 		<view class="box-footer">
 			<view class="flex-center cancel" @click="cancelOrder" v-if="orderDetails.status!=-2">取消订单</view>
 			<view class="flex-center cancel" v-if="orderDetails.status==-2&&orderDetails.use_status==-1">订单已失效</view>
-			<view class="box-font-btn flex-center" @click="confirmWriteOff" v-if="orderDetails.status==1&&orderDetails.use_status==-1">确认核销</view>
+			<view class="box-font-btn flex-center" @click="confirmWriteOff"
+				v-if="orderDetails.status==1&&orderDetails.use_status==-1">确认核销</view>
 		</view>
 		<uni-popup ref="popup" type="dialog">
-			<uni-popup-dialog type="warn" mode='base' title="警告"
-				content="你确定要取消此订单吗" :duration="2000" :before-close="true"
-				@close="close" @confirm="confirm"></uni-popup-dialog>
+			<uni-popup-dialog type="warn" mode='base' title="警告" content="你确定要取消此订单吗" :duration="2000" @confirm="confirm"></uni-popup-dialog>
 		</uni-popup>
 	</view>
 </template>
 
 <script>
-
 	export default {
 		data() {
 			return {
 				barHeight: 0, //顶部电量导航栏高度
-				id:'',
+				id: '',
 				orderDetails: {
 					out_trade_no: '',
 					store_name: '',
@@ -239,25 +237,20 @@
 				});
 			},
 			// 取消订单
-			cancelOrder(){
+			cancelOrder() {
 				this.$refs.popup.open()
 			},
-			// 弹窗点击取消
-			close(done) {
-				// TODO 做一些其他的事情，before-close 为true的情况下，手动执行 done 才会关闭对话框
-				// ...
-				done()
-			},
-			confirm(done, value) {
+
+			confirm() {
 				this.apiput('api/v1/store/order/cancel_order/' + this.id).then(res => {
 					if (res.status == 200) {
-						this.$store.commit('upOrderState',true)
+						this.$store.commit('upOrderState', true)
 						uni.showToast({
-							title:"订单取消成功",
-							icon:"none"
+							title: "订单取消成功",
+							icon: "none"
 						})
 						uni.navigateBack({
-							delta:1
+							delta: 1
 						})
 					} else {
 						uni.showToast({
@@ -265,20 +258,20 @@
 							icon: 'none'
 						})
 					}
-					done()
+				// this.$refs.popup.close()
 				});
 			},
 			// 确认核销接口
-			confirmWriteOff(){
+			confirmWriteOff() {
 				this.apiput('api/v1/store/order/write_off/' + this.id).then(res => {
 					if (res.status == 200) {
-						this.$store.commit('upOrderState',true)
+						this.$store.commit('upOrderState', true)
 						uni.showToast({
-							title:"订单核销成功",
-							icon:"none"
+							title: "订单核销成功",
+							icon: "none"
 						})
 						uni.navigateBack({
-							delta:1
+							delta: 1
 						})
 					} else {
 						uni.showToast({

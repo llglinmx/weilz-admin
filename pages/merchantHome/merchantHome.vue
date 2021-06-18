@@ -40,7 +40,7 @@
 								<view class="order-list-li-info-wrap-item">
 									<view class="order-list-li-info-wrap-item-title">顾客</view>
 									<view class="order-list-li-info-wrap-item-msg">
-										<text>{{item.member_name}}</text>
+										<text>{{item.name}}</text>
 										<text>{{item.mobile}}</text>
 									</view>
 								</view>
