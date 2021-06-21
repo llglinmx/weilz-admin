@@ -76,8 +76,7 @@
 
 		</z-paging>
 		<uni-popup ref="popup" type="dialog">
-			<uni-popup-dialog type="warn" mode='base' title="警告" content="你确定要删除此项目吗？" :duration="2000"
-				:before-close="true" @close="close" @confirm="confirm"></uni-popup-dialog>
+			<uni-popup-dialog type="warn" mode='base' title="警告" content="你确定要删除此项目吗？" :duration="2000"  @confirm="confirm"></uni-popup-dialog>
 		</uni-popup>
 	</view>
 </template>
@@ -221,12 +220,9 @@
 				this.$refs.popup.open()
 			},
 
-			// 弹窗点击取消
-			close(done) {
-				done()
-			},
+			
 			// 弹窗点击确认
-			confirm(done, value) {
+			confirm(value) {
 				this.apidelte('api/v1/store/Service_reservation/del/' + this.id, {}).then(res => {
 					if (res.status == 200) {
 						uni.showToast({
@@ -240,7 +236,6 @@
 							icon: 'none'
 						})
 					}
-					done()
 				})
 			},
 			// 批量删除

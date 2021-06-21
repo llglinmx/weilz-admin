@@ -60,8 +60,7 @@
 			<btn-sky-blue style="width: 100%;" btnName="添加项目" @btnClick="addProject" />
 		</view>
 		<uni-popup ref="popup" type="dialog">
-			<uni-popup-dialog type="warn" mode='base' title="警告" content="你确定要删除所选项目吗？" :duration="2000"
-				:before-close="true" @close="close" @confirm="confirm"></uni-popup-dialog>
+			<uni-popup-dialog type="warn" mode='base' title="警告" content="你确定要删除所选项目吗？" :duration="2000"  @confirm="confirm"></uni-popup-dialog>
 		</uni-popup>
 	</view>
 </template>
@@ -117,14 +116,9 @@
 				this.$refs.popup.open()
 			},
 
-			// 弹窗点击取消
-			close(done) {
-				done()
-			},
 			// 弹窗点击确认
-			confirm(done, value) {
+			confirm() {
 				this.$refs.check[this.defaultIndex].batchDelete() //调用子组件删除方法
-				done()
 			},
 
 

@@ -190,10 +190,7 @@
 </template>
 
 <script>
-	import navTitleBalck from "../../components/nav-title-balck/nav-title-balck.vue"
-	import btnSkyBlue from "../../components/btn-sky-blue/btn-sky-blue.vue"
-	import storeListSelect from '../../components/store-list-select/store-list-select.vue'
-	import selectDate from '../../components/select-date/select-date.vue'
+
 	export default {
 		data() {
 			return {
@@ -228,12 +225,7 @@
 				}
 			};
 		},
-		components: {
-			navTitleBalck,
-			btnSkyBlue,
-			storeListSelect,
-			selectDate
-		},
+
 		onReady() {
 			// 获取顶部电量状态栏高度
 			uni.getSystemInfo({

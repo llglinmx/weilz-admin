@@ -35,7 +35,7 @@
 							<view class="box-content-data-list-li-item flex-center">{{item.order_sum}}
 							</view>
 							<view class="box-content-data-list-li-item">
-								<text>258</text>
+								<text>{{item.total_orders}}</text>
 								<text class="iconfont icongengduo icon-font"
 									style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
 							</view>
@@ -44,8 +44,8 @@
 
 				</view>
 				<view class="box-content-data" v-if="dataList.length==0">
-					<loading v-if="isLoad"></loading>
-					<no-data v-if="dataList.length<=0&&!isLoad"></no-data>
+					<loading-merchant v-if="isLoad" />
+					<no-data v-if="dataList.length<=0&&!isLoad" />
 				</view>
 				<view class="box-content-data-drop-down" :style="{height:open?'560rpx':'0'}">
 					<view class="box-content-data-drop-down-li" v-for="(item,index) in downList"
@@ -70,6 +70,8 @@
 				dataList: [],
 				refresherStatus: 0,
 				sum: 1,
+				id: '',
+				type: '2',
 				open: false,
 				echarts: echarts,
 				storeList: [],
@@ -124,11 +126,13 @@
 				],
 				storeMenuList1: [{
 						name: '本周',
-						isCheck: false
+						isCheck: false,
+						type: 2
 					},
 					{
 						name: '本月',
-						isCheck: false
+						isCheck: false,
+						type: 1
 					},
 				],
 				storeMenuList2: [{
@@ -190,7 +194,7 @@
 						item.isCheck = false
 					})
 					this.storeMenuList1[index].isCheck = true
-
+					this.type = this.storeMenuList1[index].type
 					this.screenList.forEach(item => {
 						item.isCheck = false
 					})
@@ -201,6 +205,7 @@
 						item.isCheck = false
 					})
 					this.storeMenuList2[index].isCheck = true
+					this.id = this.storeMenuList2[index].id
 					this.screenList.forEach(item => {
 						item.isCheck = false
 					})
@@ -218,6 +223,7 @@
 					// this.screenList[this.screenIndex].isCheck = true
 					this.screenList[this.screenIndex].name = this.storeMenuList3[index].name
 				}
+				this.getStoreStatistics(1, 20)
 				this.open = false
 			},
 
@@ -238,7 +244,9 @@
 				var vuedata = {
 					page_index: num, // 请求页数，
 					each_page: size, // 请求条数
-					switch_type: 1
+					switch_type: 1,
+					eid: this.id,
+					type: this.type
 				}
 				this.apiget('api/v1/store/statistics/store_census', vuedata).then(res => {
 					if (res.status == 200) {
@@ -310,11 +318,13 @@
 				}
 				this.apiget('api/v1/store/statistics/store_census', vuedata).then(res => {
 					if (res.status == 200) {
-						if (res.data.list.length != 0) {
+						if (res.data.length != 0) {
 							this.storeList = res.data.list
 							this.$refs.paging.addData(res.data.list)
 							this.totalNum = res.data.total_rows
+							return false
 						}
+						this.$refs.paging.addData(res.data)
 					}
 
 				});

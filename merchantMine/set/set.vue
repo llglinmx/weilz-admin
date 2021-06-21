@@ -44,6 +44,7 @@
 				this.apiput('api/v1/logout', data).then(res => {
 					if (res.status == 200) {
 						uni.removeStorageSync('UToken');
+						uni.removeStorageSync("isLoginType")
 						uni.showToast({
 							icon: 'none',
 							duration: 1000,
@@ -53,7 +54,6 @@
 							url: "../../pages/login/login?type=business"
 						})
 					}
-					this.$refs.popup.close()
 				});
 			},
 		}

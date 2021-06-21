@@ -33,23 +33,31 @@
 
 <style>
 	@import url("./static/css/iconfont/iconfont.css");
-	page{
+
+	page {
 		height: 100%;
 		font-family: Source Han Sans CN;
 		font-weight: 400;
 	}
-	.flex-center{
+
+	.flex-center {
 		display: flex;
 		align-items: center;
 		justify-content: center;
 	}
-	.icon-font{
+
+	.icon-font {
 		display: flex;
 		align-items: center;
 		font-weight: 500;
 	}
-	.content{
+
+	.content-box {
 		height: 100%;
 	}
+	.content {
+		height: 100%;
+	}
+
 	/*每个页面公共css */
 </style>

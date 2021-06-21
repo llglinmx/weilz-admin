@@ -320,7 +320,7 @@
 				let currentDate = currenY + '-' + (currenM < 10 ? '0' + currenM : currenM) + '-' + (currenS < 10 ? '0' +
 					currenS : currenS) //当前日期
 					
-				if (isChange) {
+				if (this.isChange) {
 					this.$emit('schedulingChange', {
 						startTime: startTime,
 						endTime: endTime,

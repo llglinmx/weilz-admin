@@ -7,7 +7,8 @@
 						:class="isSearch?'box-head-search-box-icon-active':'box-head-search-box-icon-no-active'">
 						<text class="iconfont iconsousuo1 icon-font"
 							style="color: #999;font-size: 40rpx;margin-top: 4rpx;" @click="getStore(1,20)"></text>
-						<input type="text"  @keydown.enter="getStore(1,20)" v-model.trim="searchVal" @focus="focus" @blur="blur" placeholder="搜索门店" />
+						<input type="text" @keydown.enter="getStore(1,20)" v-model.trim="searchVal" @focus="focus"
+							@blur="blur" placeholder="搜索门店" />
 					</view>
 				</view>
 			</view>
@@ -61,7 +62,7 @@
 		</view>
 		<view class="box-content" :style="{display:!isData?'block':'none'}">
 			<loading-merchant v-if="isLoad" />
-			<no-data v-if="!isLoad" />
+			<no-data msg="暂无任何门店" v-if="!isLoad" />
 		</view>
 		<view class="box-footer">
 			<merchant-tabbar @tabbarClick="tabbarClick" :activeIndex="activeIndex"></merchant-tabbar>
@@ -70,7 +71,6 @@
 </template>
 
 <script>
-
 	export default {
 
 		data() {
@@ -81,7 +81,7 @@
 				dataList: [],
 				isData: false,
 				isLoad: true,
-				searchVal:'',
+				searchVal: '',
 			};
 		},
 
@@ -97,8 +97,8 @@
 
 		},
 		onShow() {
-			if(this.$store.state.isAddStore){
-				this.getStore(1,20)
+			if (this.$store.state.isAddStore) {
+				this.getStore(1, 20)
 			}
 		},
 		methods: {
@@ -121,13 +121,13 @@
 			// 添加门店
 			addStore() {
 				this.$store.commit("upMapObj", {})
-				this.$store.commit("upAddStore",false)
-				var str ={
-					type:'add',
-					id:''
+				this.$store.commit("upAddStore", false)
+				var str = {
+					type: 'add',
+					id: ''
 				}
 				uni.navigateTo({
-					url: "../../merchantStore/addStore/addStore?data="+JSON.stringify(str)
+					url: "../../merchantStore/addStore/addStore?data=" + JSON.stringify(str)
 				})
 			},
 			// 上拉 下拉
@@ -145,13 +145,15 @@
 				}
 				this.apiget('api/v1/store/store_information', vuedata).then(res => {
 					if (res.status == 200) {
-						if (res.data.member.length != 0) {
+						var list = []
+						if (res.data.length != 0) {
 							this.isData = true
-							var list = res.data.member
+							list = res.data.member
 							this.$refs.paging1.complete(list);
 						} else {
 							this.isData = false
 							this.isLoad = false
+							this.$refs.paging1.complete(list);
 						}
 					}
 				});
@@ -159,9 +161,9 @@
 
 
 			// tabbar点击
-			tabbarClick(index) {
-				this.activeIndex = index
-				switch (index) {
+			tabbarClick(obj) {
+				this.activeIndex = obj.index
+				switch (obj.id) {
 					case 0: //首页
 						uni.redirectTo({
 							url: "../merchantHome/merchantHome"

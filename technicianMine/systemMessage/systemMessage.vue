@@ -72,12 +72,13 @@
 				}
 				this.apiget('api/v1/members/msg', vuedata).then(res => {
 					if (res.status == 200) {
-						if (res.data.data.length != 0) {
-							console.log(11)
+						let list = []
+						if (res.data.length != 0) {
+							list = res.data.data
 							this.isData = true
-							let list = res.data.data
 							this.$refs.paging1.complete(list);
 						} else {
+							this.$refs.paging1.complete(list);
 							this.isData = false
 							this.isLoad = false
 						}

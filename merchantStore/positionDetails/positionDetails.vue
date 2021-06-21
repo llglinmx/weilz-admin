@@ -69,8 +69,7 @@
 			<view class="box-footer-btn-edit flex-center" @click="modify">修改</view>
 		</view>
 		<uni-popup ref="popup" type="dialog">
-			<uni-popup-dialog type="warn" mode='base' title="警告" content="你确定要删除此条招聘信息吗？" :duration="2000"
-				:before-close="true" @close="close" @confirm="confirm"></uni-popup-dialog>
+			<uni-popup-dialog type="warn" mode='base' title="警告" content="你确定要删除此条招聘信息吗？" :duration="2000"  @confirm="confirm"></uni-popup-dialog>
 		</uni-popup>
 	</view>
 </template>
@@ -127,21 +126,21 @@
 
 			// 修改资料
 			modify() {
-				// 编辑按钮
+				var str = {
+					id: this.id,
+					type: 'edit'
+				}
 				uni.navigateTo({
-					url: "../releaseRecruitment/releaseRecruitment?id=" + this.id
+					url: "../releaseRecruitment/releaseRecruitment?data=" + JSON.stringify(str)
 				})
 			},
 			// 删除
 			deleteRecruitment() {
 				this.$refs.popup.open()
 			},
-			// 弹窗点击取消
-			close(done) {
-				done()
-			},
+
 			// 弹窗点击确认
-			confirm(done, value) {
+			confirm() {
 				this.apidelte('api/v1/store/recruitment/del/' + this.id, {}).then(res => {
 					if (res.status == 200) {
 						this.$store.commit("upAdd", true)
@@ -155,7 +154,7 @@
 							})
 						}, 500)
 					}
-					done()
+					
 				});
 			},
 		}

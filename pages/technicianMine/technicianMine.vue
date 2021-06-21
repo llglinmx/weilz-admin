@@ -196,8 +196,12 @@
 						break;
 						// 日程安排
 					case 1:
+						let str = {
+							store: this.userInfo.store,
+							id: this.userInfo.id
+						}
 						uni.navigateTo({
-							url: "../../technicianMine/schedule/schedule"
+							url: "../../technicianMine/schedule/schedule?data=" + JSON.stringify(str)
 						})
 						break;
 						// 客户评价

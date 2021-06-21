@@ -6,7 +6,7 @@
 					<text class="iconfont iconfanhui" style="color: #333;font-size: 36rpx;"></text>
 					<!-- <image src="../../static/images/back.png" mode="aspectFill"></image> -->
 				</view>
-				<view class="box-head-nav-text" @click="register">注册</view>
+				<!-- <view class="box-head-nav-text" @click="register">注册</view> -->
 			</view>
 		</view>
 		<view class="box-content">

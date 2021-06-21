@@ -15,7 +15,8 @@
 					:refresher-angle-enable-change-continued="false" :touchmove-propagation-enabled="true"
 					:use-custom-refresher="true" style="height: 100%;">
 					<view class="box-content-screen-main-list">
-						<view class="screen-main-list-li" v-for="(item,index) in dataList" :key="item.id">
+						<view class="screen-main-list-li" v-for="(item,index) in dataList" :key="item.id"
+							@click="positionDeatils(item.id)">
 							<view class="screen-main-list-li-top">
 								<view class="screen-main-list-li-top-title">{{item.position}}</view>
 								<view class="screen-main-list-li-top-text">{{item.salary}}/月</view>
@@ -52,7 +53,6 @@
 </template>
 
 <script>
-
 	export default {
 		data() {
 			return {
@@ -83,7 +83,7 @@
 			},
 
 
-			// 订单列表
+			// 招聘列表
 			recruitList(num, size) {
 				var vuedata = {
 					status: 1,
@@ -100,10 +100,16 @@
 						}
 						this.isData = false
 						this.isLoad = false
-
 					}
 				});
 			},
+			// 查看职位详情
+			positionDeatils(id) {
+				uni.navigateTo({
+					url: '../recruitmentDetails/recruitmentDetails?id=' + id
+				})
+			},
+
 			typeSplit(val) {
 				var str = val.split(',')
 				return str

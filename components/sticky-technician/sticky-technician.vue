@@ -16,7 +16,7 @@
 				</view>
 
 				<view class="box-content-statistical-chart">
-					<l-echart ref="chart"></l-echart>
+					<l-echart ref="chart" />
 				</view>
 				<view class="box-content-data-title" style="z-index: 100;position: sticky;top :0;">
 					<view class="box-content-data-title-item flex-center">{{totalNum}}位技师</view>
@@ -42,8 +42,8 @@
 
 				</view>
 				<view class="box-content-data" v-if="goodsList.length==0">
-					<loading v-if="isLoad"></loading>
-					<no-data v-if="goodsList.length<=0&&!isLoad"></no-data>
+					<loading-merchant v-if="isLoad" />
+					<no-data v-if="goodsList.length<=0&&!isLoad" />
 				</view>
 				<view class="box-content-data-drop-down" :style="{height:open?'560rpx':'0'}">
 					<view class="box-content-data-drop-down-li" v-for="(item,index) in downList"
@@ -57,7 +57,6 @@
 </template>
 
 <script>
-
 	import * as echarts from '../../uni_modules/lime-echart/components/lime-echart/echarts.js';
 	import lEchart from '../../uni_modules/lime-echart/components/lime-echart/index.vue'
 
@@ -69,6 +68,8 @@
 				dataList: [],
 				goodsList: [],
 				refresherStatus: 0,
+				id: '',
+				type: 2,
 				sum: 1,
 				open: false,
 				echarts: echarts,
@@ -121,17 +122,19 @@
 				],
 				storeMenuList1: [{
 						name: '本周',
-						isCheck: false
+						isCheck: false,
+						type: 2
 					},
 					{
 						name: '本月',
-						isCheck: false
+						isCheck: false,
+						type: 1
 					},
 				],
 				storeMenuList2: [{
 					name: '全部技师',
 					isCheck: false,
-					id: -1
+					id: ''
 				}, ],
 				storeMenuList3: [{
 					name: '总收入',
@@ -183,6 +186,7 @@
 						item.isCheck = false
 					})
 					this.storeMenuList1[index].isCheck = true
+					this.type = this.storeMenuList1[index].type
 
 					this.screenList.forEach(item => {
 						item.isCheck = false
@@ -194,11 +198,13 @@
 						item.isCheck = false
 					})
 					this.storeMenuList2[index].isCheck = true
+					this.id = this.storeMenuList2[index].id
 					this.screenList.forEach(item => {
 						item.isCheck = false
 					})
 					// this.screenList[this.screenIndex].isCheck = true
 					this.screenList[this.screenIndex].name = this.storeMenuList2[index].name
+					this.option.series = []
 				} else if (this.screenIndex == 2) {
 					this.storeMenuList3.forEach(item => {
 						item.isCheck = false
@@ -212,13 +218,14 @@
 					this.screenList[this.screenIndex].name = this.storeMenuList3[index].name
 				}
 				this.open = false
+				this.getTechnicianStatistics(1, 20)
 			},
 
 
 			// 门店详情
 			storeDetail(id) {
 				uni.navigateTo({
-					url: "../storeData/storeData?id=" + id
+					url: "../../merchantMine/technicianData/technicianData?id=" + id
 				})
 			},
 
@@ -231,7 +238,9 @@
 				var vuedata = {
 					page_index: num, // 请求页数，
 					each_page: size, // 请求条数
-					switch_type: 1
+					switch_type: 1,
+					eid: this.id,
+					type: this.type
 				}
 				this.apiget('api/v1/store/Statistics', vuedata).then(res => {
 					if (res.status == 200) {
@@ -266,6 +275,9 @@
 								this.storeMenuList2.push(str)
 							})
 							this.option.series = arrs
+	
+							this.initEcharts()
+
 
 							this.screenList.forEach(item => {
 								item.isCheck = false
@@ -276,6 +288,7 @@
 								obj[next.id] ? '' : obj[next.id] = true && item.push(next);
 								return item;
 							}, []);
+
 
 							this.open = false
 						}
@@ -293,7 +306,7 @@
 
 						this.sum++
 						this.isLoad = false
-						this.initEcharts()
+						// this.initEcharts()
 					}
 				});
 			},

@@ -103,7 +103,6 @@
 </template>
 
 <script>
-
 	export default {
 		data() {
 			return {
@@ -169,10 +168,13 @@
 				}
 				this.apiget('api/v1/store/order', vuedata).then(res => {
 					if (res.status == 200) {
-						let list = res.data.data
+						if (res.data.length != 0) {
+							let list = res.data.data
+							this.firstLoaded = true;
+						} else {
+							this.$refs.paging.addData([]);
+						}
 
-						this.firstLoaded = true;
-						this.$refs.paging.addData(list);
 
 						this.isLoad = false
 					}

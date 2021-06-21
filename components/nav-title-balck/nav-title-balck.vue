@@ -48,7 +48,7 @@
 				display: flex;
 				align-items: center;
 				justify-content: center;
-				width: 80rpx;
+				width: 50rpx;
 				// height: 34rpx;
 				margin-right: 20rpx;
 				box-sizing: border-box;

@@ -68,7 +68,7 @@
 								</z-paging>
 							</view>
 							<view class="box-content-main" :style="{display:!isData?'block':'none'}">
-								<loading v-if="isLoad" />
+								<loading-merchant v-if="isLoad" />
 								<no-data v-if="!isLoad" />
 							</view>
 						</swiper-item>
@@ -178,13 +178,13 @@
 			</view>
 		</popup-layer>
 		<uni-popup ref="popup" type="dialog">
-			<uni-popup-dialog type="warn" mode='base' title="警告" content="你确定要删除此条招聘信息吗？" :duration="2000" @confirm="confirm"></uni-popup-dialog>
+			<uni-popup-dialog type="warn" mode='base' title="警告" content="你确定要删除此条招聘信息吗？" :duration="2000"
+				@confirm="confirm"></uni-popup-dialog>
 		</uni-popup>
 	</view>
 </template>
 
 <script>
-
 	export default {
 		data() {
 			return {
@@ -381,8 +381,12 @@
 
 			// 应聘记录
 			applicationRecord(id) {
+				var str ={
+					id:id,
+					store:this.id
+				}
 				uni.navigateTo({
-					url: "../applicationRecord/applicationRecord?id=" + id
+					url: "../applicationRecord/applicationRecord?data=" + JSON.stringify(str)
 				})
 			},
 			// 删除
@@ -392,13 +396,17 @@
 			},
 			// 编辑按钮
 			edit(id) {
+				var str = {
+					id: id,
+					type: 'edit'
+				}
 				uni.navigateTo({
-					url: "../releaseRecruitment/releaseRecruitment?id=" + id
+					url: "../releaseRecruitment/releaseRecruitment?data=" + JSON.stringify(str)
 				})
 			},
 
 			// 弹窗点击确认
-			confirm(done, value) {
+			confirm() {
 				this.apidelte('api/v1/store/recruitment/del/' + this.skid, {}).then(res => {
 					if (res.status == 200) {
 						uni.showToast({
@@ -407,7 +415,6 @@
 						})
 						this.getRecruitmentInfo(1, 10)
 					}
-					done()
 				});
 			},
 
@@ -420,9 +427,13 @@
 
 			// 发布新招聘
 			release() {
+				var str = {
+					store: this.id,
+					type: 'add'
+				}
 				this.$store.commit("upAdd", false)
 				uni.navigateTo({
-					url: "../releaseRecruitment/releaseRecruitment"
+					url: "../releaseRecruitment/releaseRecruitment?data=" + JSON.stringify(str)
 				})
 			},
 

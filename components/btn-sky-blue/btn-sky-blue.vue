@@ -28,6 +28,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		width: 100%;
 		height: 88rpx;
 		background: #5DBDFE;
 		border-radius: 15rpx;

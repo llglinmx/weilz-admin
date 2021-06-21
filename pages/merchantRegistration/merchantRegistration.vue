@@ -236,8 +236,7 @@
 			</view>
 		</view>
 		<uni-popup ref="popup" type="dialog">
-			<uni-popup-dialog type="warn" mode='base' title="警告" :content="content" :duration="2000"
-				:before-close="true" @close="close" @confirm="confirm"></uni-popup-dialog>
+			<uni-popup-dialog type="warn" mode='base' title="警告" :content="content" :duration="2000"  @confirm="confirm"></uni-popup-dialog>
 		</uni-popup>
 
 		<select-address :visible="visible" @cancel='regionCancel' @confirm='regionConfirm' />
@@ -365,18 +364,12 @@
 					this.$refs.popup.open()
 				}
 			},
-			// 弹窗点击取消
-			close(done) {
-				// TODO 做一些其他的事情，before-close 为true的情况下，手动执行 done 才会关闭对话框
-				// ...
-				done()
-			},
+
 			// 弹窗点击确认
-			confirm(done, value) {
+			confirm() {
 				uni.navigateBack({
 					delta: 1
 				})
-				done()
 			},
 
 

@@ -153,6 +153,7 @@ s<template>
 									:style="{display:index==0?'none':'block'}"></text>
 							</view>
 						</view>
+						<view class="box-content-list-li-info-msg">多个环境内容用英文逗号 ',' 隔开</view>
 					</view>
 				</view>
 			</view>
@@ -221,10 +222,10 @@ s<template>
 </template>
 
 <script>
-	import navTitleBalck from "../../components/nav-title-balck/nav-title-balck.vue"
-	import btnSkyBlue from "../../components/btn-sky-blue/btn-sky-blue.vue"
-	import popupListSelect from '../../components/popup-list-select/popup-list-select.vue'
-import {areaCodeList} from '../../static/js/publicFile.js'
+	import {
+		areaCodeList,
+		stateList
+	} from '../../static/js/publicFile.js'
 
 	import {
 		pathToBase64,
@@ -279,11 +280,7 @@ import {areaCodeList} from '../../static/js/publicFile.js'
 				}]
 			};
 		},
-		components: {
-			navTitleBalck,
-			btnSkyBlue,
-			popupListSelect
-		},
+
 		onReady() {
 			// 获取顶部电量状态栏高度
 			uni.getSystemInfo({
@@ -659,7 +656,7 @@ import {areaCodeList} from '../../static/js/publicFile.js'
 
 						this.from.format = data.format
 						this.normsList = data.format
-						
+
 						if (JSON.parse(data.custom_services).length != 0) {
 							this.customServiceList = JSON.parse(data.custom_services)
 						}
@@ -829,6 +826,10 @@ import {areaCodeList} from '../../static/js/publicFile.js'
 								width: 60rpx;
 								height: 70rpx;
 							}
+						}
+
+						.box-content-list-li-info-msg {
+							font-size: 28rpx;
 						}
 
 						.box-content-list-li-info-textarea {

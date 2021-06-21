@@ -6,32 +6,43 @@
 		<view class="box-content">
 			<view class="box-content-main">
 				<view class="box-content-calendar">
-					<calendar name="calendar" :defaultTime="time" :extraData="extraData" @calendarTap="calendarTap" @monthTap="monthTap" />
+					<calendar @initChange='getSchedule' @calendarTap="personalSchedulingInfo" />
 				</view>
 				<view class="box-content-arrange">
 					<view class="box-content-arrange-top">
 						<view class="box-content-arrange-top-left">
-							<text class="date">2021年02月12日</text>
-							<text class="week">周五</text>
+							<text class="date">{{dataObj.year}}年{{dataObj.month}}月{{dataObj.day}}日</text>
+							<text class="week">{{dataObj.week}}</text>
 						</view>
-						<view class="box-content-arrange-top-right">
-							<text>查看当日预约</text>
-							<text class="iconfont icongengduo icon-font" style="color: #26BF82;font-size: 28rpx;margin-top: 4rpx;"></text>
+						<view class="box-content-arrange-top-right" @click="technicianOwned">
+							<text>查看所有预约</text>
+							<text class="iconfont icongengduo icon-font"
+								style="color: #26BF82;font-size: 28rpx;margin-top: 4rpx;"></text>
 						</view>
 					</view>
-					<view class="box-content-arrange-text">门店名称：罗约蓝池·温泉SPA</view>
-					<view class="box-content-arrange-text">上班时间：09:00-22:00</view>
+					<view class="box-content-arrange-text" style="margin-bottom: 10rpx;">门店名称：{{storeData.name}}</view>
+					<view class="box-content-arrange-text" style="display: flex;flex-wrap: wrap;"
+						v-if="dataTimeList.length!=0">
+						<text>上班时间：</text>
+						<text v-for="(item,index) in dataTimeList" :key='index'
+							style="margin-right: 10rpx;">{{item.start}}-{{item.end}}</text>
+					</view>
+					<view class="box-content-arrange-text" style="display: flex;flex-wrap: wrap;"
+						v-if="dataTimeList.length==0">
+						<text>上班时间：</text>
+						<text>未排班</text>
+					</view>
 				</view>
 				<view class="box-content-cumulative">
 					<view class="box-content-cumulative-tilte">当月累计</view>
 					<view class="box-content-cumulative-bottom">
 						<view class="box-content-cumulative-bottom-text">
 							<text class="dot" style="background: #26BF82;"></text>
-							<text class="msg">正常排班 24 天</text>
+							<text class="msg">正常排班 {{arrData.working_days}} 天</text>
 						</view>
 						<view class="box-content-cumulative-bottom-text">
 							<text class="dot" style="background: #FF8366;"></text>
-							<text class="msg">休息班次 6 天</text>
+							<text class="msg">休息班次 {{arrData.rest_days}} 天</text>
 						</view>
 					</view>
 				</view>
@@ -42,45 +53,20 @@
 </template>
 
 <script>
-	import navTitleBalck from "../../components/nav-title-balck/nav-title-balck.vue"
-	import calendar from "../../components/tale-calendar/calendar.vue"
 	export default {
 		data() {
 			return {
 				barHeight: 0, //顶部电量导航栏高度
-				time: {
-					year: 2020,
-					month: 5
-				},
-				extraData: [{
-						date: '2020-6-3',
-						value: '签到',
-						dot: true,
-						active: true
-					},
-					{
-						date: '2020-6-5',
-						value: '未签到',
-						dot: true,
-						active: false
-					},
-					{
-						date: '2020-7-3',
-						value: '签到',
-						dot: true,
-						active: true
-					}
-				],
-				month: {
-					year: 2020,
-					month: 6
-				}, //当前年月
+				store: '', //门店id
+				id: '', //技师id
+				dataObj: {},
+				arrData: {},
+				timeList: {},
+				storeData: {},
+				dataTimeList: []
 			};
 		},
-		components: {
-			navTitleBalck,
-			calendar
-		},
+
 		onReady() {
 			// 获取顶部电量状态栏高度
 			uni.getSystemInfo({
@@ -88,29 +74,107 @@
 					this.barHeight = res.statusBarHeight
 				}
 			});
-
+		},
+		onLoad(options) {
+			var data = JSON.parse(options.data)
+			this.id = data.id
+			this.store = data.store
+			this.getStoreInfo(this.id)
 		},
 		methods: {
-			calendarTap(e) {
-				console.log(e);
-			},
-			monthTap(val) {
-				let {
-					year,
-					month
-				} = val;
-				this.month = {
-					year: year,
-					month: month,
+
+			// 查看技师当日预约
+			technicianAppointment() {
+				var str = {
+					year: this.dataObj.year,
+					month: this.dataObj.month,
+					day: this.dataObj.day,
+					engineer_id: this.id,
+					store: this.store,
 				}
-				// 此处获取动态的数据，赋值给extraData
-				this.extraData = [{
-					date: '2020-11-3',
-					value: '签到',
-					dot: true,
-					active: true
-				}];
-			}
+				uni.navigateTo({
+					url: "../technicianSchedulingInfo/technicianSchedulingInfo?data=" + JSON.stringify(str)
+				})
+			},
+
+			// 查看技师所有预约
+			technicianOwned() {
+				var str = {
+					id:this.id,
+					year: this.dataObj.year,
+					month: this.dataObj.month,
+					day: this.dataObj.day,
+				}
+				uni.navigateTo({
+					url: '../allSchedules/allSchedules?data=' + JSON.stringify(str)
+				})
+			},
+
+			// 日期点击
+			personalSchedulingInfo(e) {
+				this.dataObj = e
+
+				let dataTime = e.year + '-' + (e.month < 10 ? '0' + e.month : e.month) + '-' + (e.day < 10 ? '0' + e.day :
+					e.day)
+
+				for (let key in this.timeList) {
+					if (key == dataTime) {
+						this.dataTimeList = this.timeList[key]
+					}
+				}
+				this.getGoToWork(dataTime)
+				setTimeout(() => {
+					this.technicianAppointment()
+				}, 13)
+			},
+
+
+			// 获取排班表
+			getSchedule(e) {
+				this.getGoToWork(e.currentDate)
+
+				this.dataObj = e
+				this.apiget('api/v1/store/engineer/schedule_list', {
+					store: this.store,
+					engineer: this.id,
+					start_time: e.startTime,
+					end_time: e.endTime,
+				}).then(res => {
+					if (res.status == 200) {
+
+						var list = res.data.schedule_time
+
+						this.timeList = res.data.schedule_time
+
+						for (let key in list) {
+							if (key == e.currentDate) {
+								this.dataTimeList = list[key]
+							}
+						}
+					}
+				});
+			},
+
+			// 获取上班天数
+			getGoToWork(dataTime) {
+				this.apiget('api/v1/store/engineer/schedule_list', {
+					store: this.store,
+					engineer: this.id,
+					current_time: dataTime
+				}).then(res => {
+					if (res.status == 200) {
+						this.arrData = res.data
+					}
+				});
+			},
+			// 获取门店
+			getStoreInfo(id) {
+				this.apiget('api/v1/store/store_information/' + id, {}).then(res => {
+					if (res.status == 200) {
+						this.storeData = res.data.member
+					}
+				});
+			},
 		}
 	}
 </script>
@@ -144,7 +208,7 @@
 					display: flex;
 					flex-direction: column;
 					justify-content: space-between;
-					height: 208rpx;
+					min-height: 208rpx;
 					padding: 30rpx;
 					box-sizing: border-box;
 					border: 1rpx solid #26BF82;

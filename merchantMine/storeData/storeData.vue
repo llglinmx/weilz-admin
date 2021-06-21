@@ -7,13 +7,15 @@
 			<view class="box-content-info">
 				<view class="box-content-info-top">
 					<view class="box-content-info-top-left">
-						<image src="../../static/images/business-blue-ico.png" mode="aspectFill"></image>
-						<text>中山路店</text>
+						<text class="iconfont iconshangjia icon-font"
+							style="color: #5DBDFE;font-size: 32rpx;margin-right: 10rpx;margin-top: 10rpx;"></text>
+						<text>{{dataObj.name}}</text>
 					</view>
-					<view class="box-content-info-top-right">
-						<text>本周</text>
+					<view class="box-content-info-top-right" @click="isShow = true">
+						<text>{{msg}}</text>
 						<text class="iconfont iconxiangxiajiantou icon-font"
-							style="color: #333;font-size: 28rpx"></text>
+							style="color: #333;font-size: 28rpx;transition: 0.3s;"
+							:style="{transform:isShow?'rotate(180deg)':'rotate(0deg)'}"></text>
 					</view>
 				</view>
 				<view class="box-content-info-bottom">
@@ -23,7 +25,7 @@
 								<text style="border: 3rpx solid #5DBDFE;" class="dot"></text>
 								<text>总收入</text>
 							</view>
-							<view class="box-content-info-bottom-item-text">32158</view>
+							<view class="box-content-info-bottom-item-text">{{dataObj.order_sum}}</view>
 						</view>
 					</view>
 					<view class="box-content-info-bottom-item">
@@ -32,16 +34,16 @@
 								<text style="border: 3rpx solid #FFDB3A;" class="dot"></text>
 								<text>订单量</text>
 							</view>
-							<view class="box-content-info-bottom-item-text">32158</view>
+							<view class="box-content-info-bottom-item-text">{{dataObj.order_allnum}}</view>
 						</view>
 					</view>
 					<view class="box-content-info-bottom-item">
 						<view class="box-content-info-bottom-item-wrap">
 							<view class="box-content-info-bottom-item-title">
 								<text style="border: 3rpx solid #FFDB3A;" class="dot"></text>
-								<text>会员充值</text>
+								<text>银行卡支付</text>
 							</view>
-							<view class="box-content-info-bottom-item-text">32158</view>
+							<view class="box-content-info-bottom-item-text">{{dataObj.bank_amount}}</view>
 						</view>
 					</view>
 					<view class="box-content-info-bottom-item">
@@ -50,7 +52,7 @@
 								<text style="border: 3rpx solid #FFDB3A;" class="dot"></text>
 								<text>余额支付</text>
 							</view>
-							<view class="box-content-info-bottom-item-text">32158</view>
+							<view class="box-content-info-bottom-item-text">{{dataObj.over_amount}}</view>
 						</view>
 					</view>
 					<view class="box-content-info-bottom-item">
@@ -59,7 +61,7 @@
 								<text style="border: 3rpx solid #FFDB3A;" class="dot"></text>
 								<text>微信支付</text>
 							</view>
-							<view class="box-content-info-bottom-item-text">32158</view>
+							<view class="box-content-info-bottom-item-text">{{dataObj.wx_amount}}</view>
 						</view>
 					</view>
 					<view class="box-content-info-bottom-item">
@@ -68,7 +70,7 @@
 								<text style="border: 3rpx solid #FFDB3A;" class="dot"></text>
 								<text>通用套餐收入</text>
 							</view>
-							<view class="box-content-info-bottom-item-text">32158</view>
+							<view class="box-content-info-bottom-item-text">{{dataObj.pack_amount}}</view>
 						</view>
 					</view>
 					<view class="box-content-info-bottom-item">
@@ -78,7 +80,7 @@
 								<text>退款金额</text>
 							</view>
 							<view class="box-content-info-bottom-item-text">
-								<text>552512</text>
+								<text>{{dataObj.refund_amount}}</text>
 								<text class="iconfont iconwenhao icon-font"
 									style="color: #FF3333;font-size: 32rpx;"></text>
 							</view>
@@ -90,7 +92,7 @@
 								<text style="border: 3rpx solid #FFDB3A;" class="dot"></text>
 								<text>线下收入</text>
 							</view>
-							<view class="box-content-info-bottom-item-text">32158</view>
+							<view class="box-content-info-bottom-item-text">{{dataObj.line_amount}}</view>
 						</view>
 					</view>
 					<view class="box-content-info-bottom-item">
@@ -99,7 +101,7 @@
 								<text style="border: 3rpx solid #FF4D4D;" class="dot"></text>
 								<text>平台提成</text>
 							</view>
-							<view class="box-content-info-bottom-item-text">32158</view>
+							<view class="box-content-info-bottom-item-text">{{dataObj.fee_amount}}</view>
 						</view>
 					</view>
 				</view>
@@ -111,59 +113,52 @@
 				</view>
 				<view class="box-content-data-list">
 					<swiper class="swiper-box" :current="defaultIndex" @change="tabChange">
-						<swiper-item class="swiper-box-item-list">
-							<view class="box-content-data-list-main">
-								<view class="box-content-data-list-main-item" v-for="(item,index) in 20"
-									@click="refundDetails">
-									<view class="box-content-data-list-main-item-left">
-										<view class="list-main-item-left-text">订单号：DSH35693596738</view>
-										<view class="list-main-item-left-msg">2021年01月10日 12:00:23</view>
-									</view>
-									<view class="box-content-data-list-main-item-right">
-										<text>-129.00</text>
-										<text class="iconfont icongengduo icon-font"
-											style="color: #ccc;font-size: 28rpx;margin-top: 4rpx;"></text>
-									</view>
-								</view>
-							</view>
-						</swiper-item>
-						<swiper-item class="swiper-box-item-list">
-							<view class="box-content-data-list-main">
-								<view class="box-content-data-list-main-item" v-for="(item,index) in 20"
-									@click="packageDetails">
-									<view class="box-content-data-list-main-item-left">
-										<view class="list-main-item-left-text">订单号：DSH35693596738</view>
-										<view class="list-main-item-left-msg">2021年01月10日 12:00:23</view>
-									</view>
-									<view class="box-content-data-list-main-item-right">
-										<text>-129.00</text>
-										<text class="iconfont icongengduo icon-font"
-											style="color: #ccc;font-size: 28rpx;margin-top: 4rpx;"></text>
-									</view>
-								</view>
-							</view>
+						<swiper-item class="swiper-box-item-list" v-for="(item,index) in tabsList" :key='index'>
+							<store-data-swiper ref='refSwiper' :time='timeObj' :id='id' :type='type' :tabIndex="index"
+								:currentIndex="defaultIndex" @initChange='initChange' />
 						</swiper-item>
 					</swiper>
 				</view>
 			</view>
 		</view>
+
+		<popup-list-select @cancel="cancel" @confirm="confirm" :visible='isShow' :dataList="dataList" />
 	</view>
 </template>
 
 <script>
-	import navTitleWhite from "../../components/nav-title-white/nav-title-white.vue"
-	import merchantTabs from "../../components/merchant-tabs/merchant-tabs.vue"
+	import {
+		checkList
+	} from '../../static/js/publicFile.js'
 	export default {
 		data() {
 			return {
 				barHeight: 0, //顶部电量导航栏高度
-				tabsList: ["退款订单", "套餐订单"],
+				tabsList: [{
+						name: "退款订单",
+						type: 1
+					},
+					{
+						name: "成交订单",
+						type: 2
+					},
+				],
 				defaultIndex: 0, //当前滑动的页面
+				id: '',
+				type: 1,
+				timeObj: {
+					startTime: '',
+					endTime: ''
+				},
+				dataObj: {},
+				isShow: false,
+				msg: '全部',
+				dataList: []
 			};
 		},
-		components: {
-			navTitleWhite,
-			merchantTabs
+		onLoad(options) {
+			this.id = options.id
+			this.dataList = checkList
 		},
 		onReady() {
 			// 获取顶部电量状态栏高度
@@ -174,27 +169,62 @@
 			});
 		},
 		methods: {
-			// 退款订单详情
-			refundDetails() {
-				uni.navigateTo({
-					url: "../refundOrderDetails/refundOrderDetails"
-				})
+
+			initChange(e) {
+				this.dataObj = e
 			},
-			// 套餐订单详情
-			packageDetails() {
-				uni.navigateTo({
-					url: "../packageOrderDdetails/packageOrderDdetails"
-				})
+			// 弹出层取消按钮
+			cancel(e) {
+				this.isShow = e
 			},
+
+			// 弹出层确认按钮
+			confirm(e) {
+				this.msg = e.name;
+				let date1 = new Date();
+				let time1 = date1.getFullYear() + "-" + this.isTody(date1.getMonth() + 1) + "-" + date1.getDate() + ' ' +
+					date1.getHours() + ":" + date1.getMinutes() + ':' + date1.getSeconds();
+				if (e.id == -1) {
+					this.timeObj.startTime = ''
+					this.timeObj.endTime = ''
+				} else if (e.id == 1) {
+					this.timeObj.startTime = time1
+					this.timeObj.endTime = time1
+				} else if (e.id == 2 || e.id == 3) {
+					this.timeObj.startTime = time1
+					this.timeObj.endTime = this.funcitonDate(e.day)
+				}
+				this.$refs.refSwiper[this.defaultIndex].getDataList(1, 20)
+			},
+
+			// 根据传递进来的天数 获取到对应日期
+			funcitonDate(day) {
+				var date1 = new Date(),
+					time1 = date1.getFullYear() + "-" + (date1.getMonth() + 1) + "-" + date1.getDate(); //time1表示当前时间
+				var date2 = new Date(date1);
+				date2.setDate(date1.getDate() + day);
+				var time2 = date2.getFullYear() + "-" + this.isTody(date2.getMonth() + 1) + "-" + date2.getDate() + ' ' +
+					date2
+					.getHours() + ":" + date2.getMinutes() + ':' + date2.getSeconds();
+				return time2
+			},
+
+			// 是否小于10 小于则补0
+			isTody(day) {
+				return day < 10 ? '0' + day : day
+			},
+
 
 			// tabs 点击
 			tabClick(e) {
 				this.defaultIndex = e
+				this.type = this.tabsList[this.defaultIndex].type
 			},
 			// 滑动切换列表
 			tabChange(e) {
 				this.$refs.boxTabs.tabToIndex(e.detail.current)
 				this.defaultIndex = e.detail.current
+				this.type = this.tabsList[this.defaultIndex].type
 			},
 		}
 	}
@@ -212,8 +242,10 @@
 		}
 
 		.box-content {
+			display: flex;
+			flex-direction: column;
 			flex: 1;
-			overflow-y: scroll;
+			// overflow-y: scroll;
 
 			.box-content-info {
 				padding: 30rpx 40rpx 40rpx;
@@ -311,58 +343,18 @@
 				}
 
 				.box-content-data-list {
-					flex: 1;
-					overflow-y: scroll;
+					// flex: 1;
+					// overflow-y: scroll;
+					height: 100%;
 
 					.swiper-box {
 						height: 100%;
-						overflow-y: scroll;
+						// overflow-y: scroll;
 
 						.swiper-box-item-list {
 							height: 100%;
-							overflow-y: scroll;
+							// overflow-y: scroll;
 
-							.box-content-data-list-main {
-								padding-left: 40rpx;
-								box-sizing: border-box;
-								margin-bottom: 40rpx;
-
-								.box-content-data-list-main-item {
-									display: flex;
-									align-items: center;
-									padding: 30rpx 40rpx 30rpx 0;
-									box-sizing: border-box;
-									border-bottom: 1rpx solid #ededed;
-
-									.box-content-data-list-main-item-left {
-										flex: 1;
-										margin-right: 20rpx;
-
-										.list-main-item-left-text {
-											font-size: 30rpx;
-											color: #000;
-										}
-
-										.list-main-item-left-msg {
-											margin-top: 10rpx;
-											font-size: 24rpx;
-											color: #999;
-										}
-
-									}
-
-									.box-content-data-list-main-item-right {
-										display: flex;
-										align-items: center;
-										font-size: 32rpx;
-										color: #FF4D4D;
-
-										.icon-font {
-											margin-left: 20rpx;
-										}
-									}
-								}
-							}
 
 						}
 					}

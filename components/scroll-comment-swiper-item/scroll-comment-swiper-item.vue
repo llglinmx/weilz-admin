@@ -6,8 +6,8 @@
 			:touchmove-propagation-enabled="true" :use-custom-refresher="true" style="height: 100%;">
 			<!-- 自定义下拉刷新view，若不设置，则使用z-paging自带的下拉刷新view -->
 			<!-- <custom-refresher slot="refresher"></custom-refresher> -->
-			<loading v-if="isLoad"></loading>
-			<no-data v-if="dataList.length<=0&&!isLoad"></no-data>
+			<loading-merchant v-if="isLoad" />
+			<no-data v-if="dataList.length<=0&&!isLoad" />
 			<!-- <empty-view slot="empty"></empty-view> -->
 			<!-- 如果希望其他view跟着页面滚动，可以放在z-paging标签内 -->
 			<!-- list数据，建议像下方这样在item外层套一个view，而非直接for循环item，因为slot插入有数量限制 -->
@@ -15,46 +15,48 @@
 				<view class="box-content-item-type">
 					<view class="box-content-item-type-li flex-center" @click="typeClick(index)"
 						:class="typeIndex==index?'box-content-item-type-li-active':''" v-for="(item,index) in typeList"
-						:key="index">{{item}}({{index+10}})</view>
+						:key="index">{{item.name}}</view>
 				</view>
 				<view class="box-content-item-comment">
 					<view class="box-content-item-comment-list">
-						<view class="box-content-item-comment-list-li" v-for="(item,index) in 10" :key="index">
+						<view class="box-content-item-comment-list-li" v-for="(item,index) in dataList" :key="item.id">
 							<view class="comment-list-li-top">
 								<view class="comment-list-li-top-image">
-									<image src="../../static/images/userImage.png" mode="aspectFill">
+									<image :src="item.member_avatar" mode="aspectFill">
 									</image>
 								</view>
 								<view class="comment-list-li-top-info">
-									<view class="comment-list-li-top-info-title">SKB露娜可可</view>
+									<view class="comment-list-li-top-info-title">{{item.member_nickname}}</view>
 									<view class="comment-list-li-top-info-score">
-										<text class="iconfont iconwujiaoxing icon-font"
+										<uni-rate allow-half margin='6' size='14' v-model="item.star" />
+										<!-- <text>服务项目：{{item.service_name}}</text> -->
+										<!-- <text class="iconfont iconwujiaoxing icon-font"
 											style="color: #FFCD4D;font-size: 28rpx;" v-for="item in 5"></text>
-										<text>5分</text>
+										<text>5分</text> -->
 									</view>
 								</view>
 							</view>
 							<view class="comment-list-li-msg-content">
-								经常累的时候过来按摩，技师服务很好，按摩还会询问力度，很会聊天，这里地理位置也很好找，环境也挺好的，服务员也很热情，来这里整体给我的感觉都是不错的，推荐大家来这家店体验一下。
+								{{item.content}}
 							</view>
 							<view class="comment-list-li-msg-time">
-								2020年10月20日 16:25:01
+								{{item.createtime}}
 							</view>
 							<view class="comment-list-li-msg-image-arr">
-								<image src="../../static/images/2.png" mode="aspectFill" v-for="(i,j) in 4" :key="j">
+								<image :src="i" mode="aspectFill" v-for="(i,j) in item.bimg" :key="j" @click="previewImg(i,j)">
 								</image>
 							</view>
-							<view class="comment-list-li-msg-reply" v-if="index!=1">
+							<view class="comment-list-li-msg-reply" v-if="false">
 								<view class="comment-list-li-msg-reply-text">我的回复：</view>
 								<view class="comment-list-li-msg-reply-content">
 									感谢您的支持与认可！我们会继续努力提供更优质的服务与项目感谢您的支持与认可！我们会继续努力提供更优质的服务与项目
 								</view>
 							</view>
-							<view class="comment-list-li-msg-wrap">
+							<view class="comment-list-li-msg-wrap" v-if="false">
 								<view class="comment-list-li-msg-wrap-text">查看订单</view>
-								<view class="comment-list-li-msg-wrap-btn flex-center" v-if="index!=1">追加回复
+								<view class="comment-list-li-msg-wrap-btn flex-center">追加回复
 								</view>
-								<view class="comment-list-li-msg-wrap-btn flex-center" v-else>回复顾客</view>
+								<view class="comment-list-li-msg-wrap-btn flex-center">回复顾客</view>
 							</view>
 						</view>
 					</view>
@@ -66,14 +68,32 @@
 </template>
 
 <script>
-
+	import mixins from '../../static/js/mixins.js'
 	export default {
+		mixins: [mixins],
 		data() {
 			return {
 				dataList: [],
 				firstLoaded: false,
 				isLoad: true,
-				typeList: ["全部", "未回复", "已回复"],
+				typeList: [{
+						name: '全部',
+						id: 0
+					},
+					{
+						name: '好评',
+						id: 1
+					},
+					{
+						name: '中评',
+						id: 2
+					},
+					{
+						name: '差评',
+						id: 3
+					},
+				],
+				starId: 0,
 				typeIndex: 0, //当前选择的评论类型
 			}
 		},
@@ -110,28 +130,18 @@
 		},
 		methods: {
 			queryList(pageNo, pageSize) {
-				//组件加载时会自动触发此方法，因此默认页面加载时会自动触发，无需手动调用
-				//这里的pageNo和pageSize会自动计算好，直接传给服务器即可
-				//模拟请求服务器获取分页数据，请替换成自己的网络请求
-				// this.$request.queryList(pageNo, pageSize, this.tabIndex + 1, (data) => {
-				// 	this.$refs.paging.complete(data);
-				// 	this.firstLoaded = true;
-				// })
-				var page = {
-					num: pageNo,
-					size: pageSize,
-
-				}
-				this.getDataList(page)
+				this.getDataList(pageNo, pageSize)
 			},
 
 
 			// 获取数据
-			getDataList(page) {
+			getDataList(num, size) {
 				var vuedata = {
-					page_index: page.num, // 请求页数，
-					each_page: page.size, // 请求条数
-					com_type: this.tabIndex != 1 ? '' : 2
+					page_index: num, // 请求页数，
+					each_page: size, // 请求条数
+					com_type: this.tabIndex != 1 ? '' : 2,
+					star: this.starId,
+					type: 2
 				}
 				this.apiget('pc/comment', vuedata).then(res => {
 					if (res.status == 200) {
@@ -147,6 +157,8 @@
 			// 评论类型点击
 			typeClick(index) {
 				this.typeIndex = index
+				this.starId = this.typeList[index].id
+				this.getDataList(1, 20)
 			},
 
 		}
@@ -182,7 +194,8 @@
 
 			.box-content-item-type-li-active {
 				border: 1rpx solid #26BF82;
-				color: #26BF82;
+				color: #fff;
+				background: #26BF82;
 			}
 		}
 
@@ -218,6 +231,7 @@
 							image {
 								width: 88rpx;
 								height: 88rpx;
+								border-radius: 50%;
 							}
 						}
 
@@ -232,6 +246,7 @@
 							}
 
 							.comment-list-li-top-info-score {
+								margin-top: 10rpx;
 								display: flex;
 								align-items: center;
 
@@ -260,11 +275,13 @@
 						align-items: center;
 						margin-top: 20rpx;
 
+
 						image {
 							width: 160rpx;
 							height: 160rpx;
 							margin-right: 10rpx;
 							margin-bottom: 10rpx;
+							border-radius: 10rpx;
 						}
 
 						image:nth-child(4n) {

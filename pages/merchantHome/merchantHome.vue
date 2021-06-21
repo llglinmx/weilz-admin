@@ -289,9 +289,9 @@
 				})
 			},
 			// tabbar点击
-			tabbarClick(index) {
-				this.activeIndex = index
-				switch (index) {
+			tabbarClick(obj) {
+				this.activeIndex = obj.index
+				switch (obj.id) {
 					case 0: //首页
 						break;
 					case 1: //订单
@@ -344,6 +344,9 @@
 				uni.setStorageSync('storeLanguageId', this.LanguageID);
 				uni.setStorageSync('storeLanguageCode', this.LanguageCode);
 				this.$refs.tabBarRef.languageChange()
+				this.merchantHomeInfo()
+				this.getInfo()
+				this.orderList(1, 20)
 				this.$refs.languagePopup.close()
 			},
 

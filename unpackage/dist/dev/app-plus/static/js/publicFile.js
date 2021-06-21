@@ -101,3 +101,23 @@ export const timeList = [{
 		time: '23:00'
 	},
 ]
+export const checkList = [{
+		name: '全部',
+		id: -1,
+		type: 'all'
+	},
+	{
+		name: '当日',
+		id: 1,
+	},
+	{
+		name: '一周内',
+		id: 2,
+		day: 7
+	},
+	{
+		name: '一月内',
+		id: 3,
+		day: 30
+	},
+]

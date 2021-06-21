@@ -5,14 +5,11 @@
 		</view>
 		<view class="box-content">
 			<view class="box-content-list">
-				<view class="box-content-list-li" @click="selectStore">
+				<view class="box-content-list-li">
 					<view class="box-content-list-li-title">门店</view>
 					<view class="box-content-list-li-info">
 						<view class="box-content-list-li-info-text">{{storeName==''?'请选择门店':storeName}}</view>
-						<view class="box-content-list-li-info-more">
-							<text class="iconfont icongengduo icon-font"
-								style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
-						</view>
+
 					</view>
 				</view>
 				<view class="box-content-list-li">
@@ -148,11 +145,10 @@
 			</view>
 		</view>
 		<view class="box-footer">
-			<view class="box-footer-btn-del flex-center">取消</view>
-			<view class="box-footer-btn-edit flex-center" @click="release" v-if="!isEdit">发布</view>
-			<view class="box-footer-btn-edit flex-center" @click="modify" v-if="isEdit">修改</view>
+			<!-- <view class="box-footer-btn-del flex-center">取消</view> -->
+			<btn-sky-blue btnName='发布' @btnClick='release'  v-if="!isEdit"/>
+			<btn-sky-blue btnName='修改' @btnClick='modify' v-if="isEdit" />
 		</view>
-		<popup-list-select @cancel="cancelPopup" @confirm="confirmPopup" :visible='visible' :dataList="storeList" />
 		<popup-list-select @cancel="categoryCancel" @confirm="categoryConfirm" :visible='isCategory'
 			:dataList="categoryList" />
 		<popup-list-select @cancel="workingCancel" @confirm="workingConfirm" :visible='isWorking'
@@ -161,8 +157,6 @@
 </template>
 
 <script>
-	import navTitleBalck from "../../components/nav-title-balck/nav-title-balck.vue"
-	import popupListSelect from '../../components/popup-list-select/popup-list-select.vue'
 	export default {
 		data() {
 			return {
@@ -294,10 +288,7 @@
 				isWorking: false,
 			};
 		},
-		components: {
-			navTitleBalck,
-			popupListSelect
-		},
+
 		onReady() {
 			// 获取顶部电量状态栏高度
 			uni.getSystemInfo({
@@ -307,34 +298,25 @@
 			});
 		},
 		onLoad(options) {
-			this.getStore()
 			this.getCategory()
+			var data = JSON.parse(options.data)
 
-			var arr = Object.keys(options);
-			if (arr.length != 0) {
-				this.getDetails(options.id)
+
+			if (data.type == 'edit') {
+				this.getDetails(data.id)
 				this.title = "编辑招聘"
 				this.isEdit = true
-				this.id = options.id
+				this.id = data.id
 			} else {
+				this.from.store = data.store
 				this.title = "发布新招聘"
 			}
 
+			this.getStore()
+
 		},
 		methods: {
-			// 选择门店
-			selectStore() {
-				this.visible = true
-			},
-			// 门店关闭弹窗
-			cancelPopup(e) {
-				this.visible = e
-			},
-			// 门店弹窗选择确认
-			confirmPopup(e) {
-				this.from.store = e.id
-				this.storeName = e.name
-			},
+
 
 			// 发布按钮
 			release() {
@@ -469,9 +451,16 @@
 
 			// 获取门店列表
 			getStore() {
-				this.apiget('api/v1/store/store_information', {}).then(res => {
+				this.apiget('api/v1/store/store_information', {
+					each_page: 50
+				}).then(res => {
 					if (res.status == 200) {
 						this.storeList = res.data.member
+						res.data.member.forEach(item => {
+							if (item.id == this.from.store) {
+								this.storeName = item.name
+							}
+						})
 					}
 				});
 			},
@@ -505,10 +494,10 @@
 						this.from.store = res.data.data.store
 						this.from.psId = res.data.data.ps_id
 
-						// 门店
-						this.storeList.forEach(item => {
+
+						this.storeList.map(item => {
 							if (item.id == res.data.data.store) {
-								this.storeName = item.name
+								this.storeName = item.names
 							}
 						})
 

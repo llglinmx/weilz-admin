@@ -1,10 +1,12 @@
 <template>
 	<view class="box-tabbar">
-		<view class="box-tabbar-item" v-for="(item,index) in options" :key="index" @click="tabbarClick(index)">
+		<view class="box-tabbar-item" v-for="(item,index) in options" :key="index" @click="tabbarClick(index,item.id)">
 			<view class="box-tabbar-item-ico" :class="index == activeIndex?'ico-active':''">
 				<text :class="item.style" class="iconfont icon-font" :style="{'font-size':item.size+'rpx'}"></text>
 			</view>
-			<view class="box-tabbar-item-text" :class="index==activeIndex?'box-tabbar-item-text-active':''">{{item.title}}</view>
+			<view class="box-tabbar-item-text" :class="index==activeIndex?'box-tabbar-item-text-active':''">
+				{{item.title}}
+			</view>
 		</view>
 	</view>
 </template>
@@ -16,44 +18,53 @@
 				options: [{
 						title: "首页",
 						style: 'iconshouye',
-						size: "58"
+						size: "58",
+						id: 0
 					},
 					{
 						title: "订单",
 						style: 'icondingdan', //阿里图标库样式名
 						size: "52", //字体大小
+						id: 1
 					},
 					{
 						title: "门店",
 						style: 'iconmendian1', //阿里图标库样式名
 						size: "52", //字体大小
+						id: 2
 					},
-					{
-						title: "商城",
-						style: 'iconshangcheng', //阿里图标库样式名
-						size: "52", //字体大小
-					},
+					// {
+					// 	title: "商城",
+					// 	style: 'iconshangcheng', //阿里图标库样式名
+					// 	size: "52", //字体大小
+					// 	id: 3
+					// },
 					{
 						title: "我的",
 						style: 'iconwode3',
-						size: "52"
+						size: "52",
+						id: 4
 					}
 				],
 			}
 		},
-		props:{
-			activeIndex:{
-				type:Number,
-				default:0
+		props: {
+			activeIndex: {
+				type: Number,
+				default: 0
 			}
 		},
 		methods: {
 			// tabbar点击
-			tabbarClick(index) {
-				this.$emit("tabbarClick",index)
+			tabbarClick(index, id) {
+				let obj = {
+					index: index,
+					id: id
+				}
+				this.$emit("tabbarClick", obj)
 			},
 			// 语言接口
-			languageChange(){
+			languageChange() {
 				// 请求语言写这里
 				console.log("切换语言")
 			},
@@ -89,7 +100,8 @@
 				color: #626366;
 				transition: 0.2s;
 			}
-			.box-tabbar-item-text-active{
+
+			.box-tabbar-item-text-active {
 				color: #5DBDFE !important;
 			}
 		}

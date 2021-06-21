@@ -176,7 +176,35 @@
 					}
 
 				}
-			]
+			    ,{
+                    "path" : "technicianSchedulingInfo/technicianSchedulingInfo",
+                    "style" :                                                                                    
+                {
+                    "navigationBarTitleText": "技师排班信息",
+                    "enablePullDownRefresh": false
+                }
+                
+                }
+                ,{
+                    "path" : "allSchedules/allSchedules",
+                    "style" :                                                                                    
+                {
+                    "navigationBarTitleText": "预约日程",
+                    "enablePullDownRefresh": false
+                }
+                
+                }
+                ,{
+                    "path" : "recruitmentDetails/recruitmentDetails",
+                    "style" :                                                                                    
+                {
+                    "navigationBarTitleText": "职位详情",
+					"navigationBarTextStyle": "white", //状态栏字体颜色
+                    "enablePullDownRefresh": false
+                }
+                
+                }
+            ]
 		}, {
 			"root": "merchantHome",
 			"pages": []
@@ -539,7 +567,16 @@
 					"enablePullDownRefresh": false
 				}
 
-			}]
+			}    ,{
+                    "path" : "technicianData/technicianData",
+                    "style" :                                                                                    
+                {
+                    "navigationBarTitleText": "技师详细",
+                    "enablePullDownRefresh": false
+                }
+                
+                }
+            ]
 		}
 	],
 	"globalStyle": {

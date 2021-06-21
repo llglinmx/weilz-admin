@@ -174,6 +174,7 @@
 		onShow() {
 			if (this.$store.state.isOrderState) {
 				this.orderList(1, 20)
+				this.getInfo()
 			}
 		},
 		onLoad() {
@@ -264,6 +265,8 @@
 				uni.setStorageSync('technicianLanguageId', this.LanguageID);
 				uni.setStorageSync('technicianLanguageCode', this.LanguageCode);
 				this.$refs.tabBarRef.languageChange()
+				this.getInfo()
+				this.orderList(1, 20)
 				this.$refs.popup.close()
 			},
 

@@ -33,10 +33,10 @@
 			});
 		},
 		methods: {
-			// tabbar点击
-			tabbarClick(index) {
-				this.activeIndex = index
-				switch (index) {
+		// tabbar点击
+		tabbarClick(obj) {
+			this.activeIndex = obj.index
+			switch (obj.id) {
 					case 0: //首页
 						uni.redirectTo({
 							url: "../merchantHome/merchantHome"

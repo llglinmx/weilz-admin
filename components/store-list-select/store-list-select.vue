@@ -28,7 +28,6 @@
 		name: "store-list-select",
 		data() {
 			return {
-
 			};
 		},
 		props: {
@@ -43,17 +42,13 @@
 			}
 		},
 		mounted() {
-
 		},
 		methods: {
-
 			// 选中列表
 			changeList(index) {
 				this.dataList[index].isCheck = !this.dataList[index].isCheck
 				this.$forceUpdate();
 			},
-
-
 			// 取消
 			cancel() {
 				this.$emit("cancel", false)
@@ -79,11 +74,9 @@
 						id: -1
 					}]
 				}
-
 				this.$emit('confirm', data)
 				this.cancel()
 			},
-
 			prevent() {},
 		}
 	}
@@ -94,7 +87,6 @@
 		background: rgba(0, 0, 0, 0.5) !important;
 		z-index: 999 !important;
 	}
-
 	.popup-box {
 		position: fixed;
 		width: 100%;
@@ -102,11 +94,9 @@
 		background: rgba(0, 0, 0, 0.1);
 		transition: 0.4s;
 		z-index: -999;
-
 		.popup-box-main-open {
 			height: 1000rpx !important;
 		}
-
 		.popup-box-main {
 			display: flex;
 			flex-direction: column;
@@ -117,7 +107,6 @@
 			transition: 0.4s;
 			background: #fff;
 			border-radius: 20rpx 20rpx 0 0;
-
 			.popup-box-head {
 				display: flex;
 				align-items: center;
@@ -127,40 +116,32 @@
 				height: 100rpx;
 				border-bottom: 1rpx solid #ededed;
 				font-size: 28rpx;
-
 				.cancel {
 					color: #999;
 				}
-
 				.confirm {
 					color: #1676ec;
 				}
 			}
-
 			.popup-box-content {
 				flex: 1;
-
 				.popup-box-content-list {
 					padding: 20rpx 40rpx 0;
 					box-sizing: border-box;
-
 					.popup-box-content-list-li {
 						padding: 20rpx 0;
 						display: flex;
 						align-items: center;
 						justify-content: space-between;
-
 						.popup-box-content-list-li-title {
 							font-size: 28rpx;
 							color: #333;
 						}
-
 						.popup-box-content-list-li-check {
 							.icon-font {}
 						}
 					}
 				}
-
 			}
 		}
 	}

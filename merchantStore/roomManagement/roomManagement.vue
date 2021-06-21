@@ -108,8 +108,7 @@
 			</view>
 		</uni-popup>
 		<uni-popup ref="deltePopup" type="dialog">
-			<uni-popup-dialog type="warn" mode='base' title="警告" content="你确定要删除此房间吗？" :duration="2000"
-				:before-close="true" @close="close" @confirm="confirm"></uni-popup-dialog>
+			<uni-popup-dialog type="warn" mode='base' title="警告" content="你确定要删除此房间吗？" :duration="2000"  @confirm="confirm"></uni-popup-dialog>
 		</uni-popup>
 	</view>
 </template>
@@ -170,13 +169,9 @@
 			deleteRoom() {
 				this.$refs.deltePopup.open()
 			},
-			// 弹窗点击取消
-			close(done) {
-				done()
-			},
+
 			// 弹窗点击确认
-			confirm(done, value) {
-				done()
+			confirm() {
 				this.$refs.popup.close()
 
 				return false

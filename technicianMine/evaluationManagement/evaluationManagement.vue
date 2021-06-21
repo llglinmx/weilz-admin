@@ -11,8 +11,7 @@
 				<view class="box-content-wrap-item">
 					<swiper class="swiper-box" :current="defaultIndex" @change="tabChange">
 						<swiper-item class="swiper-box-item-list" v-for="(item,index) in tabsList" :key="item.id">
-							<scroll-comment-swiper-item :tabIndex="index" :currentIndex="defaultIndex">
-							</scroll-comment-swiper-item>
+							<scroll-comment-swiper-item :tabIndex="index" :currentIndex="defaultIndex" />
 						</swiper-item>
 					</swiper>
 				</view>
@@ -25,9 +24,6 @@
 </template>
 
 <script>
-	import tabs from "../../components/tabs/tabs.vue"
-	import navTitleBalck from "../../components/nav-title-balck/nav-title-balck.vue"
-	import scrollCommentSwiperItem from '../../components/scroll-comment-swiper-item/scroll-comment-swiper-item.vue'
 	export default {
 		data() {
 			return {
@@ -36,11 +32,7 @@
 				defaultIndex: 0, //当前滑动的页面
 			};
 		},
-		components: {
-			tabs,
-			navTitleBalck,
-			scrollCommentSwiperItem
-		},
+
 		onReady() {
 			// 获取顶部电量状态栏高度
 			uni.getSystemInfo({

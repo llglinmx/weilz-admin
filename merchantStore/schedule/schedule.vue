@@ -20,7 +20,7 @@
 										<text>{{infoData.year}}年{{infoData.month}}月{{infoData.day}}</text>
 										<text style="margin-left: 10rpx;">{{infoData.week}}</text>
 									</view>
-									<view class="box-content-main-wrap-text-right"  @click="teamAppointment">
+									<view class="box-content-main-wrap-text-right" @click="teamAppointment">
 										<text>查看当日预约</text>
 										<text class="iconfont icongengduo icon-font"
 											style="color: #45B3FE;font-size: 28rpx;margin-top: 4rpx;"></text>
@@ -95,7 +95,7 @@
 			</view>
 		</view>
 		<view class="box-footer">
-			<btn-sky-blue v-if="defaultIndex==0" btnName="添加排班表"  key='0' @btnClick="addSchedule" />
+			<btn-sky-blue v-if="defaultIndex==0" btnName="添加排班表" key='0' @btnClick="addSchedule" />
 			<btn-sky-blue v-if="!isShow&&defaultIndex==1" btnName="添加排班表" key='1' @btnClick="addSchedule" />
 			<btn-sky-blue v-if="isShow&&defaultIndex==1" btnName="编辑排班表" @btnClick="editSchedule" />
 		</view>
@@ -253,6 +253,7 @@
 			// 团队排班表日期点击
 			teamDateClick(e) {
 				this.infoData = e
+				console.log(this.infoData)
 				let dataTime = e.year + '-' + (e.month < 10 ? '0' + e.month : e.month) + '-' + (e.day < 10 ? '0' + e.day :
 					e.day)
 				for (let key in this.dataObj) {
@@ -285,18 +286,19 @@
 				});
 			},
 			// 查看团队排班当日预约
-			teamAppointment(){
+			teamAppointment() {
+				console.log(this.infoData)
 				var str = {
-					year: this.staffData.year,
-					month: this.staffData.month,
-					day: this.staffData.day,
+					year: this.infoData.year,
+					month: this.infoData.month,
+					day: this.infoData.day,
 					store: this.id,
 				}
 				uni.navigateTo({
 					url: "../teamSchedulingInfo/teamSchedulingInfo?data=" + JSON.stringify(str)
 				})
 			},
-			
+
 			// 查看技师当日预约
 			technicianAppointment() {
 				var str = {
@@ -322,10 +324,12 @@
 				this.defaultIndex = e.detail.current
 			},
 
+
 			// 获取排班表
 			getSchedule(e) {
 				this.infoData = e
 				this.staffData = e
+
 				this.apiget('api/v1/store/engineer/schedule_list', {
 					store: this.id,
 					start_time: e.startTime,
@@ -346,8 +350,6 @@
 
 			// 上个月 下个月切换监听
 			getTabChange(e) {
-
-				this.infoData = e
 				this.apiget('api/v1/store/engineer/schedule_list', {
 					store: this.id,
 					start_time: this.infoData.startTime,
@@ -465,6 +467,7 @@
 									display: flex;
 									align-items: center;
 									justify-content: space-between;
+									border-top: 1rpx solid #ededed;
 
 									.box-content-main-wrap-text-left {
 										font-size: 32rpx;

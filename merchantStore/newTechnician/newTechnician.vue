@@ -167,7 +167,8 @@
 							<text class="iconfont iconcuowu icon-font" style="color: #fff;font-size: 36rpx"></text>
 						</text>
 					</view>
-					<view class="box-content-main-image-list-up flex-center" @click="upCoverPhoto" v-if="from.photo.length<3">
+					<view class="box-content-main-image-list-up flex-center" @click="upCoverPhoto"
+						v-if="from.photo.length<3">
 						<text class="iconfont iconcuowu icon-font" style="color: #ddd;font-size: 90rpx"></text>
 					</view>
 				</view>
@@ -727,7 +728,7 @@
 						this.from.license_img = data.license_img
 
 						this.from.simg = data.simg
-						
+
 						if (!data.photo) {
 							this.from.photo = []
 						} else {
@@ -830,9 +831,11 @@
 			},
 			// 获取服务项目
 			getProject() {
-				this.apiget('pc/reserve', {}).then(res => {
+				this.apiget('api/v1/store/service_reservation/index', {
+					store_id: this.store
+				}).then(res => {
 					if (res.status == 200) {
-						this.projectList = res.data.reserveList
+						this.projectList = res.data.data
 					}
 				});
 			},

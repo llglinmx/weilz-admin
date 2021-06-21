@@ -44,8 +44,7 @@
 			<btn-sky-blue btnName="删除客户" @btnClick="deleteBtn" />
 		</view>
 		<uni-popup ref="popup" type="dialog">
-			<uni-popup-dialog type="warn" mode='base' title="警告" content="你确定要删除该客户吗?" :duration="2000"
-				:before-close="true" @close="close" @confirm="confirm"></uni-popup-dialog>
+			<uni-popup-dialog type="warn" mode='base' title="警告" content="你确定要删除该客户吗?" :duration="2000" @confirm="confirm"></uni-popup-dialog>
 		</uni-popup>
 	</view>
 </template>
@@ -104,14 +103,9 @@
 					}
 				});
 			},
-			// 弹窗点击取消
-			close(done) {
-				// TODO 做一些其他的事情，before-close 为true的情况下，手动执行 done 才会关闭对话框
-				// ...
-				done()
-			},
+			
 			// 弹窗点击确认
-			confirm(done, value) {
+			confirm() {
 				done()
 				return false
 				this.apidelte('api/v1/store/coupon/del/' + this.id, {}).then(res => {
@@ -127,7 +121,6 @@
 							})
 						}, 500)
 					}
-					done()
 				});
 			},
 		}

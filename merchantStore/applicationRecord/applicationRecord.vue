@@ -24,7 +24,7 @@
 			</z-paging>
 		</view>
 		<view class="box-content" :style="{display:!isData?'block':'none'}">
-			<loading v-if="isLoad" />
+			<loading-merchant v-if="isLoad" />
 			<no-data v-if="!isLoad" />
 		</view>
 		
@@ -40,6 +40,8 @@
 				isData: false,
 				isLoad: true,
 				recordList: [],
+				id:'',
+				store:'',
 			};
 		},
 
@@ -52,7 +54,9 @@
 			});
 		},
 		onLoad(options) {
-			this.id = options.id
+			var data =JSON.parse(options.data)
+			this.store = data.store
+			this.id = data.id
 		},
 		methods: {
 			// 上拉 下拉
@@ -64,8 +68,10 @@
 				var vuedata = {
 					page_index: num, // 请求页数，
 					each_page: size, // 请求条数
+					store:this.store,
+					id:this.id,
 				}
-				this.apiget('api/v1/store/recruitment/app_information/'+this.id, vuedata).then(res => {
+				this.apiget('api/v1/store/recruitment/app_information', vuedata).then(res => {
 					if (res.status == 200) {
 						if (res.data.data.length != 0) {
 							this.isData = true

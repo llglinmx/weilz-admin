@@ -8,7 +8,7 @@
 			<view class="box-content-wrap">
 				<view class="box-content-login box-btn flex-center" @click="login('business')">商家登录</view>
 				<view style="background: #26BF82;" class="box-content-login box-btn flex-center" @click="login('technician')">技师登录</view>
-				<view class="box-content-register box-btn flex-center" @click="register">注册</view>
+				<!-- <view class="box-content-register box-btn flex-center" @click="register">注册</view> -->
 			</view>
 		</view>
 	</view>
