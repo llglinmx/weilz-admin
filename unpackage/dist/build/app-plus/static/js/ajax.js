@@ -4,16 +4,16 @@ const httpClient = {
 	request: function(method, url, data) {
 		var headers = {
 			"Content-Type": "application/x-www-form-urlencoded",
-			"Authorization": uni.getStorageSync("UToken")
+			"Authorization": uni.getStorageSync("UToken"),
+			'Content-Language': uni.getStorageSync('isLoginType')=='technician'? uni.getStorageSync('technicianLanguageId') :uni.getStorageSync('storeLanguageId'),
 		};
 
 		return new Promise((resolve, reject) => {
-				uni.showLoading({
-					title: "加载中",
-					mask: true
-				});
+				// uni.showLoading({
+				// 	title: "Loading...",
+				// 	mask: true
+				// });
 			
-
 			uni.request({
 				url: url,
 				header: headers,
@@ -21,9 +21,7 @@ const httpClient = {
 				method: method,
 				dataType: 'json',
 				success: function(res) {
-					uni.hideLoading()
-					// console.log("接口获取原始数据：-------------------",res.data)
-					// console.log('状态码为：'+res.statusCode)
+					// uni.hideLoading()
 					if (res.statusCode == 402) {
 						uni.showToast({
 							icon: 'none',
@@ -60,7 +58,7 @@ const httpClient = {
 					}
 				},
 				fail: function(err) {
-					uni.hideLoading()
+					// uni.hideLoading()
 					reject(err)
 				}
 			})

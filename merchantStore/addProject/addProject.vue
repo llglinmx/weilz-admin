@@ -208,8 +208,7 @@ s<template>
 			</view>
 		</view>
 		<view class="box-footer">
-			<btn-sky-blue btnName="确认添加" @btnClick="confirmAdd" v-if="this.type=='add'" />
-			<btn-sky-blue btnName="确认修改" @btnClick="confirmEdit" v-if="this.type=='edit'" />
+			<btn-sky-blue :btnName="type=='add'?'确认添加':'确认修改'" @btnClick="btnChange" />
 		</view>
 
 
@@ -303,24 +302,25 @@ s<template>
 				this.getDetalis()
 			}
 			this.getPlatform()
+		
 		},
 		mounted() {
 			this.stateList = stateList
 		},
 
 		methods: {
-			// 选择平台分类
+			// 选择项目分类
 			platformOpen() {
 				if (this.platformList.length != 0) {
 					this.isPlatform = true
 				} else {
 					uni.showToast({
-						title: '暂无项目分类',
+						title: '暂无项目分类，请先去添加分类',
 						icon: 'none'
 					})
 				}
 			},
-			// 平台分类关闭弹窗
+			// 项目分类关闭弹窗
 			platformPopup(e) {
 				this.isPlatform = e
 			},
@@ -350,9 +350,8 @@ s<template>
 				this.isCurr = bool ? true : false
 			},
 
-
-			// 确认添加按钮
-			confirmAdd() {
+			// 按钮
+			btnChange() {
 				var specifications = []
 				var customService = []
 				var customEnvironment = []
@@ -404,6 +403,18 @@ s<template>
 					})
 					return false;
 				}
+
+				if (this.type == 'add') {
+					this.confirmAdd(specifications, customService, customEnvironment)
+				} else {
+					this.confirmEdit(specifications, customService, customEnvironment)
+				}
+
+			},
+
+
+			// 确认添加按钮
+			confirmAdd(specifications, customService, customEnvironment) {
 
 				var vuedata = {
 					name: this.from.name, //项目名称
@@ -445,58 +456,8 @@ s<template>
 				})
 			},
 			// 确认修改
-			confirmEdit() {
+			confirmEdit(specifications, customService, customEnvironment) {
 
-				var specifications = []
-				var customService = []
-				var customEnvironment = []
-
-				this.normsList.forEach(item => {
-					if (item.name != '' && item.price != '') {
-						specifications.push(item)
-					}
-				})
-
-				this.customServiceList.forEach(item => {
-					if (item.name != '' && item.content != '') {
-						customService.push(item)
-					}
-				})
-				this.customEnvironmentList.forEach(item => {
-					if (item.name != '' && item.content != '') {
-						customEnvironment.push(item)
-					}
-				})
-				if (this.from.name == '') {
-					uni.showToast({
-						title: '请输入项目名称',
-						icon: 'none'
-					})
-					return false;
-				}
-
-				if (this.from.cid == '') {
-					uni.showToast({
-						title: '请选择项目分类',
-						icon: 'none'
-					})
-					return false;
-				}
-				if (this.from.price == '') {
-					uni.showToast({
-						title: '请输入价格',
-						icon: 'none'
-					})
-					return false;
-				}
-
-				if (this.from.service_time == '') {
-					uni.showToast({
-						title: '请输入项目时长',
-						icon: 'none'
-					})
-					return false;
-				}
 				var vuedata = {
 					name: this.from.name, //项目名称
 					store: this.storeId, //门店id
@@ -623,7 +584,7 @@ s<template>
 			},
 
 
-			// 获取平台分类
+			// 获取项目分类
 			getPlatform() {
 				this.apiget('pc/category/category_type', {
 					type: 2,
@@ -893,7 +854,7 @@ s<template>
 						left: 0;
 						right: 0;
 						margin: auto;
-						content: "封面";
+						content: '封面';
 						font-size: 24rpx;
 						text-align: center;
 						color: #333;

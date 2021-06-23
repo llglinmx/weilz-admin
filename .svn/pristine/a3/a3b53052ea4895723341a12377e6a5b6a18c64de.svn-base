@@ -1,0 +1,338 @@
+<template>
+	<view class="content">
+		<!-- 这里设置了z-paging加载时禁止自动调用reload方法，自行控制何时reload（懒加载），同时允许touchmove事件冒泡，否则无法横向滚动切换tab -->
+		<z-paging ref="paging" @query="queryList" :list.sync="dataList" loading-more-no-more-text="已经到底了"
+			:mounted-auto-call-reload="false" :refresher-angle-enable-change-continued="false"
+			:touchmove-propagation-enabled="true" :use-custom-refresher="true" style="height: 100%;">
+			<!-- 自定义下拉刷新view，若不设置，则使用z-paging自带的下拉刷新view -->
+			<!-- <custom-refresher slot="refresher"></custom-refresher> -->
+			<loading-merchant v-if="isLoad"></loading-merchant>
+			<no-data v-if="dataList.length<=0&&!isLoad"></no-data>
+			<!-- <empty-view slot="empty"></empty-view> -->
+			<!-- 如果希望其他view跟着页面滚动，可以放在z-paging标签内 -->
+			<!-- list数据，建议像下方这样在item外层套一个view，而非直接for循环item，因为slot插入有数量限制 -->
+			<view class="box-content-order" v-if="dataList.length>0">
+				<view class="box-content-order-list">
+					<view class="box-content-order-list-li" v-for="(item,index) in dataList" :key="item.id"
+						@click="index==2 && shippingDetails(index)">
+						<view class="box-content-order-list-li-top">
+							<view class="order-list-li-top-title">
+								<text class="iconfont iconshangjia icon-font"
+									style="color: #5DBDFE;font-size: 28rpx;margin-top: 4rpx;"></text>
+								<!-- <image src="../../static/images/icon-5.jpg" mode=""></image> -->
+								<text>罗约蓝池·温泉SPA</text>
+							</view>
+							<view class="order-list-li-top-msg">待付款</view>
+						</view>
+						<view class="box-content-order-list-li-wrap">
+							<view class="order-list-li-wrap-item" v-for="(i,j) in 3">
+								<view class="order-list-li-wrap-item-image">
+									<image src="../../static/images/001.png" mode="aspectFill"></image>
+								</view>
+								<view class="order-list-li-wrap-item-info">
+									<view class="order-list-li-wrap-item-info-top">
+										<view class="wrap-item-info-top-text">淡雅茉莉香薰蜡烛</view>
+										<view class="wrap-item-info-top-msg">￥298.00</view>
+									</view>
+									<view class="order-list-li-wrap-item-info-box">
+										<view class="order-list-li-wrap-item-info-box-list">
+											规格：500g
+										</view>
+										<view class="order-list-li-wrap-item-info-box-number">x1</view>
+									</view>
+								</view>
+							</view>
+						</view>
+
+						<view class="box-content-order-list-li-footer">
+							<view class="box-content-order-list-li-footer-text">
+								<view class="box-content-order-list-li-footer-text-msg">实付款：</view>
+								<view class="box-content-order-list-li-footer-text-price">
+									￥<text>332.70</text></view>
+							</view>
+							<view class="box-content-order-list-li-footer-btn">
+								<view class="order-list-li-footer-all-btn btn-blue flex-center" v-if="index==3">评价订单
+								</view>
+								<view class="order-list-li-footer-all-btn btn-hollow flex-center" v-if="index==2"
+									@click.stop="viewLogistics">查看物流</view>
+								<view class="order-list-li-footer-all-btn btn-blue flex-center" v-if="index==2">确认收货
+								</view>
+								<view class="order-list-li-footer-all-btn btn-hollow flex-center" v-if="index==0">取消订单
+								</view>
+								<view class="order-list-li-footer-all-btn btn-fill flex-center" v-if="index==0">去付款
+								</view>
+								<view class="order-list-li-footer-all-btn btn-hollow flex-center"
+									v-if="index!=0&&index!=2&&index!=3">删除订单</view>
+							</view>
+						</view>
+					</view>
+				</view>
+			</view>
+
+		</z-paging>
+	</view>
+</template>
+
+<script>
+
+	export default {
+		data() {
+			return {
+				dataList: [],
+				firstLoaded: false,
+				isLoad: true,
+			}
+		},
+
+		props: {
+			tabIndex: {
+				type: Number,
+				default: function() {
+					return 0
+				}
+			},
+			currentIndex: {
+				type: Number,
+				default: function() {
+					return 0
+				}
+			},
+			orderType: {
+				type: String,
+				default: ''
+			},
+			search: {
+				type: String,
+				default: ''
+			}
+		},
+		watch: {
+			currentIndex: {
+				handler(newVal) {
+					if (newVal === this.tabIndex) {
+						//懒加载，当滑动到当前的item时，才去加载
+						if (!this.firstLoaded) {
+							this.$nextTick(() => {
+								this.$refs.paging.reload();
+							})
+						}
+					}
+				},
+				immediate: true
+			},
+		},
+		methods: {
+			queryList(pageNo, pageSize) {
+				//组件加载时会自动触发此方法，因此默认页面加载时会自动触发，无需手动调用
+				//这里的pageNo和pageSize会自动计算好，直接传给服务器即可
+				//模拟请求服务器获取分页数据，请替换成自己的网络请求
+				// this.$request.queryList(pageNo, pageSize, this.tabIndex + 1, (data) => {
+				// 	this.$refs.paging.complete(data);
+				// 	this.firstLoaded = true;
+				// })
+				var page = {
+					num: pageNo,
+					size: pageSize,
+
+				}
+				this.getDataList(page)
+			},
+
+
+			// 获取数据
+			getDataList(page) {
+				var vuedata = {
+					page_index: page.num, // 请求页数，
+					each_page: page.size, // 请求条数
+				}
+				this.apiget('api/v1/store/store_information', vuedata).then(res => {
+					if (res.status == 200) {
+						if (res.data.member.length != 0) {
+							let list = res.data.member
+
+							let totalSize = res.data.total_rows
+							this.$refs.paging.addData(list);
+							this.firstLoaded = true;
+						}
+						this.isLoad = false
+					}
+				});
+			},
+			// 查看物流
+			viewLogistics() {
+				uni.navigateTo({
+					url: "../logisticsDetails/logisticsDetails"
+				})
+			},
+			// 发货详情
+			shippingDetails(index) {
+				uni.navigateTo({
+					url: "../deliveryFromSeller/deliveryFromSeller"
+				})
+			},
+
+		}
+	}
+</script>
+
+<style scoped lang="scss">
+	.box-content-order {
+		.box-content-order-list {
+			margin-bottom: 20rpx;
+
+			.box-content-order-list-li {
+				margin-top: 20rpx;
+				padding: 0 40rpx;
+				box-sizing: border-box;
+				background: #fff;
+
+				.box-content-order-list-li-top {
+					display: flex;
+					align-items: center;
+					justify-content: space-between;
+					padding: 30rpx 0;
+					font-size: 28rpx;
+
+					.order-list-li-top-title {
+						display: flex;
+						align-items: center;
+						color: #000;
+
+						text {
+							margin-right: 8rpx;
+						}
+					}
+
+					.order-list-li-top-msg {
+						color: #5DBDFE;
+					}
+				}
+
+				.box-content-order-list-li-wrap {
+					// padding-bottom: 20rpx;
+
+					.order-list-li-wrap-item {
+						display: flex;
+						margin-bottom: 20rpx;
+
+						.order-list-li-wrap-item-image {
+							display: flex;
+							align-items: center;
+
+							image {
+								width: 132rpx;
+								height: 132rpx;
+							}
+						}
+
+						.order-list-li-wrap-item-info {
+							flex: 1;
+							margin-left: 20rpx;
+
+							.order-list-li-wrap-item-info-top {
+								display: flex;
+								align-items: center;
+								justify-content: space-between;
+								color: #000;
+
+								.wrap-item-info-top-text {
+									font-size: 30rpx;
+									font-weight: 500;
+								}
+
+								.wrap-item-info-top-msg {
+									font-size: 28rpx;
+								}
+							}
+
+							.order-list-li-wrap-item-info-box {
+								display: flex;
+								justify-content: space-between;
+								align-items: center;
+								margin-top: 10rpx;
+
+								.order-list-li-wrap-item-info-box-list {
+									display: flex;
+									align-items: center;
+									color: #666;
+									font-size: 24rpx;
+								}
+
+								.order-list-li-wrap-item-info-box-number {
+									font-size: 28rpx;
+									color: #999;
+								}
+
+							}
+						}
+					}
+				}
+
+
+
+				.box-content-order-list-li-footer {
+					display: flex;
+					align-items: center;
+					justify-content: space-between;
+					height: 100rpx;
+
+					.box-content-order-list-li-footer-text {
+						display: flex;
+						align-items: baseline;
+
+						.box-content-order-list-li-footer-text-msg {
+							font-size: 24rpx;
+							color: #999;
+						}
+
+						.box-content-order-list-li-footer-text-price {
+							font-size: 24rpx;
+							color: #FF4D4D;
+
+							text {
+								font-size: 32rpx;
+								font-weight: 500;
+							}
+						}
+					}
+
+					.box-content-order-list-li-footer-btn {
+						display: flex;
+						align-items: center;
+
+						.order-list-li-footer-all-btn {
+							margin-right: 20rpx;
+							border-radius: 32rpx;
+							font-size: 28rpx;
+						}
+
+						.order-list-li-footer-all-btn:last-child {
+							margin-right: 0;
+						}
+
+						.btn-hollow {
+							width: 174rpx;
+							height: 58rpx;
+							border: 1rpx solid #666666;
+							color: #666;
+						}
+
+						.btn-blue {
+							width: 174rpx;
+							height: 58rpx;
+							border: 1rpx solid #5DBDFE;
+							color: #5DBDFE;
+						}
+
+						.btn-fill {
+							width: 176rpx;
+							height: 60rpx;
+							background: #5DBDFE;
+							color: #fff;
+						}
+					}
+				}
+			}
+		}
+	}
+</style>

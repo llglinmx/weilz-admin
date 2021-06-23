@@ -1,0 +1,330 @@
+<template>
+	<view class="box">
+		<view class="box-head" :style="{paddingTop:barHeight+'px'}">
+			<view class="box-head-nav">
+				<view class="box-head-back flex-center" @click="Gback">
+					<text class="iconfont iconfanhui" style="color: #000;font-size: 36rpx;margin-top: 8rpx;"></text>
+				</view>
+				<view class="box-head-title">项目管理</view>
+				<view class="box-head-ico flex-center">
+					<text class="iconfont iconsousuo1 icon-font"
+						style="color: #5DBDFE;font-size: 52rpx;margin-top: 4rpx;"
+						:style="{display:!isChoice?'block':'none'}" @click="searchCilck"></text>
+					<text class="iconfont iconcuowu" style="color: #5DBDFE;font-size: 60rpx;"
+						:style="{display:isChoice?'block':'none'}" @click="cancelChoice"></text>
+				</view>
+			</view>
+			<view class="box-head-tabs" v-if="false">
+				<merchant-tabs ref="boxTabs" :tabData="tabsList" :activeIndex="defaultIndex" @tabClick='tabClick' />
+			</view>
+		</view>
+		<view class="box-content">
+			<view class="box-content-search"
+				:style="{height:isSearch?'auto':'0',padding:isSearch?'30rpx 40rpx':'0 40rpx'}">
+				<view class="box-content-search-box">
+					<input type="text" :focus="isFocus" @keydown.enter="searchChange" v-model.trim="searchVal"
+						placeholder="请输入需要搜索的内容" />
+					<text class="iconfont iconsousuo1 icon-font" style="color: #999;font-size: 48rpx;margin-top: 4rpx;"
+						@click="searchChange"></text>
+				</view>
+			</view>
+
+			<view class="box-content-wrap">
+				<view class="box-content-wrap-item">
+					<swiper class="swiper-box" :current="defaultIndex" @change="tabChange">
+						<swiper-item class="swiper-box-item-list" v-for="(item,index) in tabsList" :key="item.id">
+							<scroll-project-management-item ref="check" v-model="isChoice" :isChoice='isChoice'
+								:isSearch='isSearch' :search='searchVal' @closeSearch='closeSearchBox'
+								@selectAll='selectCilck' :isSelectAll='isSelectAll' :store='id' :tabIndex="index"
+								:currentIndex="defaultIndex">
+							</scroll-project-management-item>
+						</swiper-item>
+					</swiper>
+				</view>
+			</view>
+		</view>
+		<view class="box-footer" :style="{height:isChoice?'108rpx':'0'}">
+			<view class="box-footer-all-check">
+				<text class="iconfont iconxuanzhong icon-font" style="color: #5DBDFE;font-size: 40rpx;"
+					@click="selectAll" v-if="isSelectAll"></text>
+				<text class="iconfont iconweixuanzhong1 icon-font" style="color: #ccc;font-size: 40rpx;"
+					@click="selectAll" v-if="!isSelectAll"></text>
+				<text>全选</text>
+			</view>
+			<view class="box-footer-btn">
+				<view class="btn-delete flex-center" @click="deleteBtn">删除</view>
+				<view class="btn-off-the-shelf flex-center">下架</view>
+			</view>
+		</view>
+		<view class="box-footer-btn" :style="{height:!isChoice?'140rpx':'0'}">
+			<btn-sky-blue style="width: 100%;" btnName="添加项目" @btnClick="addProject" />
+		</view>
+		<uni-popup ref="popup" type="dialog">
+			<uni-popup-dialog type="warn" mode='base' title="警告" content="你确定要删除所选项目吗？" :duration="2000"  @confirm="confirm"></uni-popup-dialog>
+		</uni-popup>
+	</view>
+</template>
+
+<script>
+	export default {
+		data() {
+			return {
+				id: '',
+				barHeight: 0, //顶部电量导航栏高度
+				defaultIndex: 0, //当前滑动的页面
+				// tabsList: ["出售中 0", "仓库中 0", "已售罄 0"],
+				tabsList: ["出售中 0"],
+				isChoice: false, //是否多选
+				isSelectAll: false, //是否全选
+				isSearch: false, //是否搜索
+				searchVal: '',
+				isFocus: false,
+			};
+		},
+
+		onReady() {
+			// 获取顶部电量状态栏高度
+			uni.getSystemInfo({
+				success: (res) => {
+					this.barHeight = res.statusBarHeight
+				}
+			});
+		},
+		onLoad(options) {
+			this.id = options.id
+		},
+		onShow() {
+			if (this.$store.state.isAddProject) {
+				this.$refs.check[this.defaultIndex].getDataList(1, 20)
+			}
+		},
+		methods: {
+			//返回
+			Gback() {
+				uni.navigateBack({
+					delta: 1
+				})
+			},
+
+			// 搜索
+			searchChange() {
+				this.$refs.check[this.defaultIndex].getDataList(1, 20)
+			},
+
+			// 全选删除
+			deleteBtn() {
+				this.$refs.popup.open()
+			},
+
+			// 弹窗点击确认
+			confirm() {
+				this.$refs.check[this.defaultIndex].batchDelete() //调用子组件删除方法
+			},
+
+
+			// 搜索按钮
+			searchCilck() {
+				this.isSearch = !this.isSearch;
+				this.isFocus = this.isSearch
+			},
+
+			closeSearchBox(bool) {
+				this.isSearch = bool
+				console.log('传回来的值：' + bool)
+			},
+
+			// 取消多选界面显示
+			cancelChoice() {
+				this.isChoice = false;
+			},
+
+			// 全选
+			selectAll() {
+				// 循环列表 修改属性
+				// this.dataList.forEach(item => {
+				// 	item.isCheck = this.isSelectAll ? false : true
+				// })
+
+				this.$refs.check[this.defaultIndex].changeList()
+
+				this.isSelectAll = !this.isSelectAll
+			},
+			selectCilck(bool) {
+				this.isSelectAll = bool
+			},
+
+			// 添加项目
+			addProject() {
+				this.$store.commit('upAddProject', false)
+				var str = {
+					type: 'add',
+					id: this.id
+				}
+				uni.navigateTo({
+					url: "../addProject/addProject?data=" + JSON.stringify(str)
+				})
+			},
+
+
+			// tabs 点击
+			tabClick(e) {
+				this.defaultIndex = e
+			},
+			// 滑动切换列表
+			tabChange(e) {
+				this.$refs.boxTabs.tabToIndex(e.detail.current)
+				this.defaultIndex = e.detail.current
+			},
+		}
+	}
+</script>
+
+<style lang="scss">
+	.box {
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+		background: #F7F7F7;
+
+		.box-head {
+			background-color: #fff;
+
+			.box-head-nav {
+				display: flex;
+				align-items: center;
+				padding: 0 20rpx;
+				box-sizing: border-box;
+				height: 88rpx;
+
+				.box-head-back {
+					width: 50rpx;
+				}
+
+				.box-head-title {
+					flex: 1;
+					text-align: center;
+					font-size: 34rpx;
+					font-weight: 500;
+					color: #000;
+				}
+
+				.box-head-ico {
+					width: 50rpx;
+				}
+			}
+		}
+
+		.box-content {
+			flex: 1;
+			overflow-y: scroll;
+
+			.box-content-search {
+				padding: 0 40rpx;
+				box-sizing: border-box;
+				background: #fff;
+				overflow: hidden;
+				transition: 0.3s;
+
+				.box-content-search-box {
+					display: flex;
+					height: 68rpx;
+					padding: 0 20rpx;
+					background: #F7F7F7;
+					opacity: 1;
+					border-radius: 34rpx;
+					box-sizing: border-box;
+
+					input {
+						padding-left: 10rpx;
+						height: 100%;
+						flex: 1;
+						font-size: 28rpx;
+						box-sizing: border-box;
+					}
+				}
+			}
+
+
+			.box-content-wrap {
+				height: 100%;
+				overflow-y: scroll;
+
+				.box-content-wrap-item {
+					height: 100%;
+
+					.swiper-box {
+						height: 100%;
+						overflow-y: scroll;
+
+						.swiper-box-item-list {
+							height: 100%;
+							overflow-y: scroll;
+
+
+
+						}
+					}
+				}
+			}
+		}
+
+		.box-footer {
+			padding: 0 20rpx;
+			box-sizing: border-box;
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			background: #fff;
+			overflow: hidden;
+			transform: 0.3s;
+
+			.box-footer-all-check {
+				display: flex;
+				align-items: center;
+				font-size: 28rpx;
+				color: #000;
+
+				.icon-font {
+					margin-left: 20rpx;
+					margin-right: 20rpx;
+				}
+
+				text {}
+			}
+
+			.box-footer-btn {
+				display: flex;
+				align-items: center;
+
+				.btn-delete {
+					width: 182rpx;
+					height: 66rpx;
+					background: #FFFFFF;
+					border: 1rpx solid #666666;
+					border-radius: 34rpx;
+					color: #666;
+					font-size: 32rpx;
+				}
+
+				.btn-off-the-shelf {
+					margin-left: 20rpx;
+					width: 184rpx;
+					height: 68rpx;
+					background: #5DBDFE;
+					border-radius: 34rpx;
+					color: #fff;
+					font-size: 32rpx;
+				}
+			}
+		}
+
+		.box-footer-btn {
+			display: flex;
+			align-items: center;
+			padding: 0 40rpx;
+			box-sizing: border-box;
+			overflow: hidden;
+			transition: 0.3s;
+		}
+	}
+</style>

@@ -33,6 +33,9 @@
 							<view class="list-li-main-item-name">
 
 							</view>
+							<view class="list-li-main-item-complete flex-center" v-if="ele.use_status==1">
+								<text class="iconfont iconxuanzhong2" style="font-size: 40rpx;"></text>
+							</view>
 						</view>
 					</view>
 					<view class="box-content-list-li-main" v-if="item.data.length==0">
@@ -202,6 +205,7 @@
 						}
 
 						.list-li-main-item {
+							position: relative;
 							display: flex;
 							align-items: center;
 							min-height: 160rpx;
@@ -234,6 +238,15 @@
 							}
 
 							.list-li-main-item-name {}
+
+							.list-li-main-item-complete {
+								position: absolute;
+								right: 20rpx;
+								top: 10rpx;
+								width: 50rpx;
+								height: 50rpx;
+							}
+
 						}
 
 						.list-li-main-item:last-child {

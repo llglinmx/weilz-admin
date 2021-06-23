@@ -23,7 +23,7 @@ function uploadImage(obj, file, path, suffix, result) {
 			success_action_status: '200'
 		},
 		success: res => {
-			console.log(res)
+			// console.log(res)
 			if (res.statusCode != 200) {
 				uni.hideLoading();
 				uni.showToast({

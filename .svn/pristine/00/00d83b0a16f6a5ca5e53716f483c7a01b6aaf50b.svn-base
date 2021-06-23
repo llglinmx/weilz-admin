@@ -1,0 +1,167 @@
+<template>
+	<view class="popup-box" :class="visible?'popup-box-open':''" @click="cancel">
+		<view class="popup-box-main" :class="visible?'popup-box-main-open':''" @click.stop="prevent">
+			<view class="popup-box-head">
+				<text class="cancel" @click="cancel">取消</text>
+				<text class="confirm" @click="confirm">确定</text>
+			</view>
+			<view class="popup-box-content">
+				<view class="popup-box-content-list" :key='keyNum'>
+					<view class="popup-box-content-list-li" v-for="(item,index) in arrData" :key='index'
+						@click="checkList(index)">
+						<text>{{item.name}}</text>
+						<text class="iconxuanzhong1 iconfont" style="font-size: 38rpx;color: #999;"
+							v-if="!item.isCheck"></text>
+						<text class="iconxuanzhong iconfont" style="font-size: 38rpx;color: #b90606;"
+							v-if="item.isCheck"></text>
+					</view>
+				</view>
+			</view>
+		</view>
+	</view>
+</template>
+
+<script>
+	export default {
+		name: "technician-list-select",
+		data() {
+			return {
+				indicatorStyle: `height: 80rpx;`,
+				value: [0],
+				index: 0,
+				arrData: [],
+				keyNum: 0
+			};
+		},
+		props: {
+			visible: {
+				type: Boolean,
+				default: false
+			},
+			dataList: {},
+			skid: {
+				type: [String, Number],
+				default: ''
+			}
+		},
+		watch: {
+			dataList(newVal) {
+				this.arrData = newVal
+			},
+			skid(id) {
+				if (id != '') {
+					this.value = []
+					this.arrData.forEach((item, index) => {
+						if (item.id == id) {
+							this.value.push(index)
+							this.index = index
+						}
+					})
+				}
+
+			},
+		},
+
+		mounted() {
+			this.arrData = this.dataList
+		},
+		methods: {
+
+			// 列表点击
+			checkList(index) {
+				this.arrData[index].isCheck = !this.arrData[index].isCheck
+
+				this.keyNum++
+			},
+
+			// 取消
+			cancel() {
+				this.$emit("cancel", false)
+			},
+			// 确定
+			confirm() {
+				var str = ''
+				var name=''
+				this.arrData.map((item) => {
+					if (item.isCheck) {
+						str += item.id + ','
+						name += item.name + ';'
+					}
+				})
+
+				this.$emit('confirm', {id:str.substr(0, str.length - 1),name:name.substr(0, name.length - 1), })
+				this.cancel()
+			},
+
+			prevent() {},
+		}
+	}
+</script>
+
+<style lang="scss" scoped>
+	.popup-box-open {
+		background: rgba(0, 0, 0, 0.5) !important;
+		z-index: 999 !important;
+	}
+
+	.popup-box {
+		position: fixed;
+		width: 100%;
+		height: 100%;
+		background: rgba(0, 0, 0, 0.1);
+		transition: 0.4s;
+		z-index: -999;
+
+		.popup-box-main-open {
+			height: 700rpx !important;
+		}
+
+		.popup-box-main {
+			display: flex;
+			flex-direction: column;
+			position: absolute;
+			bottom: 0;
+			width: 100%;
+			height: 0;
+			transition: 0.4s;
+			background: #fff;
+
+			.popup-box-head {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				padding: 0 40rpx;
+				box-sizing: border-box;
+				height: 100rpx;
+				border-bottom: 1rpx solid #ededed;
+				font-size: 28rpx;
+
+				.cancel {
+					color: #999;
+				}
+
+				.confirm {
+					color: #1676ec;
+				}
+			}
+
+			.popup-box-content {
+				flex: 1;
+				overflow-y: scroll;
+
+				.popup-box-content-list {
+					padding: 0 30rpx;
+
+					.popup-box-content-list-li {
+						height: 100rpx;
+						display: flex;
+						align-items: center;
+						justify-content: space-between;
+						font-size: 28rpx;
+						color: #000;
+					}
+				}
+			}
+		}
+	}
+</style>

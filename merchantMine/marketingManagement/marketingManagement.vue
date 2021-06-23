@@ -8,7 +8,7 @@
 				<view class="box-head-title">营销管理</view>
 				<view class="box-head-ico flex-center">
 					<text class="iconfont iconsousuo1 icon-font"
-						style="color: #5DBDFE;font-size: 52rpx;margin-top: 4rpx;"></text>
+						style="color: #5DBDFE;font-size: 52rpx;margin-top: 4rpx;" v-if="false"></text>
 				</view>
 			</view>
 			<view class="box-head-tabs">

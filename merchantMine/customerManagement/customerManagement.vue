@@ -4,7 +4,7 @@
 			<nav-title-balck navTitle='客户管理' />
 		</view>
 		<view class="box-content">
-			<view class="box-content-search" :style="{display:isData?'block':'none'}">
+			<view class="box-content-search">
 				<view class="box-content-search-box">
 					<view class="box-content-search-box-ico" :class="isSearch?'box-content-search-box-ico-active':''"
 						@click="searchClick">
@@ -13,7 +13,7 @@
 					</view>
 					<view class="box-content-search-box-input"
 						:class="isSearch?'box-content-search-box-input-active':''">
-						<input type="text" v-model.trim="search" @focus="focus" @blur="blur" placeholder="搜索用户名称" />
+						<input type="text"confirm-type="search" @confirm="searchClick" @keydown.enter="searchClick" v-model.trim="search" @focus="focus" @blur="blur" placeholder="搜索用户名称" />
 					</view>
 				</view>
 			</view>

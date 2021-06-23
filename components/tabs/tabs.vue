@@ -87,10 +87,13 @@
 			this.updateConfig();
 			this.updateData();
 			this.tagIndex = this.activeIndex;
-
-			this.$nextTick(() => {
+			setTimeout(() => {
 				this.calcScrollPosition();
-			})
+			}, 500)
+
+			// this.$nextTick(() => {
+			// 	this.calcScrollPosition();
+			// })
 		},
 		methods: {
 			updateData() {

@@ -8,7 +8,7 @@
 						:class="isSearch?'box-head-search-box-icon-active':'box-head-search-box-icon-no-active'">
 						<text class="iconfont iconsousuo1 icon-font"
 							style="color: #999;font-size: 40rpx;margin-top: 4rpx;" @click="searchChange"></text>
-						<input type="text" @keydown.enter="searchChange" v-model.trim="searchVal" @focus="focus"
+						<input type="text"  confirm-type="search" @confirm="searchChange" @keydown.enter="searchChange" v-model.trim="searchVal" @focus="focus"
 							@blur="blur" placeholder="搜索订单号、预约信息" />
 					</view>
 				</view>

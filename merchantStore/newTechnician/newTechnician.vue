@@ -195,7 +195,7 @@
 					</view>
 				</view>
 
-				<view class="box-content-list-li" v-if="type=='add'" @click="userOpen">
+				<!-- <view class="box-content-list-li" v-if="type=='add'" @click="userOpen">
 					<view class="box-content-list-li-title">用户绑定</view>
 					<view class="box-content-list-li-info">
 						<view class="box-content-list-li-info-text">{{userName==''?'请选择用户':userName}}</view>
@@ -204,7 +204,7 @@
 								style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
 						</view>
 					</view>
-				</view>
+				</view> -->
 				<view class="box-content-list-li" @click="stateOpen">
 					<view class="box-content-list-li-title">状态</view>
 					<view class="box-content-list-li-info">
@@ -235,8 +235,7 @@
 			</view>
 		</view>
 		<view class="box-footer">
-			<btn-sky-blue btnName="确认提交" @btnClick="confirmAdd" v-if="type=='add'" />
-			<btn-sky-blue btnName="确认修改" @btnClick="confirmEdit" v-if="type=='edit'" />
+			<btn-sky-blue :btnName="type=='add'?'确认添加':'确认修改'" @btnClick="btnChange" />
 		</view>
 
 		<popup-list-select :skid='from.mobile_code_id' @cancel="areaCancel" @confirm="areaConfirm" :visible='isAreaCode'
@@ -411,7 +410,14 @@
 
 			// 选择项目分类
 			platformOpen() {
-				this.isPlatform = true
+				if (this.platformList.length != 0) {
+					this.isPlatform = true
+				} else {
+					uni.showToast({
+						title: '暂无项目分类，请先去添加分类',
+						icon: 'none'
+					})
+				}
 			},
 			// 项目分类关闭弹窗
 			platformPopup(e) {
@@ -488,6 +494,119 @@
 				this.isCurr = bool ? true : false
 				this.from.drive_card = this.isCurr ? 1 : -1
 			},
+
+			// 按钮
+			btnChange() {
+				if (this.from.storeCategory == '') {
+					uni.showToast({
+						title: "请选择门店分类",
+						icon: 'none'
+					})
+					return false
+				}
+				if (this.from.name == '') {
+					uni.showToast({
+						title: "请输入技师名称",
+						icon: 'none'
+					})
+					return false
+				}
+				if (this.from.platform == '') {
+					uni.showToast({
+						title: "请选择项目分类",
+						icon: 'none'
+					})
+					return false
+				}
+				if (this.from.mobile == '') {
+					uni.showToast({
+						title: "请输入手机号码",
+						icon: 'none'
+					})
+					return false
+				}
+				if (this.from.email == '') {
+					uni.showToast({
+						title: "请输入邮箱",
+						icon: 'none'
+					})
+					return false
+				}
+				if (this.from.service == '') {
+					uni.showToast({
+						title: "请选择服务项目",
+						icon: 'none'
+					})
+					return false
+				}
+				if (this.from.grade == '') {
+					uni.showToast({
+						title: "请选择技师等级",
+						icon: 'none'
+					})
+					return false
+				}
+				if (this.from.service_times == '') {
+					uni.showToast({
+						title: "请输入工龄",
+						icon: 'none'
+					})
+					return false
+				}
+				if (this.from.license_id == '') {
+					uni.showToast({
+						title: "请输入执照",
+						icon: 'none'
+					})
+					return false
+				}
+				if (this.from.license_img == '') {
+					uni.showToast({
+						title: "请上传执照图片",
+						icon: 'none'
+					})
+					return false
+				}
+				if (this.from.license_img == '') {
+					uni.showToast({
+						title: "请上传执照图片",
+						icon: 'none'
+					})
+					return false
+				}
+				if (this.from.service_fee == '') {
+					uni.showToast({
+						title: "请输入项目服务费",
+						icon: 'none'
+					})
+					return false
+				}
+
+				if (this.from.fee == '') {
+					uni.showToast({
+						title: "请技师提成",
+						icon: 'none'
+					})
+					return false
+				}
+				if (this.from.status == '-1') {
+					uni.showToast({
+						title: "请选择状态",
+						icon: 'none'
+					})
+					return false
+				}
+
+
+
+				if (this.type == 'add') {
+					this.confirmAdd()
+				} else {
+					this.confirmEdit()
+				}
+			},
+
+
 			// 确认提交按钮
 			confirmAdd() {
 				var vuedata = {
@@ -514,8 +633,7 @@
 					ordersort: this.from.ordersort, //排序
 					content: this.from.content, //详情
 				}
-				console.log(vuedata)
-				// return false;
+
 				this.apipost('api/v1/store/engineer/add', vuedata).then(res => {
 					if (res.status == 200) {
 						this.$store.commit('upAddTechhnician', true)

@@ -5,7 +5,7 @@
 		</view>
 		<view class="box-content">
 			<view class="box-content-screen" :style="{display:isData?'block':'none'}">
-				<view class="box-content-screen-search">
+				<view class="box-content-screen-search" @click="boolShow = true">
 					<text class="iconfont iconshaixuan icon-font" style="color: #000;font-size: 36rpx"></text>
 					<text style="margin-left: 10rpx;">筛选</text>
 				</view>
@@ -48,7 +48,29 @@
 			</view>
 
 		</view>
-
+		<popup-layer ref="popupRef" :direction="'left'" v-model="boolShow">
+			<view class="zidingyiBox">
+				<view class="popup-head" :style="{paddingTop:barHeight+'px'}">
+					<text @click="seekBack" class="iconfont iconfanhui icon-font"
+						style="color: #333;font-size: 36rpx;margin-top: 4rpx;"></text>
+					<text class="popup-head-text">筛选</text>
+				</view>
+				<view class="popup-content">
+					<view class="popup-content-main" v-for="(item,index) in seekList" :key="index">
+						<view class="popup-content-main-title">{{item.title}}</view>
+						<view class="popup-content-main-list">
+							<view class="popup-content-main-list-li flex-center"
+								:class="j.isCheck?'popup-content-main-list-li-active':''" @click="checkBtn(index,k)"
+								v-for="(j,k) in item.data">{{j.title}}</view>
+						</view>
+					</view>
+				</view>
+				<view class="popup-footer">
+					<view class="popup-footer-reset flex-center" @click="reset">重置</view>
+					<view class="popup-footer-confirm flex-center" @click="determine">确认</view>
+				</view>
+			</view>
+		</popup-layer>
 	</view>
 </template>
 
@@ -60,6 +82,84 @@
 				dataList: [],
 				isData: false,
 				isLoad: true,
+				seekList: [{
+						title: "岗位",
+						data: [{
+								isCheck: true,
+								title: '不限'
+							},
+							{
+								isCheck: false,
+								title: '按摩师'
+							},
+							{
+								isCheck: false,
+								title: '足疗师'
+							},
+							{
+								isCheck: false,
+								title: '针灸推拿'
+							},
+						]
+					},
+					{
+						title: "学历要求",
+						data: [{
+								isCheck: true,
+								title: '不限'
+							},
+							{
+								isCheck: false,
+								title: '初中及以下'
+							},
+							{
+								isCheck: false,
+								title: '中专/中技'
+							},
+							{
+								isCheck: false,
+								title: '高中'
+							},
+							{
+								isCheck: false,
+								title: '大专'
+							},
+							{
+								isCheck: false,
+								title: '本科'
+							},
+						]
+					},
+					{
+						title: "工龄",
+						data: [{
+								isCheck: true,
+								title: '不限'
+							},
+							{
+								isCheck: false,
+								title: '学徒'
+							},
+							{
+								isCheck: false,
+								title: '1-2年'
+							},
+							{
+								isCheck: false,
+								title: '3-4年'
+							}, {
+								isCheck: false,
+								title: '5-6年'
+							},
+							{
+								isCheck: false,
+								title: '6年以上'
+							},
+						]
+					},
+				],
+				checkArr: [],
+				boolShow: false
 			};
 		},
 
@@ -77,6 +177,45 @@
 			});
 		},
 		methods: {
+			// 筛选关闭
+			seekBack() {
+				this.boolShow = false
+			},
+			// 筛选点击
+			checkBtn(index, idx) {
+				// index 第一级下标 idx 第二级下标
+				this.checkArr = []
+				this.seekList[index].data.map(item => {
+					item.isCheck = false
+				})
+				this.seekList[index].data[idx].isCheck = true
+
+				this.seekList.forEach(item => {
+					item.data.forEach(res => {
+						if (res.isCheck) {
+							this.checkArr.push(res.title)
+						}
+					})
+				})
+			},
+
+			// 重置按钮
+			reset() {
+				this.seekList.forEach(item => {
+					item.data.forEach(res => {
+						res.isCheck = false
+					})
+					item.data[0].isCheck = true
+				})
+			},
+			// 确定按钮
+			determine() {
+				console.log(this.checkArr)
+				this.boolShow = false
+			},
+
+
+
 			// 上拉 下拉
 			queryList(pageNo, pageSize) {
 				this.recruitList(pageNo, pageSize)
@@ -232,5 +371,103 @@
 		}
 
 		.box-footer {}
+
+		.zidingyiBox {
+			display: flex;
+			flex-direction: column;
+
+			width: 500rpx;
+			height: 100%;
+			background: #fff;
+
+			.popup-head {
+				height: 88rpx;
+				margin-bottom: 20rpx;
+				font-size: 34rpx;
+				display: flex;
+				align-items: center;
+				padding: 0 40rpx;
+				box-sizing: border-box;
+
+				.icon-font {}
+
+				.popup-head-text {
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					flex: 1;
+				}
+			}
+
+			.popup-content {
+				padding: 0 40rpx;
+				box-sizing: border-box;
+				flex: 1;
+				overflow-y: scroll;
+				border-bottom: 1rpx solid #ededed;
+
+				.popup-content-main {
+					.popup-content-main-title {
+						font-size: 36rpx;
+						color: #000;
+						padding: 40rpx 0;
+						box-sizing: border-box;
+					}
+
+					.popup-content-main-list {
+						display: flex;
+						flex-wrap: wrap;
+
+						.popup-content-main-list-li {
+							width: 200rpx;
+							height: 66rpx;
+							margin-right: 20rpx;
+							margin-bottom: 40rpx;
+							background: #F7F8FA;
+							border-radius: 40rpx;
+							font-size: 26rpx;
+							color: #333;
+							transition: 0.3s;
+						}
+
+						.popup-content-main-list-li:nth-child(2n) {
+							margin-right: 0;
+						}
+
+						.popup-content-main-list-li-active {
+							color: #fff !important;
+							background: #26BF82 !important;
+						}
+					}
+				}
+			}
+
+			.popup-footer {
+				padding: 0 40rpx;
+				box-sizing: border-box;
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				height: 120rpx;
+				font-size: 32rpx;
+
+				.popup-footer-reset {
+					width: 198rpx;
+					height: 68rpx;
+					background: #F7F7F7;
+					border: 1px solid #666666;
+					border-radius: 10rpx;
+					color: #666;
+				}
+
+				.popup-footer-confirm {
+					width: 200rpx;
+					height: 70rpx;
+					background: #26BF82;
+					color: #fff;
+					border-radius: 10rpx;
+				}
+			}
+		}
 	}
 </style>

@@ -2,13 +2,13 @@
 	<view class="box">
 		<view class="box-head" :style="{paddingTop:barHeight+'px'}">
 			<view class="box-head-search">
-				<view class="box-head-search-box">
+				<view class="box-head-search-box" @click="isSearch = true">
 					<view class="box-head-search-box-icon"
 						:class="isSearch?'box-head-search-box-icon-active':'box-head-search-box-icon-no-active'">
 						<text class="iconfont iconsousuo1 icon-font"
 							style="color: #999;font-size: 40rpx;margin-top: 4rpx;" @click="getStore(1,20)"></text>
-						<input type="text" @keydown.enter="getStore(1,20)" v-model.trim="searchVal" @focus="focus"
-							@blur="blur" placeholder="搜索门店" />
+						<input type="text" confirm-type="search" @confirm="getStore(1,20)" @keydown.enter="getStore(1,20)" :focus="isFocus" v-model.trim="searchVal"
+							@focus="focus" @blur="blur" placeholder="搜索门店" />
 					</view>
 				</view>
 			</view>
@@ -82,6 +82,7 @@
 				isData: false,
 				isLoad: true,
 				searchVal: '',
+				isFocus: false,
 			};
 		},
 
@@ -101,6 +102,12 @@
 				this.getStore(1, 20)
 			}
 		},
+		watch: {
+			isSearch(val) {
+					this.isFocus = val
+				
+			},
+		},
 		methods: {
 			// input框 获得焦点事件
 			focus() {
@@ -108,7 +115,6 @@
 			},
 			// 失去焦点事件
 			blur() {
-				console.log(111)
 				this.isSearch = false
 			},
 

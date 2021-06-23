@@ -26,7 +26,8 @@
 							<view class="info-user-main-text-msg">【{{userInfo.level_name}}】</view>
 						</view>
 						<view class="info-user-main-score">
-							<score :comment="userInfo.comment"></score>
+							<uni-rate :readonly="true" allow-half margin='4' size='16' v-model="userInfo.comment" />
+							<text style="font-size: 28rpx;color: #999;line-height: 30rpx;">{{userInfo.comment}}</text>
 						</view>
 						<view class="info-user-main-user-info">
 							<text>女</text>
@@ -41,14 +42,15 @@
 					语言技能：{{userInfo.Language_skills}}
 				</view>
 				<view class="box-content-wrap-info-text">兴趣爱好：{{userInfo.hobby}}</view>
-				<view class="box-content-wrap-info-text">执照ID：<text style="color: #26BF82;" @click="previewImg(userInfo.simg,0)">查看图片</text></view>
+				<view class="box-content-wrap-info-text">执照ID：<text style="color: #26BF82;"
+						@click="previewImg(userInfo.simg,0)">查看图片</text></view>
 			</view>
 
 			<view class="box-content-store">
 				<view class="box-content-store-title">所属门店</view>
 				<view class="box-content-store-list">
 					<view class="box-content-store-list-text">
-						<text class="iconfont iconshangjia icon-font" style="color:#26BF82;font-size: 28rpx"></text>
+						<text class="iconfont iconshangjia icon-font" style="color:#26BF82;font-size: 32rpx"></text>
 						<text style="font-weight: 500;color: #000;margin-left: 20rpx;">{{userInfo.store_name}}</text>
 					</view>
 					<view class="box-content-store-list-more">
@@ -79,8 +81,10 @@
 			<view class="box-content-work-record">
 				<view class="box-content-work-record-title">工作记录</view>
 				<view class="box-content-work-record-list" v-if="userInfo.work_record">
-					<view class="box-content-work-record-list-li" v-for="(item,index) in userInfo.work_record" :key='index'>
-						<view class="box-content-work-record-list-li-time">{{item.begin_time}} - {{item.end_time}}</view>
+					<view class="box-content-work-record-list-li" v-for="(item,index) in userInfo.work_record"
+						:key='index'>
+						<view class="box-content-work-record-list-li-time">{{item.begin_time}} - {{item.end_time}}
+						</view>
 						<view class="box-content-work-record-list-li-text">
 							<text>{{item.store_name}}</text>
 							<text>{{item.Job_title}}</text>
@@ -155,7 +159,7 @@
 					if (res.status == 200) {
 						this.userInfo = res.data.engineer
 						this.imageList = []
-						
+
 						res.data.engineer.photo.forEach(item => {
 							this.imageList.push(item.name)
 						})
@@ -237,6 +241,7 @@
 						image {
 							width: 256rpx;
 							height: 256rpx;
+							border-radius: 10rpx;
 						}
 
 						.box-content-wrap-info-user-image-toast {

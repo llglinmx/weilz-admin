@@ -13,7 +13,7 @@
 			<!-- list数据，建议像下方这样在item外层套一个view，而非直接for循环item，因为slot插入有数量限制 -->
 			<view class="box-content-order" v-if="dataList.length>0">
 				<view class="box-content-order-list">
-					<view class="box-content-order-list-li" v-for="(item,index) in dataList" :key="item.id">
+					<view class="box-content-order-list-li" v-for="(item,index) in dataList" :key="item.id" @click="orderDetails(item.id)">
 						<view class="box-content-order-list-li-top">
 							<view class="order-list-li-top-title">订单号{{item.out_trade_no}}</view>
 							<view class="order-list-li-top-msg" v-if="item.status==-2&&item.use_status==-1">已失效</view>
@@ -24,7 +24,7 @@
 						<view class="box-content-order-list-li-wrap">
 							<view class="order-list-li-wrap-item" v-for="(i,j) in 1">
 								<view class="order-list-li-wrap-item-image">
-									<image src="../../static/images/001.png" mode="aspectFill"></image>
+									<image :src="item.reserve_simg" mode="aspectFill"></image>
 								</view>
 								<view class="order-list-li-wrap-item-info">
 									<view class="order-list-li-wrap-item-info-top">
@@ -84,10 +84,7 @@
 							</view>
 							<view class="box-content-order-list-li-footer-btn">
 								<view class="order-list-li-footer-all-btn btn-hollow flex-center"
-									v-if="item.status==1&&item.use_status==1" @click.stop="orderDetails(item.id)">查看详情
-								</view>
-								<view class="order-list-li-footer-all-btn btn-hollow flex-center"
-									v-if="item.status==1&&item.use_status==-1" @click.stop="cancelOrder(item)">
+									v-if="item.status==1&&item.use_status==-1&&item.pay_type==4" @click.stop="cancelOrder(item)">
 									取消订单
 								</view>
 								<view class="order-list-li-footer-all-btn btn-fill flex-center"
@@ -170,6 +167,7 @@
 					if (res.status == 200) {
 						if (res.data.length != 0) {
 							let list = res.data.data
+							this.$refs.paging.addData(list);
 							this.firstLoaded = true;
 						} else {
 							this.$refs.paging.addData([]);
@@ -244,6 +242,7 @@
 							image {
 								width: 132rpx;
 								height: 132rpx;
+								border-radius: 10rpx;
 							}
 						}
 

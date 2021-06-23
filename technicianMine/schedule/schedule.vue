@@ -100,7 +100,7 @@
 			// 查看技师所有预约
 			technicianOwned() {
 				var str = {
-					id:this.id,
+					id: this.id,
 					year: this.dataObj.year,
 					month: this.dataObj.month,
 					day: this.dataObj.day,
@@ -171,7 +171,9 @@
 			getStoreInfo(id) {
 				this.apiget('api/v1/store/store_information/' + id, {}).then(res => {
 					if (res.status == 200) {
-						this.storeData = res.data.member
+						if (res.data) {
+							this.storeData = res.data.member
+						}
 					}
 				});
 			},

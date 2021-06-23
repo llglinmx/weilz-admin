@@ -13,21 +13,23 @@
 			<!-- list数据，建议像下方这样在item外层套一个view，而非直接for循环item，因为slot插入有数量限制 -->
 			<view class="box-content-order" v-if="dataList.length>0">
 				<view class="box-content-order-list">
-					<view class="box-content-order-list-li" v-for="(item,index) in dataList" :key="index">
+					<view class="box-content-order-list-li" v-for="(item,index) in dataList" :key="index"
+						@click="orderDetails(item.id)">
 						<view class="box-content-order-list-li-top">
 							<view class="order-list-li-top-title">订单号:{{item.out_trade_no}}</view>
 							<view class="order-list-li-top-msg" v-if="item.status==1&&item.use_status==-1">待核销</view>
 							<view class="order-list-li-top-msg" v-if="item.status==-1&&item.use_status==-1">待支付</view>
 							<view class="order-list-li-top-msg" v-if="item.status==2&&item.use_status==-1">已退款</view>
 							<view class="order-list-li-top-msg" v-if="item.status==-2&&item.use_status==-1">订单已失效</view>
-							<view class="order-list-li-top-msg" v-if="item.status==1&&item.use_status==1&&item.comment_status==-1">已核销</view>
+							<view class="order-list-li-top-msg"
+								v-if="item.status==1&&item.use_status==1&&item.comment_status==-1">已核销</view>
 							<view class="order-list-li-top-msg"
 								v-if="item.status==1&&item.use_status==1&&item.comment_status==1">已评价</view>
 						</view>
 						<view class="box-content-order-list-li-wrap">
 							<view class="order-list-li-wrap-item" v-for="(i,j) in 1">
 								<view class="order-list-li-wrap-item-image">
-									<image src="../../static/images/001.png" mode="aspectFill"></image>
+									<image :src="item.reserve_simg" mode="aspectFill"></image>
 								</view>
 								<view class="order-list-li-wrap-item-info">
 									<view class="order-list-li-wrap-item-info-top">
@@ -60,7 +62,7 @@
 										<text> {{item.store_name}}</text>
 									</view>
 								</view>
-								<view class="order-list-li-appointment-info-wrap-item">
+								<view class="order-list-li-appointment-info-wrap-item" v-if="item.content">
 									<view class="order-list-li-appointment-info-wrap-item-title">备注信息：</view>
 									<view class="order-list-li-appointment-info-wrap-item-text">
 										<text>{{item.content}}</text>
@@ -77,7 +79,7 @@
 							<view class="box-content-order-list-li-footer-btn"
 								v-if="item.status==1&&item.use_status==-1">
 								<view class="order-list-li-footer-all-btn btn-fill flex-center"
-									@click="writeOffDetails(item.id)">确认核销</view>
+									@click.stop="writeOffDetails(item.id)">确认核销</view>
 							</view>
 						</view>
 					</view>
@@ -167,6 +169,12 @@
 			writeOffDetails(id) {
 				uni.navigateTo({
 					url: "../../technicianOrder/toBeWrittenOff/toBeWrittenOff?id=" + id
+				})
+			},
+			// 订单详情
+			orderDetails(id) {
+				uni.navigateTo({
+					url: '../../technicianOrder/orderDetails/orderDetails?id=' + id
 				})
 			},
 		}

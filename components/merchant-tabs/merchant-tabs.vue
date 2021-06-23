@@ -1,11 +1,13 @@
 <template>
 	<view class="_tab-box" :style="{fontSize: defaultConfig.fontSize + 'rpx', color: defaultConfig.color}">
-		<scroll-view id="_scroll" :scroll-x="true" class="scroll-view-h" scroll-with-animation :scroll-left="slider.scrollLeft">
+		<scroll-view id="_scroll" :scroll-x="true" class="scroll-view-h" scroll-with-animation
+			:scroll-left="slider.scrollLeft">
 			<view class="_scroll-content">
 				<view class="_tab-item-box" :class="[defaultConfig.itemWidth ? '_clamp' : '_flex']">
 					<block v-for="(item, index) in tabList" :key="index">
-						<view class="_item" :id="'_tab_'+index" :class="{ '_active': activeIndex === index }" :style="{color: activeIndex == index ? defaultConfig.activeColor : defaultConfig.color, 'width': defaultConfig.itemWidth ? defaultConfig.itemWidth + 'rpx' : ''}"
-						 @click="tabClick(index)">{{ item[defaultConfig.key] || item||item.name }}</view>
+						<view class="_item" :id="'_tab_'+index" :class="{ '_active': activeIndex === index }"
+							:style="{color: activeIndex == index ? defaultConfig.activeColor : defaultConfig.color, 'width': defaultConfig.itemWidth ? defaultConfig.itemWidth + 'rpx' : ''}"
+							@click="tabClick(index)">{{ item[defaultConfig.key] || item||item.name }}</view>
 					</block>
 				</view>
 				<view class="_underline" :style="{
@@ -86,9 +88,11 @@
 			this.updateData();
 			this.tagIndex = this.activeIndex;
 
-			this.$nextTick(() => {
+			setTimeout(() => {
 				this.calcScrollPosition();
-			})
+			}, 500)
+			
+			this.$nextTick(() => {})
 		},
 		methods: {
 			updateData() {
@@ -114,13 +118,13 @@
 				const query = uni.createSelectorQuery().in(this);
 
 				query.select('#_scroll').boundingClientRect((res) => {
+
 					this.scorll = res;
 					this.updateTabWidth();
 				}).exec();
 			},
 			updateTabWidth(index = 0) {
 				let data = this.tabList;
-
 				if (data.length == 0) return false;
 
 				const query = uni.createSelectorQuery().in(this);
@@ -154,7 +158,8 @@
 					if (this.defaultConfig.itemWidth) {
 						width = uni.upx2px(this.defaultConfig.itemWidth);
 					} else {
-						width = this.tabList[index][this.defaultConfig.key].length * uni.upx2px(this.defaultConfig.fontSize);
+						width = this.tabList[index][this.defaultConfig.key].length * uni.upx2px(this.defaultConfig
+							.fontSize);
 					}
 					width += uni.upx2px(this.defaultConfig.underLinePadding) * 2;
 				}

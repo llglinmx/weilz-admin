@@ -12,7 +12,7 @@
 					</view>
 					<view class="box-content-search-box-input"
 						:class="isSearch?'box-content-search-box-input-active':''">
-						<input type="text" @keydown.enter="storeList(1, 10)" v-model.trim="searchVal" @focus="focus" @blur="blur" placeholder="搜索门店名称、账号" />
+						<input type="text" confirm-type="search" @confirm="storeList(1, 10)" @keydown.enter="storeList(1, 10)" v-model.trim="searchVal" @focus="focus" @blur="blur" placeholder="搜索门店名称、账号" />
 					</view>
 				</view>
 			</view>

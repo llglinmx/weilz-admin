@@ -7,17 +7,17 @@
 			<!-- 自定义下拉刷新view，若不设置，则使用z-paging自带的下拉刷新view -->
 			<!-- <custom-refresher slot="refresher"></custom-refresher> -->
 			<loading-merchant v-if="isLoad" />
-			<no-data v-if="dataList.length<=0&&!isLoad" />
 			<!-- <empty-view slot="empty"></empty-view> -->
 			<!-- 如果希望其他view跟着页面滚动，可以放在z-paging标签内 -->
 			<!-- list数据，建议像下方这样在item外层套一个view，而非直接for循环item，因为slot插入有数量限制 -->
-			<view class="box-content-item-comment-wrap" v-if="dataList.length>0">
+			<view class="box-content-item-comment-wrap">
 				<view class="box-content-item-type">
 					<view class="box-content-item-type-li flex-center" @click="typeClick(index)"
 						:class="typeIndex==index?'box-content-item-type-li-active':''" v-for="(item,index) in typeList"
 						:key="index">{{item.name}}</view>
 				</view>
-				<view class="box-content-item-comment">
+				<no-data v-if="dataList.length<=0" />
+				<view class="box-content-item-comment" v-if="dataList.length>0">
 					<view class="box-content-item-comment-list">
 						<view class="box-content-item-comment-list-li" v-for="(item,index) in dataList" :key="item.id">
 							<view class="comment-list-li-top">
@@ -43,7 +43,8 @@
 								{{item.createtime}}
 							</view>
 							<view class="comment-list-li-msg-image-arr">
-								<image :src="i" mode="aspectFill" v-for="(i,j) in item.bimg" :key="j" @click="previewImg(i,j)">
+								<image :src="i" mode="aspectFill" v-for="(i,j) in item.bimg" :key="j"
+									@click="previewImg(i,j)">
 								</image>
 							</view>
 							<view class="comment-list-li-msg-reply" v-if="false">
@@ -145,11 +146,11 @@
 				}
 				this.apiget('pc/comment', vuedata).then(res => {
 					if (res.status == 200) {
+						let list = res.data.comment
 						if (res.data.comment.length != 0) {
-							let list = res.data.comment
-							this.$refs.paging.addData(list);
 							this.firstLoaded = true;
-						}
+						} 
+						this.$refs.paging.addData(list);
 						this.isLoad = false
 					}
 				});

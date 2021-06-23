@@ -1,7 +1,7 @@
 <template>
 	<view class="box">
 		<view class="box-head" :style="{paddingTop:barHeight+'px'}">
-			<nav-title-white navTitle="门店数据" />
+			<nav-title-white navTitle="技师数据" />
 		</view>
 		<view class="box-content">
 			<view class="box-content-info">
@@ -158,8 +158,8 @@
 					this.timeObj.startTime = ''
 					this.timeObj.endTime = ''
 				} else if (e.id == 1) {
-					this.timeObj.startTime = time1
-					this.timeObj.endTime = time1
+					this.timeObj.startTime = date1.getFullYear() + "-" + this.isTody(date1.getMonth() + 1) + "-" + date1.getDate()+' '+'00:00:00'
+					this.timeObj.endTime = date1.getFullYear() + "-" + this.isTody(date1.getMonth() + 1) + "-" + date1.getDate()+' '+'23:59:59'
 				} else if (e.id == 2 || e.id == 3) {
 					this.timeObj.startTime = time1
 					this.timeObj.endTime = this.funcitonDate(e.day)

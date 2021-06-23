@@ -66,6 +66,9 @@
 						<view class="box-content-order-info-main-item-text">
 							<text v-if="orderDetails.pay_type==1">微信支付</text>
 							<text v-if="orderDetails.pay_type==2">余额支付</text>
+							<text v-if="orderDetails.pay_type==3">支付宝支付</text>
+							<text v-if="orderDetails.pay_type==4">现金支付</text>
+							<text v-if="orderDetails.pay_type==5">信用卡支付</text>
 						</view>
 					</view>
 				</view>
@@ -136,7 +139,6 @@
 					<view class="box-content-text-list-msg" v-if="memberInfo.sex==1">男</view>
 					<view class="box-content-text-list-msg" v-if="memberInfo.sex==2">女</view>
 					<view class="box-content-text-list-msg" v-if="memberInfo.sex==0">保密</view>
-
 				</view>
 				<view class="box-content-text-list">
 					<view class="box-content-text-list-title">年龄</view>
@@ -167,13 +169,18 @@
 			</view>
 		</view>
 		<view class="box-footer">
-			<view class="flex-center cancel" @click="cancelOrder" v-if="orderDetails.status!=-2">取消订单</view>
+			<view class="flex-center cancel" @click="cancelOrder" v-if="orderDetails.status!=-2&&orderDetails.pay_type==4">取消订单</view>
 			<view class="flex-center cancel" v-if="orderDetails.status==-2&&orderDetails.use_status==-1">订单已失效</view>
 			<view class="box-font-btn flex-center" @click="confirmWriteOff"
 				v-if="orderDetails.status==1&&orderDetails.use_status==-1">确认核销</view>
 		</view>
+
 		<uni-popup ref="popup" type="dialog">
 			<uni-popup-dialog type="warn" mode='base' title="警告" content="你确定要取消此订单吗" :duration="2000" @confirm="confirm"></uni-popup-dialog>
+		</uni-popup>
+		<uni-popup ref="popupWriteOff" type="dialog">
+			<uni-popup-dialog type="warn" mode='base' title="警告" content="你是否确定核销此订单？" :duration="2000"
+				@confirm="confirm"></uni-popup-dialog>
 		</uni-popup>
 	</view>
 </template>
@@ -258,25 +265,30 @@
 							icon: 'none'
 						})
 					}
-				// this.$refs.popup.close()
 				});
 			},
-			// 确认核销接口
+			
+			// 确认核销
 			confirmWriteOff() {
-				this.apiput('api/v1/store/order/write_off/' + this.id).then(res => {
+				this.$refs.popupWriteOff.open()
+			},
+			confirm() {
+				this.apiput('api/v1/engineer/order/write_off/' + this.id, {}).then(res => {
 					if (res.status == 200) {
+			
 						this.$store.commit('upOrderState', true)
 						uni.showToast({
-							title: "订单核销成功",
+							title: '核销成功',
 							icon: "none"
 						})
 						uni.navigateBack({
 							delta: 1
 						})
+			
 					} else {
 						uni.showToast({
 							title: res.massage,
-							icon: 'none'
+							icon: "none"
 						})
 					}
 				});

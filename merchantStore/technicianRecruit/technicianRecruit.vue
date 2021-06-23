@@ -727,6 +727,7 @@
 			background: #fff;
 
 			.popup-head {
+				height: 88rpx;
 				margin-bottom: 20rpx;
 				font-size: 34rpx;
 				display: flex;

@@ -107,7 +107,16 @@
 					"enablePullDownRefresh": false
 				}
 
-			}]
+			}    ,{
+                    "path" : "orderDetails/orderDetails",
+                    "style" :                                                                                    
+                {
+                    "navigationBarTitleText": "技师订单详情",
+                    "enablePullDownRefresh": false
+                }
+                
+                }
+            ]
 		},
 		{
 			"root": "technicianMine",
@@ -378,7 +387,16 @@
 					"enablePullDownRefresh": false
 				}
 
-			}]
+			}    ,{
+                    "path" : "googleMap/googleMap",
+                    "style" :                                                                                    
+                {
+                    "navigationBarTitleText": "谷歌地图",
+                    "enablePullDownRefresh": false
+                }
+                
+                }
+            ]
 		}, {
 			"root": "merchantMall",
 			"pages": []

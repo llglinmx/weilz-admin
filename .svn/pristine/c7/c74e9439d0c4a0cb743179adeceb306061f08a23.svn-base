@@ -1,0 +1,183 @@
+<template>
+	<view class="content-box">
+		<!-- 这里设置了z-paging加载时禁止自动调用reload方法，自行控制何时reload（懒加载），同时允许touchmove事件冒泡，否则无法横向滚动切换tab -->
+		<z-paging ref="paging" @query="queryList" :list.sync="dataList" loading-more-no-more-text="已经到底了"
+			:mounted-auto-call-reload="false" :refresher-angle-enable-change-continued="false"
+			:touchmove-propagation-enabled="true" :use-custom-refresher="true" style="height: 100%;">
+			<!-- 自定义下拉刷新view，若不设置，则使用z-paging自带的下拉刷新view -->
+			<!-- <custom-refresher slot="refresher"></custom-refresher> -->
+			<loading-merchant v-if="isLoad" />
+			<no-data v-if="dataList.length<=0&&!isLoad" />
+			<!-- <empty-view slot="empty"></empty-view> -->
+			<!-- 如果希望其他view跟着页面滚动，可以放在z-paging标签内 -->
+			<!-- list数据，建议像下方这样在item外层套一个view，而非直接for循环item，因为slot插入有数量限制 -->
+
+			<view class="box-content-data-list-main" v-if="dataList.length>0">
+				<view class="box-content-data-list-main-item" v-for="(item,index) in dataList"
+					@click="refundDetails(item.id)">
+					<view class="box-content-data-list-main-item-left">
+						<view class="list-main-item-left-text">订单号：{{item.out_trade_no}}</view>
+						<view class="list-main-item-left-msg">{{item.createtime}}</view>
+					</view>
+					<view class="box-content-data-list-main-item-right">
+						<text>{{type=='1'?'-':'+'}} {{item.amount}}</text>
+						<text class="iconfont icongengduo icon-font"
+							style="color: #ccc;font-size: 28rpx;margin-top: 4rpx;"></text>
+					</view>
+				</view>
+			</view>
+
+		</z-paging>
+	</view>
+</template>
+
+<script>
+	import mixins from '../../static/js/mixins.js'
+	export default {
+		mixins: [mixins],
+		data() {
+			return {
+				dataList: [],
+				firstLoaded: false,
+				isLoad: true,
+			}
+		},
+
+		props: {
+			tabIndex: {
+				type: Number,
+				default: function() {
+					return 0
+				}
+			},
+			currentIndex: {
+				type: Number,
+				default: function() {
+					return 0
+				}
+			},
+			id: {},
+			type: {},
+			time: {
+				default:{
+					startTime:'',
+					endTime:''
+				}
+			}
+		},
+		watch: {
+			currentIndex: {
+				handler(newVal) {
+					if (newVal === this.tabIndex) {
+						//懒加载，当滑动到当前的item时，才去加载
+						if (!this.firstLoaded) {
+							this.$nextTick(() => {
+								this.$refs.paging.reload();
+							})
+						}
+					}
+				},
+				immediate: true
+			},
+		},
+		methods: {
+			queryList(pageNo, pageSize) {
+				this.getDataList(pageNo, pageSize)
+			},
+
+
+			// 获取数据
+			getDataList(num, size) {
+				var vuedata = {
+					page_index: num, // 请求页数，
+					each_page: size, // 请求条数
+					start_time: this.time.startTime,
+					end_time: this.time.endTime,
+					type: this.type,
+				}
+				this.apiget('api/v1/store/store_information/' + this.id, vuedata).then(res => {
+					if (res.status == 200) {
+						let list = []
+						if (res.data.member.order_data.order_data.length != 0) {
+							list = res.data.member.order_data.order_data
+						} else {}
+						this.$refs.paging.addData(list);
+						this.isLoad = false
+						this.$emit('initChange', res.data.member)
+					}
+				});
+			},
+			// 套餐订单详情
+			packageDetails() {
+				uni.navigateTo({
+					url: "../packageOrderDdetails/packageOrderDdetails"
+				})
+			},
+
+			// 订单详情
+			refundDetails(id) {
+				var str = {}
+				if (this.type == '1') {
+					str = {
+						type: '1',
+						id: id,
+					}
+				} else if (this.type == '2') {
+					str = {
+						type: '2',
+						id: id,
+					}
+				}
+
+
+				uni.navigateTo({
+					url: "../refundOrderDetails/refundOrderDetails?data=" + JSON.stringify(str)
+				})
+			},
+		}
+	}
+</script>
+
+<style scoped lang="scss">
+	.box-content-data-list-main {
+		padding-left: 40rpx;
+		box-sizing: border-box;
+		height: 100%;
+
+		.box-content-data-list-main-item {
+			display: flex;
+			align-items: center;
+			padding: 30rpx 40rpx 30rpx 0;
+			box-sizing: border-box;
+			border-bottom: 1rpx solid #ededed;
+
+			.box-content-data-list-main-item-left {
+				flex: 1;
+				margin-right: 20rpx;
+
+				.list-main-item-left-text {
+					font-size: 30rpx;
+					color: #000;
+				}
+
+				.list-main-item-left-msg {
+					margin-top: 10rpx;
+					font-size: 24rpx;
+					color: #999;
+				}
+
+			}
+
+			.box-content-data-list-main-item-right {
+				display: flex;
+				align-items: center;
+				font-size: 32rpx;
+				color: #FF4D4D;
+
+				.icon-font {
+					margin-left: 20rpx;
+				}
+			}
+		}
+	}
+</style>

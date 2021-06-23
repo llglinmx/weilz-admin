@@ -22,7 +22,7 @@
 			<view class="box-content-search"
 				:style="{height:isSearch?'auto':'0',padding:isSearch?'30rpx 40rpx':'0 40rpx'}">
 				<view class="box-content-search-box">
-					<input :focus="isFocus" type="text" @keydown.enter="searchChange" v-model.trim="searchVal"
+					<input confirm-type="search" @confirm="searchChange" :focus="isFocus" type="text" @keydown.enter="searchChange" v-model.trim="searchVal"
 						placeholder="请输入需要搜索的内容" />
 					<text class="iconfont iconsousuo1 icon-font" style="color: #999;font-size: 48rpx;margin-top: 4rpx;"
 						@click="searchChange"></text>

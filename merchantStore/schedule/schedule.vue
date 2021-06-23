@@ -176,7 +176,15 @@
 
 			// 选择技师
 			selectOpen() {
-				this.visible = true
+				if (this.engineerList.length != 0) {
+					this.visible = true
+					return false
+				}
+				uni.showToast({
+					title: '暂无可用技师，请先去添加技师',
+					icon: 'none'
+				})
+
 			},
 			// 选择技师取消按钮
 			engineerCancel(e) {
@@ -227,14 +235,25 @@
 
 			// 添加排班表
 			addSchedule() {
-				var str = {
-					type: 'add',
-					id: this.id,
+				// 判断是否有技师
+				if (this.engineerList.length != 0) {
+					var str = {
+						type: 'add',
+						id: this.id,
+					}
+					this.$store.commit('upAddSchedule', false)
+					uni.navigateTo({
+						url: "../addSchedule/addSchedule?data=" + JSON.stringify(str)
+					})
+					return false
 				}
-				this.$store.commit('upAddSchedule', false)
-				uni.navigateTo({
-					url: "../addSchedule/addSchedule?data=" + JSON.stringify(str)
+				
+				uni.showToast({
+					title: '暂无可用技师，请先去添加技师',
+					icon: 'none'
 				})
+
+
 			},
 			// 编辑排班表
 			editSchedule() {
@@ -287,7 +306,6 @@
 			},
 			// 查看团队排班当日预约
 			teamAppointment() {
-				console.log(this.infoData)
 				var str = {
 					year: this.infoData.year,
 					month: this.infoData.month,
@@ -380,7 +398,9 @@
 					store: this.id,
 				}).then(res => {
 					if (res.status == 200) {
-						this.engineerList = res.data.member
+						if (res.data.length != 0) {
+							this.engineerList = res.data.member
+						}
 					}
 				});
 			},

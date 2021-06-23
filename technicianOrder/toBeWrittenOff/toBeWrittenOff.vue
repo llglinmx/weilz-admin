@@ -59,7 +59,17 @@
 					<view class="box-content-order-info-main-item">
 						<view class="box-content-order-info-main-item-title">支付方式：</view>
 						<view class="box-content-order-info-main-item-text">
-							<text>{{infoData.pay_type==1?'微信支付':'余额支付'}}</text>
+							<text v-if="infoData.pay_type==1">微信支付</text>
+							<text v-if="infoData.pay_type==2">余额支付</text>
+							<text v-if="infoData.pay_type==3">支付宝支付</text>
+							<text v-if="infoData.pay_type==4">现金支付</text>
+							<text v-if="infoData.pay_type==5">信用卡支付</text>
+						</view>
+					</view>
+					<view class="box-content-order-info-main-item">
+						<view class="box-content-order-info-main-item-title">订单备注：</view>
+						<view class="box-content-order-info-main-item-text">
+							{{infoData.content}}
 						</view>
 					</view>
 				</view>

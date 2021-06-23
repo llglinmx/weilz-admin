@@ -75,6 +75,9 @@
 						<view class="box-content-order-info-main-item-text">
 							<text v-if="orderInfo.pay_type==1">微信支付</text>
 							<text v-if="orderInfo.pay_type==2">余额支付</text>
+							<text v-if="orderInfo.pay_type==3">支付宝支付</text>
+							<text v-if="orderInfo.pay_type==4">现金支付</text>
+							<text v-if="orderInfo.pay_type==5">信用卡支付</text>
 						</view>
 					</view>
 				</view>
@@ -107,19 +110,27 @@
 				<view class="box-content-text-title">下单用户信息</view>
 				<view class="box-content-text-list">
 					<view class="box-content-text-list-title">用户昵称</view>
-					<view class="box-content-text-list-msg" v-if="orderInfo&&orderInfo.member_info&&orderInfo.member_info.nickname">{{orderInfo.member_info.nickname}}</view>
+					<view class="box-content-text-list-msg"
+						v-if="orderInfo&&orderInfo.member_info&&orderInfo.member_info.nickname">
+						{{orderInfo.member_info.nickname}}</view>
 				</view>
 				<view class="box-content-text-list">
 					<view class="box-content-text-list-title">用户名</view>
-					<view class="box-content-text-list-msg" v-if="orderInfo&&orderInfo.member_info&&orderInfo.member_info.name">{{orderInfo.member_info.name}}</view>
+					<view class="box-content-text-list-msg"
+						v-if="orderInfo&&orderInfo.member_info&&orderInfo.member_info.name">
+						{{orderInfo.member_info.name}}</view>
 				</view>
 				<view class="box-content-text-list">
 					<view class="box-content-text-list-title">手机号码</view>
-					<view class="box-content-text-list-msg"  v-if="orderInfo&&orderInfo.member_info&&orderInfo.member_info.mobile">{{orderInfo.member_info.mobile}}</view>
+					<view class="box-content-text-list-msg"
+						v-if="orderInfo&&orderInfo.member_info&&orderInfo.member_info.mobile">
+						{{orderInfo.member_info.mobile}}</view>
 				</view>
 				<view class="box-content-text-list">
 					<view class="box-content-text-list-title">邮箱</view>
-					<view class="box-content-text-list-msg"  v-if="orderInfo&&orderInfo.member_info&&orderInfo.member_info.email">{{orderInfo.member_info.email}}</view>
+					<view class="box-content-text-list-msg"
+						v-if="orderInfo&&orderInfo.member_info&&orderInfo.member_info.email">
+						{{orderInfo.member_info.email}}</view>
 				</view>
 			</view>
 
@@ -127,15 +138,21 @@
 				<view class="box-content-text-title">紧急联系人</view>
 				<view class="box-content-text-list">
 					<view class="box-content-text-list-title">姓名</view>
-					<view class="box-content-text-list-msg"  v-if="orderInfo&&orderInfo.member_info&&orderInfo.member_info.urgency_name">{{orderInfo.member_info.urgency_name}}</view>
+					<view class="box-content-text-list-msg"
+						v-if="orderInfo&&orderInfo.member_info&&orderInfo.member_info.urgency_name">
+						{{orderInfo.member_info.urgency_name}}</view>
 				</view>
 				<view class="box-content-text-list">
 					<view class="box-content-text-list-title">联系电话</view>
-					<view class="box-content-text-list-msg" v-if="orderInfo&&orderInfo.member_info&&orderInfo.member_info.urgency_mobile">{{orderInfo.member_info.urgency_mobile}}</view>
+					<view class="box-content-text-list-msg"
+						v-if="orderInfo&&orderInfo.member_info&&orderInfo.member_info.urgency_mobile">
+						{{orderInfo.member_info.urgency_mobile}}</view>
 				</view>
 				<view class="box-content-text-list">
 					<view class="box-content-text-list-title">关系</view>
-					<view class="box-content-text-list-msg" v-if="orderInfo&&orderInfo.member_info&&orderInfo.member_info.urgency_relation">{{orderInfo.member_info.urgency_relation}}</view>
+					<view class="box-content-text-list-msg"
+						v-if="orderInfo&&orderInfo.member_info&&orderInfo.member_info.urgency_relation">
+						{{orderInfo.member_info.urgency_relation}}</view>
 				</view>
 			</view>
 			<view class="box-content-text">
@@ -148,37 +165,56 @@
 				</view>
 				<view class="box-content-text-list">
 					<view class="box-content-text-list-title">年龄</view>
-					<view class="box-content-text-list-msg"  v-if="orderInfo&&orderInfo.member_info&&orderInfo.member_info.age">{{orderInfo.member_info.age}}</view>
+					<view class="box-content-text-list-msg"
+						v-if="orderInfo&&orderInfo.member_info&&orderInfo.member_info.age">{{orderInfo.member_info.age}}
+					</view>
 				</view>
 				<view class="box-content-text-list">
 					<view class="box-content-text-list-title">过往病例</view>
-					<view class="box-content-text-list-msg"  v-if="orderInfo&&orderInfo.member_info&&orderInfo.member_info.cottoms">{{orderInfo.member_info.cottoms}}</view>
+					<view class="box-content-text-list-msg"
+						v-if="orderInfo&&orderInfo.member_info&&orderInfo.member_info.cottoms">
+						{{orderInfo.member_info.cottoms}}</view>
 				</view>
 				<view class="box-content-text-list">
 					<view class="box-content-text-list-title">过敏病例</view>
-					<view class="box-content-text-list-msg" v-if="orderInfo&&orderInfo.member_info&&orderInfo.member_info.allergy">{{orderInfo.member_info.allergy}}</view>
+					<view class="box-content-text-list-msg"
+						v-if="orderInfo&&orderInfo.member_info&&orderInfo.member_info.allergy">
+						{{orderInfo.member_info.allergy}}</view>
 				</view>
 				<view class="box-content-text-list">
 					<view class="box-content-text-list-title">有无手术</view>
-					<view class="box-content-text-list-msg" v-if="orderInfo&&orderInfo.member_info&&orderInfo.member_info.operation">{{orderInfo.member_info.operation==1?'无':'有'}}</view>
+					<view class="box-content-text-list-msg"
+						v-if="orderInfo&&orderInfo.member_info&&orderInfo.member_info.operation">
+						{{orderInfo.member_info.operation==1?'无':'有'}}</view>
 				</view>
 				<view class="box-content-text-list">
 					<view class="box-content-text-list-title">是否怀孕</view>
-					<view class="box-content-text-list-msg" v-if="orderInfo&&orderInfo.member_info&&orderInfo.member_info.fetation">{{orderInfo.member_info.fetation==1?'否':'是'}}</view>
+					<view class="box-content-text-list-msg"
+						v-if="orderInfo&&orderInfo.member_info&&orderInfo.member_info.fetation">
+						{{orderInfo.member_info.fetation==1?'否':'是'}}</view>
 				</view>
 				<view class="box-content-text-list">
 					<view class="box-content-text-list-title">注意事项</view>
-					<view class="box-content-text-list-msg" v-if="orderInfo&&orderInfo.member_info&&orderInfo.member_info.announcements">{{orderInfo.member_info.announcements}}</view>
+					<view class="box-content-text-list-msg"
+						v-if="orderInfo&&orderInfo.member_info&&orderInfo.member_info.announcements">
+						{{orderInfo.member_info.announcements}}</view>
 				</view>
 			</view>
 		</view>
 		<view class="box-footer">
 			<view class="flex-center cancel" v-if="orderInfo.status==-1&&orderInfo.use_status==-1">订单未支付</view>
-			<view class="flex-center cancel" v-if="orderInfo.status==1&&orderInfo.use_status==-1">取消订单</view>
+			<view class="flex-center cancel" v-if="orderInfo.status==1&&orderInfo.use_status==-1&&orderInfo.pay_type==4" @click="cancelOrder">取消订单</view>
 			<view class="flex-center cancel" v-if="orderInfo.status==-2&&orderInfo.use_status==-1">订单已失效</view>
-			<view class="box-font-btn flex-center" v-if="orderInfo.status==1&&orderInfo.use_status==-1">服务结束</view>
+			<view class="box-font-btn flex-center" v-if="orderInfo.status==1&&orderInfo.use_status==-1" @click="confirmWriteOff">确认核销</view>
 			<view class="box-font-btn flex-center" v-if="orderInfo.status==1&&orderInfo.use_status==1">服务已完成</view>
 		</view>
+		<uni-popup ref="popup" type="dialog">
+			<uni-popup-dialog type="warn" mode='base' title="警告" content="你确定要取消此订单吗" :duration="2000" @confirm="confirm"></uni-popup-dialog>
+		</uni-popup>
+		<uni-popup ref="popupWriteOff" type="dialog">
+			<uni-popup-dialog type="warn" mode='base' title="警告" content="你是否确定核销此订单？" :duration="2000"
+				@confirm="confirm"></uni-popup-dialog>
+		</uni-popup>
 	</view>
 </template>
 
@@ -188,6 +224,7 @@
 		data() {
 			return {
 				barHeight: 0, //顶部电量导航栏高度
+				id:'',
 				orderInfo: {
 
 				}
@@ -205,9 +242,61 @@
 			});
 		},
 		onLoad(options) {
+			this.id = options.id
 			this.getOrderDetails(options.id)
 		},
 		methods: {
+			
+			// 取消订单
+			cancelOrder() {
+				this.$refs.popup.open()
+			},
+			
+			confirm() {
+				this.apiput('api/v1/store/order/cancel_order/' + this.id).then(res => {
+					if (res.status == 200) {
+						this.$store.commit('upOrderState', true)
+						uni.showToast({
+							title: "订单取消成功",
+							icon: "none"
+						})
+						uni.navigateBack({
+							delta: 1
+						})
+					} else {
+						uni.showToast({
+							title: res.massage,
+							icon: 'none'
+						})
+					}
+				});
+			},
+			
+			// 确认核销
+			confirmWriteOff() {
+				this.$refs.popupWriteOff.open()
+			},
+			confirm() {
+				this.apiput('api/v1/engineer/order/write_off/' + this.id, {}).then(res => {
+					if (res.status == 200) {
+			
+						this.$store.commit('upOrderState', true)
+						uni.showToast({
+							title: '核销成功',
+							icon: "none"
+						})
+						uni.navigateBack({
+							delta: 1
+						})
+			
+					} else {
+						uni.showToast({
+							title: res.massage,
+							icon: "none"
+						})
+					}
+				});
+			},
 			// 获取订单详情 
 			getOrderDetails(id) {
 				this.apiget('api/v1/store/order/' + id).then(res => {

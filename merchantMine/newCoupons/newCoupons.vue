@@ -122,7 +122,8 @@
 				<view class="box-content-list-li">
 					<view class="box-content-list-li-title">发放状态</view>
 					<view class="box-content-list-li-info">
-						<switch :checked="isState" style="transform: scale(0.7);" @change="switch1Change" color="#07C160" />
+						<switch :checked="isState" style="transform: scale(0.7);" @change="switch1Change"
+							color="#07C160" />
 					</view>
 				</view>
 
@@ -144,16 +145,18 @@
 
 		</view>
 		<view class="box-footer">
-			<btn-sky-blue btnName="确认添加" @btnClick="confirmAdd" v-if="type =='add'" />
-			<btn-sky-blue btnName="确认修改" @btnClick="confirmEdit" v-if="type =='edit'" />
+			<btn-sky-blue :btnName="type =='add'?'确认添加':'确认修改'" @btnClick="btnChange" />
 		</view>
-		<popup-list-select :skid='from.store' @cancel="storeCancel" @confirm="storeConfirm" :visible='isStore' :dataList="storeList">
+		<popup-list-select :skid='from.store' @cancel="storeCancel" @confirm="storeConfirm" :visible='isStore'
+			:dataList="storeList">
 		</popup-list-select>
-		
-		<popup-list-select :skid='from.code_type' @cancel="codeCancel" @confirm="codeConfirm" :visible='isCode' :dataList="codeList">
+
+		<popup-list-select :skid='from.code_type' @cancel="codeCancel" @confirm="codeConfirm" :visible='isCode'
+			:dataList="codeList">
 		</popup-list-select>
-		
-		<popup-list-select :skid='from.access' @cancel="accessCancel" @confirm="accessConfirm" :visible='isAccess' :dataList="accessList">
+
+		<popup-list-select :skid='from.access' @cancel="accessCancel" @confirm="accessConfirm" :visible='isAccess'
+			:dataList="accessList">
 		</popup-list-select>
 
 		<select-date @cancel="dateStartCancel" @confirm="dateStartConfirm" :visible='isStartDate' />
@@ -253,7 +256,7 @@
 				this.title = '编辑优惠券'
 				this.type = 'edit'
 				this.id = data.id
-				this.getDetails(data.id)
+				// this.getDetails(data.id)
 			}
 
 		},
@@ -297,7 +300,7 @@
 			// 选择开始日期弹窗选择确认
 			dateStartConfirm(e) {
 				console.log(e)
-				this.startTime = e.year + '-' + e.month + '-' + e.day+' '+e.hour+':'+e.minute+':'+e.second
+				this.startTime = e.year + '-' + e.month + '-' + e.day + ' ' + e.hour + ':' + e.minute + ':' + e.second
 			},
 
 			// 选择结束日期
@@ -318,7 +321,7 @@
 			},
 			// 选择结束日期弹窗选择确认
 			dateEndConfirm(e) {
-				this.endTime = e.year + '-' + e.month + '-' + e.day+' '+e.hour+':'+e.minute+':'+e.second
+				this.endTime = e.year + '-' + e.month + '-' + e.day + ' ' + e.hour + ':' + e.minute + ':' + e.second
 			},
 
 
@@ -351,7 +354,87 @@
 				this.from.date_type = this.isCurr ? 1 : 2
 			},
 
+			// 按钮
+			btnChange() {
+				if (this.from.store == '') {
+					uni.showToast({
+						title: '请选择门店',
+						icon: 'none'
+					})
+					return false
+				}
+				if (this.from.name == '') {
+					uni.showToast({
+						title: '请输入优惠券名称',
+						icon: 'none'
+					})
+					return false
+				}
+				if (this.from.least_cost == '') {
+					uni.showToast({
+						title: '请输入优惠券启用金额',
+						icon: 'none'
+					})
+					return false
+				}
+				if (this.from.reduce_cost == '') {
+					uni.showToast({
+						title: '请输入优惠券减免',
+						icon: 'none'
+					})
+					return false
+				}
+				if (this.from.quantity == '') {
+					uni.showToast({
+						title: '请输入库存',
+						icon: 'none'
+					})
+					return false
+				}
+				if (this.from.code_type == '') {
+					uni.showToast({
+						title: '请选择码型',
+						icon: 'none'
+					})
+					return false
+				}
 
+				if (this.isCurr && this.startTime == '') {
+					uni.showToast({
+						title: '请输入开始时间',
+						icon: 'none'
+					})
+					return false
+				}
+				if (this.isCurr && this.endTime == '') {
+					uni.showToast({
+						title: '请输入结束时间',
+						icon: 'none'
+					})
+					return false
+				}
+				
+				if (!this.isCurr && this.from.fixed_term == '') {
+					uni.showToast({
+						title: '请输入有效天数',
+						icon: 'none'
+					})
+					return false
+				}
+				if (this.from.access == '') {
+					uni.showToast({
+						title: '请选择分类',
+						icon: 'none'
+					})
+					return false
+				}
+
+				if (this.type == 'add') {
+					this.confirmAdd()
+				} else {
+					this.confirmEdit()
+				}
+			},
 
 			// 确认提交按钮
 			confirmAdd() {
@@ -371,8 +454,7 @@
 					sort: this.from.sort, //排序
 					description: this.from.description, //优惠券说明
 				}
-				console.log(vuedata)
-				// return false;
+
 				this.apipost('api/v1/store/coupon/add', vuedata).then(res => {
 					if (res.status == 200) {
 						this.$store.commit('upAddCoupon', true)
@@ -481,7 +563,10 @@
 				this.apiget('api/v1/store/store_information', {}).then(res => {
 					if (res.status == 200) {
 						this.storeList = res.data.member
-						this.from.store = res.data.member[0].id
+						
+						if (this.type == 'edit') {
+							this.getDetails(this.id)
+						}
 					}
 				});
 			},

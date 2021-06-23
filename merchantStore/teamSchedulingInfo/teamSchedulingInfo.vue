@@ -27,6 +27,9 @@
 					<view class="box-content-list-li-name">
 						{{item.member_name}}
 					</view>
+					<view class="box-content-list-li-complete flex-center" v-if="item.use_status==1">
+						<text class="iconfont iconxuanzhong2" style="font-size: 40rpx;"></text>
+					</view>
 				</view>
 			</view>
 			<view class="box-content-list" style="padding: 0;" :style="{display:!isData?'block':'none'}">
@@ -136,6 +139,7 @@
 				box-sizing: border-box;
 
 				.box-content-list-li {
+					position: relative;
 					display: flex;
 					align-items: center;
 					justify-content: space-between;
@@ -185,6 +189,13 @@
 					.box-content-list-li-name {
 						margin-left: 20rpx;
 						font-size: 28rpx;
+					}
+					.box-content-list-li-complete{
+						position: absolute;
+						right: 20rpx;
+						top: 10rpx;
+						width: 50rpx;
+						height: 50rpx;
 					}
 				}
 
