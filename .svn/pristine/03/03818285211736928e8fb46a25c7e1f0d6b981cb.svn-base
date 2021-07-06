@@ -1,0 +1,607 @@
+<template>
+	<view class="box">
+		<view class="box-head" :style="{paddingTop:barHeight+'px'}">
+			<view class="box-head-top">
+				<text class="iconfont iconxiaoxi icon-font" style="font-size: 52rpx;color: #fff;margin-right: 20rpx;"
+					@click="msgClick"></text>
+				<text class="iconfont iconshezhi icon-font" style="font-size: 52rpx;color: #fff;" @click="set"></text>
+			</view>
+			<view class="box-head-wrap">
+				<view class="box-head-wrap-user-info">
+					<view class="box-head-wrap-user-info-image flex-center">
+						<image :src="userInfo.simg" mode="aspectFill"></image>
+					</view>
+					<view class="box-head-wrap-user-info-main">
+						<view class="user-info-main-title">
+							<view class="user-info-main-title-text">{{userInfo.name}}</view>
+							<view class="user-info-main-title-msg">{{userInfo.level_name}}</view>
+						</view>
+						<view class="user-info-main-store">所属门店：{{userInfo.store_name}}</view>
+					</view>
+				</view>
+				<view class="box-head-wrap-state flex-center">上班中</view>
+			</view>
+		</view>
+		<view class="box-content">
+			<!-- <view class="box-content-list">
+				<view class="box-content-list-li" v-for="(item,index) in typeList" :key="index">
+					<view class="box-content-list-li-image">
+						<image :src="item.image" mode="aspectFill"></image>
+					</view>
+					<view class="box-content-list-li-text">{{item.text}}</view>
+				</view>
+			</view> -->
+
+			<view class="box-content-main">
+				<view class="box-content-main-list">
+					<view class="box-content-main-list-li" v-for="(item,index) in menuList" :key="index"
+						@click="menuClick(index,item.id)">
+						<view class="box-content-main-list-li-info">
+							<text :class="item.style" class="iconfont icon-font"
+								:style="{fontSize:item.size+'rpx',color:item.color}"></text>
+							<text class="list-li-info-text">{{item.text}}</text>
+						</view>
+						<view class="box-content-main-list-li-more">
+							<text class="iconfont icongengduo icon-font"
+								style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
+						</view>
+					</view>
+				</view>
+			</view>
+		</view>
+		<view class="box-footer">
+			<technician-tabbar ref="tabBarRef" @tabbarClick="tabbarClick" :activeIndex="activeIndex">
+			</technician-tabbar>
+		</view>
+		<!-- 选择语言弹出层 -->
+		<uni-popup ref="popup" type="center" :maskClick="false">
+			<view class="popup-box">
+				<view class="popup-list-box">
+					<view class="popup-title">
+						选择语言
+					</view>
+					<view class="popup-list">
+						<view class="popup-list-li" v-for="(item,index) in textList"
+							@click="selectLanguage(item.id,index)" :class="item.default==1?'popup-list-li-active':''">
+							<text>{{item.name}}</text>
+							<text class="iconfont icondagou icon-font" style="color:#26BF82;font-size: 40rpx;"
+								v-if="item.default==1"></text>
+						</view>
+					</view>
+					<view class="popup-btn" @click="confirmBtn">
+						确定
+					</view>
+				</view>
+				<view class="popup-close flex-center" @click="closeLanguage">
+					<text class="iconfont iconcuowu icon-font" style="color:#fff;font-size: 48rpx;"></text>
+				</view>
+			</view>
+		</uni-popup>
+	</view>
+</template>
+
+<script>
+	export default {
+		data() {
+			return {
+				barHeight: 0, //顶部电量导航栏高度
+				activeIndex: 2, //当前tabbar所在页面
+				typeList: [{
+						text: '待核销',
+						image: '../../static/images/technician-mine-icon1.png',
+					},
+					{
+						text: '已核销',
+						image: '../../static/images/technician-mine-icon2.png'
+					},
+					{
+						text: '已退款',
+						image: '../../static/images/technician-mine-icon3.png'
+					},
+					{
+						text: '已评价',
+						image: '../../static/images/technician-mine-icon4.png'
+					},
+					{
+						text: '全部订单',
+						image: '../../static/images/technician-mine-icon5.png'
+					},
+				],
+				menuList: [
+					// {
+					// 	text: "收益统计",
+					// 	size: '48',
+					// 	style: "iconshouyitongji",
+					// 	color: "#26BF82",
+					// 	id: 0
+					// },
+					{
+						text: "日程安排",
+						size: '48',
+						style: "iconrichenganpai",
+						color: "#26BF82",
+						id: 1
+					},
+					{
+						text: "客户评价",
+						size: '48',
+						style: "iconkehupingjia",
+						color: "#FFDB3A",
+						id: 2
+					},
+					{
+						text: "技师信息",
+						size: '48',
+						style: "iconjishixinxi",
+						color: "#4CB6FE",
+						id: 3
+					},
+					// {
+					// 	text: "收益提成",
+					// 	size: '48',
+					// 	style: "iconshouyiticheng",
+					// 	color: "#26BF82",
+					// 	id: 4
+					// },
+					{
+						text: "推荐消息",
+						size: '48',
+						style: "icontuijianxiaoxi",
+						color: "#4CB6FE",
+						id: 5
+					},
+					{
+						text: "招聘信息",
+						size: '48',
+						style: "iconzhaopinxinxi",
+						color: "#FFDB3A",
+						id: 6
+					},
+					{
+						text: "银行卡管理",
+						size: '48',
+						style: "iconzhaopinxinxi",
+						color: "#FFDB3A",
+						id: 8
+					},
+					{
+						text: "切换语言",
+						size: '48',
+						style: "icontuijianxiaoxi",
+						color: "#4CB6FE",
+						id: 7
+					},
+				],
+				userInfo: {
+					level_name: '',
+					name: '',
+					simg: '',
+					store_name: ''
+				},
+				selectIndex: 0, //当前选择的语言
+				LanguageID: '',
+				LanguageCode: '',
+				textList: ['中文', "英语", "俄语", "法语", "德语"],
+				selectIndex: 0, //当前选择的语言
+			};
+		},
+
+
+		onLoad() {
+			// 获取顶部电量状态栏高度
+			uni.getSystemInfo({
+				success: (res) => {
+					this.barHeight = res.statusBarHeight
+				}
+			});
+			this.getInfo()
+			this.languageList()
+		},
+		methods: {
+
+			// 获取个人信息
+			getInfo() {
+				let vuedata = {}
+				this.apiget('api/v1/engineer/info', vuedata).then(res => {
+					if (res.status == 200) {
+						this.userInfo = res.data.engineer
+					}
+				});
+			},
+
+
+
+			// 系统消息
+			msgClick() {
+				uni.navigateTo({
+					url: "../../technicianMine/systemMessage/systemMessage"
+				})
+			},
+
+			// 设置
+			set() {
+				uni.navigateTo({
+					url: "../../technicianMine/set/set"
+				})
+			},
+
+
+
+			// 选择语言
+			selectLanguage(id, index) {
+				this.textList.forEach(item => {
+					item.default = '-1'
+				})
+				this.textList[index].default = 1
+				this.selectIndex = index
+				this.LanguageID = this.textList[index].id
+				this.LanguageCode = this.textList[index].code
+			},
+
+			// 选择语言 关闭
+			closeLanguage() {
+				this.$refs.popup.close()
+			},
+
+			// 语言选择确定按钮
+			confirmBtn() {
+				uni.setStorageSync('isStoreSelectLanguage', true);
+				uni.setStorageSync('storeLanguageId', this.LanguageID);
+				uni.setStorageSync('storeLanguageCode', this.LanguageCode);
+				this.$refs.tabBarRef.languageChange()
+				this.$refs.popup.close()
+			},
+
+			// 请求语言列表
+			languageList() {
+				this.apiget('language', {}).then(res => {
+					if (res.status == 200) {
+						this.textList = res.data.lng.reverse()
+						var langId = uni.getStorageSync('storeLanguageId');
+
+						if (langId) {
+							this.textList.forEach((item, index) => {
+								if (item.id == langId) { //判断默认选中语言包
+									this.textList.forEach(item => {
+										item.default = '-1'
+									})
+									this.textList[index].default = 1
+								}
+							})
+						} else {
+							this.textList.forEach((item, index) => {
+								if (item.default == 1) { //判断默认选中语言包
+									this.selectIndex = index
+								}
+							})
+						}
+					}
+				});
+			},
+
+
+
+			// 菜单点击
+			menuClick(index, id) {
+				// 
+				switch (id) {
+					// 收益统计
+					case 0:
+						uni.navigateTo({
+							url: "../../technicianMine/revenueStatistics/revenueStatistics"
+						})
+						break;
+						// 日程安排
+					case 1:
+						let str = {
+							store: this.userInfo.store,
+							id: this.userInfo.id
+						}
+						uni.navigateTo({
+							url: "../../technicianMine/schedule/schedule?data=" + JSON.stringify(str)
+						})
+						break;
+						// 客户评价
+					case 2:
+						uni.navigateTo({
+							url: "../../technicianMine/evaluationManagement/evaluationManagement"
+						})
+						break;
+						// 技师信息
+					case 3:
+						uni.navigateTo({
+							url: "../../technicianMine/technicianInformation/technicianInformation"
+						})
+						break;
+						// 收益提成
+					case 4:
+						uni.navigateTo({
+							url: "../../technicianMine/incomeCommission/incomeCommission"
+						})
+						break;
+						// 推荐消息
+					case 5:
+						uni.navigateTo({
+							url: "../../technicianMine/recommend/recommend"
+						})
+						break;
+						// 招聘信息
+					case 6:
+						uni.navigateTo({
+							url: "../../technicianMine/recruitmentInformation/recruitmentInformation"
+						})
+						break;
+						// 切换语言
+					case 7:
+						this.$refs.popup.open()
+						break;
+						// 银行卡管理
+					case 8:
+						uni.navigateTo({
+							url: '../../technicianMine/bankCardManagement/bankCardManagement'
+						})
+						break;
+				}
+			},
+
+			// tabbar点击
+			tabbarClick(index) {
+				this.activeIndex = index
+				switch (index) {
+					case 0: //首页
+						uni.redirectTo({
+							url: "../../pages/technicianHome/technicianHome"
+						})
+						break;
+					case 1: //订单
+
+						uni.redirectTo({
+							url: "../../pages/technicianOrder/technicianOrder"
+						})
+						break;
+					case 2: //我的
+
+
+						break;
+				}
+
+			},
+		}
+	}
+</script>
+
+<style lang="scss">
+	.box {
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+		background: #F7F7F7;
+
+		.box-head {
+			padding-bottom: 30rpx;
+			background-color: #26BF82;
+			color: #fff;
+
+			.box-head-top {
+				display: flex;
+				justify-content: flex-end;
+				padding: 18rpx 40rpx;
+				box-sizing: border-box;
+			}
+
+			.box-head-wrap {
+				padding-left: 40rpx;
+				box-sizing: border-box;
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+
+				.box-head-wrap-user-info {
+					display: flex;
+					align-items: center;
+
+					.box-head-wrap-user-info-image {
+						width: 128rpx;
+						height: 128rpx;
+						background: rgba(255, 255, 255, .2);
+						border-radius: 50%;
+
+						image {
+							width: 112rpx;
+							height: 112rpx;
+							border-radius: 50%;
+						}
+					}
+
+					.box-head-wrap-user-info-main {
+						margin-left: 20rpx;
+
+						.user-info-main-title {
+							display: flex;
+							align-items: center;
+
+							.user-info-main-title-text {
+								font-size: 36rpx;
+							}
+
+							.user-info-main-title-msg {
+								margin-left: 12rpx;
+								padding: 7rpx 10rpx;
+								box-sizing: border-box;
+								font-size: 22rpx;
+								border: 1rpx solid #fff;
+								line-height: 22rpx;
+								border-radius: 6rpx;
+							}
+						}
+
+						.user-info-main-store {
+							margin-top: 10rpx;
+							font-size: 24rpx;
+						}
+					}
+				}
+
+				.box-head-wrap-state {
+					width: 144rpx;
+					height: 56rpx;
+					background: rgba(255, 255, 255, .2);
+					border-radius: 28rpx 0rpx 0rpx 28rpx;
+					font-size: 28rpx;
+				}
+			}
+		}
+
+		.box-content {
+			flex: 1;
+			overflow-y: scroll;
+
+			.box-content-list {
+				height: 164rpx;
+				display: flex;
+				margin: 20rpx 0;
+				background: #fff;
+
+				.box-content-list-li {
+					display: flex;
+					flex-direction: column;
+					align-items: center;
+					justify-content: center;
+					flex: 1;
+
+					.box-content-list-li-image {
+						image {
+							width: 64rpx;
+							height: 64rpx;
+						}
+					}
+
+					.box-content-list-li-text {
+						font-size: 24rpx;
+						color: #333;
+					}
+				}
+			}
+
+			.box-content-main {
+				.box-content-main-list {
+					background: #fff;
+					padding-left: 40rpx;
+					box-sizing: border-box;
+
+					.box-content-main-list-li {
+						height: 100rpx;
+						padding-right: 40rpx;
+						box-sizing: border-box;
+						display: flex;
+						align-items: center;
+						justify-content: space-between;
+						border-bottom: 1rpx solid #ededed;
+
+						.box-content-main-list-li-info {
+							display: flex;
+							align-items: center;
+
+							.list-li-info-text {
+								margin-left: 16rpx;
+								font-size: 32rpx;
+								color: #000;
+							}
+						}
+
+						.box-content-main-list-li-more {}
+					}
+
+					.box-content-main-list-li:last-child {
+						border-bottom: 0;
+					}
+				}
+			}
+
+		}
+
+		.box-footer {}
+
+		.popup-box {
+			position: relative;
+			width: 570rpx;
+			// height: 704rpx;
+			padding: 0 60rpx;
+			box-sizing: border-box;
+			background: #fff;
+			border-radius: 20rpx;
+
+			.popup-list-box {
+				height: 100%;
+				display: flex;
+				flex-direction: column;
+
+				.popup-title {
+					padding: 40rpx 0;
+					font-size: 36rpx;
+					font-family: Source Han Sans CN;
+					font-weight: 400;
+					color: #000000;
+					text-align: center;
+				}
+
+				.popup-list {
+					flex: 1;
+					margin-bottom: 40rpx;
+					overflow-y: scroll;
+
+					.popup-list-li {
+						position: relative;
+						display: flex;
+						align-items: center;
+						justify-content: center;
+						height: 80rpx;
+						margin-bottom: 30rpx;
+						background: #F7F7F7;
+						transition: 0.2s;
+
+						text {}
+
+						.icon-font {
+							position: absolute;
+							right: 30rpx;
+							top: 0;
+							bottom: 0;
+							margin: auto;
+						}
+					}
+
+					.popup-list-li-active {
+						color: #26BF82 !important;
+						background: #bde6d6 !important;
+					}
+
+					.popup-list-li:last-child {
+						margin-bottom: 0;
+					}
+				}
+
+				.popup-btn {
+					margin-bottom: 50rpx;
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					height: 88rpx;
+					background: #26BF82;
+					border-radius: 15rpx;
+					color: #fff;
+				}
+			}
+
+			.popup-close {
+				position: absolute;
+				top: -28rpx;
+				right: -28rpx;
+				width: 56rpx;
+				height: 56rpx;
+				border-radius: 50%;
+				background: #26BF82;
+			}
+		}
+	}
+</style>

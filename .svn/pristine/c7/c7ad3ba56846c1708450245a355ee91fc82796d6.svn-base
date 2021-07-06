@@ -1,0 +1,311 @@
+<template>
+	<view class="box">
+		<view class="box-head" :style="{paddingTop:barHeight+'px'}">
+			<nav-title-balck navTitle="商家信息"></nav-title-balck>
+		</view>
+		<view class="box-content">
+			<view class="content-list">
+				<view class="content-list-li" style="height: 171rpx;">
+					<view class="content-list-li-title">商家头像</view>
+					<view class="content-list-li-wrap">
+						<view class="content-list-li-wrap-image" @click="upImage">
+							<image :src="userImage!=''?userImage:noUserImage" mode="aspectFill"></image>
+						</view>
+					</view>
+				</view>
+				<view class="content-list-li">
+					<view class="content-list-li-title">商家名称</view>
+					<view class="content-list-li-wrap">
+						<view class="content-list-li-wrap-text">
+							<input type="text" v-model.trim="name" class="content-list-li-wrap-text-input"
+								placeholder="请输入商家名称" />
+						</view>
+					</view>
+				</view>
+				<view class="content-list-li">
+					<view class="content-list-li-title">电子邮箱</view>
+					<view class="content-list-li-wrap">
+						<view class="content-list-li-wrap-text">
+							<input type="text" v-model.trim="email" class="content-list-li-wrap-text-input"
+								placeholder="请输入邮箱" />
+						</view>
+					</view>
+				</view>
+				<view class="content-list-li">
+					<view class="content-list-li-title">商家电话</view>
+					<view class="content-list-li-wrap">
+						<view class="content-list-li-wrap-code flex-center" @click="isShow = true">
+							<text>+{{codeId}}</text>
+							<text class="iconfont iconxiangxiajiantou" style="transition: 0.3s;"
+								:style="{transform:isShow?'rotate(180deg)':'rotate(0deg)'}"></text>
+						</view>
+						<view class="content-list-li-wrap-text">
+							<input type="number" v-model.trim="mobile" class="content-list-li-wrap-text-input"
+								placeholder="请输入商家电话" />
+						</view>
+					</view>
+				</view>
+				<view class="content-list-li">
+					<view class="content-list-li-title">商家地址</view>
+					<view class="content-list-li-wrap">
+						<view class="content-list-li-wrap-text">
+							<input type="text" v-model.trim="address" class="content-list-li-wrap-text-input"
+								placeholder="请输入商家地址" />
+						</view>
+					</view>
+				</view>
+			</view>
+		</view>
+		<view class="box-footer">
+			<btn-sky-blue btnName="保存" @btnClick="preserve"></btn-sky-blue>
+		</view>
+		<popup-list-select :skid='codeId' @cancel="cancel" @confirm="confirm" :visible='isShow' :dataList="codeList" />
+	</view>
+</template>
+
+<script>
+	import {
+		pathToBase64,
+		base64ToPath
+	} from '../../js_sdk/mmmm-image-tools/index.js'
+	import uploadImage from "../../js_sdk/oss/uploadOSS.js";
+	// import uploadImage from "../../js_sdk/yushijie-ossutil/ossutil/uploadFile.js";
+	import {
+		areaCodeList
+	} from '../../static/js/publicFile.js'
+
+	export default {
+		data() {
+
+			return {
+				barHeight: 0, //顶部电量导航栏高度
+				userImage: '',
+				noUserImage: '../../static/images/user-icon.png',
+				mobile: '',
+				isShow: false,
+				codeId: '86',
+				codeList: [],
+				id: '',
+				name: '',
+				address: '',
+				email: '',
+			};
+		},
+
+		onReady() {
+			// 获取顶部电量状态栏高度
+			uni.getSystemInfo({
+				success: (res) => {
+					this.barHeight = res.statusBarHeight
+				}
+			});
+		},
+		onLoad() {
+
+			this.getInfo()
+
+			this.codeList = areaCodeList
+		},
+
+		onShow() {
+			if (this.$store.state.editText != '') {
+				this.nickname = this.$store.state.editText
+			}
+		},
+		methods: {
+			// 选择头像
+			upImage() {
+				uni.chooseImage({
+					count: 1, //默认100
+					sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
+					success: (res) => {
+						// console.log(res.tempFilePaths[0])
+						// this.userImage = res.tempFilePaths[0]
+
+						//转为base64位图片
+						pathToBase64(res.tempFilePaths[0]).then((data) => {
+							this.userImage = data
+							const path = 'avatar/';
+
+							// #ifdef H5
+							let file = res.tempFilePaths[0];
+							let suffix = res.tempFiles[0].name.split('.').pop();
+							// #endif
+
+							// #ifdef APP-PLUS
+							let file = res.tempFilePaths[0];
+							let suffix = res.tempFiles[0].path.split('.').pop();
+							// #endif
+							this.getOss(path, file, suffix)
+
+						})
+
+						// console.log(this.userImage)
+					}
+				});
+			},
+
+			// 获取阿里云oss 信息
+			getOss(path, file, suffix) {
+				this.apiget('app/oss/url', {}).then(res => {
+					if (res.status == 200) {
+						var obj = {
+							accessid: res.data.accessid,
+							policy: res.data.policy,
+							signature: res.data.signature,
+						}
+						// 上传图片
+						uploadImage(obj, file, path, suffix, result => {
+							this.userImage = result
+						});
+					}
+				});
+			},
+			// 区号取消
+			cancel(e) {
+				this.isShow = e
+			},
+			// 区号确定
+			confirm(e) {
+				this.codeId = e.name
+			},
+
+
+			// 保存按钮
+			preserve() {
+				var vuedata = {
+					name: this.name,
+					email: this.email,
+					mobile: this.mobile,
+					address: this.address,
+					simg: this.userImage,
+					mobile_code: this.codeId
+				}
+
+				this.apiput('api/v1/store/admin_info/edit/' + this.id, vuedata).then(res => {
+					if (res.status == 200) {
+						uni.showToast({
+							title: "信息修改成功",
+							icon: "none"
+						})
+						setTimeout(() => {
+							uni.navigateBack({
+								delta: 1
+							})
+						}, 500)
+					}
+				});
+			},
+			// 获取个人信息
+			getInfo() {
+				this.apiget('api/v1/store/admin_info', {}).then(res => {
+					if (res.status == 200) {
+						this.id = res.data.id
+						// this.company = res.data.company
+						this.codeId = res.data.mobile_code
+						this.userImage = res.data.simg
+						this.name = res.data.name
+						this.email = res.data.email
+						this.mobile = res.data.mobile
+						this.address = res.data.address
+					}
+				});
+			},
+
+		}
+	}
+</script>
+
+<style lang="scss" scoped>
+	.box {
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+		background: #fff;
+
+		.box-head {
+			background: #fff;
+		}
+
+		.box-content {
+			flex: 1;
+			overflow-y: scroll;
+
+			.content-list {
+				background: #fff;
+
+				.content-list-li {
+					display: flex;
+					align-items: center;
+					justify-content: space-between;
+					padding: 0 40rpx;
+					box-sizing: border-box;
+					height: 99rpx;
+					border-bottom: 1rpx solid #EDEDED;
+
+					.content-list-li-title {
+						font-size: 28rpx;
+						font-family: Source Han Sans CN;
+						font-weight: 400;
+						color: #000000;
+					}
+
+					.content-list-li-wrap {
+						margin-left: 80rpx;
+						display: flex;
+						align-items: center;
+						flex: 1;
+
+						.content-list-li-wrap-code {
+							width: 140rpx;
+							height: 50rpx;
+							margin-right: 20rpx;
+							border-radius: 30rpx;
+							border: 1rpx solid #ededed;
+							font-size: 28rpx;
+						}
+
+						.content-list-li-wrap-text {
+							width: 100%;
+							font-size: 28rpx;
+							font-family: Source Han Sans CN;
+							font-weight: 400;
+							color: #333;
+							margin-right: 10rpx;
+
+							.content-list-li-wrap-text-input {
+								width: 100%;
+								font-size: 28rpx;
+							}
+						}
+
+
+
+						.content-list-li-wrap-image {
+							width: 112rpx;
+							height: 112rpx;
+							margin-right: 10rpx;
+
+							image {
+								width: 112rpx;
+								height: 112rpx;
+								border-radius: 50%;
+							}
+						}
+					}
+				}
+
+				.content-list-li:last-child {
+					// border-bottom: none;
+				}
+			}
+		}
+
+		.box-footer {
+			margin-bottom: 30rpx;
+			padding: 0 40rpx;
+		}
+
+
+	}
+</style>

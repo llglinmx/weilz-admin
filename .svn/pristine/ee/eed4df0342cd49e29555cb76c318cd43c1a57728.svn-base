@@ -1,0 +1,641 @@
+{
+	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+		{
+			"path": "pages/login/login",
+			"style": {
+				"navigationBarTitleText": "登录"
+			}
+		}, {
+			"path": "pages/technicianHome/technicianHome",
+			"style": {
+				"navigationBarTitleText": "首页",
+				"navigationBarTextStyle": "white", //状态栏字体颜色
+				"enablePullDownRefresh": false
+			}
+
+		}, {
+			"path": "pages/signUp/signUp",
+			"style": {
+				"navigationBarTextStyle": "white", //状态栏字体颜色
+				"navigationBarTitleText": "登录/注册中心"
+			}
+		}, {
+			"path": "pages/merchantHome/merchantHome",
+			"style": {
+				"navigationBarTitleText": "商家首页",
+				"navigationBarTextStyle": "white", //状态栏字体颜色
+				"enablePullDownRefresh": false
+			}
+
+		}, {
+			"path": "pages/technicianOrder/technicianOrder",
+			"style": {
+				"navigationBarTitleText": "订单",
+				"enablePullDownRefresh": false
+			}
+
+		}, {
+			"path": "pages/technicianMine/technicianMine",
+			"style": {
+				"navigationBarTitleText": "我的",
+				"navigationBarTextStyle": "white", //状态栏字体颜色
+				"enablePullDownRefresh": false
+			}
+
+		},
+		{
+			"path": "pages/registerRoles/registerRoles",
+			"style": {
+				"navigationBarTitleText": "",
+				"enablePullDownRefresh": false
+			}
+		},
+		{
+			"path": "pages/technicianRegistration/technicianRegistration",
+			"style": {
+				"navigationBarTitleText": "",
+				"enablePullDownRefresh": false
+			}
+		}, {
+			"path": "pages/merchantRegistration/merchantRegistration",
+			"style": {
+				"navigationBarTitleText": "",
+				"enablePullDownRefresh": false
+			}
+		}, {
+			"path": "pages/merchantOrder/merchantOrder",
+			"style": {
+				"navigationBarTitleText": "",
+				"enablePullDownRefresh": false
+			}
+
+		}, {
+			"path": "pages/merchantStore/merchantStore",
+			"style": {
+				"navigationBarTitleText": "",
+				"enablePullDownRefresh": false
+			}
+
+		}, {
+			"path": "pages/merchantMall/merchantMall",
+			"style": {
+				"navigationBarTitleText": "",
+				"enablePullDownRefresh": false
+			}
+
+		}, {
+			"path": "pages/merchantMine/merchantMine",
+			"style": {
+				"navigationBarTitleText": "商家中心",
+				"navigationBarTextStyle": "white", //状态栏字体颜色
+				"enablePullDownRefresh": false
+			}
+
+		}
+	],
+	"subPackages": [{
+			"root": "technicianHome",
+			"pages": []
+		},
+		{
+			"root": "technicianOrder",
+			"pages": [{
+				"path": "orderDetails/orderDetails",
+				"style": {
+					"navigationBarTitleText": "技师订单详情",
+					"navigationBarTextStyle": "white", //状态栏字体颜色
+					"enablePullDownRefresh": false
+				}
+
+			}]
+		},
+		{
+			"root": "technicianMine",
+			"pages": [{
+					"path": "revenueStatistics/revenueStatistics",
+					"style": {
+						"navigationBarTitleText": "收益统计",
+						"navigationBarTextStyle": "white", //状态栏字体颜色
+						"enablePullDownRefresh": false
+					}
+				},
+				{
+					"path": "systemMessage/systemMessage",
+					"style": {
+						"navigationBarTitleText": "系统消息",
+						"enablePullDownRefresh": false
+					}
+				}, {
+					"path": "evaluationManagement/evaluationManagement",
+					"style": {
+						"navigationBarTitleText": "评价管理",
+						"enablePullDownRefresh": false
+					}
+
+				}, {
+					"path": "incomeCommission/incomeCommission",
+					"style": {
+						"navigationBarTitleText": "收益统计",
+						"navigationBarTextStyle": "white", //状态栏字体颜色
+						"enablePullDownRefresh": false
+					}
+
+				}, {
+					"path": "technicianInformation/technicianInformation",
+					"style": {
+						"navigationBarTitleText": "",
+						"enablePullDownRefresh": false
+					}
+
+				}, {
+					"path": "recommend/recommend",
+					"style": {
+						"navigationBarTitleText": "",
+						"enablePullDownRefresh": false
+					}
+
+				}, {
+					"path": "recruitmentInformation/recruitmentInformation",
+					"style": {
+						"navigationBarTitleText": "",
+						"enablePullDownRefresh": false
+					}
+
+				}, {
+					"path": "schedule/schedule",
+					"style": {
+						"navigationBarTitleText": "",
+						"enablePullDownRefresh": false
+					}
+
+				}, {
+					"path": "set/set",
+					"style": {
+						"navigationBarTitleText": "",
+						"enablePullDownRefresh": false
+					}
+
+				}, {
+					"path": "technicianSchedulingInfo/technicianSchedulingInfo",
+					"style": {
+						"navigationBarTitleText": "技师排班信息",
+						"enablePullDownRefresh": false
+					}
+
+				}, {
+					"path": "allSchedules/allSchedules",
+					"style": {
+						"navigationBarTitleText": "预约日程",
+						"enablePullDownRefresh": false
+					}
+
+				}, {
+					"path": "recruitmentDetails/recruitmentDetails",
+					"style": {
+						"navigationBarTitleText": "职位详情",
+						"navigationBarTextStyle": "white", //状态栏字体颜色
+						"enablePullDownRefresh": false
+					}
+
+				}
+			    ,{
+                    "path" : "technicianInfo/technicianInfo",
+                    "style" :                                                                                    
+                {
+                    "navigationBarTitleText": "修改技师信息",
+                    "enablePullDownRefresh": false
+                }
+                
+                }
+                ,{
+                    "path" : "addBankCard/addBankCard",
+                    "style" :                                                                                    
+                {
+                    "navigationBarTitleText": "",
+                    "enablePullDownRefresh": false
+                }
+                
+                }
+                ,{
+                    "path" : "bankCardManagement/bankCardManagement",
+                    "style" :                                                                                    
+                {
+                    "navigationBarTitleText": "银行卡管理",
+                    "enablePullDownRefresh": false
+                }
+                
+                }
+                ,{
+                    "path" : "curriculumVitae/curriculumVitae",
+                    "style" :                                                                                    
+                {
+                    "navigationBarTitleText": "个人简历",
+                    "enablePullDownRefresh": false
+                }
+                
+                }
+                ,{
+                    "path" : "editPhone/editPhone",
+                    "style" :                                                                                    
+                {
+                    "navigationBarTitleText": "修改手机号",
+                    "enablePullDownRefresh": false
+                }
+                
+                }
+            ]
+		}, {
+			"root": "merchantHome",
+			"pages": []
+		}, {
+			"root": "merchantOrder",
+			"pages": [{
+				"path": "orderDetails/orderDetails",
+				"style": {
+					"navigationBarTitleText": "订单详情",
+					"navigationBarTextStyle": "white", //状态栏字体颜色
+					"enablePullDownRefresh": false
+				}
+
+			}]
+		}, {
+			"root": "merchantStore",
+			"pages": [{
+				"path": "storeManagement/storeManagement",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "storeQRCode/storeQRCode",
+				"style": {
+					"navigationBarTitleText": "",
+					"navigationBarTextStyle": "white", //状态栏字体颜色
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "projectManagement/projectManagement",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "technicianManagement/technicianManagement",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "technicianRecruit/technicianRecruit",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "roomManagement/roomManagement",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "addRoom/addRoom",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "applicationRecord/applicationRecord",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "positionDetails/positionDetails",
+				"style": {
+					"navigationBarTitleText": "职位详情",
+					"navigationBarTextStyle": "white", //状态栏字体颜色
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "releaseRecruitment/releaseRecruitment",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "newTechnician/newTechnician",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "schedule/schedule",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "addSchedule/addSchedule",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "addProject/addProject",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "merchantInformation/merchantInformation",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "addStore/addStore",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "personalSchedulingInfo/personalSchedulingInfo",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "selectLocation/selectLocation",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "projectClassification/projectClassification",
+				"style": {
+					"navigationBarTitleText": "项目分类",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "addClassification/addClassification",
+				"style": {
+					"navigationBarTitleText": "新增分类",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "teamSchedulingInfo/teamSchedulingInfo",
+				"style": {
+					"navigationBarTitleText": "团队排班信息",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "googleMap/googleMap",
+				"style": {
+					"navigationBarTitleText": "谷歌地图",
+					"enablePullDownRefresh": false
+				}
+
+			}]
+		}, {
+			"root": "merchantMall",
+			"pages": []
+		}, {
+			"root": "merchantMine",
+			"pages": [{
+				"path": "systemMessage/systemMessage",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "purchaseOrder/purchaseOrder",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "customerManagement/customerManagement",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "customerDetails/customerDetails",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "recommend/recommend",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "marketingManagement/marketingManagement",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "newCoupons/newCoupons",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "addPackageCard/addPackageCard",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "addGiftCard/addGiftCard",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "statisticsInfo/statisticsInfo",
+				"style": {
+					"navigationBarTitleText": "统计信息",
+					"navigationBarTextStyle": "white", //状态栏字体颜色
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "storeData/storeData",
+				"style": {
+					"navigationBarTitleText": "门店数据",
+					"navigationBarTextStyle": "white", //状态栏字体颜色
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "technicianDetails/technicianDetails",
+				"style": {
+					"navigationBarTitleText": "技师详情",
+					"navigationBarTextStyle": "white", //状态栏字体颜色
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "refundOrderDetails/refundOrderDetails",
+				"style": {
+					"navigationBarTitleText": "退款订单详情",
+					"navigationBarTextStyle": "white", //状态栏字体颜色
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "packageOrderDdetails/packageOrderDdetails",
+				"style": {
+					"navigationBarTitleText": "套餐订单详情",
+					"navigationBarTextStyle": "white", //状态栏字体颜色
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "serviceOrderDetails/serviceOrderDetails",
+				"style": {
+					"navigationBarTitleText": "服务订单详情",
+					"navigationBarTextStyle": "white", //状态栏字体颜色
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "accountManagement/accountManagement",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "accountDetails/accountDetails",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "addSubAccount/addSubAccount",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "videoTeaching/videoTeaching",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "massageDetails/massageDetails",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "massage/massage",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "logisticsDetails/logisticsDetails",
+				"style": {
+					"navigationBarTitleText": "物流详情",
+					"navigationBarTextStyle": "white", //状态栏字体颜色
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "deliveryFromSeller/deliveryFromSeller",
+				"style": {
+					"navigationBarTitleText": "卖家发货",
+					"navigationBarTextStyle": "white", //状态栏字体颜色
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "set/set",
+				"style": {
+					"navigationBarTitleText": "设置",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "customerEditer/customerEditer",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "technicianData/technicianData",
+				"style": {
+					"navigationBarTitleText": "技师详细",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "businessInformation/businessInformation",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			}    ,{
+                    "path" : "evaluationList/evaluationList",
+                    "style" :                                                                                    
+                {
+                    "navigationBarTitleText": "评价列表",
+                    "enablePullDownRefresh": false
+                }
+                
+                }
+            ]
+		}
+	],
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "uni-app",
+		"navigationBarBackgroundColor": "#F8F8F8",
+		"backgroundColor": "#F8F8F8",
+		"navigationStyle": "custom"
+	}
+}

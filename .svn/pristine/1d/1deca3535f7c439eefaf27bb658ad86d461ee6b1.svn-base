@@ -1,0 +1,777 @@
+<template>
+	<view class="box">
+		<view class="box-head" :style="{paddingTop:barHeight+'px'}">
+			<nav-title-balck :navTitle="title"></nav-title-balck>
+		</view>
+		<view class="box-content">
+			<view class="box-content-list">
+				<view class="box-content-list-li">
+					<view class="box-content-list-li-title">门店</view>
+					<view class="box-content-list-li-info">
+						<view class="box-content-list-li-info-text">{{storeName==''?'请选择门店':storeName}}</view>
+
+					</view>
+				</view>
+				<view class="box-content-list-li">
+					<view class="box-content-list-li-title">职位名称</view>
+					<view class="box-content-list-li-info">
+						<view class="box-content-list-li-info-input">
+							<input type="text" v-model.trim="from.position" placeholder="请输入职位名称" />
+						</view>
+					</view>
+				</view>
+				<view class="box-content-list-li" @click="categoryOpen">
+					<view class="box-content-list-li-title">职位类别</view>
+					<view class="box-content-list-li-info">
+						<view class="box-content-list-li-info-text">{{categoryName==''?'请选择类别':categoryName}}</view>
+						<view class="box-content-list-li-info-more">
+							<text class="iconfont icongengduo icon-font"
+								style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
+						</view>
+					</view>
+				</view>
+				<view class="box-content-list-li">
+					<view class="box-content-list-li-title">招聘人数</view>
+					<view class="box-content-list-li-info">
+						<view class="box-content-list-li-info-input">
+							<input type="number" v-model.trim="from.recruitsNnumber" placeholder="请输入招聘人数" />
+							<text>人</text>
+						</view>
+					</view>
+				</view>
+				<view class="box-content-list-li">
+					<view class="box-content-list-li-title">薪资</view>
+					<view class="box-content-list-li-info">
+						<view class="box-content-list-li-info-input">
+							<input type="number" v-model.trim="from.salary" class="input-box" placeholder="底薪/元" />
+							<text class="iconfont iconjia icon-font"
+								style="color: #999;font-size: 28rpx;margin: 0 10rpx;"></text>
+							<input type="number" v-model.trim="from.fee" class="input-box" placeholder="抽成/项目" />
+							<text>%</text>
+						</view>
+					</view>
+				</view>
+				<view class="box-content-list-li" @click="workingOpen">
+					<view class="box-content-list-li-title">工龄</view>
+					<view class="box-content-list-li-info">
+						<view class="box-content-list-li-info-text" v-if="from.serviceYear==''">不限</view>
+						<view class="box-content-list-li-info-text" v-if="from.serviceYear!=''">{{from.serviceYear}}
+						</view>
+						<view class="box-content-list-li-info-more">
+							<text class="iconfont icongengduo icon-font"
+								style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
+						</view>
+					</view>
+				</view>
+				<view class="box-content-list-li">
+					<view class="box-content-list-li-title">工作地点</view>
+					<view class="box-content-list-li-info">
+						<view class="box-content-list-li-info-input">
+							<input type="text" v-model.trim="from.placeWork" placeholder="州、市" />
+						</view>
+					</view>
+				</view>
+
+				<view class="box-content-list-li">
+					<view class="box-content-list-li-title">职位福利</view>
+					<view class="box-content-list-li-info" style="flex-wrap: wrap;justify-content: flex-start;">
+						<view class="box-content-list-li-info-item flex-center" v-for="(item,index) in menuList">
+							<view class="flex-center"
+								style="border: 1rpx solid #ededed;width: 60rpx;height: 58rpx;color: #999;border-radius: 6rpx;"
+								@click="addSkill(index)">
+								<text class="iconfont iconjia" style="font-size: 32rpx;"></text>
+							</view>
+							<view
+								style="border: 1rpx solid #ededed;flex: 1;height: 60rpx;margin-left: 20rpx;padding: 0 10rpx;box-sizing: border-box;">
+								<input type="text" placeholder="请输入职位福利" v-model.trim="item.name"
+									style="font-size: 24rpx;height: 100%;" />
+							</view>
+							<view @click="skillDelete(index)">
+								<text class="iconfont iconcuowu"
+									style="margin-left: 10rpx;font-size: 46rpx;color: #999;"></text>
+							</view>
+						</view>
+					</view>
+				</view>
+
+
+				<view class="box-content-list-menu" :key='edIndex'>
+					<view class="box-content-list-menu-title">学历要求</view>
+					<view class="box-content-list-menu-info">
+						<view class="box-content-list-menu-info-item" v-for="(item,index) in education"
+							@click="educationClick(index)">
+							<text class="iconfont iconxuanzhong2 icon-font"
+								style="color: #07C160;font-size: 40rpx;margin-top: 4rpx;" v-if="item.isCheck"></text>
+							<text class="iconfont iconweixuanzhong icon-font"
+								style="color: #B2B2B2;font-size: 40rpx;margin-top: 4rpx;" v-if="!item.isCheck"></text>
+							<text>{{item.name}}</text>
+						</view>
+					</view>
+				</view>
+
+				<view class="box-content-list-li-item">
+					<view class="box-content-list-li-item-title">职位描述</view>
+					<view class="box-content-list-li-item-textarea">
+						<textarea value="" v-model="from.positionInformation" placeholder="请输入描述" />
+					</view>
+				</view>
+			</view>
+			<view class="box-content-list">
+
+				<view class="box-content-list-li">
+					<view class="box-content-list-li-title">联系人</view>
+					<view class="box-content-list-li-info">
+						<view class="box-content-list-li-info-input">
+							<input type="text" v-model="from.contacts" placeholder="请输入联系人" />
+						</view>
+					</view>
+				</view>
+				<view class="box-content-list-li">
+					<view class="box-content-list-li-title">联系电话</view>
+					<view class="box-content-list-li-info">
+						<view class="box-content-list-li-info-input">
+							<input type="number" v-model="from.contactInformation" placeholder="请输入联系电话" />
+							<view style="display: flex;align-items: center;" @click="isItOpen" v-if="false">
+								<text class="iconfont iconxuanzhong2 icon-font"
+									style="color: #07C160;font-size: 40rpx;margin-top: 4rpx;" v-if="isShow"></text>
+								<text class="iconfont iconweixuanzhong icon-font"
+									style="color: #B2B2B2;font-size: 40rpx;margin-top: 4rpx;" v-if="!isShow"></text>
+								<text>公开</text>
+							</view>
+						</view>
+					</view>
+				</view>
+				<view class="box-content-list-li">
+					<view class="box-content-list-li-title">邮箱</view>
+					<view class="box-content-list-li-info">
+						<view class="box-content-list-li-info-input">
+							<input type="text" v-model="from.contactsEmail" placeholder="请输入邮箱" />
+						</view>
+					</view>
+				</view>
+			</view>
+			<view class="box-content-text">
+				注：格式参考 username@mail.com，应聘简历将会同时被投递到您在此处填写的邮箱
+			</view>
+		</view>
+		<view class="box-footer">
+			<!-- <view class="box-footer-btn-del flex-center">取消</view> -->
+			<btn-sky-blue :btnName="type=='add'?'确认发布':'确认修改'" @btnClick="btnChange" />
+		</view>
+
+		<popup-list-select :skid='from.psId' @cancel="categoryCancel" @confirm="categoryConfirm" :visible='isCategory'
+			:dataList="categoryList" />
+		<popup-list-select :skid='from.service_year' @cancel="workingCancel" @confirm="workingConfirm"
+			:visible='isWorking' :dataList="workingYearsList" />
+	</view>
+</template>
+
+<script>
+	export default {
+		data() {
+			return {
+				barHeight: 0, //顶部电量导航栏高度
+				title: '',
+				isEdit: false, //是否编辑进入
+				id: '',
+				isShow: false, //是否公开
+				storeName: '',
+				menuList: [{
+					id: 0,
+					name: ''
+				}],
+				education: [],
+				from: {
+					store: '', //门店id
+					position: '', //职位
+					psId: '', //职位类别
+					recruitsNnumber: '', //招聘人数
+					salary: '', //薪资
+					fee: '', //提成
+					serviceYear: '不限',
+					service_year: '', //工龄
+					placeWork: '', //工作地点
+					positionBenefits: '', //岗位福利
+					education: '', //学历要求
+					positionInformation: '', //岗位描述
+					contacts: '', //联系人
+					contactInformation: '', //联系方式
+					contactsEmail: '', //邮箱
+				},
+				storeList: [],
+				visible: false,
+				isCategory: false,
+				categoryName: '',
+				categoryList: [],
+				workingYearsList: [],
+				isWorking: false,
+				edIndex: 0
+			};
+		},
+
+		onLoad(options) {
+			// 获取顶部电量状态栏高度
+			uni.getSystemInfo({
+				success: (res) => {
+					this.barHeight = res.statusBarHeight
+				}
+			});
+
+			this.getCategory()
+
+			var data = JSON.parse(options.data)
+
+
+			if (data.type == 'edit') {
+				this.title = "编辑招聘"
+				this.type = 'edit'
+				this.id = data.id
+				this.storeName = data.store
+			} else {
+				this.type = 'add'
+				this.from.store = data.store
+				this.title = "发布新招聘"
+				this.storeName = data.storeName
+			}
+
+
+		},
+		methods: {
+			// 按钮
+			btnChange() {
+				let str = ''
+				this.menuList.forEach(item => {
+					if (item.name != '') {
+						str += item.name + ','
+					}
+				})
+				this.from.positionBenefits = str.substr(0, str.length - 1);
+
+				var vuedata = {
+					store: this.from.store,
+					position: this.from.position,
+					ps_id: this.from.psId,
+					recruits_number: this.from.recruitsNnumber,
+					salary: this.from.salary,
+					fee: this.from.fee,
+					service_year: this.from.service_year,
+					place_work: this.from.placeWork,
+					position_benefits: this.from.positionBenefits,
+					education: this.from.education,
+					position_information: this.from.positionInformation,
+					contacts: this.from.contacts,
+					contact_information: this.from.contactInformation,
+					contacts_email: this.from.contactsEmail,
+				}
+
+				if (this.from.position == '') {
+					uni.showToast({
+						title: "请输入职位名称",
+						icon: 'none'
+					})
+					return false
+				}
+				if (this.from.psId == '') {
+					uni.showToast({
+						title: "请输入职位类别",
+						icon: 'none'
+					})
+					return false
+				}
+				if (this.from.recruitsNnumber == '') {
+					uni.showToast({
+						title: "请输入招聘人数",
+						icon: 'none'
+					})
+					return false
+				}
+				if (this.from.salary == '') {
+					uni.showToast({
+						title: "请输入薪资",
+						icon: 'none'
+					})
+					return false
+				}
+				if (this.from.service_year == '') {
+					uni.showToast({
+						title: "请选择工龄",
+						icon: 'none'
+					})
+					return false
+				}
+
+				if (this.from.placeWork == '') {
+					uni.showToast({
+						title: "请输入工作地点",
+						icon: 'none'
+					})
+					return false
+				}
+				if (this.from.education == '') {
+					uni.showToast({
+						title: "请选择学历",
+						icon: 'none'
+					})
+					return false
+				}
+				if (this.from.contacts == '') {
+					uni.showToast({
+						title: "请输入联系人",
+						icon: 'none'
+					})
+					return false
+				}
+				if (this.from.contactInformation == '') {
+					uni.showToast({
+						title: "请输入联系电话",
+						icon: 'none'
+					})
+					return false
+				}
+				if (this.from.contactsEmail == '') {
+					uni.showToast({
+						title: "请输入邮箱",
+						icon: 'none'
+					})
+					return false
+				}
+
+				if (this.type == 'add') {
+					this.release(vuedata)
+				} else {
+					this.modify(vuedata)
+				}
+			},
+
+
+			// 发布按钮
+			release(vuedata) {
+
+				this.apipost('api/v1/store/recruitment/add', vuedata).then(res => {
+					if (res.status == 200) {
+						this.$store.commit("upAdd", true)
+						uni.showToast({
+							title: "发布成功",
+							icon: "none"
+						})
+						setTimeout(() => {
+							uni.navigateBack({
+								delta: 1
+							})
+						}, 500)
+					}
+				});
+
+				// console.log(vuedata)
+			},
+
+			// 修改按钮
+			modify(vuedata) {
+
+				this.apiput('api/v1/store/recruitment/edit/' + this.id, vuedata).then(res => {
+					if (res.status == 200) {
+						this.$store.commit("upAdd", true)
+						uni.showToast({
+							title: "修改成功",
+							icon: "none"
+						})
+						setTimeout(() => {
+							uni.navigateBack({
+								delta: 1
+							})
+						}, 500)
+					}
+				});
+			},
+
+
+			// 技能添加
+			addSkill(index) {
+				let str = {
+					name: '',
+					id: index + 1,
+				}
+				this.menuList.splice(index + 1, 0, str) // 当前点击的后一位添加
+			},
+			// 技能删除
+			skillDelete(index) {
+				if (this.menuList.length != 1) {
+					this.menuList.splice(index, 1) // 当前点击位置删除
+					return false
+				}
+				uni.showToast({
+					title: "不能再删了，起码保留一个",
+					icon: 'none'
+				})
+			},
+
+
+			// 选择学历
+			educationClick(index) {
+				// 先把所有的都变为false  然后通过下标修改状态
+				this.education.forEach(item => {
+					item.isCheck = false
+				})
+				this.education[index].isCheck = true
+
+				// 循环 判断选中的学历信息
+				this.education.forEach(item => {
+					if (item.isCheck) {
+						this.from.education = item.id
+					}
+				})
+				this.edIndex++
+
+			},
+			// 选择类别点击
+			categoryOpen() {
+				this.isCategory = true
+			},
+			// 类别取消按钮
+			categoryCancel(e) {
+				this.isCategory = e
+			},
+
+			// 类别确定按钮
+			categoryConfirm(e) {
+				this.from.psId = e.id
+				this.categoryName = e.name
+			},
+
+			// 选择工龄点击
+			workingOpen() {
+				this.isWorking = true
+			},
+			//工龄取消按钮
+			workingCancel(e) {
+				this.isWorking = e
+			},
+			// 工龄确定按钮
+			workingConfirm(e) {
+				this.from.serviceYear = e.name
+				this.from.service_year = e.id
+			},
+
+			// 是否公开
+			isItOpen() {
+				this.isShow = !this.isShow
+			},
+
+
+
+			// 获取类别
+			getCategory() {
+				this.apiget('pc/category/recruitment_config', {
+					type: 3
+				}).then(res => {
+					if (res.status == 200) {
+						this.categoryList = res.data
+					}
+					this.getEducation()
+				});
+
+			},
+			// 获取学历
+			getEducation() {
+				this.apiget('pc/category/recruitment_config', {
+					type: 1
+				}).then(res => {
+					if (res.status == 200) {
+						this.education = res.data
+						this.education.map(item => {
+							item.isCheck = false
+						})
+					}
+					this.getYears()
+				});
+			},
+			// 获取工作年限
+			getYears() {
+				this.apiget('pc/category/recruitment_config', {
+					type: 2
+				}).then(res => {
+					if (res.status == 200) {
+						this.workingYearsList = res.data
+						this.workingYearsList.unshift({
+							id: '',
+							name: '不限'
+						})
+					}
+					if (this.type == 'edit') {
+						this.getDetails()
+					}
+
+				});
+			},
+
+			// 获取详情   编辑状态下
+			getDetails() {
+				this.apiget('api/v1/store/recruitment/' + this.id, {}).then(res => {
+					if (res.status == 200) {
+						this.from.contacts = res.data.data.contacts
+						this.from.positionInformation = res.data.data.position_information
+						this.from.placeWork = res.data.data.place_work
+						this.from.salary = res.data.data.salary
+						this.from.fee = res.data.data.fee
+						this.from.recruitsNnumber = res.data.data.recruits_number
+						this.from.service_year = res.data.data.service_year
+						this.from.position = res.data.data.position
+						this.from.positionBenefits = res.data.data.position_benefits
+						this.from.education = res.data.data.education
+						this.from.contactInformation = res.data.data.contact_information
+						this.from.contactsEmail = res.data.data.contacts_email
+						this.from.store = res.data.data.store
+						this.from.psId = res.data.data.ps_id
+
+
+						// 职位类别
+						this.categoryList.forEach(item => {
+							if (item.id == res.data.data.ps_id) {
+								this.categoryName = item.name
+							}
+						})
+
+						// 福利
+						this.menuList = []
+						var arr = res.data.data.position_benefits.split(',') //以逗号切割 循环判断选中的内容
+						arr.forEach((item, index) => {
+							this.menuList.push({
+								id: index,
+								name: item
+							})
+						})
+
+						this.workingYearsList.forEach(item => {
+							if (item.id == res.data.data.service_year) {
+								this.from.serviceYear = item.name
+							}
+						})
+
+
+
+						// 学历
+						this.education.map(item => {
+							if (item.id == res.data.data.education) {
+								item.isCheck = true
+							}
+						})
+					}
+				});
+			},
+		}
+	}
+</script>
+
+<style lang="scss">
+	.box {
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+		background: #F7F7F7;
+
+		.box-head {
+			background-color: #fff;
+		}
+
+		.box-content {
+			flex: 1;
+			overflow-y: scroll;
+
+			.box-content-list {
+				margin-top: 20rpx;
+				padding-left: 40rpx;
+				box-sizing: border-box;
+				background: #fff;
+
+				.box-content-list-li:last-child {
+					border-bottom: 0;
+				}
+
+				.box-content-list-li {
+					display: flex;
+					align-items: center;
+					min-height: 100rpx;
+					padding: 30rpx 40rpx 30rpx 0;
+					box-sizing: border-box;
+					border-bottom: 1rpx solid #ededed;
+
+					.box-content-list-li-title {
+						width: 140rpx;
+						font-size: 28rpx;
+						color: #333;
+					}
+
+					.box-content-list-li-info {
+						margin-left: 80rpx;
+						flex: 1;
+						display: flex;
+						align-items: center;
+						justify-content: space-between;
+
+						.box-content-list-li-info-item {
+							width: 100%;
+							margin-bottom: 20rpx;
+						}
+
+						.box-content-list-li-info-item:last-child {
+							margin-bottom: 0;
+						}
+
+						.box-content-list-li-info-text {
+							font-size: 28rpx;
+							color: #000;
+						}
+
+						.box-content-list-li-info-more {}
+
+						.box-content-list-li-info-input {
+							width: 100%;
+							display: flex;
+							align-items: center;
+							justify-content: space-between;
+
+							input {
+								flex: 1;
+								height: 100%;
+								font-size: 28rpx;
+							}
+
+							text {
+								margin-left: 10rpx;
+								font-size: 28rpx;
+								color: #333;
+							}
+
+							.input-box {
+								width: 188rpx;
+								height: 58rpx;
+								border: 1rpx solid #EDEDED;
+								text-align: center;
+							}
+						}
+
+						.box-content-list-li-info-check {
+							display: flex;
+							align-items: center;
+
+							.box-content-list-li-info-check-box:first-child {
+								margin-left: 0;
+							}
+
+							.box-content-list-li-info-check-box {
+								margin-left: 40rpx;
+								display: flex;
+								align-items: center;
+								color: #000;
+								font-size: 28rpx;
+
+								.icon-font {
+									margin-right: 20rpx;
+								}
+
+								text {}
+							}
+						}
+					}
+
+				}
+
+				.box-content-list-li-item {
+					padding-bottom: 40rpx;
+					padding-right: 40rpx;
+					box-sizing: border-box;
+
+					.box-content-list-li-item-title {
+						display: flex;
+						align-items: center;
+						font-size: 28rpx;
+						color: #333;
+						height: 94rpx;
+					}
+
+					.box-content-list-li-item-textarea {
+						height: 300rpx;
+						border: 1rpx dashed #E0E0E0;
+						padding: 20rpx;
+						box-sizing: border-box;
+
+						textarea {
+							width: 100%;
+							height: 100%;
+							font-size: 28rpx;
+						}
+					}
+				}
+
+				.box-content-list-menu {
+					display: flex;
+					padding: 30rpx 0 0;
+					border-bottom: 1rpx solid #ededed;
+
+					.box-content-list-menu-title {
+						width: 140rpx;
+						font-size: 28rpx;
+						color: #333;
+					}
+
+					.box-content-list-menu-info {
+						margin-left: 80rpx;
+						flex: 1;
+						display: flex;
+						flex-wrap: wrap;
+
+						.box-content-list-menu-info-item {
+							margin-right: 40rpx;
+							margin-bottom: 30rpx;
+							display: flex;
+							align-items: center;
+							font-size: 28rpx;
+							color: #000;
+
+							.icon-font {
+								margin-right: 10rpx;
+							}
+						}
+
+
+					}
+				}
+
+			}
+
+			.box-content-text {
+				padding: 20rpx 40rpx 0;
+				box-sizing: border-box;
+				font-size: 24rpx;
+				color: #999;
+			}
+		}
+
+		.box-footer {
+			padding: 30rpx 40rpx;
+			box-sizing: border-box;
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+
+			.box-footer-btn-del {
+				width: 318rpx;
+				height: 78rpx;
+				background: #F7F7F7;
+				border: 1rpx solid #666666;
+				border-radius: 10rpx;
+				font-size: 32rpx;
+				color: #666;
+			}
+
+			.box-footer-btn-edit {
+				width: 320rpx;
+				height: 80rpx;
+				background: #5DBDFE;
+				border-radius: 10rpx;
+				font-size: 32rpx;
+				color: #fff;
+			}
+		}
+	}
+</style>

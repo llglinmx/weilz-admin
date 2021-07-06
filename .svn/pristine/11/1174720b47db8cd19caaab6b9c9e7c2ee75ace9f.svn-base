@@ -1,0 +1,276 @@
+<template>
+	<view class="box">
+		<view class="box-head" :style="{paddingTop:barHeight+'px'}">
+			<nav-title-balck navTitle="商家信息"></nav-title-balck>
+		</view>
+		<view class="box-content">
+			<view class="content-list">
+				<view class="content-list-li" style="height: 171rpx;">
+					<view class="content-list-li-title">商家头像</view>
+					<view class="content-list-li-wrap" style="justify-content: flex-end;">
+						<view class="content-list-li-wrap-image" @click="upImage">
+							<image :src="userImage!=''?userImage:noUserImage" mode="aspectFill"></image>
+						</view>
+					</view>
+				</view>
+				<view class="content-list-li">
+					<view class="content-list-li-title">商家名称</view>
+					<view class="content-list-li-wrap">
+						<view class="content-list-li-wrap-text">
+							<input type="text" class="content-list-li-wrap-text-input" placeholder="请输入商家名称" />
+						</view>
+					</view>
+				</view>
+				<view class="content-list-li">
+					<view class="content-list-li-title">电子邮箱</view>
+					<view class="content-list-li-wrap">
+						<view class="content-list-li-wrap-text">
+							<input type="text" class="content-list-li-wrap-text-input" placeholder="请输入邮箱" />
+						</view>
+					</view>
+				</view>
+				<view class="content-list-li">
+					<view class="content-list-li-title">商家电话</view>
+					<view class="content-list-li-wrap">
+						<view class="content-list-li-wrap-text">
+							<input type="number" class="content-list-li-wrap-text-input" placeholder="请输入商家电话" />
+						</view>
+					</view>
+				</view>
+				<view class="content-list-li">
+					<view class="content-list-li-title">商家地址</view>
+					<view class="content-list-li-wrap">
+						<view class="content-list-li-wrap-text">
+							<input type="text" class="content-list-li-wrap-text-input" placeholder="请输入商家地址" />
+						</view>
+					</view>
+				</view>
+			</view>
+		</view>
+		<view class="box-footer">
+			<btn-sky-blue btnName="保存" @btnClick="preserve"></btn-sky-blue>
+		</view>
+	</view>
+</template>
+
+<script>
+	import {
+		pathToBase64,
+		base64ToPath
+	} from '../../js_sdk/mmmm-image-tools/index.js'
+	import uploadImage from "../../js_sdk/oss/uploadOSS.js";
+	// import uploadImage from "../../js_sdk/yushijie-ossutil/ossutil/uploadFile.js";
+
+	export default {
+		data() {
+
+			return {
+				barHeight: 0, //顶部电量导航栏高度
+				userImage: '',
+				noUserImage: '../../static/images/userImage.png',
+			};
+		},
+
+		onReady() {
+			// 获取顶部电量状态栏高度
+			uni.getSystemInfo({
+				success: (res) => {
+					this.barHeight = res.statusBarHeight
+				}
+			});
+		},
+		onLoad() {
+			// this.id = this.$store.state.userInfo.id
+			// this.getInfo()
+
+
+		},
+
+		onShow() {
+			if (this.$store.state.editText != '') {
+				this.nickname = this.$store.state.editText
+			}
+		},
+		methods: {
+			// 选择头像
+			upImage() {
+				uni.chooseImage({
+					count: 1, //默认100
+					sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
+					success: (res) => {
+						// console.log(res.tempFilePaths[0])
+						// this.userImage = res.tempFilePaths[0]
+
+						//转为base64位图片
+						pathToBase64(res.tempFilePaths[0]).then((data) => {
+							this.userImage = data
+							const path = 'avatar/';
+
+							// #ifdef H5
+							let file = res.tempFilePaths[0];
+							let suffix = res.tempFiles[0].name.split('.').pop();
+							// #endif
+
+							// #ifdef APP-PLUS
+							let file = res.tempFilePaths[0];
+							let suffix = res.tempFiles[0].path.split('.').pop();
+							// #endif
+							this.getOss(path, file, suffix)
+
+						})
+
+						// console.log(this.userImage)
+					}
+				});
+			},
+
+			// 获取阿里云oss 信息
+			getOss(path, file, suffix) {
+				this.apiget('app/oss/url', {}).then(res => {
+					if (res.status == 200) {
+						var obj = {
+							accessid: res.data.accessid,
+							policy: res.data.policy,
+							signature: res.data.signature,
+						}
+						// 上传图片
+						uploadImage(obj, file, path, suffix, result => {
+							this.avatar = result
+						});
+					}
+				});
+			},
+
+
+
+
+
+			// 保存按钮
+			preserve() {
+				var vuedata = {
+					nickname: this.nickname,
+					sex: this.sex,
+					birth: this.birth,
+					address: this.address,
+					avatar: this.avatar,
+				}
+
+				this.apiput('api/v1/members/member_info/edit/' + this.id, vuedata).then(res => {
+					if (res.status == 200) {
+						uni.showToast({
+							title: "信息修改成功",
+							icon: "none"
+						})
+						setTimeout(function() {
+							uni.navigateBack({
+								delta: 1
+							})
+						}, 500)
+					}
+				});
+			},
+			// 获取个人信息
+			getInfo() {
+				let vuedata = {
+
+				}
+				this.apiget('api/v1/members/member_info', vuedata).then(res => {
+					if (res.status == 200) {
+						this.nickname = res.data.nickname
+						this.sex = res.data.sex
+						this.birth = res.data.birth
+						this.address = res.data.address
+						this.userImage = res.data.avatar
+						this.id = res.data.id
+					}
+				});
+			},
+
+		}
+	}
+</script>
+
+<style lang="scss" scoped>
+	.box {
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+		background: #fff;
+
+		.box-head {
+			background: #fff;
+		}
+
+		.box-content {
+			flex: 1;
+			overflow-y: scroll;
+
+			.content-list {
+				background: #fff;
+
+				.content-list-li {
+					display: flex;
+					align-items: center;
+					justify-content: space-between;
+					padding: 0 40rpx;
+					box-sizing: border-box;
+					height: 99rpx;
+					border-bottom: 1rpx solid #EDEDED;
+
+					.content-list-li-title {
+						font-size: 28rpx;
+						font-family: Source Han Sans CN;
+						font-weight: 400;
+						color: #000000;
+					}
+
+					.content-list-li-wrap {
+						margin-left: 80rpx;
+						display: flex;
+						align-items: center;
+						flex: 1;
+
+						.content-list-li-wrap-text {
+							width: 100%;
+							font-size: 28rpx;
+							font-family: Source Han Sans CN;
+							font-weight: 400;
+							color: #333;
+							margin-right: 10rpx;
+
+							.content-list-li-wrap-text-input {
+								width: 100%;
+								font-size: 28rpx;
+							}
+						}
+
+
+
+						.content-list-li-wrap-image {
+							width: 112rpx;
+							height: 112rpx;
+							margin-right: 10rpx;
+
+							image {
+								width: 112rpx;
+								height: 112rpx;
+								border-radius: 50%;
+							}
+						}
+					}
+				}
+
+				.content-list-li:last-child {
+					// border-bottom: none;
+				}
+			}
+		}
+
+		.box-footer {
+			margin-bottom: 30rpx;
+			padding: 0 40rpx;
+		}
+
+
+	}
+</style>

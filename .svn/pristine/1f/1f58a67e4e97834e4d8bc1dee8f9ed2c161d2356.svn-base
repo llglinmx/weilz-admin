@@ -1,0 +1,290 @@
+<template>
+	<view class="box">
+		<view class="box-content">
+			<view class="box-content-title">
+				<text class="logo-title">weiiz</text>
+				<text class="logo-msg">{{lan.MerchantServicePlatform}}</text>
+			</view>
+			<view class="box-content-wrap">
+				<view class="box-content-login box-btn flex-center" @click="login('business')">{{lan.MerchantLoginn}}
+				</view>
+				<view style="background: #26BF82;" class="box-content-login box-btn flex-center"
+					@click="login('technician')">{{lan.TechnicianLoginn}}</view>
+				<!-- <view class="box-content-register box-btn flex-center" @click="register">注册</view> -->
+			</view>
+		</view>
+		<!-- 选择语言弹出层 -->
+		<uni-popup ref="languagePopup" type="center" :maskClick="false">
+			<view class="popup-box-main">
+				<view class="popup-list-box">
+					<view class="popup-title">
+						{{lan.languagee}}
+					</view>
+					<view class="popup-list">
+						<view class="popup-list-li" v-for="(item,index) in textList"
+							@click="selectLanguage(item.id,index)" :key="index"
+							:class="item.default==1?'popup-list-li-active':''">
+							<text>{{item.name}}</text>
+							<text class="iconfont icondagou icon-font" style="color:#5DBDFE;font-size: 40rpx;"
+								v-if="item.default==1"></text>
+						</view>
+					</view>
+					<view class="popup-btn" @click="confirmBtn">{{lan.confirmms}}</view>
+				</view>
+				<view class="popup-close flex-center" @click="closeLanguage">
+					<text class="iconfont iconcuowu icon-font" style="color:#fff;font-size: 48rpx;"></text>
+				</view>
+			</view>
+		</uni-popup>
+	</view>
+</template>
+
+<script>
+	export default {
+		data() {
+			return {
+				lan: {},
+				textList: [],
+				LanguageID: '',
+				LanguageCode: '',
+				selectIndex: 0, //当前选择的语言
+			};
+		},
+		onLoad() {
+
+			this.languageList()
+			this.getLanguage()
+		},
+		methods: {
+			// 登录
+			login(type) {
+				uni.navigateTo({
+					url: "../login/login?type=" + type
+				})
+			},
+			// 点击注册 跳转到 注册页面
+			register() {
+				uni.navigateTo({
+					url: "../registerRoles/registerRoles"
+				})
+			},
+
+
+			// 点击切换语言
+			languageCheck() {
+				this.$refs.languagePopup.open()
+			},
+			// 选择语言
+			selectLanguage(id, index) {
+				this.textList.forEach(item => {
+					item.default = '-1'
+				})
+				this.textList[index].default = 1
+				this.selectIndex = index
+				this.LanguageID = this.textList[index].id
+				this.LanguageCode = this.textList[index].code
+			},
+
+			// 选择语言 关闭
+			closeLanguage() {
+				this.$refs.languagePopup.close()
+			},
+
+			// 语言选择确定按钮 
+			confirmBtn() {
+				uni.setStorageSync('isStoreSelectLanguage', true);
+				uni.setStorageSync('storeLanguageId', this.LanguageID);
+				uni.setStorageSync('storeLanguageCode', this.LanguageCode);
+				this.$refs.languagePopup.close()
+				this.getLanguage()
+			},
+
+			// 请求语言列表
+			languageList() {
+				this.apiget('language', {}).then(res => {
+					if (res.status == 200) {
+						this.textList = res.data.lng.reverse()
+
+
+						// 判断是否有选择语言
+						var isSelectLanguage = uni.getStorageSync('isStoreSelectLanguage');
+						if (!isSelectLanguage) {
+							this.languageCheck()
+						}
+
+						this.textList.forEach((item, index) => {
+							if (item.default == 1) { //判断默认选中语言包
+								this.selectIndex = index
+							}
+						})
+					}
+
+				});
+			},
+
+
+			// 请求语言包
+			getLanguage() {
+				this.apiget('language/info', {
+					name: 'merchantsLogin'
+				}).then(res => {
+					if (res.status == 200) {
+						let language = res.data.language
+						this.lan = res.data.language
+					}
+				});
+			},
+		}
+	}
+</script>
+
+<style lang="scss">
+	.box {
+		position: relative;
+		height: 100%;
+		background: url(../../static/images/login-ico.png) no-repeat;
+		background-size: cover;
+
+		.box-content {
+			display: flex;
+			flex-direction: column;
+			width: 100%;
+			height: 100%;
+			position: absolute;
+			top: 0;
+			left: 0;
+			background: rgba(0, 0, 0, 0.3);
+
+			.box-content-title {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				flex-direction: column;
+				flex: 1;
+				color: #fff;
+
+				.logo-title {
+					font-size: 160rpx;
+				}
+
+				.logo-msg {
+					font-size: 48rpx;
+				}
+			}
+
+			.box-content-wrap {
+				flex: 1;
+				padding: 0 60rpx 120rpx;
+				box-sizing: border-box;
+				display: flex;
+				flex-direction: column;
+				justify-content: flex-end;
+
+				.box-btn {
+					width: 630rpx;
+					height: 88rpx;
+					border-radius: 15rpx;
+					font-size: 32rpx;
+					color: #fff;
+				}
+
+				.box-content-login {
+					background: #5DBDFE;
+					margin-bottom: 30rpx;
+				}
+
+				.box-content-register {
+					background: rgba(255, 255, 255, .5);
+				}
+				
+
+			}
+			
+
+		}
+
+		.popup-box-main {
+			position: relative;
+			width: 570rpx;
+			// height: 704rpx;
+			padding: 0 60rpx;
+			box-sizing: border-box;
+			background: #fff;
+			border-radius: 20rpx;
+		
+			.popup-list-box {
+				height: 100%;
+				display: flex;
+				flex-direction: column;
+		
+				.popup-title {
+					padding: 40rpx 0;
+					font-size: 36rpx;
+					font-family: Source Han Sans CN;
+					font-weight: 400;
+					color: #000000;
+					text-align: center;
+				}
+		
+				.popup-list {
+					flex: 1;
+					margin-bottom: 40rpx;
+					overflow-y: scroll;
+		
+					.popup-list-li {
+						position: relative;
+						display: flex;
+						align-items: center;
+						justify-content: center;
+						height: 80rpx;
+						margin-bottom: 30rpx;
+						background: #F7F7F7;
+						transition: 0.2s;
+		
+						text {}
+		
+						.icon-font {
+							position: absolute;
+							right: 30rpx;
+							top: 0;
+							bottom: 0;
+							margin: auto;
+						}
+					}
+		
+					.popup-list-li-active {
+						color: #26BF82 !important;
+						background: #bde6d6 !important;
+					}
+		
+					.popup-list-li:last-child {
+						margin-bottom: 0;
+					}
+				}
+		
+				.popup-btn {
+					margin-bottom: 50rpx;
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					height: 88rpx;
+					background: #26BF82;
+					border-radius: 15rpx;
+					color: #fff;
+				}
+			}
+		
+			.popup-close {
+				position: absolute;
+				top: -28rpx;
+				right: -28rpx;
+				width: 56rpx;
+				height: 56rpx;
+				border-radius: 50%;
+				background: #26BF82;
+			}
+		
+		}
+		
+	}
+</style>

@@ -1,0 +1,97 @@
+import httpClient from '../static/js/ajax.js'
+
+export function get(url, params) {
+	return httpClient.Get(url, params)
+};
+export function post(url, params) {
+	return httpClient.Post(url, params)
+};
+export function put(url, params) {
+	return httpClient.Put(url, params)
+};
+export function del(url, params) {
+	console.log(url)
+	return httpClient.Delete(url, params)
+};
+
+import Vue from 'vue'
+import Vuex from 'vuex'
+Vue.use(Vuex)
+const store = new Vuex.Store({
+	state: {
+		isAdd: false, //用于判断是否发布技师招聘
+		mapObj: {}, //选择的定位具体地址信息
+		isAddStore: false, //是否有添加门店
+		isAddRoom: false, //是否有添加房间
+		isDeleteCustomer: false, //是否删除客户
+		isAddTechhnician: false, //是否有添加技师
+		isAddProject: false, //是否有添加项目
+		isAddCoupon: false, //是否有添加优惠券
+		isAddPackageCard: false, //是否有添加套餐卡
+		isAddGift: false, //是否有添加礼品卡
+		isAddAccount:false,//是否有添加账号
+		isAddSchedule:false,//是否有添加排班表
+		isOrderState:false,//用于判断订单是否取消或核销
+		isClassification:false,//是否添加分类
+		isAddBank:false,//是否添加银行卡
+	},
+	mutations: {
+		//用于判断是否添加地址 等同于发送监听
+		upAdd(state, bool) {
+			state.isAdd = bool
+		},
+		// 更新地址信息
+		upMapObj(state, obj) {
+			state.mapObj = obj
+		},
+
+		upAddStore(state, bool) {
+			state.isAddStore = bool
+		},
+
+
+		upAddRoom(state, bool) {
+			state.isAddRoom = bool
+		},
+
+		upDeleteCustomer(state, bool) {
+			state.isDeleteCustomer = bool
+		},
+
+		upAddTechhnician(state, bool) {
+			state.isAddTechhnician = bool
+		},
+
+		upAddProject(state, bool) {
+			state.isAddProject = bool
+		},
+		upAddCoupon(state, bool) {
+			state.isAddCoupon = bool
+		},
+		upAddPackageCard(state, bool) {
+			state.isAddPackageCard = bool
+		},
+		upAddGift(state, bool) {
+			state.isAddGift = bool
+		},
+		upAddAccount(state, bool) {
+			state.isAddAccount = bool
+		},
+		
+		upAddSchedule(state, bool) {
+			state.isAddSchedule = bool
+		},
+		
+		upOrderState(state, bool) {
+			state.isOrderState = bool
+		},
+		upAddClassification(state, bool){
+			state.isClassification = bool
+		},
+		upAddBank(state, bool){
+			state.isAddBank = bool
+		},
+	},
+	actions: {}
+})
+export default store

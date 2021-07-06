@@ -121,3 +121,13 @@ export const checkList = [{
 		day: 30
 	},
 ]
+
+export const bankList = [{
+		id: 1,
+		name: '信用卡'
+	},
+	{
+		id: 2,
+		name: '借记卡'
+	},
+]

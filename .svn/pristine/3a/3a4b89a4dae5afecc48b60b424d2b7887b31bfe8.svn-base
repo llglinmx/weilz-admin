@@ -1,0 +1,265 @@
+<template>
+	<view class="popup-box" :class="visible?'popup-box-open':''" @click="cancel">
+		<view class="popup-box-main" :class="visible?'popup-box-main-open':''" @click.stop="prevent">
+			<view class="popup-box-head">
+				<text class="cancel" @click="cancel">{{cancelx}}</text>
+				<text class="confirm" @click="confirm">{{confirmx}}</text>
+			</view>
+			<view class="popup-box-content">
+				<picker-view :indicator-style="indicatorStyle" :value="value" @change="bindChange" class="picker-view"
+					:key='keyVal'>
+					<picker-view-column v-for="(i,j) in dataList" :key='j'>
+						<view class="item" v-for="(item,index) in i.data" :key="index">{{item.name||item}}</view>
+					</picker-view-column>
+				</picker-view>
+			</view>
+		</view>
+	</view>
+</template>
+
+<script>
+	export default {
+		name: "select-time",
+		data() {
+			return {
+				indicatorStyle: `height: 80rpx;`,
+				value: [0, 0],
+				dataList: [],
+				startTime: '',
+				endTime: '',
+				hours: [],
+				minutes: [],
+				keyVal: 0,
+				lan:{
+					hourq:'时',
+					minuteq:'分'
+				}
+			};
+		},
+		props: {
+			arr:{},
+			visible: {
+				type: Boolean,
+				default: false
+			},
+			checkStart: {
+				// type:Object,
+				// default:{start:'',end:''}
+			},
+			checkEnd: {},
+			isType: {},
+			cancelx:{
+				type:String,
+				default:'取消'
+			},
+			confirmx:{
+				type:String,
+				default:'确定'
+			},
+			isClass:{}
+		},
+		watch: {
+			arr(val){
+				
+				switch(this.isClass){
+					case 'store':
+					this.lan.hourq= val.hourq
+					this.lan.minuteq= val.minuteq
+					break;
+					case 'schedule':
+					this.lan.hourq= val.hourq
+					this.lan.minuteq= val.minuteq
+					break;
+				}
+				
+				this.getHour()
+			},
+			visible(val) {
+				this.keyVal++
+				this.value = [0, 0]
+				this.hours = this.dataList[0].data[this.value[0]]
+				this.minutes = this.dataList[1].data[this.value[1]]
+
+				switch (this.isType) {
+					case 'start':
+						if (this.checkStart) {
+							this.changeStart(this.checkStart)
+						}
+						break;
+					case 'end':
+						if (this.checkEnd) {
+							this.changeEnd(this.checkEnd)
+						}
+						break;
+				}
+			},
+
+		},
+		mounted() {
+			this.getHour()
+		},
+		methods: {
+			bindChange(e) {
+				var val = e.detail.value
+				this.hours = this.dataList[0].data[val[0]]
+				this.minutes = this.dataList[1].data[val[1]]
+			},
+			// 取消
+			cancel() {
+				this.$emit("cancel", false)
+			},
+			// 确定
+			confirm() {
+				var hour = this.hours.split(' ');
+				var minute = this.minutes.split(' ');
+
+				var str = {
+					hour: hour[0],
+					minute: minute[0]
+				}
+				
+				this.$emit('confirm', str)
+				this.cancel()
+			},
+
+			prevent() {},
+
+			// 获取小时
+			getHour() {
+				var hour = ''
+				var arr = []
+				this.dataList = []
+				for (var i = 0; i < 24; i++) {
+					hour = i < 10 ? '0' + i + ' '+this.lan.hourq : i + ' '+this.lan.hourq
+					arr.push(hour)
+				}
+				var str = {
+					data: arr
+				}
+				this.dataList.push(str)
+				this.getMinute()
+
+			},
+			// 获取分钟
+			getMinute() {
+				var minut = ''
+				var arr = []
+				for (var i = 0; i < 60; i++) {
+					minut = i < 10 ? '0' + i + ' '+this.lan.minuteq : i + ' '+this.lan.minuteq
+					arr.push(minut)
+				}
+				var str = {
+					data: arr
+				}
+				this.dataList.push(str)
+
+				this.hours = this.dataList[0].data[0]
+				this.minutes = this.dataList[1].data[1]
+			},
+
+			changeStart(val) {
+				this.value[0] = 0
+				this.value[1] = 0
+				if (val != '') {
+					let sp = val.split(':')
+					this.dataList[0].data.forEach((item, index) => {
+						var split1 = item.split(' ')
+						if (sp[0] == split1[0]) {
+							this.value[0] = index
+						}
+					})
+					this.dataList[1].data.forEach((item, index) => {
+						let split2 = item.split(' ')
+						if (sp[1] == split2[0]) {
+							this.value[1] = index
+						}
+					})
+				}
+			},
+			changeEnd(val) {
+				this.value[0] = 0
+				this.value[1] = 0
+				if (val != '') {
+					let sp = val.split(':')
+					this.dataList[0].data.forEach((item, index) => {
+						var split1 = item.split(' ')
+						if (sp[0] == split1[0]) {
+							this.value[0] = index
+						}
+					})
+					this.dataList[1].data.forEach((item, index) => {
+						let split2 = item.split(' ')
+						if (sp[1] == split2[0]) {
+							this.value[1] = index
+						}
+					})
+				}
+			}
+		}
+	}
+</script>
+
+<style lang="scss" scoped>
+	.popup-box-open {
+		background: rgba(0, 0, 0, 0.5) !important;
+		z-index: 999 !important;
+	}
+
+	.popup-box {
+		position: fixed;
+		width: 100%;
+		height: 100%;
+		background: rgba(0, 0, 0, 0.1);
+		transition: 0.4s;
+		z-index: -999;
+
+		.popup-box-main-open {
+			height: 700rpx !important;
+		}
+
+		.popup-box-main {
+			display: flex;
+			flex-direction: column;
+			position: absolute;
+			bottom: 0;
+			width: 100%;
+			height: 0;
+			transition: 0.4s;
+			background: #fff;
+
+			.popup-box-head {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				padding: 0 40rpx;
+				box-sizing: border-box;
+				height: 100rpx;
+				border-bottom: 1rpx solid #ededed;
+				font-size: 28rpx;
+
+				.cancel {
+					color: #999;
+				}
+
+				.confirm {
+					color: #1676ec;
+				}
+			}
+
+			.popup-box-content {
+				flex: 1;
+
+				.picker-view {
+					width: 100%;
+					height: 100%;
+
+					.item {
+						display: flex;
+						align-items: center;
+						justify-content: center;
+					}
+				}
+			}
+		}
+	}
+</style>

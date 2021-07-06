@@ -1,0 +1,191 @@
+<template>
+	<view class="resume-box">
+		<view class="resume-box-close flex-center" @click="close">
+			<text class="iconfont iconcuowu" style="font-size: 60rpx;"></text>
+		</view>
+		<view class="resume-box-content">
+			<view class="resume-box-content-user-image">
+				<image :src="dataInfo.simg" mode=""></image>
+			</view>
+			<view class="resume-box-content-list">
+				<view class="resume-box-content-list-li">
+					<view class="resume-box-content-list-li-title">{{lan.Nameh}}<!-- 姓名 -->：</view>
+					<view class="resume-box-content-list-li-msg">{{dataInfo.name}}</view>
+				</view>
+				<view class="resume-box-content-list-li">
+					<view class="resume-box-content-list-li-title">{{lan.mailboxl}}<!-- 邮箱 -->：</view>
+					<view class="resume-box-content-list-li-msg">{{dataInfo.email}}</view>
+				</view>
+				<view class="resume-box-content-list-li">
+					<view class="resume-box-content-list-li-title">{{lan.phonex}}<!-- 手机号 -->：</view>
+					<view class="resume-box-content-list-li-msg">{{dataInfo.mobile}}</view>
+				</view>
+				<view class="resume-box-content-list-li">
+					<view class="resume-box-content-list-li-title">{{lan.agex}}<!-- 年龄 -->：</view>
+					<view class="resume-box-content-list-li-msg">{{dataInfo.age}}</view>
+				</view>
+				<view class="resume-box-content-list-li" v-if="dataInfo.education_info">
+					<view class="resume-box-content-list-li-title">{{lan.Educationq}}<!-- 学历 -->：</view>
+					<view class="resume-box-content-list-li-msg">{{dataInfo.education_info.name}}</view>
+				</view>
+				<view class="resume-box-content-list-li" v-if="dataInfo.wy_info">
+					<view class="resume-box-content-list-li-title">{{lan.workExperiences}}<!-- 工作经验 -->：</view>
+					<view class="resume-box-content-list-li-msg">{{dataInfo.wy_info.name}}</view>
+				</view>
+				<view class="resume-box-content-list-li">
+					<view class="resume-box-content-list-li-title">{{lan.skilld}}<!-- 掌握技能 -->：</view>
+					<view class="resume-box-content-list-li-msg">{{dataInfo.skill}}</view>
+				</view>
+				<view class="resume-box-content-list-li">
+					<view class="resume-box-content-list-li-title">{{lan.JobPosts}}<!-- 求职岗位 -->：</view>
+					<view class="resume-box-content-list-li-msg">{{dataInfo.job_search}}</view>
+				</view>
+				<view class="resume-box-content-list-li">
+					<view class="resume-box-content-list-li-title">{{lan.expectedSalaryd}}<!-- 期望薪资 -->：</view>
+					<view class="resume-box-content-list-li-msg">{{dataInfo.salary_expectation}}</view>
+				</view>
+				<view class="resume-box-content-list-li" style="align-items: flex-start;">
+					<view class="resume-box-content-list-li-title">{{lan.selfIntroductions}}<!-- 个人介绍 -->：</view>
+					<view class="resume-box-content-list-li-msg">{{dataInfo.personal_evaluation}}</view>
+				</view>
+			</view>
+			<view class="resume-box-content-footer" v-if="isType=='application'">
+				<view class="resume-box-content-footer-btn flex-center" style="background: #5DBDFE;">聘用</view>
+				<view class="resume-box-content-footer-btn flex-center" style="background: #e44242;">拒绝</view>
+			</view>
+		</view>
+	</view>
+</template>
+
+<script>
+	export default {
+		name: "resume-preview",
+		data() {
+			return {
+				dataInfo: {},
+				isType: '',
+				dataInfo: {},
+				lan: {},
+			}
+		},
+		props: {
+			data: {},
+			type: {
+				type: String,
+				default: 'seek'
+			},
+			arr: {},
+		},
+		watch: {
+			data(val) {
+				this.dataInfo = this.data
+			},
+			arr(value) {
+				this.lan = this.arr
+			}
+		},
+		mounted() {
+			this.dataInfo = this.data
+			this.getType()
+			this.lan = this.arr
+		},
+		methods: {
+			close() {
+				this.$emit('close')
+			},
+
+			getType() {
+				switch (this.type) {
+					case 'application':
+						this.isType = 'application'
+						break;
+				}
+			}
+		}
+	}
+</script>
+
+<style lang="scss" scoped>
+	.resume-box {
+		position: relative;
+		padding: 60rpx;
+		box-sizing: border-box;
+		min-height: 1000rpx;
+		width: 600rpx;
+		background: #fff;
+		border-radius: 20rpx;
+
+		.resume-box-close {
+			position: absolute;
+			bottom: -100rpx;
+			left: 0;
+			right: 0;
+			margin: auto;
+			width: 80rpx;
+			height: 80rpx;
+			border: 1rpx solid #fff;
+			border-radius: 50%;
+			color: #fff;
+		}
+
+		.resume-box-content {
+			height: 100%;
+			display: flex;
+			flex-direction: column;
+
+			.resume-box-content-user-image {
+				width: 120rpx;
+				height: 120rpx;
+				margin: auto;
+				margin-bottom: 40rpx;
+
+				image {
+					width: 100%;
+					height: 100%;
+					border-radius: 50%;
+				}
+			}
+
+			.resume-box-content-list {
+				flex: 1;
+				overflow-y: scroll;
+
+				.resume-box-content-list-li {
+					display: flex;
+					align-items: center;
+					margin-bottom: 20rpx;
+					font-size: 28rpx;
+
+					.resume-box-content-list-li-title {
+						// max-width: 140rpx;
+						color: #333;
+						font-weight: 500;
+					}
+
+					.resume-box-content-list-li-msg {
+						flex: 1;
+						color: #999;
+					}
+				}
+			}
+
+			.resume-box-content-footer {
+				display: flex;
+				align-items: center;
+				margin-top: 50rpx;
+
+				.resume-box-content-footer-btn {
+					height: 70rpx;
+					flex: 1;
+					font-size: 28rpx;
+					border-radius: 10rpx;
+					color: #fff;
+				}
+
+				.resume-box-content-footer-btn:nth-child(2) {
+					margin-left: 40rpx;
+				}
+			}
+		}
+	}
+</style>

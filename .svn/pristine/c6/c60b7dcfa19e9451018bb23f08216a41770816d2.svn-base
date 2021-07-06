@@ -1,0 +1,334 @@
+<template>
+	<view class="box">
+		<view class="box-head" :style="{paddingTop:barHeight+'px'}">
+			<nav-title-white navTitle="职位详情" />
+		</view>
+		<view class="box-content">
+			<view class="box-content-details">
+				<view class="box-content-details-top">
+					<view class="box-content-details-top-title">{{infoData.position}}</view>
+					<view class="box-content-details-top-text">{{infoData.salary}}/月</view>
+				</view>
+				<view class="box-content-details-list">
+					<view class="box-content-details-list-li" v-for="(item,index) in welfareList">{{item}}</view>
+				</view>
+				<view class="box-content-details-wrap">
+					<view class="box-content-details-wrap-item" v-if="infoData.position_info">
+						职位类别：<text>{{infoData.position_info.name}}</text>
+					</view>
+					<view class="box-content-details-wrap-item" v-if="infoData.education_info">
+						学历要求：
+						<text>{{infoData.education_info.name}}</text>
+					</view>
+					<view class="box-content-details-wrap-item">
+						招聘人数：<text>{{infoData.recruits_number}}人</text>
+					</view>
+					<view class="box-content-details-wrap-item" v-if="infoData.wy_info">
+						工龄要求：<text>{{infoData.wy_info.name}}</text>
+					</view>
+					<view class="box-content-details-wrap-item">
+						工作地点：<text>{{infoData.place_work}}</text>
+					</view>
+				</view>
+			</view>
+			<view class="box-content-text">
+				<view class="box-content-text-title">职位描述</view>
+				<view class="box-content-text-msg">{{infoData.position_information}}</view>
+			</view>
+			<view class="box-content-introduce">
+				<view class="box-content-introduce-title">门店介绍</view>
+				<view class="box-content-introduce-text">
+					门店名称：<text>{{infoData.store_info.name}}</text>
+				</view>
+				<view class="box-content-introduce-address">
+					<view class="box-content-introduce-address-icon">
+						<text class="iconfont icondingwei1 icon-font" style="color: #26BF82;font-size: 40rpx"></text>
+					</view>
+					<view class="box-content-introduce-address-text">
+						{{infoData.store_info.address}}
+					</view>
+					<view class="box-content-introduce-address-more">
+						<text class="iconfont icongengduo icon-font"
+							style="color: #26BF82;font-size: 40rpx;margin-top: 4rpx;"></text>
+					</view>
+				</view>
+				<view class="box-content-introduce-text">门店介绍</view>
+				<view class="box-content-introduce-msg" v-html="infoData.store_info.content"></view>
+			</view>
+		</view>
+		<view class="box-footer">
+			<view class="box-footer-btn-del flex-center" @click="deleteRecruitment">删除</view>
+			<view class="box-footer-btn-edit flex-center" @click="modify">修改</view>
+		</view>
+		<uni-popup ref="popup" type="dialog">
+			<uni-popup-dialog type="warn" mode='base' title="警告" content="你确定要删除此条招聘信息吗？" :duration="2000"
+				@confirm="confirm"></uni-popup-dialog>
+		</uni-popup>
+	</view>
+</template>
+
+<script>
+	export default {
+		data() {
+			return {
+				barHeight: 0, //顶部电量导航栏高度
+				id: '',
+				infoData: {
+					position: '',
+					salary: '',
+					recruits_number: 1,
+					position_information: '',
+					service_year: '',
+					education: '',
+					place_work: '',
+					store_info: {
+						name: ''
+					},
+				},
+				welfareList: []
+			};
+		},
+
+		onReady() {
+			// 获取顶部电量状态栏高度
+			uni.getSystemInfo({
+				success: (res) => {
+					this.barHeight = res.statusBarHeight
+				}
+			});
+		},
+		onLoad(options) {
+			this.id = options.id
+			this.getInfo(options.id)
+		},
+		onShow() {
+			// 用于判断是否有发布招聘
+			if (this.$store.state.isAdd) {
+				this.getInfo(this.id)
+			}
+		},
+		methods: {
+
+			getInfo(id) {
+				this.apiget('api/v1/store/recruitment/' + id, {}).then(res => {
+					if (res.status == 200) {
+						this.infoData = res.data.data
+						this.welfareList = res.data.data.position_benefits.split(',')
+					}
+				});
+			},
+
+			// 修改资料
+			modify() {
+				var str = {
+					id: this.id,
+					type: 'edit'
+				}
+				uni.navigateTo({
+					url: "../releaseRecruitment/releaseRecruitment?data=" + JSON.stringify(str)
+				})
+			},
+			// 删除
+			deleteRecruitment() {
+				this.$refs.popup.open()
+			},
+
+			// 弹窗点击确认
+			confirm() {
+				this.apidelte('api/v1/store/recruitment/del/' + this.id, {}).then(res => {
+					if (res.status == 200) {
+						this.$store.commit("upAdd", true)
+						uni.showToast({
+							title: "删除成功",
+							icon: "none"
+						})
+						setTimeout(() => {
+							uni.navigateBack({
+								delta: 1
+							})
+						}, 500)
+					}
+
+				});
+			},
+		}
+	}
+</script>
+
+<style lang="scss">
+	.box {
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+		background: #F7F7F7;
+
+		.box-head {
+			background-color: #5DBDFE;
+		}
+
+		.box-content {
+			flex: 1;
+			overflow-y: scroll;
+
+			.box-content-details {
+				padding: 30rpx 40rpx 20rpx;
+				box-sizing: border-box;
+				background: #fff;
+
+				.box-content-details-top {
+					display: flex;
+					align-items: center;
+					justify-content: space-between;
+
+					.box-content-details-top-title {
+						font-size: 48rpx;
+						font-weight: 500;
+						color: #000;
+					}
+
+					.box-content-details-top-text {
+						font-size: 40rpx;
+						font-weight: 500;
+						color: #5DBDFE;
+					}
+				}
+
+				.box-content-details-list {
+					display: flex;
+					flex-wrap: wrap;
+					margin: 30rpx 0 20rpx 0;
+
+					.box-content-details-list-li {
+						padding: 10rpx 16rpx;
+						margin-right: 10rpx;
+						margin-bottom: 10rpx;
+						background: #F7F8FA;
+						border-radius: 5rpx;
+						font-size: 24rpx;
+						color: #666;
+					}
+				}
+
+				.box-content-details-wrap {
+					display: flex;
+					flex-wrap: wrap;
+
+					.box-content-details-wrap-item {
+						
+						display: flex;
+						align-items: center;
+						width: 310rpx;
+						margin-bottom: 20rpx;
+						font-size: 28rpx;
+						color: #999;
+
+						text {
+							color: #000;
+						}
+					}
+
+					.box-content-details-wrap-item:nth-child(2n) {
+						margin-left: 50rpx;
+					}
+				}
+			}
+
+			.box-content-text {
+				margin-top: 20rpx;
+				padding: 30rpx 40rpx;
+				box-sizing: border-box;
+				background: #fff;
+
+				.box-content-text-title {
+					font-size: 36rpx;
+					font-weight: 500;
+					color: #000;
+				}
+
+				.box-content-text-msg {
+					margin-top: 10rpx;
+					line-height: 50rpx;
+					font-size: 28rpx;
+					color: #1A1A1A;
+				}
+			}
+
+			.box-content-introduce {
+				margin-top: 20rpx;
+				padding: 30rpx 40rpx;
+				box-sizing: border-box;
+				background: #fff;
+
+				.box-content-introduce-title {
+					font-size: 32rpx;
+					font-weight: 500;
+					color: #000;
+				}
+
+				.box-content-introduce-text {
+					margin-top: 40rpx;
+					font-size: 28rpx;
+					color: #999;
+					line-height: 32rpx;
+
+					text {
+						color: #000;
+					}
+				}
+
+				.box-content-introduce-address {
+					display: flex;
+					align-items: center;
+					padding: 30rpx 0;
+					margin: 30rpx 0;
+					border-top: 1rpx solid #ededed;
+					border-bottom: 1rpx solid #ededed;
+
+					.box-content-introduce-address-icon {}
+
+					.box-content-introduce-address-text {
+						margin: 0 40rpx 0 20rpx;
+						flex: 1;
+						font-size: 28rpx;
+						color: #333333;
+					}
+
+					.box-content-introduce-address-more {}
+				}
+
+				.box-content-introduce-msg {
+					margin-top: 30rpx;
+					font-size: 28rpx;
+					color: #333;
+				}
+			}
+		}
+
+		.box-footer {
+			padding: 30rpx 40rpx;
+			box-sizing: border-box;
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+
+			.box-footer-btn-del {
+				width: 318rpx;
+				height: 78rpx;
+				background: #F7F7F7;
+				border: 1rpx solid #666666;
+				border-radius: 10rpx;
+				font-size: 32rpx;
+				color: #666;
+			}
+
+			.box-footer-btn-edit {
+				width: 320rpx;
+				height: 80rpx;
+				background: #5DBDFE;
+				border-radius: 10rpx;
+				font-size: 32rpx;
+				color: #fff;
+			}
+		}
+	}
+</style>

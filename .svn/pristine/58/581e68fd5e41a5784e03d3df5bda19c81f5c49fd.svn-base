@@ -1,0 +1,153 @@
+<template>
+	<view class="box">
+		<view class="box-head" :style="{paddingTop:barHeight+'px'}">
+			<nav-title-balck navTitle="银行卡管理"></nav-title-balck>
+		</view>
+		<view class="box-content" :style="{display:isData?'block':'none'}">
+			<z-paging ref="paging1" @query="queryList" :list.sync="dataList" loading-more-no-more-text="已经到底了"
+				:refresher-angle-enable-change-continued="false" :touchmove-propagation-enabled="true"
+				:use-custom-refresher="true" style="height: 100%;">
+				<view class="box-content-list">
+					<view class="box-content-list-li" v-for="(item,index) in dataList" :key='item.id'>
+
+					</view>
+				</view>
+			</z-paging>
+		</view>
+		<view class="box-content" :style="{display:!isData?'block':'none'}">
+			<loading v-if="isLoad" />
+			<no-data v-if="!isLoad" />
+		</view>
+		<view class="box-footer">
+			<view class="box-footer-btn flex-center" @click="addCard">添加银行卡</view>
+		</view>
+
+	</view>
+</template>
+
+<script>
+	export default {
+		data() {
+			return {
+				barHeight: 0, //顶部电量导航栏高度,
+
+				dataList: [],
+
+				isData: false,
+				isLoad: true,
+			}
+		},
+
+		onShow() {
+			// if (this.$store.state.isOrderState) {
+			// 	this.orderList(1, 20)
+			// }
+		},
+		onLoad() {
+			// 获取顶部电量状态栏高度
+			uni.getSystemInfo({
+				success: (res) => {
+					this.barHeight = res.statusBarHeight
+				}
+			});
+		},
+		onShow() {
+			if (this.$store.state.isAddBank) {
+
+			}
+		},
+		methods: {
+
+			// 添加银行卡
+			addCard() {
+				let str = {
+					type: 'add'
+				}
+				uni.navigateTo({
+					url: '../addBankCard/addBankCard?data=' + JSON.stringify(str)
+				})
+			},
+
+			// 上拉 下拉
+			queryList(pageNo, pageSize) {
+				this.orderList(pageNo, pageSize)
+			},
+
+
+			// 订单列表
+			orderList(num, size) {
+				var vuedata = {
+					page_index: num, // 请求页数，
+					each_page: size, // 请求条数
+				}
+				this.apiget('api/v1/engineer/order', vuedata).then(res => {
+					if (res.status == 200) {
+						if (res.data.member.length != 0) {
+							this.isData = true
+							let list = res.data.member
+							this.$refs.paging1.complete(list);
+							return false;
+						}
+						this.isData = false
+						this.isLoad = false
+
+					}
+				});
+			},
+
+
+
+		}
+	}
+</script>
+
+<style scoped lang="scss">
+	.box {
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+		background: #F7F7F7;
+
+		.box-head {}
+
+		.box-content {
+			flex: 1;
+			overflow-y: scroll;
+
+			.box-content-list {
+				padding: 0 30rpx;
+				box-sizing: border-box;
+				display: flex;
+				flex-direction: column;
+
+				.box-content-list-li:first-child {
+					margin-top: 40rpx;
+				}
+
+				.box-content-list-li {
+					height: 300rpx;
+					border-radius: 10rpx;
+					background: #fff;
+					margin-bottom: 40rpx;
+				}
+			}
+
+
+
+		}
+
+		.box-footer {
+			padding: 30rpx 40rpx;
+			box-sizing: border-box;
+
+			.box-footer-btn {
+				height: 88rpx;
+				background: #26BF82;
+				box-shadow: 0rpx 10rpx 20rpx rgba(38, 191, 130, 0.2);
+				border-radius: 15rpx;
+				font-size: 32rpx;
+				color: #fff;
+			}
+		}
+	}
+</style>

@@ -1,0 +1,221 @@
+<template>
+	<view class="box">
+		<view class="box-head" :style="{paddingTop:barHeight+'px'}">
+			<nav-title-balck :navTitle="title"></nav-title-balck>
+		</view>
+		<view class="box-content">
+			<view class="box-content-list" :style="{display:isData?'block':'none'}">
+				<view class="box-content-list-li" v-for="(item,index) in dataList" :key='index'
+					:class="item.use_status==1?'bgColor':''">
+					<view class="box-content-list-li-img">
+						<image :src="item.simg" mode="aspectFill"></image>
+					</view>
+					<view class="box-content-list-li-info">
+						<view class="box-content-list-li-info-item">
+							<text class="iconfont iconshizhong icon-font" style="font-size: 28rpx;"></text>
+							<text>{{item.plan_start}}-{{item.plan_end}}AM</text>
+						</view>
+						<view class="box-content-list-li-info-item">
+							<text class="iconfont icon70BasicIcons-all-05 icon-font" style="font-size: 28rpx;"></text>
+							<text>{{item.name}} {{item.mobile}}</text>
+						</view>
+						<view class="box-content-list-li-info-item">
+							<text class="iconfont icondingdan1 icon-font" style="font-size: 28rpx;"></text>
+							<text>{{item.content}}</text>
+						</view>
+					</view>
+					<view class="box-content-list-li-name">
+						{{item.member_name}}
+					</view>
+					<view class="box-content-list-li-complete flex-center" v-if="item.use_status==1">
+						<text class="iconfont iconxuanzhong2" style="font-size: 40rpx;"></text>
+					</view>
+				</view>
+			</view>
+			<view class="box-content-list" style="padding: 0;" :style="{display:!isData?'block':'none'}">
+				<loading-merchant v-if="isLoad" />
+				<no-data :msg="lan.noSchedule" v-if="!isLoad" />
+			</view>
+		</view>
+	</view>
+</template>
+
+<script>
+	import {
+		timeList
+	} from '../../static/js/publicFile.js'
+
+	export default {
+		data() {
+			return {
+				barHeight: 0, //顶部电量导航栏高度
+				title: '2021年02月12日预约日程',
+				timeList: [],
+				dataList: [],
+				keyIndex: 0,
+				dataArr: {},
+				msg: '分钟',
+				isLoad: true,
+				isData: false,
+				lan:{}
+			};
+		},
+
+		onLoad(options) {
+			// 获取顶部电量状态栏高度
+			uni.getSystemInfo({
+				success: (res) => {
+					this.barHeight = res.statusBarHeight
+				}
+			});
+			var data = JSON.parse(options.data)
+			this.dataArr = data
+			this.title = data.year + '年' + data.month + '月' + data.day + "日预约日程"
+
+			this.getSchedulingInfo(data)
+			this.getLanguage()
+		},
+		methods: {
+
+			getSchedulingInfo(e) {
+				this.apiget('api/v1/store/engineer/engineer_schedule', {
+					store: e.store,
+					date: (e.year + '-' + e.month + '-' + e.day),
+				}).then(res => {
+					if (res.status == 200) {
+						var list = res.data
+						this.isLoad = true
+						if (list.length != 0) {
+							this.dataList = []
+							res.data.map(item => {
+								item.order_info.map(ele => {
+									let start = this.timeChange(ele.plan_start)
+									let end = this.timeChange(ele.plan_end)
+
+									ele.simg = item.simg
+									ele.content = ele.reserve_name + ' ' + (end - start) + this.msg
+									this.dataList.push(ele)
+								})
+							})
+						}
+						if (this.dataList.length != 0) {
+							this.isData = true
+						}
+						this.isLoad = false
+					}
+				});
+			},
+
+			timeChange(item) {
+				var t = item.split(':');
+				var times = 60 * parseInt(t[0]) + parseInt(t[1])
+				return times
+			},
+			// 请求语言包
+			getLanguage() {
+				this.apiget('language/info', {
+					name: 'MerchantStorez'
+				}).then(res => {
+					if (res.status == 200) {
+						let language = res.data.language
+						this.lan = res.data.language
+					}
+				});
+			},
+		}
+	}
+</script>
+
+<style lang="scss" scoped>
+	.box {
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+		background: #fff;
+
+		.box-head {
+			background-color: #fff;
+		}
+
+		.box-content {
+			display: flex;
+			flex-direction: column;
+			flex: 1;
+			overflow-y: scroll;
+
+
+			.box-content-list {
+				flex: 1;
+				overflow-y: scroll;
+				padding: 0 30rpx;
+				box-sizing: border-box;
+
+				.box-content-list-li {
+					position: relative;
+					display: flex;
+					align-items: center;
+					justify-content: space-between;
+					min-height: 160rpx;
+					padding: 20rpx 30rpx;
+					box-sizing: border-box;
+					margin-bottom: 20rpx;
+					background: rgba(248, 148, 148, 0.1);
+					color: #FF6363;
+					border-radius: 10rpx;
+
+					.box-content-list-li-img {
+						width: 90rpx;
+						height: 90rpx;
+
+						image {
+							width: 90rpx;
+							height: 90rpx;
+							border-radius: 50%;
+						}
+					}
+
+					.box-content-list-li-info {
+						display: flex;
+						flex-direction: column;
+						justify-content: center;
+						flex: 1;
+						height: 100%;
+						margin-left: 30rpx;
+
+						.box-content-list-li-info-item {
+							margin-bottom: 6rpx;
+							display: flex;
+							align-items: center;
+							font-size: 28rpx;
+
+							.icon-font {
+								margin-right: 10rpx;
+							}
+						}
+
+						.box-content-list-li-info-item:last-child {
+							margin-bottom: 0;
+						}
+					}
+
+					.box-content-list-li-name {
+						margin-left: 20rpx;
+						font-size: 28rpx;
+					}
+					.box-content-list-li-complete{
+						position: absolute;
+						right: 20rpx;
+						top: 10rpx;
+						width: 50rpx;
+						height: 50rpx;
+					}
+				}
+
+				.bgColor {
+					background: #CEEBFF !important;
+					color: #5DBDFE !important;
+				}
+			}
+		}
+	}
+</style>

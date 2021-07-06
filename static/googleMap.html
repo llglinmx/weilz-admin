@@ -6,27 +6,38 @@
 		<title>Google Map</title>
 		<script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
 		<script
-			src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAwjMreTOci1VWPK8GY5Qo3i4Nny4va6hY&callback=initMap&libraries=&v=weekly"
-			async defer>
-		</script>
+			src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAwjMreTOci1VWPK8GY5Qo3i4Nny4va6hY&libraries=places&v=weekly"
+			async defer></script>
+
 		<script type="text/javascript" src="https://js.cdn.aliyun.dcloud.net.cn/dev/uni-app/uni.webview.1.5.2.js">
 		</script>
+
+		<!-- <script type="text/javascript" src='../../static/js/vue.min-v2.6.14.js'></script>
+		<script type="text/javascript" src='../../static/js/uni.webview.1.5.2.js'></script> -->
+
 		<style type="text/css">
 			#map {
-				height: calc(100% - 70px);
+				height: calc(100% - 120px);
 			}
 
 			html,
 			body {
+				position: relative;
 				height: calc(100% - 10px);
 				margin: 0;
 				padding: 0;
 			}
 
-			.btn-list {
-				margin-top: 20px;
-				padding: 0 15px;
-				box-sizing: border-box;
+			#appBox {
+				height: 100%;
+			}
+
+			#Gback {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				width: 33px;
+				height: 33px;
 			}
 
 			.arrow:before {
@@ -43,24 +54,145 @@
 				position: relative;
 				top: 0
 			}
+
+			#search {
+				width: 100%;
+				position: absolute;
+				top: 80px;
+				z-index: 99999999999999999999999999999999999999;
+				text-align: center;
+			}
+
+			#search .input-box {
+				padding: 0 5px;
+				height: 30px;
+				width: 280px;
+				box-sizing: border-box;
+			}
+
+			.btn-list {
+				margin-top: 20px;
+				padding: 0 15px;
+				box-sizing: border-box;
+			}
+
+			#btn {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				width: 90%;
+				height: 44px;
+				margin: 10px auto 0;
+				border-radius: 5px;
+				background: #5DBDFE;
+				color: #fff;
+				font-size: 16px;
+			}
+
+			#description {
+				font-family: Roboto;
+				font-size: 15px;
+				font-weight: 300;
+			}
+
+			#infowindow-content .title {
+				font-weight: bold;
+			}
+
+			#infowindow-content {
+				display: none;
+			}
+
+			#map #infowindow-content {
+				display: inline;
+			}
+
+			.pac-card {
+				margin: 10px 10px 0 0;
+				border-radius: 2px 0 0 2px;
+				box-sizing: border-box;
+				-moz-box-sizing: border-box;
+				outline: none;
+				box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+				background-color: #fff;
+				font-family: Roboto;
+			}
+
+			#pac-container {
+				padding-bottom: 12px;
+				margin-right: 12px;
+			}
+
+			.pac-controls {
+				display: inline-block;
+				padding: 5px 11px;
+			}
+
+			.pac-controls label {
+				font-family: Roboto;
+				font-size: 13px;
+				font-weight: 300;
+			}
+
+			#pac-input {
+				background-color: #fff;
+				font-family: Roboto;
+				font-size: 15px;
+				font-weight: 300;
+				padding: 0 11px 0 13px;
+				text-overflow: ellipsis;
+				height: 30px;
+				width: 280px;
+				top: 60px !important;
+				left: 0 !important;
+				right: 0;
+				margin: auto;
+				outline: none;
+			}
+
+			#pac-input:focus {
+				border-color: #4d90fe;
+			}
+
+			#title {
+				color: #fff;
+				background-color: #4d90fe;
+				font-size: 25px;
+				font-weight: 500;
+				padding: 6px 12px;
+			}
+
+			#target {
+				width: 345px;
+			}
 		</style>
 	</head>
 	<body>
-		<div id="search-box">
-			<input id="pac-input" class="controls" type="text" placeholder="Search Box" />
-		</div>
-		<div class="btn-list" style="display: flex;align-items: center;">
-			<!-- <image @click="" data-action="navigateBack"
+		<div id="appBox">
+			<div class="btn-list" style="display: flex;align-items: center;">
+				<!-- <image @click="" data-action="navigateBack"
 				style="width: 20px;padding: 5px 0 5px 10px;position: absolute;left: 0;" src="./img/back.png"></image> -->
-			<span class='arrow' @click="" data-action="navigateBack"></span>
-			<div style="width: 100%;text-align: center;height: 50px;line-height: 50px;">
-				<h4 style="margin: 0 0;">Map</h4>
+				<div id='Gback'>
+					<span class='arrow' data-action="navigateBack"></span>
+				</div>
+
+				<div style="width: 100%;text-align: center;height: 50px;line-height: 50px;padding-right: 30px;
+					box-sizing: border-box;">
+					<h4 style="margin: 0 0;">Map</h4>
+				</div>
 			</div>
+			<div id="search">
+				<input id="pac-input" class="input-box" type="text" placeholder="Search Box" />
+			</div>
+			<div id="map"></div>
+			<div id="btn">确定</div>
 		</div>
-		<div id="map"></div>
+
 	</body>
 </html>
 <script>
+	let addressObj
+
 	function getQuery(name) {
 		// 正则：[找寻'&' + 'url参数名字' = '值' + '&']（'&'可以不存在）
 		let reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
@@ -72,70 +204,134 @@
 		return null;
 	}
 
-	let map;
 
-	function initMap() {
-		const uluru = {
-			lat: Number(getQuery('lat')),
-			lng: Number(getQuery('log'))
+
+	function initAutocomplete() {
+		var lats = Number(getQuery('lat'))
+		var lngs = Number(getQuery('log'))
+
+		console.log(lats, lngs)
+
+		var uluru = {
+			lat: lats,
+			lng: lngs,
 		};
-		map = new google.maps.Map(document.getElementById("map"), {
+		const map = new google.maps.Map(document.getElementById("map"), {
 			center: {
-				lat: Number(getQuery('lat')),
-				lng: Number(getQuery('log'))
+				lat: lats,
+				lng: lngs
 			},
-			zoom: 16,
-			center: uluru,
+			zoom: 13,
 			mapTypeId: "roadmap",
+			center: uluru,
 		});
 		const marker = new google.maps.Marker({
 			position: uluru,
 			map: map,
 		});
 
+		map.addListener('click', function(e) {
+			var latLngData = e.latLng.lat().toFixed(6) + ',' + e.latLng.lng().toFixed(6);
+			console.log(latLngData)
+		});
+
+
+
+
+
+		// Create the search box and link it to the UI element.
 		const input = document.getElementById("pac-input");
 		const searchBox = new google.maps.places.SearchBox(input);
+		map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+		// Bias the SearchBox results towards current map's viewport.
+		map.addListener("bounds_changed", () => {
+			searchBox.setBounds(map.getBounds());
+		});
+		let markers = [];
+		// Listen for the event fired when the user selects a prediction and retrieve
+		// more details for that place.
+		searchBox.addListener("places_changed", () => {
+			const places = searchBox.getPlaces();
+			addressObj = searchBox.getPlaces();
 
+			if (places.length == 0) {
+				return;
+			}
+			// Clear out the old markers.
+			markers.forEach((marker) => {
+				marker.setMap(null);
+			});
+			markers = [];
+			// For each place, get the icon, name and location.
+			const bounds = new google.maps.LatLngBounds();
+			places.forEach((place) => {
+				if (!place.geometry || !place.geometry.location) {
+					console.log("Returned place contains no geometry");
+					return;
+				}
+				const icon = {
+					url: place.icon,
+					size: new google.maps.Size(71, 71),
+					origin: new google.maps.Point(0, 0),
+					anchor: new google.maps.Point(17, 34),
+					scaledSize: new google.maps.Size(25, 25),
+				};
+				// Create a marker for each place.
+				markers.push(
+					new google.maps.Marker({
+						map,
+						icon,
+						title: place.name,
+						position: place.geometry.location,
+					})
+				);
 
+				if (place.geometry.viewport) {
+					// Only geocodes have viewport.
+					bounds.union(place.geometry.viewport);
+				} else {
+					bounds.extend(place.geometry.location);
+				}
+			});
+			console.log(markers)
+			map.fitBounds(bounds);
+		});
 	}
 
-
-	var userAgent = navigator.userAgent;
-	if (userAgent.indexOf('AlipayClient') > -1) {
-		// 支付宝小程序的 JS-SDK 防止 404 需要动态加载，如果不需要兼容支付宝小程序，则无需引用此 JS 文件。
-		document.writeln('<script src="https://appx/web-view.min.js"' + '>' + '<' + '/' + 'script>');
-	} else if (/QQ/i.test(userAgent) && /miniProgram/i.test(userAgent)) {
-		// QQ 小程序
-		document.write(
-			'<script type="text/javascript" src="https://qqq.gtimg.cn/miniprogram/webview_jssdk/qqjssdk-1.0.0.js"><\/script>'
-		);
-	} else if (/miniProgram/i.test(userAgent) && /micromessenger/i.test(userAgent)) {
-		// 微信小程序 JS-SDK 如果不需要兼容微信小程序，则无需引用此 JS 文件。
-		document.write('<script type="text/javascript" src="https://res.wx.qq.com/open/js/jweixin-1.4.0.js"><\/script>');
-	} else if (/toutiaomicroapp/i.test(userAgent)) {
-		// 头条小程序 JS-SDK 如果不需要兼容头条小程序，则无需引用此 JS 文件。
-		document.write(
-			'<script type="text/javascript" src="https://s3.pstatp.com/toutiao/tmajssdk/jssdk-1.0.1.js"><\/script>');
-	} else if (/swan/i.test(userAgent)) {
-		// 百度小程序 JS-SDK 如果不需要兼容百度小程序，则无需引用此 JS 文件。
-		document.write(
-			'<script type="text/javascript" src="https://b.bdstatic.com/searchbox/icms/searchbox/js/swan-2.0.18.js"><\/script>'
-		);
-	} else if (/quickapp/i.test(userAgent)) {
-		// quickapp
-		document.write('<script type="text/javascript" src="https://quickapp/jssdk.webview.min.js"><\/script>');
+	window.onload = function() {
+		console.log('加载完成')
+		initAutocomplete()
 	}
 
 	// 待触发 `UniAppJSBridgeReady` 事件后，即可调用 uni 的 API。
 	document.addEventListener('UniAppJSBridgeReady', function() {
-		document.querySelector('.btn-list').addEventListener('click', function(evt) {
-			var target = evt.target;
+		// 返回
+		var backNav = document.getElementById('Gback')
+		backNav.onclick = function() {
 			uni.navigateBack({
 				delta: 1
+			})
+		}
+		var aBtn = document.getElementById('btn')
+		aBtn.onclick = function() {
+
+			uni.getEnv(function(res) {
+				console.log(JSON.stringify(res))
+				if (res.h5) {
+
+				} else {
+					uni.postMessage({
+						data: {
+							// dataObj: places,
+							dataObj: addressObj,
+						}
+					});
+				}
+
 			});
-		});
-		// document.getElementById('map').addEventListener('click', function(e) {
-		// 	console.log(e)
-		// })
+			uni.navigateBack({
+				delta: 1
+			})
+		}
 	});
 </script>

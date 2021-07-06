@@ -1,0 +1,832 @@
+<template>
+	<view class="box">
+		<view class="box-head" :style="{paddingTop:barHeight+'px'}">
+			<nav-title-balck :navTitle="lan.ResumeInformationss"></nav-title-balck>
+		</view>
+		<view class="box-content">
+			<view class="box-content-list">
+				<view class="box-content-list-li">
+					<view class="box-content-list-li-title">{{lan.Nameh}}<!-- 姓名 -->
+					</view>
+					<view class="box-content-list-li-info">
+						<view class="box-content-list-li-info-input">
+							<input type="text" v-model.trim="from.name" :placeholder="lan.nameg" />
+						</view>
+					</view>
+				</view>
+				<view class="box-content-list-li">
+					<view class="box-content-list-li-title">{{lan.mailboxl}}<!-- 邮箱 -->
+					</view>
+					<view class="box-content-list-li-info">
+						<view class="box-content-list-li-info-input">
+							<input type="text" v-model.trim="from.email" :placeholder="lan.inputEmailq" />
+						</view>
+					</view>
+				</view>
+				<view class="box-content-list-li">
+					<view class="box-content-list-li-title">{{lan.phonex}}<!-- 手机号 -->
+					</view>
+					<view class="box-content-list-li-info" style="display: flex;">
+						<view class="box-content-list-li-info-area-code" @click="isAreaCode=true">
+							<text>+{{from.mobile_code}}</text>
+							<text class="iconfont iconxiangxiajiantou"
+								style="font-size: 24rpx;margin-left: 10rpx;transition: 0.3s;"
+								:style="{transform: isAreaCode?'rotate(180deg)':'rotate(0deg)'}"></text>
+						</view>
+						<view class="box-content-list-li-info-input">
+							<input type="number" v-model.trim="from.mobile" :placeholder="lan.phoneqz" />
+						</view>
+					</view>
+				</view>
+				<view class="box-content-list-li" @click="categoryOpen">
+					<view class="box-content-list-li-title">职位类别</view>
+
+					<view class="box-content-list-li-info">
+						<view class="box-content-list-li-info-text">{{categoryName==''?'请选择职位类别':categoryName}}</view>
+						<view class="box-content-list-li-info-more">
+							<text class="iconfont icongengduo icon-font"
+								style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
+						</view>
+					</view>
+				</view>
+				<view class="box-content-list-li">
+					<view class="box-content-list-li-title">{{lan.agex}}<!-- 年龄 -->
+					</view>
+					<view class="box-content-list-li-info">
+						<view class="box-content-list-li-info-input">
+							<input type="number" v-model.trim="from.age" :placeholder="lan.enterAged" />
+						</view>
+					</view>
+				</view>
+				<view class="box-content-list-li" @click="isEducation = true">
+					<view class="box-content-list-li-title">{{lan.Educationq}}<!-- 学历 -->
+					</view>
+					<view class="box-content-list-li-info">
+						<view class="box-content-list-li-info-text">
+							{{educationName==''?lan.selectDegree:educationName}}
+						</view>
+						<view class="box-content-list-li-info-more">
+							<text class="iconfont icongengduo icon-font"
+								style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
+						</view>
+					</view>
+				</view>
+				<view class="box-content-list-li" @click="isExperience = true">
+					<view class="box-content-list-li-title">{{lan.workExperiences}}<!-- 工作经验 -->
+					</view>
+					<view class="box-content-list-li-info">
+						<view class="box-content-list-li-info-text">
+							{{experienceName==''?lan.workingYearsxc:experienceName}}
+						</view>
+						<view class="box-content-list-li-info-more">
+							<text class="iconfont icongengduo icon-font"
+								style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
+						</view>
+					</view>
+				</view>
+				<view class="box-content-list-li" @click="visible = true">
+					<view class="box-content-list-li-title">{{lan.ResidentialAddress}}<!-- 居住地址 -->
+					</view>
+					<view class="box-content-list-li-info">
+						<view class="box-content-list-li-info-text">
+							{{from.regionName==''?lan.regionh:from.regionName}}
+						</view>
+						<view class="box-content-list-li-info-more">
+							<text class="iconfont icongengduo icon-font"
+								style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
+						</view>
+					</view>
+				</view>
+				<view class="box-content-list-li">
+					<view class="box-content-list-li-title">{{lan.Addressj}}<!-- 详细地址 -->
+					</view>
+					<view class="box-content-list-li-info">
+						<view class="box-content-list-li-info-input">
+							<input type="text" v-model.trim="from.residential_address"
+								:placeholder="lan.detailedAddressl" />
+						</view>
+					</view>
+				</view>
+
+
+				<view class="box-content-list-li" style="align-items: flex-start">
+					<view class="box-content-list-li-title">{{lan.skilld}}<!-- 掌握技能 -->
+					</view>
+					<view class="box-content-list-li-info" style="flex-wrap: wrap;justify-content: flex-start;">
+						<view class="box-content-list-li-info-item flex-center" v-for="(item,index) in skillList"
+							:key='index'>
+							<view class="flex-center"
+								style="border: 1rpx solid #ededed;width: 60rpx;height: 58rpx;color: #999;border-radius: 6rpx;"
+								@click="addSkill(index)">
+								<text class="iconfont iconjia" style="font-size: 32rpx;"></text>
+							</view>
+							<view
+								style="border: 1rpx solid #ededed;flex: 1;height: 60rpx;margin-left: 20rpx;padding: 0 10rpx;box-sizing: border-box;">
+								<input type="text" :placeholder="lan.enterSkills" v-model.trim="item.name"
+									style="font-size: 24rpx;height: 100%;" />
+							</view>
+							<view @click="skillDelete(index)">
+								<text class="iconfont iconcuowu"
+									style="margin-left: 10rpx;font-size: 46rpx;color: #999;"></text>
+							</view>
+						</view>
+					</view>
+				</view>
+				<view class="box-content-list-li">
+					<view class="box-content-list-li-title">{{lan.JobPosts}}<!-- 求职岗位 -->
+					</view>
+					<view class="box-content-list-li-info">
+						<view class="box-content-list-li-info-input">
+							<input type="text" v-model.trim="from.job_search" :placeholder="lan.searchPositionh" />
+						</view>
+					</view>
+				</view>
+				<view class="box-content-list-li">
+					<view class="box-content-list-li-title">{{lan.expectedSalaryd}}<!-- 期望薪资 -->
+					</view>
+					<view class="box-content-list-li-info">
+						<view class="box-content-list-li-info-input">
+							<input type="number" v-model.trim="from.salary_expectation" :placeholder="lan.expected" />
+						</view>
+					</view>
+				</view>
+
+				<view class="box-content-list-item">
+					<view class="box-content-list-item-text">
+						{{lan.WorkPhotoh}}<!-- 工作照片 --><text>(100*100)</text>
+					</view>
+					<view class="box-content-list-item-info" @click="upSimg">
+						<view class="box-content-list-item-info-icon flex-center" v-if="from.simg==''">
+							<text class="iconfont icontupian icon-font" style="color: #fff;font-size: 50rpx;"></text>
+						</view>
+						<image :src="from.simg" v-if="from.simg!=''" class="box-content-list-item-info-image"
+							mode="aspectFill"></image>
+					</view>
+				</view>
+				<view class="box-content-list-li">
+					<view class="box-content-list-li-title">{{lan.openResume}}<!-- 是否开放简历 -->
+					</view>
+					<view class="box-content-list-li-info">
+						<switch style="transform: scale(0.7);" :checked='isStatus' @change="switch1Change3"
+							color="#07C160" />
+					</view>
+				</view>
+				<view class="box-content-list-li" style="padding:30rpx 0;height: auto;align-items: flex-start;">
+					<view class="box-content-list-li-title">{{lan.PersonalProfilee}}<!-- 个人简介 -->
+					</view>
+					<view class="box-content-list-li-info" style="margin-left: 0;">
+						<textarea class="box-content-list-li-info-textarea" v-model.trim="from.personal_evaluation"
+							:placeholder="lan.introductiong" />
+					</view>
+				</view>
+			</view>
+		</view>
+
+		<view class="box-footer">
+			<view class="box-footer-btn flex-center" @click="releaseResume">{{isAdd?lan.PostResumes:lan.editResumes}}
+			</view>
+		</view>
+		<popup-list-select :confirmx='lan.determinep' :cancelx='lan.cancelp' :skid='from.mobile_code_id'
+			@cancel="areaCancel" @confirm="areaConfirm" :visible='isAreaCode' :dataList="areaCodeList" />
+
+		<popup-list-select :confirmx='lan.determinep' :cancelx='lan.cancelp' :skid='from.education'
+			@cancel="educationCancel" @confirm="educationConfirm" :visible='isEducation' :dataList="educationList" />
+
+		<popup-list-select :confirmx='lan.determinep' :cancelx='lan.cancelp' :skid='from.service_year'
+			@cancel="experienceCancel" @confirm="experienceConfirm" :visible='isExperience'
+			:dataList="workingYearsList" />
+
+		<select-address :confirmx='lan.determinep' :cancelx='lan.cancelp' :isAdd='isAdd' :country='from.country'
+			:province='from.province' :city='from.city' :district='from.district' :visible="visible"
+			@cancel='regionCancel' @confirm='regionConfirm' @editChange='editChanges' />
+		<popup-list-select :skid='from.ps_id' @cancel="categoryCancel" @confirm="categoryConfirm" :visible='isCategory'
+			:dataList="categoryList" />
+	</view>
+</template>
+
+<script>
+	import {
+		pathToBase64,
+		base64ToPath
+	} from '../../js_sdk/mmmm-image-tools/index.js'
+	import uploadImage from "../../js_sdk/oss/uploadOSS.js";
+
+	import {
+		areaCodeList
+	} from '../../static/js/publicFile.js'
+
+	export default {
+		data() {
+			return {
+				barHeight: 0, //顶部电量导航栏高度
+				from: {
+					regionName: '', //区域名称
+					name: '', //名称
+					age: '', //年龄
+					email: '', //邮箱
+					mobile_code: '86', //区号
+					ps_id: '', //职位类别
+					mobile_code_id: '',
+					mobile: '', //电话号码
+					education: '', //学历
+					simg: '', //执照图片
+					job_search: '', //求职岗位
+					salary_expectation: '', //期望薪资
+					skill: '', //技能
+					country: '', //国家id
+					province: '', //省份id
+					city: '', //城市id
+					district: '', //区域id
+					residential_address: '', //详细地址
+					education: '', //学历
+					service_year: '', //工龄
+					status: 1, // 1显示 -1隐藏
+					personal_evaluation: '', //个人简介
+				},
+				educationName: '',
+				isEducation: false,
+				isAreaCode: false,
+				areaCodeList: [],
+				skillName: '',
+				isSkill: false,
+				skillList: [{
+					id: 0,
+					name: ''
+				}],
+				isAdd: false,
+				visible: false,
+				isStatus: true,
+				isExperience: false,
+				experienceName: '',
+				categoryList: [],
+				workingYearsList: [],
+				educationList: [],
+				isCategory: false,
+				categoryList: [],
+				categoryName: '',
+				lan: {},
+			}
+		},
+		onLoad() {
+			// 获取顶部电量状态栏高度
+			uni.getSystemInfo({
+				success: (res) => {
+					this.barHeight = res.statusBarHeight
+				}
+			});
+			this.areaCodeList = areaCodeList
+
+			this.getCategory()
+			this.getLanguage()
+
+		},
+
+		methods: {
+			// 区号取消按钮
+			areaCancel(e) {
+				this.isAreaCode = e
+			},
+
+			areaConfirm(e) {
+				this.from.mobile_code = e.name
+			},
+			// 选择类别点击
+			categoryOpen() {
+				this.isCategory = true
+			},
+			// 类别取消按钮
+			categoryCancel(e) {
+				this.isCategory = e
+			},
+
+			// 类别确定按钮
+			categoryConfirm(e) {
+				this.from.ps_id = e.id
+				this.categoryName = e.name
+			},
+
+			// 学历取消
+			educationCancel(e) {
+				this.isEducation = e
+			},
+			//学历确定
+			educationConfirm(e) {
+				this.from.education = e.id
+				this.educationName = e.name
+			},
+
+			// 工龄取消
+			experienceCancel(e) {
+				this.isExperience = e
+			},
+			//工龄确定
+			experienceConfirm(e) {
+				this.from.service_year = e.id
+				this.experienceName = e.name
+			},
+
+			// 技能添加
+			addSkill(index) {
+				let str = {
+					name: '',
+					id: index + 1,
+				}
+				this.skillList.splice(index + 1, 0, str) // 当前点击的后一位添加
+			},
+			// 技能删除
+			skillDelete(index) {
+				if (this.skillList.length != 1) {
+					this.skillList.splice(index, 1) // 当前点击位置删除
+					return false
+				}
+				uni.showToast({
+					title: this.lan.deleteAny, //"不能再删了，起码保留一个",
+					icon: 'none'
+				})
+			},
+
+			// 选择区域取消按钮
+			regionCancel(e) {
+				this.visible = e
+			},
+			// 区域确定按钮
+			regionConfirm(e) {
+				this.from.country = e.country_id
+				this.from.province = e.province_id
+				this.from.city = e.city_id
+				this.from.district = e.area_id
+				this.from.regionName = e.country_name + e.province_name + e.city_name + e.area_name
+			},
+			editChanges(e) {
+				this.from.regionName = e.country_name + '' + e.province_name + '' + e.city_name + '' + e.area_name
+			},
+			// 状态
+			switch1Change3(e) {
+				this.from.status = e.target.value ? 1 : -1
+				this.isStatus = e.target.value
+			},
+
+			// 发布修改简历
+			releaseResume() {
+				console.log(this.from)
+				if (this.from.name == '') {
+					uni.showToast({
+						title: this.lan.nameg, //'请输入名字',
+						icon: "none"
+					})
+					return false
+				}
+
+				if (this.from.email== '') {
+					uni.showToast({
+						title: this.lan.inputEmailq, //'请输入邮箱',
+						icon: "none"
+					})
+					return false
+				}
+				if (this.from.mobile == '') {
+					uni.showToast({
+						title: this.lan.phoneqz, //'请输入手机号',
+						icon: "none"
+					})
+					return false
+				}
+				if ( this.from.age == '') {
+					uni.showToast({
+						title: this.lan.enterAged, //'请输入年龄',
+						icon: "none"
+					})
+					return false
+				}
+				if (this.from.education == '') {
+					uni.showToast({
+						title: this.lan.selectDegree, //'请选择学历',
+						icon: "none"
+					})
+					return false
+				}
+				if (this.from.service_year == '') {
+					uni.showToast({
+						title: this.lan.workingYearsxc, //'请选择工作年限',
+						icon: "none"
+					})
+					return false
+				}
+
+				if (this.from.job_search == '') {
+					uni.showToast({
+						title: this.lan.searchPositionh, //'请输入求职岗位',
+						icon: "none"
+					})
+					return false
+				}
+
+				let str = ''
+				this.skillList.forEach(item => {
+					if (item.name != '') {
+						str += item.name + ','
+					}
+				})
+				this.from.skill = str
+
+				var obj = {
+					name: this.from.name,
+					email: this.from.email,
+					mobile_code: this.from.mobile_code,
+					mobile: this.from.mobile,
+					age: this.from.age,
+					job_type: this.from.ps_id,
+					education: this.from.education,
+					service_year: this.from.service_year,
+					country: this.from.country,
+					province: this.from.province,
+					city: this.from.city,
+					district: this.from.district,
+					residential_address: this.from.residential_address,
+					skill: this.from.skill.substring(0, this.from.skill.length - 1),
+					job_search: this.from.job_search,
+					salary_expectation: this.from.salary_expectation,
+					simg: this.from.simg,
+					status: this.from.status,
+					personal_evaluation: this.from.personal_evaluation,
+				}
+
+				this.apipost('api/v1/engineer/recruitment/add', obj).then(res => {
+					if (res.status == 200) {
+						if (this.isAdd) {
+							uni.showToast({
+								title: this.lan.ResumeAddedf, //'简历添加成功',
+								icon: 'none'
+							})
+						} else {
+							uni.showToast({
+								title: this.lan.SuccessfullyModifiedz, //'简历修改成功',
+								icon: 'none'
+							})
+						}
+
+						setTimeout(() => {
+							uni.navigateBack({
+								delta: 1
+							})
+						}, 500)
+					}
+				});
+			},
+
+
+			// 上传工作照片
+			upSimg() {
+				uni.chooseImage({
+					count: 1, //默认100
+					sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
+					success: (res) => {
+						pathToBase64(res.tempFilePaths[0]).then((data) => {
+							this.from.simg = data
+							const path = 'avatar/';
+							// #ifdef H5
+							let file = res.tempFilePaths[0];
+							let suffix = res.tempFiles[0].name.split('.').pop();
+							// #endif
+
+							// #ifdef APP-PLUS
+							let file = res.tempFilePaths[0];
+							let suffix = res.tempFiles[0].path.split('.').pop();
+							// #endif
+
+							// 获取阿里云oss 信息
+							this.apiget('app/oss/url', {}).then(ress => {
+								if (ress.status == 200) {
+									var obj = {
+										accessid: ress.data.accessid,
+										policy: ress.data.policy,
+										signature: ress.data.signature,
+									}
+									// 上传图片
+									uploadImage(obj, file, path, suffix, result => {
+										this.from.simg = result
+									});
+								}
+							});
+						})
+					}
+				});
+			},
+
+
+
+			// 获取个人简历信息
+			getResumeInfo() {
+				this.apiget('api/v1/engineer/Recruitment/user_resume', {}).then(res => {
+					if (res.status == 200) {
+						if (res.data) {
+							this.isAdd = false
+							
+							this.from.name = res.data.name
+							this.from.email = res.data.email
+							this.from.mobile = res.data.mobile
+							this.from.mobile_code = res.data.mobile_code
+							this.from.age = res.data.age
+							this.from.education = res.data.education
+							this.from.service_year = res.data.service_year
+							this.from.ps_id = res.data.job_type
+
+							this.from.country = res.data.country
+							this.from.province = res.data.province
+							this.from.city = res.data.city
+							this.from.district = res.data.district
+							this.from.residential_address = res.data.residential_address
+
+							if (res.data.skill != '') {
+								this.skillList = []
+								let arrs = res.data.skill.split(',')
+								arrs.forEach((item, index) => {
+									this.skillList.push({
+										id: index,
+										name: item
+									})
+								})
+							}
+
+							this.educationName = res.data.education_name
+							this.experienceName = res.data.service_year_name
+
+							this.from.job_search = res.data.job_search
+							this.from.salary_expectation = res.data.salary_expectation
+							this.from.simg = res.data.simg
+							this.from.status = res.data.status
+							this.isStatus = res.data.status == 1 ? true : false
+							this.from.personal_evaluation = res.data.personal_evaluation
+
+
+							this.areaCodeList.forEach((item, index) => {
+								if (item.name == res.data.mobile_code) {
+									this.from.mobile_code_id = index
+								}
+							})
+
+							this.categoryList.forEach(item => {
+								if (item.id == res.data.job_type) {
+									this.categoryName = item.name
+								}
+							})
+
+						} else {
+							this.isAdd = true
+						}
+					}
+				});
+			},
+			// 获取类别
+			getCategory() {
+				this.apiget('pc/category/recruitment_config', {
+					type: 3
+				}).then(res => {
+					if (res.status == 200) {
+						this.categoryList = res.data
+					}
+					this.getEducation()
+				});
+			},
+
+			// 获取学历
+			getEducation() {
+				this.apiget('pc/category/recruitment_config', {
+					type: 1
+				}).then(res => {
+					if (res.status == 200) {
+						this.educationList = res.data
+						this.getYears()
+					}
+				});
+			},
+			// 获取工作年限
+			getYears() {
+				this.apiget('pc/category/recruitment_config', {
+					type: 2
+				}).then(res => {
+					if (res.status == 200) {
+						this.workingYearsList = res.data
+					}
+					this.getResumeInfo()
+				});
+			},
+
+
+			// 请求语言包
+			getLanguage() {
+				this.apiget('language/info', {
+					name: 'TechnicianRecruitments'
+				}).then(res => {
+					if (res.status == 200) {
+						let language = res.data.language
+						this.lan = res.data.language
+
+
+					}
+				});
+			},
+		}
+	}
+</script>
+
+<style lang="scss" scoped>
+	.box {
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+		background: #f7f7f7;
+
+		.box-head {
+			background-color: #fff;
+		}
+
+		.box-content {
+			flex: 1;
+			overflow-y: scroll;
+
+			.box-content-list {
+				margin-top: 20rpx;
+				padding-left: 40rpx;
+				box-sizing: border-box;
+				background: #fff;
+
+				.box-content-list-li:last-child {
+					border-bottom: 0;
+				}
+
+				.box-content-list-li {
+					display: flex;
+					align-items: center;
+					min-height: 100rpx;
+					padding: 20rpx 40rpx 20rpx 0;
+					box-sizing: border-box;
+					border-bottom: 1rpx solid #ededed;
+
+					.box-content-list-li-title {
+						width: 140rpx;
+						font-size: 28rpx;
+						color: #333;
+					}
+
+					.box-content-list-li-info {
+						margin-left: 80rpx;
+						flex: 1;
+						display: flex;
+						align-items: center;
+						justify-content: space-between;
+
+						.box-content-list-li-info-text {
+							font-size: 28rpx;
+							color: #000;
+						}
+
+						.box-content-list-li-info-more {}
+
+						.box-content-list-li-info-input {
+							flex: 1;
+							display: flex;
+							align-items: center;
+							justify-content: space-between;
+
+							input {
+								flex: 1;
+								height: 100%;
+								font-size: 28rpx;
+							}
+
+							text {
+								margin-left: 10rpx;
+								font-size: 28rpx;
+								color: #333;
+							}
+						}
+
+						.input-border {
+							height: 60rpx;
+							margin: 0 20rpx;
+							border: 1rpx solid #EDEDED;
+
+							input {
+								text-align: center;
+							}
+						}
+
+
+						.box-content-list-li-info-msg {
+							font-size: 28rpx;
+							color: #333;
+						}
+
+						.box-content-list-li-info-check {
+							display: flex;
+							align-items: center;
+
+							.box-content-list-li-info-check-box:first-child {
+								margin-left: 0;
+							}
+
+							.box-content-list-li-info-check-box {
+								margin-left: 40rpx;
+								display: flex;
+								align-items: center;
+								color: #000;
+								font-size: 28rpx;
+
+								.icon-font {
+									margin-right: 20rpx;
+								}
+
+								text {}
+							}
+						}
+
+						.box-content-list-li-info-area-code {
+							display: flex;
+							align-items: center;
+							justify-content: center;
+							width: 100rpx;
+							height: 46rpx;
+							margin-right: 10rpx;
+							border: 1rpx solid #999;
+							border-radius: 30rpx;
+							font-size: 24rpx;
+						}
+
+						.box-content-list-li-info-textarea {
+							width: 100%;
+							max-height: 180rpx;
+							padding: 0 20rpx 0 0;
+							box-sizing: border-box;
+							font-size: 28rpx;
+						}
+
+						.box-content-list-li-info-item {
+							width: 100%;
+							margin-bottom: 20rpx;
+						}
+
+						.box-content-list-li-info-item:last-child {
+							margin-bottom: 0;
+						}
+					}
+				}
+
+				.box-content-list-item {
+					padding: 30rpx 0;
+					display: flex;
+					align-items: center;
+					border-bottom: 1rpx solid #ededed;
+
+					.box-content-list-item-text {
+						width: 140rpx;
+						font-size: 28rpx;
+						color: #333;
+
+						text {
+							font-size: 24rpx;
+							color: #999;
+						}
+					}
+
+					.box-content-list-item-info {
+						flex: 1;
+						margin-left: 80rpx;
+
+						.box-content-list-item-info-icon {
+							width: 120rpx;
+							height: 120rpx;
+							background: #EDEDED;
+							border-radius: 10rpx;
+						}
+
+						.box-content-list-item-info-image {
+							width: 120rpx;
+							height: 120rpx;
+							border-radius: 10rpx;
+						}
+					}
+				}
+
+				.box-content-list-item:last-child {
+					border-bottom: 0;
+				}
+			}
+
+		}
+
+		.box-footer {
+			padding: 30rpx 40rpx;
+			box-sizing: border-box;
+
+			.box-footer-btn {
+				height: 88rpx;
+				background: #26BF82;
+				box-shadow: 0rpx 10rpx 20rpx rgba(38, 191, 130, 0.2);
+				border-radius: 15rpx;
+				font-size: 32rpx;
+				color: #fff;
+			}
+		}
+	}
+</style>

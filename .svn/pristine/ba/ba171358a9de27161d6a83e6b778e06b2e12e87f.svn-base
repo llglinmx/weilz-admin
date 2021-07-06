@@ -1,0 +1,490 @@
+<template>
+	<view class="box">
+		<view class="box-head" :style="{paddingTop:barHeight+'px'}">
+			<nav-title-balck :navTitle="type=='add'?lan.NewCategory:lan.EditCategory"></nav-title-balck>
+		</view>
+		<view class="box-content">
+			<view class="box-content-list">
+				<view class="box-content-list-li">
+					<view class="box-content-list-li-title">{{lan.Storet}}<!-- 门店 --></view>
+					<view class="box-content-list-li-info">
+						<view class="box-content-list-li-info-text">
+							{{storeName}}
+						</view>
+
+					</view>
+				</view>
+				<view class="box-content-list-li">
+					<view class="box-content-list-li-title">{{lan.CategoryNames}}<!-- 分类名称 --></view>
+					<view class="box-content-list-li-info">
+						<view class="box-content-list-li-info-input">
+							<input type="text" v-model.trim="from.name" :placeholder="lan.enterCategory" />
+						</view>
+					</view>
+				</view>
+
+
+				<view class="box-content-list-item">
+					<view class="box-content-list-item-text">
+						{{lan.ClassificationIcon}}<!-- 分类图标 --><text>(100*100)</text>
+					</view>
+					<view class="box-content-list-item-info">
+						<view class="box-content-list-item-info-icon flex-center" @click="licenseImg"
+							v-if="from.icon==''">
+							<text class="iconfont icontupian icon-font" style="color: #fff;font-size: 50rpx;"></text>
+						</view>
+						<image :src="from.icon" v-if="from.icon!=''" class="box-content-list-item-info-image"
+							mode="aspectFill"></image>
+					</view>
+				</view>
+				<view class="box-content-list-li">
+					<view class="box-content-list-li-title">{{lan.statusr}}<!-- 状态 --></view>
+					<view class="box-content-list-li-info">
+						<switch :checked='isState' style="transform: scale(0.7);" @change="switch1Change" />
+					</view>
+				</view>
+
+				<view class="box-content-list-li">
+					<view class="box-content-list-li-title">{{lan.Sortt}}<!-- 排序 --></view>
+					<view class="box-content-list-li-info">
+						<view class="box-content-list-li-info-input">
+							<input type="number" v-model.trim="from.sort" :placeholder="lan.enterSortD" />
+						</view>
+					</view>
+				</view>
+
+			</view>
+		</view>
+		<view class="box-footer">
+			<btn-sky-blue :btnName="type=='add'?lan.ConfirmAddz:lan.ConfirmChangesr" @btnClick="btnChange" />
+		</view>
+	</view>
+</template>
+
+<script>
+	import {
+		pathToBase64,
+		base64ToPath
+	} from '../../js_sdk/mmmm-image-tools/index.js'
+	import uploadImage from "../../js_sdk/oss/uploadOSS.js";
+
+	export default {
+		data() {
+			return {
+				barHeight: 0, //顶部电量导航栏高度
+				type: 'add',
+				isState: true,
+				id: '',
+				from: {
+					name: '', //名称
+					icon: '', //图标
+					sort: '', //排序
+					status: 1, //状态
+				},
+				store: '',
+				storeName: '',
+				lan:{}
+			};
+		},
+
+		onReady() {
+			// 获取顶部电量状态栏高度
+			uni.getSystemInfo({
+				success: (res) => {
+					this.barHeight = res.statusBarHeight
+				}
+			});
+		},
+		onLoad(options) {
+			this.getLanguage()
+			this.getStore()
+			var data = JSON.parse(options.data)
+			this.store = data.store
+
+			if (data.type == 'add') {
+				this.type = 'add'
+			} else if (data.type == 'edit') {
+				this.type = 'edit'
+				this.id = data.id
+				this.getDetails(data.id)
+			}
+		},
+
+
+		methods: {
+
+			// 按钮
+			btnChange() {
+				if (this.from.name == '') {
+					uni.showToast({
+						title: this.lan.categoryNamez,
+						icon: 'none'
+					})
+					return false
+				}
+
+
+				if (this.type == 'add') {
+					this.confirmAdd()
+				} else {
+					this.confirmEdit()
+				}
+			},
+
+
+			// 确认提交按钮
+			confirmAdd() {
+				var vuedata = {
+					name: this.from.name,
+					store: this.store,
+					icon: this.from.icon,
+					sort: this.from.sort,
+					status: this.from.status,
+				}
+
+				this.apipost('api/v1/store/service_reservation/category_add', vuedata).then(res => {
+					if (res.status == 200) {
+						this.$store.commit('upAddClassification', true)
+						uni.showToast({
+							title: this.lan.addedSuccessfullyR,
+							icon: 'none'
+						})
+						setTimeout(() => {
+							uni.navigateBack({
+								delta: 1
+							})
+						}, 13)
+					} else if (res.status == 400) {
+						uni.showToast({
+							title: res.massage,
+							icon: 'none'
+						})
+					}
+				})
+			},
+			// 确认修改
+			confirmEdit() {
+				var vuedata = {
+					name: this.from.name,
+					store: this.store,
+					icon: this.from.icon,
+					sort: this.from.sort,
+					status: this.from.status,
+				}
+
+				this.apiput('api/v1/store/service_reservation/category_edit/' + this.id, vuedata).then(res => {
+					if (res.status == 200) {
+						this.$store.commit('upAddClassification', true)
+						uni.showToast({
+							title: this.lan.modifiedSuccessfullyz,
+							icon: 'none'
+						})
+						setTimeout(() => {
+							uni.navigateBack({
+								delta: 1
+							})
+						}, 13)
+					} else if (res.status == 400) {
+						uni.showToast({
+							title: res.massage,
+							icon: 'none'
+						})
+					}
+				})
+			},
+
+			// 状态
+			switch1Change(e) {
+				this.from.status = e.target.value ? 1 : -1
+			},
+
+			// 上传工作照片
+			upImage() {
+				uni.chooseImage({
+					count: 1, //默认100
+					sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
+					success: (res) => {
+						pathToBase64(res.tempFilePaths[0]).then((data) => {
+							this.from.simg = data
+							const path = 'avatar/';
+							// #ifdef H5
+							let file = res.tempFilePaths[0];
+							let suffix = res.tempFiles[0].name.split('.').pop();
+							// #endif
+
+							// #ifdef APP-PLUS
+							let file = res.tempFilePaths[0];
+							let suffix = res.tempFiles[0].path.split('.').pop();
+							// #endif
+
+							// 获取阿里云oss 信息
+							this.apiget('app/oss/url', {}).then(ress => {
+								if (ress.status == 200) {
+									var obj = {
+										accessid: ress.data.accessid,
+										policy: ress.data.policy,
+										signature: ress.data.signature,
+									}
+									// 上传图片
+									uploadImage(obj, file, path, suffix, result => {
+										// this.from.simg = result
+										this.from.photo = []
+										var str = {
+											name: result,
+											content: []
+										}
+										this.from.photo.push(str)
+									});
+								}
+							});
+						})
+					}
+				});
+			},
+
+			// 上传执照照片
+			licenseImg() {
+				uni.chooseImage({
+					count: 1, //默认100
+					sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
+					success: (res) => {
+						pathToBase64(res.tempFilePaths[0]).then((data) => {
+							this.from.icon = data
+							const path = 'avatar/';
+							// #ifdef H5
+							let file = res.tempFilePaths[0];
+							let suffix = res.tempFiles[0].name.split('.').pop();
+							// #endif
+
+							// #ifdef APP-PLUS
+							let file = res.tempFilePaths[0];
+							let suffix = res.tempFiles[0].path.split('.').pop();
+							// #endif
+
+							// 获取阿里云oss 信息
+							this.apiget('app/oss/url', {}).then(ress => {
+								if (ress.status == 200) {
+									var obj = {
+										accessid: ress.data.accessid,
+										policy: ress.data.policy,
+										signature: ress.data.signature,
+									}
+									// 上传图片
+									uploadImage(obj, file, path, suffix, result => {
+										this.from.icon = result
+									});
+								}
+							});
+						})
+					}
+				});
+			},
+
+			// 获取详情
+			getDetails(id) {
+				this.apiget('api/v1/store/service_reservation/reserve_category/' + id, {}).then(res => {
+					if (res.status == 200) {
+						var data = res.data.member
+						this.from.name = res.data.name
+						this.from.icon = res.data.icon
+						this.from.sort = res.data.sort
+						this.from.status = res.data.status
+						this.isState = res.data.status == 1 ? true : false
+					}
+				});
+			},
+
+
+			// 获取门店列表
+			getStore() {
+				this.apiget('api/v1/store/store_information', {
+					each_page: 100
+				}).then(res => {
+					if (res.status == 200) {
+						res.data.member.forEach(item => {
+							if (item.id == this.store) {
+								this.storeName = item.name
+							}
+						})
+					}
+				});
+			},
+			// 请求语言包
+			getLanguage() {
+				this.apiget('language/info', {
+					name: 'MerchantStorez'
+				}).then(res => {
+					if (res.status == 200) {
+						let language = res.data.language
+						this.lan = res.data.language
+			
+			
+					}
+				});
+			},
+
+		}
+	}
+</script>
+
+<style lang="scss">
+	.box {
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+		background: #F7F7F7;
+
+		.box-head {
+			background-color: #fff;
+		}
+
+		.box-content {
+			flex: 1;
+			overflow-y: scroll;
+
+			.box-content-list {
+				margin-top: 20rpx;
+				padding-left: 40rpx;
+				box-sizing: border-box;
+				background: #fff;
+
+				.box-content-list-li:last-child {
+					border-bottom: 0;
+				}
+
+				.box-content-list-li {
+					display: flex;
+					align-items: center;
+					height: 100rpx;
+					padding-right: 40rpx;
+					box-sizing: border-box;
+					border-bottom: 1rpx solid #ededed;
+
+					.box-content-list-li-title {
+						width: 140rpx;
+						font-size: 28rpx;
+						color: #333;
+					}
+
+					.box-content-list-li-info {
+						margin-left: 80rpx;
+						flex: 1;
+						display: flex;
+						align-items: center;
+						justify-content: space-between;
+
+						.box-content-list-li-info-text {
+							font-size: 28rpx;
+							color: #000;
+						}
+
+						.box-content-list-li-info-more {}
+
+						.box-content-list-li-info-input {
+							flex: 1;
+							display: flex;
+							align-items: center;
+							justify-content: space-between;
+
+							input {
+								flex: 1;
+								height: 100%;
+								font-size: 28rpx;
+							}
+
+							text {
+								margin-left: 10rpx;
+								font-size: 28rpx;
+								color: #333;
+							}
+						}
+
+						.input-border {
+							height: 60rpx;
+							margin: 0 20rpx;
+							border: 1rpx solid #EDEDED;
+
+							input {
+								text-align: center;
+							}
+						}
+
+
+						.box-content-list-li-info-msg {
+							font-size: 28rpx;
+							color: #333;
+						}
+
+						.box-content-list-li-info-check {
+							display: flex;
+							align-items: center;
+
+							.box-content-list-li-info-check-box:first-child {
+								margin-left: 0;
+							}
+
+							.box-content-list-li-info-check-box {
+								margin-left: 40rpx;
+								display: flex;
+								align-items: center;
+								color: #000;
+								font-size: 28rpx;
+
+								.icon-font {
+									margin-right: 20rpx;
+								}
+
+								text {}
+							}
+						}
+					}
+				}
+
+				.box-content-list-item {
+					padding: 30rpx 0;
+					display: flex;
+					align-items: center;
+					border-bottom: 1rpx solid #ededed;
+
+					.box-content-list-item-text {
+						width: 140rpx;
+						font-size: 28rpx;
+						color: #333;
+
+						text {
+							font-size: 24rpx;
+							color: #999;
+						}
+					}
+
+					.box-content-list-item-info {
+						flex: 1;
+						margin-left: 80rpx;
+
+						.box-content-list-item-info-icon {
+							width: 120rpx;
+							height: 120rpx;
+							background: #EDEDED;
+							border-radius: 10rpx;
+						}
+
+						.box-content-list-item-info-image {
+							width: 120rpx;
+							height: 120rpx;
+							border-radius: 10rpx;
+						}
+					}
+				}
+
+				.box-content-list-item:last-child {
+					border-bottom: 0;
+				}
+			}
+		}
+
+		.box-footer {
+			padding: 30rpx 40rpx;
+			box-sizing: border-box;
+		}
+	}
+</style>

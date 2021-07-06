@@ -1,0 +1,251 @@
+<template>
+	<view class="box">
+		<view class="box-head" :style="{paddingTop:barHeight+'px'}">
+			<nav-title-balck navTitle="银行卡管理"></nav-title-balck>
+		</view>
+		<view class="box-content" :style="{display:isData?'block':'none'}">
+			<z-paging ref="paging1" @query="queryList" :list.sync="dataList" loading-more-no-more-text="已经到底了"
+				:refresher-angle-enable-change-continued="false" :touchmove-propagation-enabled="true"
+				:use-custom-refresher="true" style="height: 100%;">
+				<view class="box-content-list">
+					<view class="box-content-list-li" v-for="(item,index) in dataList" :key='item.id'>
+						<view class="box-content-list-li-top">
+							<view class="box-content-list-li-top-title">
+								{{item.bank_name}}
+							</view>
+							<view class="box-content-list-li-top-right">{{item.type=='1'?'信用卡':'借记卡'}}</view>
+						</view>
+						<view class="box-content-list-li-bottom">
+							<view class="box-content-list-li-bottom-text">
+								{{item.bank_card_no}}
+							</view>
+							<view class="box-content-list-li-bottom-click-all">
+								<text style="color: #333;" @click="editCard(item)">编辑</text>
+								<text style="margin-left: 40rpx;color: red;" @click="delBank(item.id)">删除</text>
+							</view>
+						</view>
+					</view>
+				</view>
+			</z-paging>
+		</view>
+		<view class="box-content" :style="{display:!isData?'block':'none'}">
+			<loading v-if="isLoad" />
+			<no-data v-if="!isLoad" />
+		</view>
+		<view class="box-footer">
+			<view class="box-footer-btn flex-center" @click="addCard">添加银行卡</view>
+		</view>
+		<uni-popup ref="popup" type="dialog">
+			<uni-popup-dialog type="warn" mode='base' title="警告" content="你是否确定删除该银行卡？" :duration="2000"
+				@confirm="confirm"></uni-popup-dialog>
+		</uni-popup>
+	</view>
+</template>
+
+<script>
+	export default {
+		data() {
+			return {
+				barHeight: 0, //顶部电量导航栏高度,
+				id: '',
+				dataList: [],
+
+				isData: false,
+				isLoad: true,
+			}
+		},
+
+		onShow() {
+			// if (this.$store.state.isOrderState) {
+			// 	this.orderList(1, 20)
+			// }
+		},
+		onLoad() {
+			// 获取顶部电量状态栏高度
+			uni.getSystemInfo({
+				success: (res) => {
+					this.barHeight = res.statusBarHeight
+				}
+			});
+		},
+		onShow() {
+			if (this.$store.state.isAddBank) {
+				this.orderList(1, 50)
+			}
+		},
+		methods: {
+
+			// 添加银行卡
+			addCard() {
+				this.$store.commit('upAddBank', false)
+				let str = {
+					type: 'add'
+				}
+				uni.navigateTo({
+					url: '../addBankCard/addBankCard?data=' + JSON.stringify(str)
+				})
+			},
+			// 编辑银行卡
+			editCard(item) {
+				this.$store.commit('upAddBank', false)
+				let str = {
+					type: 'edit',
+					item: item
+				}
+				uni.navigateTo({
+					url: '../addBankCard/addBankCard?data=' + JSON.stringify(str)
+				})
+			},
+
+			// 删除信用卡
+			delBank(id) {
+				this.id = id
+				this.$refs.popup.open()
+			},
+			// 删除确认
+			confirm() {
+				return false
+				this.apidelte('api/v1/engineer/info/del/' + this.id, {}).then(res => {
+					if (res.status == 200) {
+						uni.showToast({
+							title: '银行卡删除成功',
+							icon: "none"
+						})
+
+					} else {
+						uni.showToast({
+							title: res.massage,
+							icon: "none"
+						})
+					}
+				});
+			},
+
+			// 上拉 下拉
+			queryList(pageNo, pageSize) {
+				this.orderList(pageNo, pageSize)
+			},
+
+
+			// 订单列表
+			orderList(num, size) {
+				var vuedata = {
+
+				}
+				this.apiget('api/v1/engineer/info', vuedata).then(res => {
+					if (res.status == 200) {
+						if (res.data.bank_info) {
+							this.isData = true
+							let list = res.data.bank_info
+							this.$refs.paging1.complete(list);
+							return false;
+						}
+						this.$refs.paging1.complete([]);
+						this.isData = false
+						this.isLoad = false
+
+					}
+				});
+			},
+
+		}
+	}
+</script>
+
+<style scoped lang="scss">
+	.box {
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+		background: #F7F7F7;
+
+		.box-head {}
+
+		.box-content {
+			flex: 1;
+			overflow-y: scroll;
+
+			.box-content-list {
+				padding: 0 30rpx;
+				box-sizing: border-box;
+				display: flex;
+				flex-direction: column;
+
+				.box-content-list-li:first-child {
+					margin-top: 40rpx;
+				}
+
+				.box-content-list-li {
+					display: flex;
+					flex-direction: column;
+					height: 340rpx;
+					border-radius: 10rpx;
+
+					background: #fff;
+					margin-bottom: 40rpx;
+					overflow: hidden;
+
+					.box-content-list-li-top {
+						display: flex;
+						justify-content: space-between;
+						height: 100rpx;
+						padding: 0 30rpx;
+						box-sizing: border-box;
+						background: #eee;
+
+						.box-content-list-li-top-title {
+							display: flex;
+							align-items: center;
+							font-size: 32rpx;
+						}
+
+						.box-content-list-li-top-right {
+							display: flex;
+							align-items: center;
+							font-size: 28rpx;
+						}
+					}
+
+					.box-content-list-li-bottom {
+						flex: 1;
+
+						.box-content-list-li-bottom-text {
+							height: 160rpx;
+							display: flex;
+							align-items: center;
+							justify-content: center;
+							font-size: 40rpx;
+							font-weight: 600;
+						}
+
+						.box-content-list-li-bottom-click-all {
+							padding: 0 30rpx;
+							box-sizing: border-box;
+							display: flex;
+							justify-content: flex-end;
+							font-size: 28rpx;
+						}
+					}
+
+				}
+			}
+
+
+
+		}
+
+		.box-footer {
+			padding: 30rpx 40rpx;
+			box-sizing: border-box;
+
+			.box-footer-btn {
+				height: 88rpx;
+				background: #26BF82;
+				box-shadow: 0rpx 10rpx 20rpx rgba(38, 191, 130, 0.2);
+				border-radius: 15rpx;
+				font-size: 32rpx;
+				color: #fff;
+			}
+		}
+	}
+</style>

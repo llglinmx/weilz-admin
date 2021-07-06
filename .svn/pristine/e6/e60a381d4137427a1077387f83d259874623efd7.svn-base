@@ -1,0 +1,312 @@
+<template>
+	<view class="box">
+		<view class="box-head" :style="{paddingTop:barHeight+'px'}">
+			<nav-title-balck :navTitle="title"></nav-title-balck>
+		</view>
+		<view class="box-content" :style="{display:isData?'block':'none'}">
+			<view class="box-content-wrap">
+				<view class="box-content-wrap-user">
+					<view class="box-content-wrap-user-image">
+						<image :src="listArr.simg" mode="aspectFill"></image>
+					</view>
+					<view class="box-content-wrap-user-text">{{listArr.name}}</view>
+				</view>
+			</view>
+			<view class="box-content-list">
+				<view class="box-content-list-li" v-for="(item,index) in timeList" :key="index"
+					:style="{marginBottom:isCheckChange(item.time,item.data.startTime,item.data.endTime)?'20rpx':0}">
+					<view class="box-content-list-li-time">{{item.time}}</view>
+					<view class="box-content-list-li-info" v-show="item.isShow"
+						:class="[{bgColorRed:isCheck(item.status)}]">
+						<view class="box-content-list-li-info-wrap" :style="{display:item.isFlag?'block':'none'}">
+							<view class="list-li-info-wrap-item">
+								<text class="iconfont iconshizhong icon-font" style="font-size: 28rpx;"></text>
+								<text>{{item.data.startTime}}-{{item.data.endTime}}AM</text>
+							</view>
+							<view class="list-li-info-wrap-item">
+								<text class="iconfont icon70BasicIcons-all-05 icon-font"
+									style="font-size: 28rpx;"></text>
+								<text>{{item.data.personnel}}</text>
+							</view>
+							<view class="list-li-info-wrap-item">
+								<text class="iconfont icondingdan1 icon-font" style="font-size: 28rpx;"></text>
+								<text>{{item.data.content}}</text>
+							</view>
+						</view>
+					</view>
+				</view>
+			</view>
+		</view>
+		<view class="box-content" :style="{display:!isData?'block':'none'}">
+			<loading v-if="isLoad" />
+			<no-data msg='该日期暂无任何排班' v-if="!isLoad" />
+		</view>
+		<view class="box-footer">
+
+		</view>
+	</view>
+</template>
+
+<script>
+	import {
+		timeList
+	} from '../../static/js/publicFile.js'
+	export default {
+		data() {
+			return {
+				barHeight: 0, //顶部电量导航栏高度
+				title: '2021年02月12日预约日程',
+				timeList: [],
+				dataArr: {},
+				listArr: {},
+				startNum: 0,
+				isData: false,
+				isLoad: true
+			};
+		},
+		onReady() {
+			// 获取顶部电量状态栏高度
+			uni.getSystemInfo({
+				success: (res) => {
+					this.barHeight = res.statusBarHeight
+				}
+			});
+		},
+		onLoad(options) {
+			var data = JSON.parse(options.data)
+			this.dataArr = data
+			this.title = data.year + '年' + data.month + '月' + data.day + "日预约日程"
+
+			// this.initChange()
+			this.getSchedulingInfo(this.dataArr)
+		},
+		methods: {
+			isCheck(status) {
+				var bool = status == 1 ? true : false
+				return bool
+			},
+
+			isCheckChange(initTime, start, end) {
+				let spInit = initTime.split(':')
+				let spEnd = end.split(':')
+				var bool = false
+				if (spInit[0] == spEnd[0]) {
+					bool = true
+				}
+				return bool
+			},
+
+			isEnd(initTime, start, end) {
+
+				let spInit = initTime.split(':')
+				let spStart = start.split(':')
+
+				if (spInit[0] == spStart[0]) {
+					// bool = true
+				}
+				var bool = true
+				return bool
+			},
+
+
+
+
+			getSchedulingInfo(e) {
+				this.apiget('api/v1/store/engineer/engineer_schedule', {
+					store: e.store,
+					date: (e.year + '-' + e.month + '-' + e.day),
+					ids: e.engineer_id
+				}).then(res => {
+					if (res.status == 200) {
+						var list = res.data[0]
+						this.listArr = res.data[0]
+						this.isLoad = false
+						if (res.data[0].plan_date&&res.data[0].order_info.length!=0) {
+							this.isData = true
+							this.getTime(res.data[0].plan_date.start, res.data[0].plan_date.end, list)
+							return false
+						}
+						this.isData = false
+					}
+				});
+			},
+
+			getTime(startTime, endTime, list) {
+				let start = startTime.split(' ')[1]
+				let end = endTime.split(' ')[1]
+
+				let s1 = start.split(':')
+				let e1 = end.split(':')
+				let s2 = Number(s1[0])
+				let e2 = 0
+				var arrs = []
+				if (Number(e1[1]) >= 1) {
+					e2 = Number(e1[0]) + 1
+				} else {
+					e2 = Number(e1[0])
+				}
+				for (var i = s2; i <= e2; i++) {
+					let str = ''
+					str = i < 10 ? '0' + i + ':00' : i + ':00'
+					arrs.push(str)
+				}
+				this.initChange(arrs, list)
+			},
+
+			initChange(arrs, list) {
+				var flag = false
+				arrs.forEach(item => {
+					var str = {
+						time: item,
+						isShow: false,
+						status: '-1',
+						isFlag: false,
+						data: {
+							startTime: '',
+							endTime: '',
+							personnel: '',
+							content: ''
+						}
+					}
+					this.timeList.push(str)
+				})
+				if (list.order_info.length != 0) {
+					list.order_info.map(ele => {
+						this.timeList.map(item => {
+							let init = this.timeChange(item.time)
+							let start = this.timeChange(ele.plan_start)
+							let end = this.timeChange(ele.plan_end)
+							if (init >= start && init <= end) {
+								item.data.startTime = ele.plan_start
+								item.data.endTime = ele.plan_end
+								item.status = ele.use_status
+								item.data.personnel = ele.user_name
+								item.data.content = ele.reserve_name + ' ' + (end -
+									start) + '分钟'
+								item.isShow = true
+
+								if (this.startNum != start) {
+									item.isFlag = true
+								}
+								this.startNum = start
+							}
+						})
+					})
+				}
+			},
+			timeChange(item) {
+				var t = item.split(':');
+				var times = 60 * parseInt(t[0]) + parseInt(t[1])
+				return times
+			},
+		}
+	}
+</script>
+
+<style lang="scss" scoped>
+	.box {
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+		background: #fff;
+
+		.box-head {
+			background-color: #fff;
+		}
+
+		.box-content {
+			display: flex;
+			flex-direction: column;
+			flex: 1;
+			overflow-y: scroll;
+
+			.box-content-wrap {
+				display: flex;
+				align-items: center;
+				height: 100rpx;
+				padding: 0 40rpx 0 150rpx;
+				box-sizing: border-box;
+
+				.box-content-wrap-user {
+					display: flex;
+					align-items: center;
+
+					.box-content-wrap-user-image {
+						display: flex;
+						align-items: center;
+
+						image {
+							width: 64rpx;
+							height: 64rpx;
+							border-radius: 50%;
+						}
+					}
+
+					.box-content-wrap-user-text {
+						margin-left: 20rpx;
+						font-size: 32rpx;
+						color: #000;
+					}
+				}
+			}
+
+			.box-content-list {
+				flex: 1;
+				overflow-y: scroll;
+				padding: 0 40rpx;
+				box-sizing: border-box;
+
+				.box-content-list-li {
+
+					display: flex;
+
+					height: 160rpx;
+
+					.box-content-list-li-time {
+						width: 110rpx;
+						font-size: 28rpx;
+						color: #B3B3B3;
+					}
+
+					.box-content-list-li-info {
+						flex: 1;
+						padding: 20rpx;
+						box-sizing: border-box;
+						border-radius: 10rpx;
+
+						// background: rgba(78,196,148,0.1);
+						// color: #26BF81;
+
+						background: rgba(248, 148, 148, 0.1);
+						color: #FF6363;
+
+						.box-content-list-li-info-wrap {
+							.list-li-info-wrap-item {
+
+								display: flex;
+								align-items: center;
+								font-size: 26rpx;
+
+								.icon-font {
+									margin-right: 10rpx;
+								}
+							}
+						}
+					}
+
+					.bgColorRed {
+						background: rgba(78, 196, 148, 0.1);
+						color: #4EC494;
+					}
+				}
+
+				.list-li-margin-top {
+					margin-top: 20rpx;
+				}
+			}
+
+		}
+
+		.box-footer {}
+	}
+</style>

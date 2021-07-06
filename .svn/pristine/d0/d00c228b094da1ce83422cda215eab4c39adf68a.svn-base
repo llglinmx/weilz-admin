@@ -1,0 +1,995 @@
+<template>
+	<view class="box">
+		<view class="box-head" :style="{paddingTop:barHeight+'px'}">
+			<nav-title-balck :navTitle="lan.TechnicianRecruitments"></nav-title-balck>
+			<view class="box-head-tabs">
+				<merchant-tabs ref="boxTabs" :tabData="tabsList" :activeIndex="defaultIndex" @tabClick='tabClick' />
+			</view>
+		</view>
+		<view class="box-content">
+			<view class="box-content-wrap">
+				<view class="box-content-wrap-item">
+					<swiper class="swiper-box" :current="defaultIndex" @change="tabChange">
+						<swiper-item class="swiper-box-item-list">
+							<view class="box-content-main">
+								<z-paging ref="paging1" @query="queryList" :list.sync="recruitmentList"
+									 :refresher-angle-enable-change-continued="false"
+									:touchmove-propagation-enabled="true" :use-custom-refresher="true"
+									
+									:key='val' :refresherDefaultText='lans.pullDownRefresh' :loading-more-no-more-text="lan.theEnd"
+									:refresherPullingText='lans.ReleaseRefresh' :refresherRefreshingText='lans.Refreshings'
+									:loadingMoreDefaultText='lans.ClickMore' :loadingMoreLoadingText='lans.loadings'
+									:loadingMoreNoMoreText='lans.NoMores' :loadingMoreFailText='lans.LoadFaileds'
+									style="height: 100%;">
+									<view class="box-content-main-list" :style="{display:isData?'block':'none'}">
+										<view class="box-content-main-list-li" v-for="(item,index) in recruitmentList"
+											:key="item.id" @click="positionDetails(item.id)">
+											<view class="box-content-main-list-li-top">
+												<view class="box-content-main-list-li-top-title">
+													<view class="list-li-top-title-text">{{item.position}}</view>
+													<view class="list-li-top-title-msg">{{item.salary}}/{{lan.monthf}}<!-- 月 --></view>
+												</view>
+												<view class="box-content-main-list-li-top-list">
+													<view class="box-content-main-list-li-top-list-title">{{lan.JobCategories}}<!-- 职位类别 -->：</view>
+													<view class="box-content-main-list-li-top-list-text">
+														{{item.position_info.name}}
+													</view>
+												</view>
+												<!-- <view class="box-content-main-list-li-top-list">
+													<view class="box-content-main-list-li-top-list-title">学历：</view>
+													<view class="box-content-main-list-li-top-list-text">
+														{{item.education_info.name}}
+													</view>
+												</view>
+												<view class="box-content-main-list-li-top-list">
+													<view class="box-content-main-list-li-top-list-title">工龄：</view>
+													<view class="box-content-main-list-li-top-list-text">
+														{{item.wy_info.name}}
+													</view>
+												</view> -->
+												<view class="box-content-main-list-li-top-list">
+													<view class="box-content-main-list-li-top-list-title">{{lan.StoreNamed}}<!-- 门店名称 -->：</view>
+													<view class="box-content-main-list-li-top-list-text">
+														{{item.store_info}}
+													</view>
+												</view>
+												<view class="box-content-main-list-li-top-list">
+													<view class="box-content-main-list-li-top-list-title">{{lan.workPlace}}<!-- 工作地点 -->：</view>
+													<view class="box-content-main-list-li-top-list-text">
+														{{item.place_work}}
+													</view>
+												</view>
+											</view>
+											<view class="box-content-main-list-li-bottom">
+												<view class="box-content-main-list-li-bottom-item flex-center"
+													@click.stop="deleteRecruitment(item.id)">
+													<text class="iconfont iconshanchu-shangjia icon-font"
+														style="color: #FF6666;font-size: 36rpx;margin-top: 4rpx;"></text>
+													<text>{{lan.deletef}}<!-- 删除 --></text>
+												</view>
+												<view class="box-content-main-list-li-bottom-item flex-center"
+													@click.stop="applicationRecord(item.id)">
+													<text class="iconfont iconyingpinjilu-shangjia icon-font"
+														style="color: #4EC494;font-size: 36rpx;margin-top: 4rpx;"></text>
+													<text>{{lan.ApplicationRecordd}}<!-- 应聘记录 --></text>
+												</view>
+												<view class="box-content-main-list-li-bottom-item flex-center"
+													@click.stop="edit(item.id,item.store_info)">
+													<text class="iconfont iconbianji-shangjia icon-font"
+														style="color: #5DBDFE;font-size: 36rpx;margin-top: 4rpx;"></text>
+													<text>{{lan.editd}}<!-- 编辑 --></text>
+												</view>
+											</view>
+										</view>
+									</view>
+									<view class="box-content-main-list" :style="{display:!isData?'block':'none'}"
+										style="height: 100%;padding: 0;">
+										<loading-merchant v-if="isLoad" />
+										<no-data v-if="!isLoad" />
+									</view>
+								</z-paging>
+							</view>
+						</swiper-item>
+						<swiper-item class="swiper-box-item-list">
+							<view class="box-content-seek">
+								<view class="box-content-seek-screen">
+									<view class="box-content-seek-screen-wrap" @click="seeKClick">
+										<text class="iconfont iconshaixuan icon-font"
+											style="color: #000;font-size: 36rpx;margin-top: 4rpx;"></text>
+										<text>{{lan.filterd}}<!-- 筛选 --></text>
+									</view>
+								</view>
+								<view class="box-content-seek-list">
+									<z-paging ref="paging2" @query="seekQueryList" :list.sync="technicianList"
+										:refresher-angle-enable-change-continued="false"
+										:touchmove-propagation-enabled="true" :use-custom-refresher="true"
+										:mounted-auto-call-reload="false"
+										 
+										 :key='val' :refresherDefaultText='lans.pullDownRefresh' :loading-more-no-more-text="lan.theEnd"
+										 :refresherPullingText='lans.ReleaseRefresh' :refresherRefreshingText='lans.Refreshings'
+										 :loadingMoreDefaultText='lans.ClickMore' :loadingMoreLoadingText='lans.loadings'
+										 :loadingMoreNoMoreText='lans.NoMores' :loadingMoreFailText='lans.LoadFaileds'
+										 style="height: 100%;">
+										<view class="box-content-seek-list-box"
+											:style="{display:isDataTec?'block':'none'}">
+											<view class="box-content-seek-list-li"
+												v-for="(item,index) in technicianList" :key="item.id">
+												<view class="box-content-seek-list-li-image">
+													<image :src="item.simg" mode="aspectFill">
+													</image>
+												</view>
+												<view class="box-content-seek-list-li-info">
+													<view class="box-content-seek-list-li-info-top">
+														<view class="box-content-seek-list-li-info-top-text">
+															<view class="box-content-seek-list-li-info-top-text-title">
+																{{item.name}}
+															</view>
+															<view
+																class="box-content-seek-list-li-info-top-text-title-score">
+																<uni-rate :readonly="true" allow-half margin='3'
+																	size='14' v-model="item.comment" />
+																<view style="font-size: 28rpx;color: #999;">
+																	{{item.comment}}
+																</view>
+															</view>
+														</view>
+														<view class="box-content-seek-list-li-info-top-btn flex-center"
+															@click="viewResume(item.id)">
+															{{lan.ViewResumed}}<!-- 查看简历 -->
+														</view>
+													</view>
+													<view class="box-content-seek-list-li-info-main-list"
+														style="color: #636363;">
+														<view class="seek-list-li-info-main-list-li">{{item.age}}{{lan.aged}}<!-- 岁 -->
+														</view>
+														<view class="seek-list-li-info-main-list-li"
+															v-if="item.education_info">
+															{{item.education_info.name}}
+														</view>
+														<view class="seek-list-li-info-main-list-li"
+															v-if="item.wy_info">
+															{{item.wy_info.name}}
+														</view>
+														<view class="seek-list-li-info-main-list-li"
+															v-if="item.position_info">
+															{{item.position_info.name}}
+														</view>
+													</view>
+													<view class="box-content-seek-list-li-info-main-list"
+														style="color: #999999;">
+														<view class="seek-list-li-info-main-list-li">
+															{{lan.JobPosts}}<!-- 求职岗位 -->：
+															<text style="color: #333333;">{{item.job_search}}</text>
+														</view>
+														<view class="seek-list-li-info-main-list-li">
+															{{lan.expectedSalaryd}}<!-- 期望薪资 -->：
+															<text
+																style="color: #333333;">{{item.salary_expectation}}</text>
+														</view>
+													</view>
+													<view class="box-content-seek-list-li-info-main-list"
+														style="color: #999999;">
+														<view class="seek-list-li-info-main-list-li">
+															{{lan.skilld}}<!-- 掌握技能 -->：
+															<text style="color: #333333;">{{item.skill}}</text>
+														</view>
+													</view>
+												</view>
+											</view>
+										</view>
+										<view class="box-content-seek-list-box"
+											:style="{display:!isDataTec?'block':'none'}" style="height: 100%;">
+											<loading-merchant v-if="isLoadTec" />
+											<no-data v-if="!isLoadTec" :msg='lans.NoDatar'/>
+										</view>
+									</z-paging>
+								</view>
+							</view>
+						</swiper-item>
+					</swiper>
+				</view>
+			</view>
+		</view>
+		<view class="box-footer" :style="{display:!isLoad?'block':'none'}"
+			:class="defaultIndex==1?'box-footer-active':''">
+			<btn-sky-blue :btnName="lan.PostNewJob" @btnClick="release" />
+		</view>
+		<popup-layer ref="popupRef" :direction="'left'" v-model="boolShow">
+			<view class="zidingyiBox">
+				<view class="popup-head" :style="{paddingTop:barHeight+'px'}">
+					<text @click="seekBack" class="iconfont iconfanhui icon-font"
+						style="color: #333;font-size: 36rpx;margin-top: 4rpx;"></text>
+					<text class="popup-head-text">{{lan.filterd}}<!-- 筛选 --></text>
+				</view>
+				<view class="popup-content">
+					<view class="popup-content-main" v-for="(item,index) in seekList" :key="index">
+						<view class="popup-content-main-title">{{item.title}}</view>
+						<view class="popup-content-main-list">
+							<view class="popup-content-main-list-li flex-center"
+								:class="j.isCheck?'popup-content-main-list-li-active':''" @click="checkBtn(index,k)"
+								v-for="(j,k) in item.data">{{j.name}}</view>
+						</view>
+					</view>
+				</view>
+				<view class="popup-footer">
+					<view class="popup-footer-reset flex-center" @click="reset">{{lan.Resetq}}<!-- 重置 --></view>
+					<view class="popup-footer-confirm flex-center" @click="determine">{{lan.confirmq}}<!-- 确认 --></view>
+				</view>
+			</view>
+		</popup-layer>
+		<uni-popup ref="popup" type="dialog">
+			<uni-popup-dialog :determine='lan.determineo' :cancel='lan.cancelo' type="warn" mode='base' :title="lan.caveato" :content="lan.deleposting" :duration="2000"
+				@confirm="confirm"></uni-popup-dialog>
+		</uni-popup>
+		<uni-popup ref="popupView" type="dialog" :maskClick="false">
+			<resume-preview :arr='lange' :data='previewInfo' @close='closeView' />
+		</uni-popup>
+	</view>
+</template>
+
+<script>
+	export default {
+		data() {
+			return {
+				barHeight: 0, //顶部电量导航栏高度
+				tabsList: ["招聘信息", "寻找技师"],
+				defaultIndex: 0, //当前滑动的页面
+				boolShow: false, //筛选弹出层
+				seekList: [{
+					title: '',
+					data: [],
+					id: '',
+					skid: 0
+				}, {
+					title: '',
+					data: [],
+					id: '',
+					skid: 1
+				}, {
+					title: '',
+					data: [],
+					id: '',
+					skid: 2
+				}],
+				checkArr: [],
+				skid: '',
+				recruitmentList: [],
+				isData: false,
+				isLoad: true,
+				technicianList: [],
+				isDataTec: false,
+				isLoadTec: true,
+				categoryList: [],
+				educationList: [],
+				workingYearsList: [],
+				pid: '',
+				wy_id: '',
+				ed_id: '',
+				storeName: '',
+				previewInfo: {},
+				lan:{},
+				lange:{},
+				lans:{},
+				val:0,
+
+			};
+		},
+
+
+		onLoad(options) {
+			// 获取顶部电量状态栏高度
+			uni.getSystemInfo({
+				success: (res) => {
+					this.barHeight = res.statusBarHeight
+				}
+			});
+
+			let data = JSON.parse(options.data)
+			this.id = data.id
+			this.storeName = data.storeName
+			this.getCategory()
+			this.getLanguage()
+			this.getLan()
+		},
+		onShow() {
+			// 用于判断是否有发布招聘
+			if (this.$store.state.isAdd) {
+				this.getRecruitmentInfo(1, 10)
+			}
+		},
+		methods: {
+
+			// 上拉 下拉
+			queryList(pageNo, pageSize) {
+				this.getRecruitmentInfo(pageNo, pageSize)
+			},
+
+			getRecruitmentInfo(num, size) {
+				var vuedata = {
+					page_index: num, // 请求页数，
+					each_page: size, // 请求条数
+					store: this.id
+				}
+				this.apiget('api/v1/store/recruitment', vuedata).then(res => {
+					if (res.status == 200) {
+						if (res.data.data.length != 0) {
+							this.isData = true
+							let list = res.data.data
+							this.$refs.paging1.complete(list);
+						} else {
+							this.isData = false
+							this.$refs.paging2.complete([]);
+						}
+						this.isLoad = false
+					}
+				});
+			},
+
+			// 找技师上拉 下拉
+			seekQueryList(pageNo, pageSize) {
+				this.getSeekTechnician(pageNo, pageSize)
+			},
+			getSeekTechnician(num, size) {
+				var vuedata = {
+					page_index: num, // 请求页数，
+					each_page: size, // 请求条数
+					pid: this.pid,
+					wy_id: this.wy_id,
+					ed_id: this.ed_id,
+				}
+				this.apiget('api/v1/store/recruitment/accept', vuedata).then(res => {
+					if (res.status == 200) {
+						if (res.data.data.length != 0) {
+							this.isDataTec = true
+							let list = res.data.data
+							this.$refs.paging2.complete(list);
+						} else {
+							this.isDataTec = false
+							this.isLoadTec = false
+							this.$refs.paging2.complete([]);
+						}
+					}
+				});
+			},
+
+			// 筛选点击
+			checkBtn(index, idx) {
+				// index 第一级下标 idx 第二级下标
+				this.checkArr = []
+				this.seekList[index].data.map(item => {
+					item.isCheck = false
+				})
+				this.seekList[index].data[idx].isCheck = true
+
+				this.seekList.forEach(item => {
+					item.data.forEach(res => {
+						switch (item.skid) {
+							case 0:
+								if (res.isCheck) {
+									item.id = res.id
+								}
+								break;
+							case 1:
+								if (res.isCheck) {
+									item.id = res.id
+								}
+								break;
+							case 2:
+								if (res.isCheck) {
+									item.id = res.id
+								}
+								break;
+						}
+					})
+				})
+			},
+
+			// 重置按钮
+			reset() {
+				this.seekList.forEach(item => {
+					item.id = ''
+					item.data.forEach(res => {
+						res.isCheck = false
+					})
+					item.data[0].isCheck = true
+				})
+			},
+			// 确定按钮
+			determine() {
+				this.seekList.forEach(item => {
+					switch (item.skid) {
+						case 0:
+							this.pid = item.id
+							break;
+						case 1:
+							this.ed_id = item.id
+							break;
+						case 2:
+							this.wy_id = item.id
+							break;
+					}
+				})
+				this.boolShow = false
+				this.getSeekTechnician(1, 20)
+			},
+
+			// 应聘记录
+			applicationRecord(id) {
+				var str = {
+					id: id,
+					store: this.id
+				}
+				uni.navigateTo({
+					url: "../applicationRecord/applicationRecord?data=" + JSON.stringify(str)
+				})
+			},
+			// 查看简历
+			viewResume(id) {
+				
+				this.$refs.popupView.open()
+				this.apiget('api/v1/store/recruitment/accept/' + id, {}).then(res => {
+					this.lange = this.lan
+					if (res.status == 200) {
+						this.previewInfo = res.data.data
+						
+					}
+				});
+			},
+			// 关闭简历弹出层
+			closeView(){
+				this.$refs.popupView.close()
+			},
+
+			// 删除
+			deleteRecruitment(id) {
+				this.skid = id
+				this.$refs.popup.open()
+			},
+			// 编辑按钮
+			edit(id, store) {
+				var str = {
+					id: id,
+					type: 'edit',
+					store: store
+				}
+				uni.navigateTo({
+					url: "../releaseRecruitment/releaseRecruitment?data=" + JSON.stringify(str)
+				})
+			},
+
+			// 弹窗点击确认
+			confirm() {
+				this.apidelte('api/v1/store/recruitment/del/' + this.skid, {}).then(res => {
+					if (res.status == 200) {
+						uni.showToast({
+							title: this.lan.successfullyDeletedz,
+							icon: "none"
+						})
+						this.getRecruitmentInfo(1, 10)
+					}
+				});
+			},
+
+			// 职位详情
+			positionDetails(id) {
+				uni.navigateTo({
+					url: "../positionDetails/positionDetails?id=" + id
+				})
+			},
+
+			// 发布新招聘
+			release() {
+				var str = {
+					store: this.id,
+					type: 'add',
+					storeName: this.storeName
+				}
+				this.$store.commit("upAdd", false)
+				uni.navigateTo({
+					url: "../releaseRecruitment/releaseRecruitment?data=" + JSON.stringify(str)
+				})
+			},
+
+			// 筛选点击
+			seeKClick() {
+				this.boolShow = true
+				// this.$refs.popupRef.show() // 弹出
+			},
+			// 筛选关闭
+			seekBack() {
+				// this.$refs.popupRef.close() // 关闭
+				this.boolShow = false
+			},
+
+			// tabs 点击
+			tabClick(e) {
+				this.defaultIndex = e
+			},
+			// 滑动切换列表
+			tabChange(e) {
+				this.$refs.boxTabs.tabToIndex(e.detail.current)
+				this.defaultIndex = e.detail.current
+
+				switch (this.defaultIndex) {
+					case 0:
+						this.getRecruitmentInfo(1, 10)
+						break;
+					case 1:
+						this.seekQueryList(1, 10)
+						break;
+				}
+			},
+
+
+
+			// 获取类别
+			getCategory() {
+				this.apiget('pc/category/recruitment_config', {
+					type: 3
+				}).then(res => {
+					if (res.status == 200) {
+						this.categoryList = res.data
+
+						this.categoryList.push({
+							id: '888',
+							name: '不限',  //Unlimited
+							isCheck: true
+						})
+
+						this.categoryList.map(item => {
+							if (item.id != '') {
+								item.isCheck = false
+							}
+							if(item.id==888){
+								item.name=this.lan.Unlimited
+							}
+						})
+
+						this.seekList[0].title = this.lan.postq
+						this.seekList[0].data = this.categoryList.reverse()
+
+
+					}
+					this.getEducation()
+				});
+
+			},
+			// 获取学历
+			getEducation() {
+				this.apiget('pc/category/recruitment_config', {
+					type: 1
+				}).then(res => {
+					if (res.status == 200) {
+						this.educationList = res.data
+
+						this.educationList.push({
+							id: '777',
+							name: '不限',
+							isCheck: true
+						})
+						this.educationList.map(item => {
+							if (item.id != '') {
+								item.isCheck = false
+							}
+							if(item.id==777){
+								item.name=this.lan.Unlimited
+							}
+						})
+
+						this.seekList[1].title = this.lan.Educationq  //'学历'
+						this.seekList[1].data = this.educationList.reverse()
+					}
+					this.getYears()
+				});
+			},
+			// 获取工作年限
+			getYears() {
+				this.apiget('pc/category/recruitment_config', {
+					type: 2
+				}).then(res => {
+					if (res.status == 200) {
+						this.workingYearsList = res.data
+
+
+						this.workingYearsList.push({
+							id: '999',
+							name: '不限',
+							isCheck: true
+						})
+						
+						this.workingYearsList.map(item => {
+							if (item.id != '') {
+								item.isCheck = false
+							}
+							if(item.id==999){
+								item.name=this.lan.Unlimited
+							}
+						})
+							 
+						this.seekList[2].title = this.lan.WorkingYearscv
+						this.seekList[2].data = this.workingYearsList.reverse()
+					}
+				});
+			},
+			// 请求语言包
+			getLanguage() {
+				this.apiget('language/info', {
+					name: 'TechnicianRecruitments'
+				}).then(res => {
+					if (res.status == 200) {
+						let language = res.data.language
+						this.lan = res.data.language
+						
+			           let arr=[]
+					   arr[0]=language.JobOffers
+					   arr[1]=language.FindTechnicians
+					   this.tabsList=arr
+					   
+					}
+				});
+			},
+			// 请求语言包
+			getLan() {
+			   this.apiget('language/info', {
+			         name: 'pullUp'
+				}).then(res => {
+				    if (res.status == 200) {
+					this.lans = res.data.language
+					this.val++
+				     }
+				  });
+				},
+		}
+	}
+</script>
+
+<style lang="scss">
+	.box {
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+		background: #F7F7F7;
+		overflow: hidden;
+
+		.box-head {
+			background-color: #fff;
+
+			.box-head-tabs {}
+		}
+
+		.box-content {
+			flex: 1;
+			overflow-y: scroll;
+			border-top: 1rpx solid #ededed;
+
+			.box-content-wrap {
+				height: 100%;
+				overflow-y: scroll;
+
+				.box-content-wrap-item {
+					height: 100%;
+
+					.swiper-box {
+						height: 100%;
+						overflow-y: scroll;
+
+						.swiper-box-item-list {
+							height: 100%;
+							overflow-y: scroll;
+
+							.box-content-main {
+								height: 100%;
+
+								.box-content-main-list {
+									padding: 0 20rpx;
+									box-sizing: border-box;
+
+									.box-content-main-list-li {
+										margin-top: 20rpx;
+										padding: 0 20rpx;
+										box-sizing: border-box;
+										background: #FFFFFF;
+										border-radius: 20rpx;
+
+										.box-content-main-list-li-top {
+											padding: 30rpx 0;
+											border-bottom: 1rpx solid #ededed;
+
+											.box-content-main-list-li-top-title {
+												margin-bottom: 30rpx;
+												display: flex;
+												align-items: center;
+												justify-content: space-between;
+
+												.list-li-top-title-text {
+													font-size: 36rpx;
+													color: #000;
+												}
+
+												.list-li-top-title-msg {
+													font-size: 32rpx;
+													color: #5DBDFE;
+												}
+											}
+
+											.box-content-main-list-li-top-list {
+												margin-top: 10rpx;
+												display: flex;
+												align-items: center;
+												font-size: 28rpx;
+
+												.box-content-main-list-li-top-list-title {
+													color: #000;
+												}
+
+												.box-content-main-list-li-top-list-text {
+													color: #999;
+												}
+											}
+
+										}
+
+										.box-content-main-list-li-bottom {
+											display: flex;
+											align-items: center;
+											height: 88rpx;
+
+											.box-content-main-list-li-bottom-item {
+												flex: 1;
+												font-size: 28rpx;
+												color: #333;
+
+												.icon-font {
+													margin-right: 10rpx;
+												}
+											}
+										}
+									}
+								}
+							}
+
+							.box-content-seek {
+								display: flex;
+								flex-direction: column;
+								// height: calc(100% - 40rpx);
+								height: 100%;
+								background: #fff;
+
+								.box-content-seek-screen {
+									padding: 20rpx 20rpx 40rpx;
+									box-sizing: border-box;
+
+									.box-content-seek-screen-wrap {
+										display: flex;
+										align-items: center;
+										justify-content: center;
+										height: 72rpx;
+										background: #F7F7F7;
+										border-radius: 40rpx;
+										font-size: 28rpx;
+										color: #000;
+
+										.icon-font {
+											margin-right: 10rpx;
+										}
+									}
+								}
+
+								.box-content-seek-list {
+									flex: 1;
+									overflow-y: scroll;
+									// padding-left: 40rpx;
+									// box-sizing: border-box;
+									background: #fff;
+
+									.box-content-seek-list-li:last-child {
+										margin-bottom: 0;
+									}
+
+									.box-content-seek-list-li {
+										display: flex;
+										margin-bottom: 40rpx;
+
+										.box-content-seek-list-li-image {
+											padding-left: 30rpx;
+											box-sizing: border-box;
+
+											image {
+												width: 98rpx;
+												height: 98rpx;
+												border-radius: 50%;
+											}
+										}
+
+										.box-content-seek-list-li-info {
+											padding-right: 30rpx;
+											box-sizing: border-box;
+											flex: 1;
+											margin-left: 20rpx;
+											padding-bottom: 40rpx;
+											border-bottom: 1rpx solid #ededed;
+
+											.box-content-seek-list-li-info-top {
+												display: flex;
+												align-items: center;
+												justify-content: space-between;
+
+												.box-content-seek-list-li-info-top-text {
+													display: flex;
+													align-items: center;
+
+													.box-content-seek-list-li-info-top-text-title {
+														font-size: 34rpx;
+														font-weight: 500;
+														color: #000;
+														overflow: hidden;
+														text-overflow: ellipsis;
+														white-space: nowrap;
+													}
+
+													.box-content-seek-list-li-info-top-text-title-score {
+														margin-left: 20rpx;
+														display: flex;
+														align-items: center;
+
+														text {
+															margin-right: 6rpx;
+															font-size: 24rpx;
+															color: #999;
+														}
+													}
+												}
+
+												.box-content-seek-list-li-info-top-btn {
+													width: 172rpx;
+													height: 60rpx;
+													background: #5DBDFE;
+													border-radius: 30rpx;
+													font-size: 28rpx;
+													color: #fff;
+												}
+											}
+
+											.box-content-seek-list-li-info-main-list {
+												display: flex;
+												flex-wrap: wrap;
+												margin-top: 20rpx;
+
+												.seek-list-li-info-main-list-li:first-child {
+													padding-left: 0;
+												}
+
+												.seek-list-li-info-main-list-li:last-child {
+													border-right: 0;
+												}
+
+												.seek-list-li-info-main-list-li {
+													display: flex;
+													align-items: center;
+													height: 28rpx;
+													padding: 0 20rpx;
+													font-size: 26rpx;
+													border-right: 1rpx solid #ccc;
+												}
+											}
+
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		.box-footer {
+			padding: 30rpx 40rpx;
+			box-sizing: border-box;
+			transition: 0.3s;
+		}
+
+		.box-footer-active {
+			padding: 0 !important;
+			height: 0 !important;
+		}
+
+		.zidingyiBox {
+			display: flex;
+			flex-direction: column;
+
+			width: 500rpx;
+			height: 100%;
+			background: #fff;
+
+			.popup-head {
+				height: 88rpx;
+				margin-bottom: 20rpx;
+				font-size: 34rpx;
+				display: flex;
+				align-items: center;
+				padding: 0 40rpx;
+				box-sizing: border-box;
+
+				.icon-font {}
+
+				.popup-head-text {
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					flex: 1;
+				}
+			}
+
+			.popup-content {
+				padding: 0 40rpx;
+				box-sizing: border-box;
+				flex: 1;
+				overflow-y: scroll;
+				border-bottom: 1rpx solid #ededed;
+
+				.popup-content-main {
+					.popup-content-main-title {
+						font-size: 36rpx;
+						color: #000;
+						padding: 40rpx 0;
+						box-sizing: border-box;
+					}
+
+					.popup-content-main-list {
+						display: flex;
+						flex-wrap: wrap;
+
+						.popup-content-main-list-li {
+							width: 200rpx;
+							height: 66rpx;
+							margin-right: 20rpx;
+							margin-bottom: 40rpx;
+							background: #F7F8FA;
+							border-radius: 40rpx;
+							font-size: 26rpx;
+							color: #333;
+							transition: 0.3s;
+						}
+
+						.popup-content-main-list-li:nth-child(2n) {
+							margin-right: 0;
+						}
+
+						.popup-content-main-list-li-active {
+							color: #fff !important;
+							background: #5DBDFE !important;
+						}
+					}
+				}
+			}
+
+			.popup-footer {
+				padding: 0 40rpx;
+				box-sizing: border-box;
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				height: 120rpx;
+				font-size: 32rpx;
+
+				.popup-footer-reset {
+					width: 198rpx;
+					height: 68rpx;
+					background: #F7F7F7;
+					border: 1px solid #666666;
+					border-radius: 10rpx;
+					color: #666;
+				}
+
+				.popup-footer-confirm {
+					width: 200rpx;
+					height: 70rpx;
+					background: #5DBDFE;
+					color: #fff;
+					border-radius: 10rpx;
+				}
+			}
+		}
+	}
+</style>

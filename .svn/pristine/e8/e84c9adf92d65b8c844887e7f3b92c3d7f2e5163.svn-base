@@ -1,0 +1,911 @@
+s<template>
+	<view class="box">
+		<view class="box-head" :style="{paddingTop:barHeight+'px'}">
+			<nav-title-balck :navTitle="title"></nav-title-balck>
+		</view>
+		<view class="box-content">
+
+			<view class="box-content-list">
+				<view class="box-content-list-li">
+					<view class="box-content-list-li-title">{{lan.projectNamef}}<!-- 项目名称 --></view>
+					<view class="box-content-list-li-info">
+						<view class="box-content-list-li-info-input">
+							<input type="text" v-model.trim="from.name" :placeholder="lan.enterProjectName" />
+						</view>
+					</view>
+				</view>
+				<view class="box-content-list-li" @click="platformOpen">
+					<view class="box-content-list-li-title">{{lan.categoryl}}<!-- 项目分类 --></view>
+					<view class="box-content-list-li-info">
+						<view class="box-content-list-li-info-text">{{platformName==''?lan.projectCategoryl:platformName}}</view>
+						<view class="box-content-list-li-info-more">
+							<text class="iconfont icongengduo icon-font"
+								style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
+						</view>
+					</view>
+				</view>
+
+			</view>
+
+			<view class="box-content-main">
+				<view class="box-content-main-top">
+					<view>{{lan.addPictures}}<!-- 添加图片 --><text style="font-size: 24rpx;color: #999;margin-left: 10rpx;">(990*556)</text></view>
+				</view>
+				<view class="box-content-main-image-list">
+					<view class="box-content-main-image-list-li" :class="index==0?'list-li-affter':''"
+						v-for="(item,index) in imageList" :key="index">
+						<image :src="item" mode="aspectFill"></image>
+						<text class="close flex-center" @click="delImage(index)">
+							<text class="iconfont iconcuowu icon-font" style="color: #fff;font-size: 36rpx"></text>
+						</text>
+					</view>
+					<view class="box-content-main-image-list-up flex-center" @click="upCoverPhoto"
+						v-if="imageList.length<3">
+						<text class="iconfont iconcuowu icon-font" style="color: #ddd;font-size: 90rpx"></text>
+					</view>
+				</view>
+			</view>
+
+
+			<view class="box-content-list">
+				<view class="box-content-list-li">
+					<view class="box-content-list-li-title">{{lan.pricer}}<!-- 价格 --></view>
+					<view class="box-content-list-li-info">
+						<view class="box-content-list-li-info-input">
+							<input type="number" v-model.trim="from.price" :placeholder="lan.enterPrice" />
+						</view>
+					</view>
+				</view>
+				<view class="box-content-list-li">
+					<view class="box-content-list-li-title">{{lan.OriginalPrices}}<!-- 原价 --></view>
+					<view class="box-content-list-li-info">
+						<view class="box-content-list-li-info-input">
+							<input type="number" v-model.trim="from.o_price" :placeholder="lan.originalPricer" />
+						</view>
+					</view>
+				</view>
+				<view class="box-content-list-li">
+					<view class="box-content-list-li-title">{{lan.ProjectDuration}}<!-- 项目时长 --></view>
+					<view class="box-content-list-li-info">
+						<view class="box-content-list-li-info-input">
+							<input type="number" v-model.trim="from.service_time" :placeholder="lan.durationProjectz" />
+							<text>{{lan.minutet}}<!-- 分钟 --></text>
+						</view>
+					</view>
+				</view>
+				<view class="box-content-list-li"
+					style="height: auto;padding: 30rpx 0;box-sizing: border-box; align-items: baseline;">
+					<view class="box-content-list-li-title" style="width: 100rpx;">{{lan.specificationss}}<!-- 规格 --></view>
+					<view class="box-content-list-li-info"
+						style="margin-left: 0;flex-direction: column;align-items: baseline;">
+						<view class="box-content-list-li-info-norms" v-for="(item,index) in normsList" :key="index">
+							<view class="list-li-info-norms-add flex-center" @click="addNorms(index)">
+								<text class="iconfont iconjia icon-font" style="color: #ccc;font-size: 24rpx"></text>
+							</view>
+							<view class="list-li-info-norms-text">
+								<input type="text" v-model.trim="item.name" :placeholder="lan.specificationName" />
+							</view>
+							<view class="list-li-info-norms-reduce flex-center">
+								<text class="iconfont iconjian icon-font" style="color: #ccc;font-size: 24rpx"></text>
+							</view>
+							<view class="list-li-info-norms-price">
+								<input type="number" v-model.trim="item.price" :placeholder="lan.enterPrice" />
+							</view>
+							<view class="list-li-info-norms-del flex-center">
+								<text class="iconfont iconcuowu icon-font" style="color: #ccc;font-size: 52rpx"
+									@click="deleteNorms(index)" :style="{display:index==0?'none':'block'}"></text>
+							</view>
+						</view>
+					</view>
+				</view>
+				<view class="box-content-list-li"
+					style="height: auto;padding: 30rpx 0;box-sizing: border-box; align-items: baseline;">
+					<view class="box-content-list-li-title" style="width: 100rpx;">{{lan.CustomServicess}}<!-- 自定义服务 --></view>
+					<view class="box-content-list-li-info"
+						style="margin-left: 0;flex-direction: column;align-items: baseline;">
+						<view class="box-content-list-li-info-norms" v-for="(item,index) in customServiceList"
+							:key="index">
+							<view class="list-li-info-norms-add flex-center" @click="addCustomService(index)">
+								<text class="iconfont iconjia icon-font" style="color: #ccc;font-size: 24rpx"></text>
+							</view>
+							<view class="list-li-info-norms-text">
+								<input type="text" v-model.trim="item.name" :placeholder="lan.serviceNamec" />
+							</view>
+							<view class="list-li-info-norms-reduce flex-center">
+								<text class="iconfont iconjian icon-font" style="color: #ccc;font-size: 24rpx"></text>
+							</view>
+							<view class="list-li-info-norms-price"
+								style="display: flex;align-items: center;font-size: 24rpx;padding: 0;overflow: hidden;">
+								<input style="flex: 1;" type="number" v-model.trim="item.content" :placeholder="lan.minutet" />
+								<text class="flex-center"
+									style="width: 80rpx;height: 100%;background: #ededed;">{{lan.minutet}}<!-- 分钟 --></text>
+							</view>
+							<view class="list-li-info-norms-del flex-center">
+								<text class="iconfont iconcuowu icon-font" style="color: #ccc;font-size: 52rpx"
+									@click="deleteCustomService(index)"
+									:style="{display:index==0?'none':'block'}"></text>
+							</view>
+						</view>
+					</view>
+				</view>
+				<view class="box-content-list-li"
+					style="height: auto;padding: 30rpx 0;box-sizing: border-box; align-items: baseline;">
+					<view class="box-content-list-li-title" style="width: 100rpx;">{{lan.CustomEnvironmentf}}<!-- 自定义环境 --></view>
+					<view class="box-content-list-li-info"
+						style="margin-left: 0;flex-direction: column;align-items: baseline;">
+						<view class="box-content-list-li-info-norms" v-for="(item,index) in customEnvironmentList"
+							:key="index">
+							<view class="list-li-info-norms-add flex-center" @click="addCustomEnvironment(index)">
+								<text class="iconfont iconjia icon-font" style="color: #ccc;font-size: 24rpx"></text>
+							</view>
+							<view class="list-li-info-norms-text">
+								<input type="text" v-model.trim="item.name" :placeholder="lan.EnvironmentName" />
+							</view>
+							<view class="list-li-info-norms-reduce flex-center">
+								<text class="iconfont iconjian icon-font" style="color: #ccc;font-size: 24rpx"></text>
+							</view>
+							<view class="list-li-info-norms-price">
+								<input type="text" v-model.trim="item.content" :placeholder="lan.EnvironmentalContent" />
+							</view>
+							<view class="list-li-info-norms-del flex-center">
+								<text class="iconfont iconcuowu icon-font" style="color: #ccc;font-size: 52rpx"
+									@click="deleteCustomEnvironment(index)"
+									:style="{display:index==0?'none':'block'}"></text>
+							</view>
+						</view>
+						<view class="box-content-list-li-info-msg">{{lan.Multiples}}<!-- 多个环境内容用英文逗号 ',' 隔开 --></view>
+					</view>
+				</view>
+			</view>
+
+			<view class="box-content-list">
+				<view class="box-content-list-li" @click="stateOpen">
+					<view class="box-content-list-li-title">{{lan.statust}}<!-- 状态 --></view>
+					<view class="box-content-list-li-info">
+						<view class="box-content-list-li-info-text">{{stateName==''?lan.selectStatusz:stateName}}</view>
+						<view class="box-content-list-li-info-more">
+							<text class="iconfont icongengduo icon-font"
+								style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
+						</view>
+					</view>
+				</view>
+				<view class="box-content-list-li">
+					<view class="box-content-list-li-title">{{lan.Sortt}}<!-- 排序 --></view>
+					<view class="box-content-list-li-info">
+						<view class="box-content-list-li-info-input">
+							<input type="number" v-model.trim="from.sort" :placeholder="lan.enterSortD" />
+						</view>
+					</view>
+				</view>
+				<view class="box-content-list-li" style="padding:30rpx 0;height: auto;align-items: flex-start;">
+					<view class="box-content-list-li-title">{{lan.Detailsq}}<!-- 详情 --></view>
+					<view class="box-content-list-li-info" style="margin-left: 0;">
+						<textarea class="box-content-list-li-info-textarea" v-model.trim="from.content"
+							:placeholder="lan.detailsw" />
+					</view>
+				</view>
+			</view>
+		</view>
+		<view class="box-footer">
+			<btn-sky-blue :btnName="type=='add'?lan.ConfirmAddz:lan.ConfirmChangesr" @btnClick="btnChange" />
+		</view>
+
+
+		<popup-list-select :cancelx='lan.cancelr' :confirmx='lan.determiner' :skid='from.store_cid' @cancel="platformPopup" @confirm="platformConfirm"
+			:visible='isPlatform' :dataList="platformList" />
+
+		<popup-list-select :cancelx='lan.cancelr' :confirmx='lan.determiner' :skid='from.status' @cancel="statePopup" @confirm="stateConfirm" :visible='isState'
+			:dataList="stateList" />
+
+	</view>
+</template>
+
+<script>
+	import {
+		areaCodeList,
+		stateList
+	} from '../../static/js/publicFile.js'
+
+	import {
+		pathToBase64,
+		base64ToPath
+	} from '../../js_sdk/mmmm-image-tools/index.js'
+	import uploadImage from "../../js_sdk/oss/uploadOSS.js";
+
+	export default {
+		data() {
+			return {
+				lan:{},
+				barHeight: 0, //顶部电量导航栏高度
+				isCurr: true, //订单使用时间
+				type: 'add',
+				id: '',
+				title: '',
+				storeId: '',
+				isStore: false,
+				isPlatform: false,
+				platformName: '',
+				storeCategoryList: [],
+				platformList: [],
+				imageList: [],
+				from: {
+					name: '', //项目名称
+					storeId: '', //门店id
+					cid: '', //项目分类id
+					simg: '', //封面图
+					bimg: '', //图片
+					price: '', //价格
+					o_price: '', //原价
+					service_time: '', //项目服务时长
+					order_usage_time: 1, //下单使用时间（-1不限，1时间范围）
+					status: '', //状态
+					sort: '', //排序
+					format: [], //规格
+					content: '', //详情
+				},
+				isState: false,
+				stateName: '',
+				stateList: [],
+				normsList: [{
+					"name": '',
+					"price": ''
+				}],
+				customServiceList: [{
+					name: '',
+					content: 15
+				}],
+				customEnvironmentList: [{
+					name: '',
+					content: ''
+				}]
+			};
+		},
+
+		onLoad(options) {
+			// 获取顶部电量状态栏高度
+			uni.getSystemInfo({
+				success: (res) => {
+					this.barHeight = res.statusBarHeight
+				}
+			});
+
+			var data = JSON.parse(options.data)
+			this.type = data.type
+
+			if (data.type == 'add') {
+				this.title = '添加项目'
+				this.storeId = data.id
+			} else if (data.type == 'edit') {
+				this.id = data.id
+				this.title = '编辑项目'
+				this.storeId = data.store
+
+			}
+			this.getPlatform()
+			this.getLanguage()
+
+		},
+		mounted() {
+			this.stateList = stateList
+		},
+
+		methods: {
+			// 选择项目分类
+			platformOpen() {
+				if (this.platformList.length != 0) {
+					this.isPlatform = true
+				} else {
+					uni.showToast({
+						title: this.lan.NoItem,//'暂无项目分类，请先去添加分类',
+						icon: 'none'
+					})
+				}
+			},
+			// 项目分类关闭弹窗
+			platformPopup(e) {
+				this.isPlatform = e
+			},
+			// 平台分类弹窗选择确认
+			platformConfirm(e) {
+				this.from.cid = e.id
+				this.platformName = e.name
+			},
+
+
+			// 状态
+			stateOpen() {
+				this.isState = true
+			},
+			// 状态关闭弹窗
+			statePopup(e) {
+				this.isState = e
+			},
+			// 状态弹窗选择确认
+			stateConfirm(e) {
+				this.from.status = e.id
+				this.stateName = e.name
+			},
+
+
+			// 按钮
+			btnChange() {
+				var specifications = []
+				var customService = []
+				var customEnvironment = []
+
+				this.normsList.forEach(item => {
+					if (item.name != '' && item.price != '') {
+						specifications.push(item)
+					}
+				})
+
+				this.customServiceList.forEach(item => {
+					if (item.name != '' && item.content != '') {
+						customService.push(item)
+					}
+				})
+				this.customEnvironmentList.forEach(item => {
+					if (item.name != '' && item.content != '') {
+						customEnvironment.push(item)
+					}
+				})
+
+				if (this.from.name == '') {
+					uni.showToast({
+						title: this.lan.enterProjectName,//'请输入项目名称',
+						icon: 'none'
+					})
+					return false;
+				}
+
+				// if (this.from.cid == '') {
+				// 	uni.showToast({
+				// 		title: '请选择项目分类',
+				// 		icon: 'none'
+				// 	})
+				// 	return false;
+				// }
+
+				if (this.from.price == '') {
+					uni.showToast({
+						title: this.lan.enterPrice,//'请输入价格',
+						icon: 'none'
+					})
+					return false;
+				}
+
+				if (this.from.service_time == '') {
+					uni.showToast({
+						title: this.lan.durationProjectz,//'请输入项目时长',
+						icon: 'none'
+					})
+					return false;
+				}
+
+				if (this.type == 'add') {
+					this.confirmAdd(specifications, customService, customEnvironment)
+				} else {
+					this.confirmEdit(specifications, customService, customEnvironment)
+				}
+
+			},
+
+
+			// 确认添加按钮
+			confirmAdd(specifications, customService, customEnvironment) {
+				var vuedata = {
+					name: this.from.name, //项目名称
+					store: this.storeId, //门店id
+					cid: this.from.cid, //平台分类id
+
+					simg: this.imageList.length != 0 ? this.imageList[0] : '', //封面图
+					bimg: this.imageList.length != 0 ? this.imageList.join(',') : '', //图片
+					price: this.from.price, //价格
+					o_price: this.from.o_price, //原价
+					service_time: this.from.service_time, //项目服务时长
+					status: this.from.status, //状态
+					sort: this.from.sort, //排序
+					format: JSON.stringify(specifications), //规格
+					custom_services: JSON.stringify(customService), //自定义服务
+					custom_environment: JSON.stringify(customEnvironment), //自定义环境
+					content: this.from.content, //详情
+				}
+				// return false
+				this.apipost('api/v1/store/service_reservation/add', vuedata).then(res => {
+					if (res.status == 200) {
+						this.$store.commit('upAddProject', true)
+						uni.showToast({
+							title: this.lan.ProjectAddedf,//"项目添加成功",
+							icon: 'none'
+						})
+						setTimeout(function() {
+							uni.navigateBack({
+								delta: 1
+							})
+						}, 500)
+					} else if (res.status == 400) {
+						uni.showToast({
+							title: res.massage,
+							icon: 'none'
+						})
+					}
+				})
+			},
+			// 确认修改
+			confirmEdit(specifications, customService, customEnvironment) {
+
+				var vuedata = {
+					name: this.from.name, //项目名称
+					store: this.storeId, //门店id
+					cid: this.from.cid, //项目分类id
+
+					simg: this.imageList.length != 0 ? this.imageList[0] : '', //封面图
+					bimg: this.imageList.length != 0 ? this.imageList.join(',') : '', //图片
+					price: this.from.price, //价格
+					o_price: this.from.o_price, //原价
+					service_time: this.from.service_time, //项目服务时长
+					status: this.from.status, //状态
+					sort: this.from.sort, //排序
+					format: JSON.stringify(specifications), //规格
+					custom_services: JSON.stringify(customService), //自定义服务
+					custom_environment: JSON.stringify(customEnvironment), //自定义环境
+					content: this.from.content, //详情
+				}
+				this.apiput('api/v1/store/service_reservation/edit/' + this.id, vuedata).then(res => {
+					if (res.status == 200) {
+						this.$store.commit('upAddProject', true)
+						uni.showToast({
+							title: this.lan.ProjectModifiedg,//"项目修改成功",
+							icon: 'none'
+						})
+						setTimeout(function() {
+							uni.navigateBack({
+								delta: 1
+							})
+						}, 500)
+					} else if (res.status == 400) {
+						uni.showToast({
+							title: res.massage,
+							icon: 'none'
+						})
+					}
+				})
+			},
+
+
+			// 上传封面图片
+			upCoverPhoto() {
+				uni.chooseImage({
+					count: 3, //默认100
+					sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
+					success: (res) => {
+
+						res.tempFilePaths.forEach((item, index) => {
+							const path = 'images/';
+							// #ifdef H5
+							let file = item;
+							let suffix = res.tempFiles[index].name.split('.').pop();
+							// #endif
+
+							// #ifdef APP-PLUS
+							let file = item;
+							let suffix = res.tempFiles[index].path.split('.').pop();
+							// #endif
+
+							// 获取阿里云oss 信息
+							this.apiget('app/oss/url', {}).then(ress => {
+								if (ress.status == 200) {
+									var obj = {
+										accessid: ress.data.accessid,
+										policy: ress.data.policy,
+										signature: ress.data.signature,
+									}
+									// 上传图片
+									uploadImage(obj, file, path, suffix, result => {
+										this.imageList.push(result)
+									});
+								}
+							});
+						})
+					}
+				});
+			},
+			// 删除图片
+			delImage(index) {
+				this.imageList.splice(index, 1)
+			},
+
+			// 添加规格
+			addNorms(index) {
+				let str = {
+					"name": '',
+					"price": '',
+				}
+				this.normsList.splice(index + 1, 0, str) // 当前点击的后一位添加
+			},
+
+
+			// 删除规格
+			deleteNorms(index) {
+				this.normsList.splice(index, 1) // 当前点击位置删除
+			},
+
+
+			// 添加自定义服务
+			addCustomService(index) {
+				let str = {
+					"name": '',
+					"content": 15,
+				}
+				this.customServiceList.splice(index + 1, 0, str) // 当前点击的后一位添加
+			},
+			// 删除自定义服务
+			deleteCustomService(index) {
+				this.customServiceList.splice(index, 1) // 当前点击位置删除
+			},
+
+
+			// 添加自定义环境
+			addCustomEnvironment(index) {
+				let str = {
+					"name": '',
+					"content": '',
+				}
+				this.customEnvironmentList.splice(index + 1, 0, str) // 当前点击的后一位添加
+			},
+			// 删除自定义环境
+			deleteCustomEnvironment(index) {
+				this.customEnvironmentList.splice(index, 1) // 当前点击位置删除
+			},
+
+
+			// 获取项目分类
+			getPlatform() {
+				this.apiget('pc/category/category_type', {
+					type: 2,
+					store: this.storeId
+				}).then(res => {
+					if (res.status == 200) {
+						this.platformList = res.data
+						if (this.type == 'edit') {
+							this.getDetalis()
+						}
+					}
+				});
+			},
+			// 获取服务详情
+			getDetalis() {
+				this.apiget('api/v1/store/service_reservation/index/' + this.id, {}).then(res => {
+					if (res.status == 200) {
+						var data = res.data
+						this.from.name = data.name
+						this.storeId = data.store
+						this.from.cid = data.cid
+
+						this.from.price = data.price
+						this.from.o_price = data.o_price
+						this.imageList = data.bimg
+						this.from.service_time = data.service_time
+						this.from.order_usage_time = data.order_usage_time
+
+						this.isCurr = data.order_usage_time == 1 ? true : false
+
+						this.from.status = data.status
+						this.stateName = data.status == 1 ?this.lan.Enable : this.lan.closef
+						this.from.format = data.format
+
+						if (data.format.length != 0) {
+							this.normsList = data.format
+						}
+
+
+						if (JSON.parse(data.custom_services).length != 0) {
+							this.customServiceList = JSON.parse(data.custom_services)
+						}
+						if (JSON.parse(data.custom_environment).length != 0) {
+							this.customEnvironmentList = JSON.parse(data.custom_environment)
+
+						}
+
+
+						this.from.sort = data.sort
+						this.from.content = data.content
+
+
+						this.platformList.forEach(item => {
+							if (item.id == data.cid) {
+								this.platformName = item.name
+							}
+						})
+
+					}
+				});
+			},
+			// 请求语言包
+			getLanguage() {
+				this.apiget('language/info', {
+					name: 'MerchantStorez'
+				}).then(res => {
+					if (res.status == 200) {
+						let language = res.data.language
+						this.lan = res.data.language
+			         
+					 if (this.type == 'add') {
+					 	this.title = language.AddItemg
+					 } else if (this.type == 'edit') {
+					 	this.title = language.EditProjectG
+					 
+					 }
+					 console.log(this.stateList)
+					 this.stateList[0].name=language.Enable
+					 this.stateList[1].name=language.closef
+			
+					}
+				});
+			},
+		}
+	}
+</script>
+
+<style lang="scss">
+	.box {
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+		background: #F7F7F7;
+
+		.box-head {
+			background-color: #fff;
+		}
+
+		.box-content {
+			flex: 1;
+			overflow-y: scroll;
+
+			.box-content-list {
+				margin-top: 20rpx;
+				padding-left: 40rpx;
+				box-sizing: border-box;
+				background: #fff;
+
+				.box-content-list-li:last-child {
+					border-bottom: 0;
+				}
+
+				.box-content-list-li {
+					display: flex;
+					align-items: center;
+					height: 100rpx;
+					padding-right: 40rpx;
+					box-sizing: border-box;
+					border-bottom: 1rpx solid #ededed;
+
+					.box-content-list-li-title {
+						width: 180rpx;
+						font-size: 28rpx;
+						color: #333;
+					}
+
+					.box-content-list-li-info {
+						margin-left: 80rpx;
+						flex: 1;
+						display: flex;
+						align-items: center;
+						justify-content: space-between;
+
+						.box-content-list-li-info-text {
+							font-size: 28rpx;
+							color: #000;
+						}
+
+						.box-content-list-li-info-more {}
+
+						.box-content-list-li-info-input {
+							width: 100%;
+							display: flex;
+							align-items: center;
+							justify-content: space-between;
+
+							input {
+								flex: 1;
+								height: 100%;
+								font-size: 28rpx;
+							}
+
+							text {
+								margin-left: 10rpx;
+								font-size: 28rpx;
+								color: #333;
+							}
+						}
+
+						.box-content-list-li-info-check {
+							display: flex;
+							align-items: center;
+
+							.box-content-list-li-info-check-box:first-child {
+								margin-left: 0;
+							}
+
+							.box-content-list-li-info-check-box {
+								margin-left: 40rpx;
+								display: flex;
+								align-items: center;
+								color: #000;
+								font-size: 28rpx;
+
+								.icon-font {
+									margin-right: 20rpx;
+								}
+
+								text {}
+							}
+						}
+
+						.box-content-list-li-info-norms:last-child {
+							margin-bottom: 0;
+						}
+
+						.box-content-list-li-info-norms {
+							display: flex;
+							align-items: center;
+							margin-bottom: 30rpx;
+
+							.list-li-info-norms-text,
+							.list-li-info-norms-price {
+								display: flex;
+								align-items: center;
+								justify-content: center;
+								width: 200rpx;
+								height: 70rpx;
+								padding: 0 10rpx;
+								box-sizing: border-box;
+								border: 1rpx solid #ededed;
+								border-radius: 15rpx;
+
+								input {
+									text-align: center;
+									width: 100%;
+									height: 100%;
+									font-size: 24rpx;
+								}
+							}
+
+							.list-li-info-norms-add {
+								margin-right: 20rpx;
+								width: 60rpx;
+								height: 68rpx;
+								border: 1rpx solid #ededed;
+								border-radius: 15rpx;
+							}
+
+							.list-li-info-norms-reduce {
+								width: 40rpx;
+								height: 60rpx;
+							}
+
+							.list-li-info-norms-price {}
+
+							.list-li-info-norms-del {
+								width: 60rpx;
+								height: 70rpx;
+							}
+						}
+
+						.box-content-list-li-info-msg {
+							font-size: 28rpx;
+						}
+
+						.box-content-list-li-info-textarea {
+							width: 100%;
+							max-height: 180rpx;
+							padding: 0 20rpx 0 0;
+							box-sizing: border-box;
+							font-size: 28rpx;
+						}
+
+					}
+				}
+
+
+			}
+
+			.box-content-main {
+				margin-top: 20rpx;
+				padding-left: 40rpx;
+				box-sizing: border-box;
+				background: #fff;
+
+				.box-content-main-top {
+					display: flex;
+					align-items: center;
+					justify-content: space-between;
+					padding-right: 40rpx;
+					box-sizing: border-box;
+					height: 80rpx;
+					border-bottom: 1rpx solid #ededed;
+					color: #333;
+					font-size: 28rpx;
+
+					.box-content-main-top-title {}
+
+					.box-content-main-top-add {
+						width: 40rpx;
+						height: 40rpx;
+						border: 2rpx solid #CCCCCC;
+						border-radius: 10rpx;
+
+						.icon-font {
+							transform: rotate(135deg);
+						}
+					}
+				}
+
+				.box-content-main-image-list {
+					display: flex;
+					align-items: center;
+					padding: 40rpx 0 70rpx;
+					box-sizing: border-box;
+
+					.list-li-affter {
+						position: relative;
+					}
+
+					.list-li-affter::after {
+						position: absolute;
+						bottom: -44rpx;
+						left: 0;
+						right: 0;
+						margin: auto;
+						content: '封面';
+						font-size: 24rpx;
+						text-align: center;
+						color: #333;
+					}
+
+					.box-content-main-image-list-li {
+						position: relative;
+						width: 160rpx;
+						height: 160rpx;
+						margin-right: 30rpx;
+
+						image {
+							width: 160rpx;
+							height: 160rpx;
+							border-radius: 10rpx;
+						}
+
+						.close {
+							position: absolute;
+							right: -20rpx;
+							top: -20rpx;
+							width: 40rpx;
+							height: 40rpx;
+							background: rgba(0, 0, 0, 0.4);
+							border-radius: 50%;
+						}
+					}
+
+					.box-content-main-image-list-up {
+						width: 156rpx;
+						height: 156rpx;
+						border: 2rpx dashed #DDDDDD;
+						border-radius: 10rpx;
+
+						.icon-font {
+							transform: rotate(45deg);
+						}
+					}
+				}
+
+
+			}
+
+		}
+
+		.box-footer {
+			padding: 30rpx 40rpx;
+			box-sizing: border-box;
+		}
+	}
+</style>

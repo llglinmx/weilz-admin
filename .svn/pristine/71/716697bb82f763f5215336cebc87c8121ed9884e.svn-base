@@ -1,0 +1,1069 @@
+<template>
+	<view class="box">
+		<view class="box-head" :style="{paddingTop:barHeight+'px'}">
+			<nav-title-balck :navTitle="isType=='add'?lan.AddTechnicianv:lan.EditTechnicianb"></nav-title-balck>
+		</view>
+		<view class="box-content">
+			<view class="box-content-list">
+				<view class="box-content-list-li" v-if="isType!='add'">
+					<view class="box-content-list-li-title">{{lan.StoreNamef}}<!-- 门店 -->
+					</view>
+					<view class="box-content-list-li-info">
+						<view class="box-content-list-li-info-text">{{storeName}}</view>
+					</view>
+				</view>
+				<view class="box-content-list-li" @click="storeCategoryOpen" v-if="isType!='add'">
+					<view class="box-content-list-li-title">{{lan.StoreClassifications}}<!-- 门店分类 -->
+					</view>
+					<view class="box-content-list-li-info">
+						<view class="box-content-list-li-info-text">
+							{{storeCategoryName==''?lan.selectStoreCategoryy:storeCategoryName}}
+						</view>
+						<view class="box-content-list-li-info-more">
+							<text class="iconfont icongengduo icon-font"
+								style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
+						</view>
+					</view>
+				</view>
+				<view class="box-content-list-li">
+					<view class="box-content-list-li-title">{{lan.TechnicianNameag}}<!-- 技师名字 -->
+					</view>
+					<view class="box-content-list-li-info">
+						<view class="box-content-list-li-info-input">
+							<input type="text" v-model.trim="from.name" :placeholder=lan.technicianNamel />
+						</view>
+					</view>
+				</view>
+				<view class="box-content-list-li" @click="platformOpen" v-if="isType!='add'">
+					<view class="box-content-list-li-title">{{lan.categoryl}}<!-- 项目分类 -->
+					</view>
+					<view class="box-content-list-li-info">
+						<view class="box-content-list-li-info-text">
+							{{platformName==''?lan.projectCategoryl:platformName}}</view>
+						<view class="box-content-list-li-info-more">
+							<text class="iconfont icongengduo icon-font"
+								style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
+						</view>
+					</view>
+				</view>
+				<view class="box-content-list-li" v-if="isType!='add'">
+					<view class="box-content-list-li-title">{{lan.phonep}}<!-- 手机号 -->
+					</view>
+					<view class="box-content-list-li-info" style="display: flex;">
+						<view class="box-content-list-li-info-area-code" @click="selectOpenArea">
+							<text>+{{from.mobile_code}}</text>
+							<text class="iconfont iconxiangxiajiantou"
+								style="font-size: 24rpx;margin-left: 10rpx;transition: 0.3s;"
+								:style="{transform: isAreaCode?'rotate(180deg)':'rotate(0deg)'}"></text>
+						</view>
+						<view class="box-content-list-li-info-input">
+							<input type="number" :disabled="isDisabled" v-model.trim="from.mobile"
+								:placeholder="lan.phonel" />
+						</view>
+					</view>
+				</view>
+				<view class="box-content-list-li">
+					<view class="box-content-list-li-title">{{lan.Emailq}}<!-- 电子邮箱 -->
+					</view>
+					<view class="box-content-list-li-info">
+						<view class="box-content-list-li-info-input">
+							<input type="text" v-model.email="from.email" :placeholder="lan.enteremailz" />
+						</view>
+					</view>
+				</view>
+				<view class="box-content-list-li" @click="projectOpen" v-if="isType!='add'">
+					<view class="box-content-list-li-title">{{lan.servicei}}<!-- 服务项目 -->
+					</view>
+					<view class="box-content-list-li-info">
+						<view class="box-content-list-li-info-text">{{projectName==''?lan.selectServiceq:projectName}}
+						</view>
+						<view class="box-content-list-li-info-more">
+							<text class="iconfont icongengduo icon-font"
+								style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
+						</view>
+					</view>
+				</view>
+				<view class="box-content-list-li">
+					<view class="box-content-list-li-title">{{lan.Languageq}}<!-- 语言 -->
+					</view>
+					<view class="box-content-list-li-info">
+						<view class="box-content-list-li-info-input">
+							<input type="text" v-model.trim="from.Language_skills" :placeholder="lan.Useq" />
+						</view>
+					</view>
+				</view>
+				<view class="box-content-list-li">
+					<view class="box-content-list-li-title">{{lan.CanDriveq}}<!-- 是否会开车 -->
+					</view>
+					<view class="box-content-list-li-info">
+						<view class="box-content-list-li-info-check">
+							<view class="box-content-list-li-info-check-box" @click="currency(true)">
+								<text class="iconfont iconxuanzhong icon-font" style="color: #07C160;font-size: 42rpx;"
+									v-if="isCurr"></text>
+								<text class="iconfont iconweixuanzhong1 icon-font" style="color: #ccc;font-size: 42rpx;"
+									v-else></text>
+								<text>{{lan.Yesq}}<!-- 是 --></text>
+							</view>
+							<view class="box-content-list-li-info-check-box" @click="currency(false)">
+								<text class="iconfont iconxuanzhong icon-font" style="color: #07C160;font-size: 42rpx;"
+									v-if="!isCurr"></text>
+								<text class="iconfont iconweixuanzhong1 icon-font" style="color: #ccc;font-size: 42rpx;"
+									v-else></text>
+								<text>{{lan.nop}}<!-- 否 --></text>
+							</view>
+						</view>
+					</view>
+				</view>
+				<view class="box-content-list-li">
+					<view class="box-content-list-li-title">{{lan.LengthServicees}}<!-- 工龄 -->
+					</view>
+					<view class="box-content-list-li-info">
+						<view class="box-content-list-li-info-input">
+							<input type="number" v-model.trim="from.service_times" :placeholder="lan.lengthq" />
+							<text>{{lan.yearq}}<!-- 年 --></text>
+						</view>
+					</view>
+				</view>
+				<view class="box-content-list-li">
+					<view class="box-content-list-li-title">{{lan.LicenseIDq}}<!-- 执照ID -->
+					</view>
+					<view class="box-content-list-li-info">
+						<view class="box-content-list-li-info-input">
+							<input type="number" v-model.trim="from.license_id" :placeholder="lan.enterlicenseID" />
+						</view>
+					</view>
+				</view>
+				<view class="box-content-list-item">
+					<view class="box-content-list-item-text">
+						{{lan.licenser}}<!-- 执照 --><text>(100*100)</text>
+					</view>
+					<view class="box-content-list-item-info" @click="licenseImg">
+						<view class="box-content-list-item-info-icon flex-center" v-if="from.license_img==''">
+							<text class="iconfont icontupian icon-font" style="color: #fff;font-size: 50rpx;"></text>
+						</view>
+						<image :src="from.license_img" v-if="from.license_img!=''"
+							class="box-content-list-item-info-image" mode="aspectFill"></image>
+					</view>
+				</view>
+
+				<view class="box-content-list-item">
+					<view class="box-content-list-item-text">
+						{{lan.CoverPhoto}}<!-- 封面照片 --><text>(110*80)</text>
+					</view>
+					<view class="box-content-list-item-info" @click="upSimg">
+						<view class="box-content-list-item-info-icon flex-center" v-if="from.simg==''">
+							<text class="iconfont icontupian icon-font" style="color: #fff;font-size: 50rpx;"></text>
+						</view>
+						<image :src="from.simg" v-if="from.simg!=''" class="box-content-list-item-info-image"
+							mode="aspectFill"></image>
+					</view>
+				</view>
+			</view>
+			<view class="box-content-main">
+				<view class="box-content-main-top">
+					<view>{{lan.WorkPicturer}}<!-- 工作图片 --><text
+							style="font-size: 24rpx;color: #999;margin-left: 10rpx;">(990*556)</text></view>
+				</view>
+				<view class="box-content-main-image-list">
+					<view class="box-content-main-image-list-li" :class="index==0?'list-li-affter':''"
+						v-for="(item,index) in from.photo" :key="index">
+						<image :src="item.name" mode="aspectFill"></image>
+						<text class="close flex-center" @click="delImage(index)">
+							<text class="iconfont iconcuowu icon-font" style="color: #fff;font-size: 36rpx"></text>
+						</text>
+					</view>
+					<view class="box-content-main-image-list-up flex-center" @click="upCoverPhoto"
+						v-if="from.photo.length<3">
+						<text class="iconfont iconcuowu icon-font" style="color: #ddd;font-size: 90rpx"></text>
+					</view>
+				</view>
+			</view>
+			<view class="box-content-list" v-if="isType!='add'">
+
+				<view class="box-content-list-li">
+					<view class="box-content-list-li-title">{{lan.TechnicianCommissionB}}<!-- 技师提成 -->
+					</view>
+					<view class="box-content-list-li-info">
+						<view class="box-content-list-li-info-text">{{lan.AmountConsumption}} {{from.fee}}%</view>
+					</view>
+				</view>
+
+				<view class="box-content-list-li" @click="stateOpen">
+					<view class="box-content-list-li-title">{{lan.statust}}<!-- 状态 -->
+					</view>
+					<view class="box-content-list-li-info">
+						<view class="box-content-list-li-info-text">{{stateName==''?lan.selectStatusz:stateName}}</view>
+						<view class="box-content-list-li-info-more">
+							<text class="iconfont icongengduo icon-font"
+								style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
+						</view>
+					</view>
+				</view>
+
+				<view class="box-content-list-li">
+					<view class="box-content-list-li-title">{{lan.Sortt}}<!-- 排序 -->
+					</view>
+					<view class="box-content-list-li-info">
+						<view class="box-content-list-li-info-input">
+							<input type="number" v-model.trim="from.ordersort" :placeholder="lan.enterSortD" />
+						</view>
+					</view>
+				</view>
+
+				<view class="box-content-list-li" style="padding:30rpx 0;height: auto;align-items: flex-start;">
+					<view class="box-content-list-li-title">{{lan.Detailsq}}<!-- 详情 -->
+					</view>
+					<view class="box-content-list-li-info" style="margin-left: 0;">
+						<textarea class="box-content-list-li-info-textarea" v-model.trim="from.content"
+							:placeholder="lan.detailsw" />
+					</view>
+				</view>
+			</view>
+		</view>
+		<view class="box-footer">
+			<view class="box-footer-btn flex-center" @click="btnChange">{{isType=='add'?'确认添加':'确认修改'}}</view>
+		</view>
+
+		<popup-list-select :confirmx='lan.determiner' :cancelx='lan.cancelr' :skid='from.mobile_code_id'
+			@cancel="areaCancel" @confirm="areaConfirm" :visible='isAreaCode' :dataList="areaCodeList" />
+
+		<popup-list-select :confirmx='lan.determiner' :cancelx='lan.cancelr' :skid='from.storeCategory'
+			@cancel="storeCategoryPopup" @confirm="storeCategoryConfirm" :visible='isStore'
+			:dataList="storeCategoryList" />
+
+		<popup-list-select :confirmx='lan.determiner' :cancelx='lan.cancelr' :skid='from.platform'
+			@cancel="platformPopup" @confirm="platformConfirm" :visible='isPlatform' :dataList="platformList" />
+
+		<project-list-select :confirma='lan.determiner' :cancela='lan.cancelr' :skid='from.service'
+			@cancel="projectPopup" @confirm="projectConfirm" :visible='isProject' :dataList="projectList" />
+
+
+		<popup-list-select :skid='from.status' @cancel="statePopup" @confirm="stateConfirm" :visible='isState'
+			<popup-list-select :confirmx='lan.determiner' :cancelx='lan.cancelr' :skid='from.status'
+			@cancel="statePopup" @confirm="stateConfirm" :visible='isState' :dataList="stateList" />
+
+	</view>
+</template>
+
+<script>
+	import {
+		pathToBase64,
+		base64ToPath
+	} from '../../js_sdk/mmmm-image-tools/index.js'
+	import uploadImage from "../../js_sdk/oss/uploadOSS.js";
+
+	import {
+		areaCodeList,
+		stateList
+	} from '../../static/js/publicFile.js'
+
+	export default {
+		data() {
+			return {
+				lan: {},
+				barHeight: 0, //顶部电量导航栏高度
+				id: '',
+				store: '',
+				isType: 'add',
+				isCurr: false, //是否会开车
+				isStore: false,
+				isPlatform: false,
+				isProject: false,
+				isState: false,
+				isAreaCode: false,
+				isDisabled: false, //是否禁止编辑
+				areaCodeList: [],
+				storeCategoryList: [],
+				platformList: [],
+				projectList: [],
+				stateList: [],
+				storeCategoryName: '',
+				storeName: '暂无门店可选',
+				platformName: '',
+				projectName: '',
+				timeName: '',
+				userName: '',
+				stateName: '',
+				imageList: [],
+				from: {
+					name: '',
+					store: '', //门店id
+					store_cid: '', //门店分类ID
+					storeCategory: '',
+					platform: '', //技师分类ID
+					simg: '', //封面照片
+					photo: [], //
+					mobile: '',
+					mobile_code: '86', //区号
+					mobile_code_id: '', //区号id
+					email: '',
+					status: '',
+					service: '', //服务项目
+					fee: '', //技师提成
+					ordersort: '', //排序
+					content: '', //详情
+					service_times: '', //工龄
+					Language_skills: '', //语言
+					drive_card: -1, //是否会开车
+					license_id: '', //执照id
+					license_img: '', //执照图片
+					status: -1, //状态
+					uid: '', //用户id
+
+				},
+
+			};
+		},
+
+		onLoad(options) {
+			// 获取顶部电量状态栏高度
+			uni.getSystemInfo({
+				success: (res) => {
+					this.barHeight = res.statusBarHeight
+				}
+			});
+
+			var data = JSON.parse(options.data)
+			this.getStoreCategory()
+
+			if (data.type == 'add') {
+				this.isType = 'add'
+				this.id = data.id
+			} else {
+				this.isDisabled = true
+				this.isType = 'edit'
+				this.store = data.store
+				this.id = data.id
+				if (data.storeName != '') {
+					this.storeName = data.storeName
+				}
+				this.getPlatform()
+				this.getProject()
+			}
+
+
+
+
+			this.areaCodeList = areaCodeList
+			this.stateList = stateList
+			this.getLanguage()
+		},
+
+
+		methods: {
+			// 打开区号弹出层
+			selectOpenArea() {
+				this.isAreaCode = this.isType == 'add' ? true : false
+			},
+
+			// 区号取消按钮
+			areaCancel(e) {
+				this.isAreaCode = e
+			},
+
+			areaConfirm(e) {
+				this.from.mobile_code = e.name
+			},
+
+			// 选择门店分类
+			storeCategoryOpen() {
+				this.isStore = true
+			},
+			// 门店分类关闭弹窗
+			storeCategoryPopup(e) {
+				this.isStore = e
+			},
+			// 门店分类弹窗选择确认
+			storeCategoryConfirm(e) {
+				this.from.storeCategory = e.id
+				this.storeCategoryName = e.name
+			},
+
+			// 选择项目分类
+			platformOpen() {
+				if (this.platformList.length != 0) {
+					this.isPlatform = true
+				} else {
+					uni.showToast({
+						title: this.lan.NoItem, //'暂无项目分类，请先去添加分类',
+						icon: 'none'
+					})
+				}
+			},
+			// 项目分类关闭弹窗
+			platformPopup(e) {
+				this.isPlatform = e
+			},
+			// 项目分类弹窗选择确认
+			platformConfirm(e) {
+				this.from.platform = e.id
+				this.platformName = e.name
+			},
+
+			// 选择服务项目
+			projectOpen() {
+				this.isProject = true
+			},
+			// 服务项目关闭弹窗
+			projectPopup(e) {
+				this.isProject = e
+			},
+			// 服务项目弹窗选择确认
+			projectConfirm(e) {
+				console.log(e)
+				this.from.service = e.id
+				this.projectName = e.name
+			},
+
+
+			// 状态
+			stateOpen() {
+				this.isState = true
+			},
+			// 状态关闭弹窗
+			statePopup(e) {
+				this.isState = e
+			},
+			// 状态弹窗选择确认
+			stateConfirm(e) {
+				this.from.status = e.id
+				this.stateName = e.name
+			},
+
+
+			// 是否会开车点击
+			currency(bool) {
+				this.isCurr = bool ? true : false
+				this.from.drive_card = this.isCurr ? 1 : -1
+			},
+
+			// 按钮
+			btnChange() {
+				if (this.from.name == '') {
+					uni.showToast({
+						title: this.lan.technicianNamel, //"请输入技师名称",
+						icon: 'none'
+					})
+					return false
+				}
+
+				if (this.from.email == '') {
+					uni.showToast({
+						title: this.lan.enteremailz, //"请输入邮箱",
+						icon: 'none'
+					})
+					return false
+				}
+				if (this.from.service_times == '') {
+					uni.showToast({
+						title: this.lan.lengthq, //"请输入工龄",
+						icon: 'none'
+					})
+					return false
+				}
+				if (this.from.license_id == '') {
+					uni.showToast({
+						title: this.lan.enterlicenseID, //"请输入执照",
+						icon: 'none'
+					})
+					return false
+				}
+				if (this.from.license_img == '') {
+					uni.showToast({
+						title: this.lan.uploadLicenseImage, //"请上传执照图片",
+						icon: 'none'
+					})
+					return false
+				}
+				if (this.from.license_img == '') {
+					uni.showToast({
+						title: this.lan.uploadLicenseImage, //"请上传执照图片",
+						icon: 'none'
+					})
+					return false
+				}
+
+				this.confirmEdit()
+			},
+
+
+			// 确认修改
+			confirmEdit() {
+				var vuedata = {
+					store: this.from.store, //门店id
+					store_cid: this.from.storeCategory, //门店分类id
+					name: this.from.name, //技师名称
+					cid: this.from.platform, //项目分类ID
+					mobile: this.from.mobile, //手机号
+					mobile_code: this.from.mobile_code, //区号
+					email: this.from.email, //邮箱
+					service: this.from.service, //服务项目
+					Language_skills: this.from.Language_skills, //语言
+					drive_card: this.from.drive_card, //是否会开车
+					service_times: this.from.service_times, //工龄
+					license_id: this.from.license_id, //执照id
+					license_img: this.from.license_img, //执照图片
+					simg: this.from.simg, //封面图片
+					photo: JSON.stringify(this.from.photo), //工作照片
+					fee: this.from.fee, //技师提成
+					status: this.from.status, //状态
+					ordersort: this.from.ordersort, //排序
+					content: this.from.content, //详情
+				}
+				this.apiput('api/v1/store/engineer/edit/' + this.id, vuedata).then(res => {
+					if (res.status == 200) {
+						this.$store.commit('upAddTechhnician', true)
+						uni.showToast({
+							title: this.lan.modifiedh, //"技师修改成功",
+							icon: 'none'
+						})
+						setTimeout(function() {
+							uni.navigateBack({
+								delta: 1
+							})
+						}, 500)
+					} else if (res.status == 400) {
+						uni.showToast({
+							title: res.massage,
+							icon: 'none'
+						})
+					}
+				})
+			},
+
+
+			// 上传封面图片
+			upCoverPhoto() {
+				uni.chooseImage({
+					count: 3, //默认100
+					sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
+					success: (res) => {
+
+						res.tempFilePaths.forEach((item, index) => {
+							const path = 'images/';
+							// #ifdef H5
+							let file = item;
+							let suffix = res.tempFiles[index].name.split('.').pop();
+							// #endif
+
+							// #ifdef APP-PLUS
+							let file = item;
+							let suffix = res.tempFiles[index].path.split('.').pop();
+							// #endif
+
+							// 获取阿里云oss 信息
+							this.apiget('app/oss/url', {}).then(ress => {
+								if (ress.status == 200) {
+									var obj = {
+										accessid: ress.data.accessid,
+										policy: ress.data.policy,
+										signature: ress.data.signature,
+									}
+									// 上传图片
+									uploadImage(obj, file, path, suffix, result => {
+										var str = {
+											name: result,
+											content: []
+										}
+										this.from.photo.push(str)
+									});
+								}
+							});
+						})
+					}
+				});
+			},
+			// 删除图片
+			delImage(index) {
+				this.from.photo.splice(index, 1)
+			},
+
+			// 上传执照照片
+			licenseImg() {
+				uni.chooseImage({
+					count: 1, //默认100
+					sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
+					success: (res) => {
+						pathToBase64(res.tempFilePaths[0]).then((data) => {
+							this.from.license_img = data
+							const path = 'avatar/';
+							// #ifdef H5
+							let file = res.tempFilePaths[0];
+							let suffix = res.tempFiles[0].name.split('.').pop();
+							// #endif
+
+							// #ifdef APP-PLUS
+							let file = res.tempFilePaths[0];
+							let suffix = res.tempFiles[0].path.split('.').pop();
+							// #endif
+
+							// 获取阿里云oss 信息
+							this.apiget('app/oss/url', {}).then(ress => {
+								if (ress.status == 200) {
+									var obj = {
+										accessid: ress.data.accessid,
+										policy: ress.data.policy,
+										signature: ress.data.signature,
+									}
+									// 上传图片
+									uploadImage(obj, file, path, suffix, result => {
+										this.from.license_img = result
+									});
+								}
+							});
+						})
+					}
+				});
+			},
+
+			// 上传封面照片
+			upSimg() {
+				uni.chooseImage({
+					count: 1, //默认100
+					sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
+					success: (res) => {
+						pathToBase64(res.tempFilePaths[0]).then((data) => {
+							this.from.simg = data
+							const path = 'avatar/';
+							// #ifdef H5
+							let file = res.tempFilePaths[0];
+							let suffix = res.tempFiles[0].name.split('.').pop();
+							// #endif
+
+							// #ifdef APP-PLUS
+							let file = res.tempFilePaths[0];
+							let suffix = res.tempFiles[0].path.split('.').pop();
+							// #endif
+
+							// 获取阿里云oss 信息
+							this.apiget('app/oss/url', {}).then(ress => {
+								if (ress.status == 200) {
+									var obj = {
+										accessid: ress.data.accessid,
+										policy: ress.data.policy,
+										signature: ress.data.signature,
+									}
+									// 上传图片
+									uploadImage(obj, file, path, suffix, result => {
+										this.from.simg = result
+									});
+								}
+							});
+						})
+					}
+				});
+			},
+
+
+
+			// 获取详情
+			getDetails(id) {
+				this.apiget('api/v1/store/engineer/' + id, {}).then(res => {
+					if (res.status == 200) {
+						var data = res.data.member
+						this.from.store = data.store
+						this.from.storeCategory = data.store_cid
+						this.from.platform = data.cid
+						this.from.name = data.name
+						this.from.mobile = data.mobile
+						this.from.mobile_code = data.mobile_code
+						this.from.email = data.mail
+						this.from.service = data.service
+						this.from.Language_skills = data.Language_skills
+						this.from.drive_card = data.drive_card
+						this.from.service_times = data.service_times
+						this.from.license_id = data.license_id
+						this.from.license_img = data.license_img
+
+						this.from.simg = data.simg
+
+						if (!data.photo) {
+							this.from.photo = []
+						} else {
+							this.from.photo = data.photo
+						}
+						this.from.fee = data.fee
+						this.from.schedule = data.schedule
+						this.from.status = data.status
+						this.from.ordersort = data.sort
+						this.from.content = data.content
+
+
+						areaCodeList.forEach(item => {
+							if (item.name == data.mobile_code) {
+								this.from.mobile_code_id = item.id
+							}
+						})
+
+
+						this.storeCategoryList.forEach(item => {
+							if (item.id == data.store_cid) {
+								this.storeCategoryName = item.name
+							}
+						})
+
+						this.platformList.forEach(item => {
+							if (item.id == data.cid) {
+								this.platformName = item.name
+							}
+						})
+
+						var arrs = data.service.split(',')
+						var str = ''
+						this.projectList.map(item => {
+							arrs.map(ele => {
+								if (item.id == ele) {
+									str += item.name + ';'
+									item.isCheck = true
+								}
+							})
+						})
+						this.projectName = str.substr(0, str.length - 1)
+
+
+						this.isCurr = data.drive_card == 1 ? true : false
+
+
+						this.stateList.forEach(item => {
+							if (item.id == data.status) {
+								this.stateName = item.name
+							}
+						})
+
+					}
+				});
+			},
+
+
+			// 获取门店类别
+			getStoreCategory() {
+				this.apiget('pc/category/category_type', {
+					type: 11,
+					level: 1
+				}).then(res => {
+					if (res.status == 200) {
+						this.storeCategoryList = res.data
+					}
+				});
+			},
+
+			// 获取项目分类
+			getPlatform() {
+				this.apiget('pc/category/category_type', {
+					type: 2,
+					store: this.store
+				}).then(res => {
+					if (res.status == 200) {
+						this.platformList = res.data
+						this.getDetails(this.id)
+					}
+				});
+			},
+			// 获取服务项目
+			getProject() {
+				this.apiget('api/v1/store/service_reservation/index', {
+					store_id: this.store
+				}).then(res => {
+					if (res.status == 200) {
+						this.projectList = res.data.data
+					}
+				});
+			},
+			// 请求语言包
+			getLanguage() {
+				this.apiget('language/info', {
+					name: 'MerchantStorez'
+				}).then(res => {
+					if (res.status == 200) {
+						let language = res.data.language
+						this.lan = res.data.language
+						this.stateList[0].name = language.Enable
+						this.stateList[1].name = language.shutDownr
+					}
+				});
+			},
+		}
+	}
+</script>
+
+<style lang="scss">
+	.box {
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+		background: #F7F7F7;
+
+		.box-head {
+			background-color: #fff;
+		}
+
+		.box-content {
+			flex: 1;
+			overflow-y: scroll;
+
+			.box-content-main {
+				margin-top: 20rpx;
+				padding-left: 40rpx;
+				box-sizing: border-box;
+				background: #fff;
+
+				.box-content-main-top {
+					display: flex;
+					align-items: center;
+					justify-content: space-between;
+					padding-right: 40rpx;
+					box-sizing: border-box;
+					height: 80rpx;
+					border-bottom: 1rpx solid #ededed;
+					color: #333;
+					font-size: 28rpx;
+
+					.box-content-main-top-title {}
+
+					.box-content-main-top-add {
+						width: 40rpx;
+						height: 40rpx;
+						border: 2rpx solid #CCCCCC;
+						border-radius: 10rpx;
+
+						.icon-font {
+							transform: rotate(135deg);
+						}
+					}
+				}
+
+				.box-content-main-image-list {
+					display: flex;
+					align-items: center;
+					padding: 40rpx 0 70rpx;
+					box-sizing: border-box;
+
+					.list-li-affter {
+						position: relative;
+					}
+
+					.list-li-affter::after {
+						position: absolute;
+						bottom: -44rpx;
+						left: 0;
+						right: 0;
+						margin: auto;
+						content: "封面";
+						font-size: 24rpx;
+						text-align: center;
+						color: #333;
+					}
+
+					.box-content-main-image-list-li {
+						position: relative;
+						width: 160rpx;
+						height: 160rpx;
+						margin-right: 30rpx;
+
+						image {
+							width: 160rpx;
+							height: 160rpx;
+							border-radius: 10rpx;
+						}
+
+						.close {
+							position: absolute;
+							right: -20rpx;
+							top: -20rpx;
+							width: 40rpx;
+							height: 40rpx;
+							background: rgba(0, 0, 0, 0.4);
+							border-radius: 50%;
+						}
+					}
+
+					.box-content-main-image-list-up {
+						width: 156rpx;
+						height: 156rpx;
+						border: 2rpx dashed #DDDDDD;
+						border-radius: 10rpx;
+
+						.icon-font {
+							transform: rotate(45deg);
+						}
+					}
+				}
+
+
+			}
+
+			.box-content-list {
+				margin-top: 20rpx;
+				padding-left: 40rpx;
+				box-sizing: border-box;
+				background: #fff;
+
+				.box-content-list-li:last-child {
+					border-bottom: 0;
+				}
+
+				.box-content-list-li {
+					display: flex;
+					align-items: center;
+					min-height: 100rpx;
+					padding: 20rpx 40rpx 20rpx 0;
+					box-sizing: border-box;
+					border-bottom: 1rpx solid #ededed;
+
+					.box-content-list-li-title {
+						width: 140rpx;
+						font-size: 28rpx;
+						color: #333;
+					}
+
+					.box-content-list-li-info {
+						margin-left: 80rpx;
+						flex: 1;
+						display: flex;
+						align-items: center;
+						justify-content: space-between;
+
+						.box-content-list-li-info-text {
+							font-size: 28rpx;
+							color: #000;
+						}
+
+						.box-content-list-li-info-more {}
+
+						.box-content-list-li-info-input {
+							flex: 1;
+							display: flex;
+							align-items: center;
+							justify-content: space-between;
+
+							input {
+								flex: 1;
+								height: 100%;
+								font-size: 28rpx;
+							}
+
+							text {
+								margin-left: 10rpx;
+								font-size: 28rpx;
+								color: #333;
+							}
+						}
+
+						.input-border {
+							height: 60rpx;
+							margin: 0 20rpx;
+							border: 1rpx solid #EDEDED;
+
+							input {
+								text-align: center;
+							}
+						}
+
+
+						.box-content-list-li-info-msg {
+							font-size: 28rpx;
+							color: #333;
+						}
+
+						.box-content-list-li-info-check {
+							display: flex;
+							align-items: center;
+
+							.box-content-list-li-info-check-box:first-child {
+								margin-left: 0;
+							}
+
+							.box-content-list-li-info-check-box {
+								margin-left: 40rpx;
+								display: flex;
+								align-items: center;
+								color: #000;
+								font-size: 28rpx;
+
+								.icon-font {
+									margin-right: 20rpx;
+								}
+
+								text {}
+							}
+						}
+
+						.box-content-list-li-info-area-code {
+							display: flex;
+							align-items: center;
+							justify-content: center;
+							width: 100rpx;
+							height: 46rpx;
+							margin-right: 10rpx;
+							border: 1rpx solid #333;
+							border-radius: 30rpx;
+							font-size: 24rpx;
+						}
+
+						.box-content-list-li-info-textarea {
+							width: 100%;
+							max-height: 180rpx;
+							padding: 0 20rpx 0 0;
+							box-sizing: border-box;
+							font-size: 28rpx;
+						}
+					}
+				}
+
+				.box-content-list-item {
+					padding: 30rpx 0;
+					display: flex;
+					align-items: center;
+					border-bottom: 1rpx solid #ededed;
+
+					.box-content-list-item-text {
+						width: 140rpx;
+						font-size: 28rpx;
+						color: #333;
+
+						text {
+							font-size: 24rpx;
+							color: #999;
+						}
+					}
+
+					.box-content-list-item-info {
+						flex: 1;
+						margin-left: 80rpx;
+
+						.box-content-list-item-info-icon {
+							width: 120rpx;
+							height: 120rpx;
+							background: #EDEDED;
+							border-radius: 10rpx;
+						}
+
+						.box-content-list-item-info-image {
+							width: 120rpx;
+							height: 120rpx;
+							border-radius: 10rpx;
+						}
+					}
+				}
+
+				.box-content-list-item:last-child {
+					border-bottom: 0;
+				}
+			}
+		}
+
+		.box-footer {
+			padding: 30rpx 40rpx;
+			box-sizing: border-box;
+
+			.box-footer-btn {
+				height: 88rpx;
+				background: #26BF82;
+				box-shadow: 0rpx 10rpx 20rpx rgba(38, 191, 130, 0.2);
+				border-radius: 15rpx;
+				font-size: 32rpx;
+				color: #fff;
+			}
+		}
+	}
+</style>

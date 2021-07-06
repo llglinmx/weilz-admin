@@ -1,0 +1,353 @@
+<template>
+	<view class="resume-box">
+		<view class="resume-box-close flex-center" @click="close">
+			<text class="iconfont iconcuowu" style="font-size: 60rpx;"></text>
+		</view>
+		<view class="resume-box-content">
+			<view class="resume-box-content-title">
+				面试邀请列表
+			</view>
+			<view class="resume-box-content-list">
+				<view class="resume-box-content-list-li" v-for="(item,index) in dataList" :key='index'>
+					<view class="resume-box-content-list-li-msg flex-center" v-if="item.status==2">
+						已通过面试
+					</view>
+					<view class="resume-box-content-list-li-left">
+						<view class="content-list-li-left-text">
+							<text class="title">门店：</text>
+							<text class="text">{{item.store_info}}</text>
+						</view>
+						<view class="content-list-li-left-text">
+							<text class="title">职位：</text>
+							<text class="text">{{item.occupation}}</text>
+						</view>
+						<view class="content-list-li-left-text">
+							<text class="title">地点：</text>
+							<text class="text">福建厦门</text>
+						</view>
+					</view>
+					<view class="resume-box-content-list-li-right" v-if="item.status==1">
+						<view class="content-list-li-right-btn flex-center" style="background: #26BF82;width: 120rpx;"
+							@click="Interview(item)">
+							接受面试</view>
+						<view class="content-list-li-right-btn flex-center"
+							style="background: #ef3b38;margin-left: 20rpx;width: 120rpx;" @click="refuse(item)">拒绝面试
+						</view>
+					</view>
+					<view class="resume-box-content-list-li-right" v-if="item.status==3">
+						<view class="content-list-li-right-btn flex-center"
+							style="background: #3cc1c7;min-width: 120rpx;padding: 0 10rpx;box-sizing: border-box;">
+							已接受面试
+						</view>
+					</view>
+					<view class="resume-box-content-list-li-right" v-if="item.status==2">
+						<view class="content-list-li-right-btn flex-center" style="background:#5DBDFE;width: 120rpx;"
+							@click="confirmGoToWork(item)">
+							确认上班</view>
+						<view class="content-list-li-right-btn flex-center"
+							style="background: #ef3b38;margin-left: 20rpx;width: 120rpx;" @click="refuseGoToWork(item)">
+							拒绝</view>
+					</view>
+				</view>
+			</view>
+			<view class="resume-box-content-footer" v-if="totalNum>size">
+				<view class="resume-box-content-footer-btn flex-center" @click="pageChange('last')">上一页</view>
+				<view class="resume-box-content-footer-text">
+					{{pageIndex}}/{{Math.ceil(totalNum/size)}}
+				</view>
+				<view class="resume-box-content-footer-btn flex-center" @click="pageChange('next')">下一页</view>
+			</view>
+		</view>
+		<uni-popup ref="popup" type="dialog">
+			<uni-popup-dialog type="warn" mode='base' title="警告" content="你是否确认拒绝此次面试?" :duration="2000"
+				@confirm="confirm"></uni-popup-dialog>
+		</uni-popup>
+		<uni-popup ref="popupEntry" type="dialog">
+			<uni-popup-dialog type="warn" mode='base' title="警告" content="你是否确认拒绝此次工作?" :duration="2000"
+				@confirm="entryConfirm"></uni-popup-dialog>
+		</uni-popup>
+	</view>
+</template>
+
+<script>
+	export default {
+		name: "application-info",
+		data() {
+			return {
+				dataInfo: {},
+				num: 1,
+				size: 5,
+				totalNum: 0,
+				dataList: [],
+				id: ''
+			}
+		},
+		props: {
+			data: {
+
+			},
+		},
+		computed: {
+			pageIndex() {
+				return this.num
+			}
+		},
+		watch: {
+			data(val) {
+				this.dataInfo = this.data
+			},
+		},
+		mounted() {
+			this.dataInfo = this.data
+			this.getData()
+		},
+		methods: {
+			// 技师接受面试
+			Interview(item) {
+				this.apiput('api/v1/engineer/recruitment/accept_interview/' + item.id, {
+					status: 3,
+				}).then(res => {
+					if (res.status == 200) {
+						uni.showToast({
+							title: '接受面试邀请成功',
+							icon: 'none'
+						})
+						this.getData()
+					} else {
+						uni.showToast({
+							title: res.massage,
+							icon: 'none'
+						})
+					}
+				})
+			},
+			// 技师拒绝面试
+			refuse(item) {
+				this.id = item.id
+				this.$refs.popup.open()
+			},
+			// 技师确认 拒绝面试
+			confirm() {
+				this.apiput('api/v1/engineer/recruitment/accept_interview/' + this.id, {
+					status: -1,
+				}).then(res => {
+					if (res.status == 200) {
+						uni.showToast({
+							title: '面试拒绝成功',
+							icon: 'none'
+						})
+					} else {
+						uni.showToast({
+							title: res.massage,
+							icon: 'none'
+						})
+					}
+				})
+			},
+
+			// 技师确认上班
+			confirmGoToWork(item) {
+				this.apiput('api/v1/engineer/recruitment/accept_interview/' + item.id, {
+					status: 4,
+				}).then(res => {
+					if (res.status == 200) {
+						uni.showToast({
+							title: '确认入职成功',
+							icon: 'none'
+						})
+						this.close()
+					} else {
+						uni.showToast({
+							title: res.massage,
+							icon: 'none'
+						})
+					}
+				})
+			},
+			// 技师拒绝上班
+			refuseGoToWork(item) {
+				this.id = item.id
+				this.$refs.popupEntry.open()
+			},
+			// 技师拒绝入职确认
+			entryConfirm() {
+				this.apiput('api/v1/engineer/recruitment/accept_interview/' + this.id, {
+					status: -3,
+				}).then(res => {
+					if (res.status == 200) {
+						uni.showToast({
+							title: '拒绝入职成功',
+							icon: 'none'
+						})
+						this.close()
+					} else {
+						uni.showToast({
+							title: res.massage,
+							icon: 'none'
+						})
+					}
+				})
+			},
+			// 分页
+			pageChange(type) {
+				switch (type) {
+					case 'last': // 上一页
+						if (this.num <= 1) {
+							uni.showToast({
+								title: '已经是第一页',
+								icon: 'none'
+							})
+						} else {
+							this.num--
+						}
+						break;
+					case 'next': // 下一页
+						if (this.num >= Math.ceil(this.totalNum / this.size)) {
+							uni.showToast({
+								title: '已经没有更多数据了',
+								icon: 'none'
+							})
+						} else {
+							this.num++
+						}
+						break;
+				}
+			},
+
+			close() {
+				this.$emit('close')
+			},
+
+			getData() {
+				this.apiget('api/v1/engineer/recruitment/application_feedback_record', {
+					status: 1,
+					each_page: this.size,
+					page_index: this.num
+				}).then(res => {
+					if (res.status == 200) {
+						this.dataList = res.data.data
+						this.totalNum = res.data.total_rows
+						if (res.data.total_rows == 0) {
+							this.close()
+						}
+					}
+				})
+			},
+		}
+	}
+</script>
+
+<style lang="scss" scoped>
+	.resume-box {
+		position: relative;
+		padding: 40rpx 30rpx;
+		box-sizing: border-box;
+		min-height: 300rpx;
+		max-height: 1200rpx;
+		width: 650rpx;
+		background: #fff;
+		border-radius: 20rpx;
+
+		.resume-box-close {
+			position: absolute;
+			bottom: -100rpx;
+			left: 0;
+			right: 0;
+			margin: auto;
+			width: 80rpx;
+			height: 80rpx;
+			border: 1rpx solid #fff;
+			border-radius: 50%;
+			color: #fff;
+		}
+
+		.resume-box-content {
+			display: flex;
+			flex-direction: column;
+			display: flex;
+			flex-direction: column;
+
+			.resume-box-content-title {
+				font-size: 42rpx;
+				text-align: center;
+				color: #333;
+			}
+
+			.resume-box-content-list {
+				flex: 1;
+				overflow-y: scroll;
+
+				.resume-box-content-list-li:last-child {
+					border-bottom: none;
+				}
+
+				.resume-box-content-list-li {
+					position: relative;
+					display: flex;
+					align-items: center;
+					min-height: 200rpx;
+					border-bottom: 1rpx solid #ededed;
+
+					.resume-box-content-list-li-left {
+						flex: 1;
+
+						.content-list-li-left-text {
+							font-size: 28rpx;
+
+							.title {}
+
+							.text {
+								color: #999;
+							}
+						}
+					}
+
+					.resume-box-content-list-li-right {
+						margin-left: 20rpx;
+						display: flex;
+						align-items: center;
+
+						.content-list-li-right-btn {
+							height: 60rpx;
+							border-radius: 6rpx;
+							font-size: 24rpx;
+							color: #fff;
+						}
+					}
+
+					.resume-box-content-list-li-msg {
+						position: absolute;
+						top: 5rpx;
+						left: -16rpx;
+						min-width: 165rpx;
+						height: 40rpx;
+						padding: 0 10rpx;
+						box-sizing: border-box;
+						font-size: 28rpx;
+						color: #fff;
+						background: #26BF82;
+						border-radius: 5rpx;
+						transform: scale(0.8);
+					}
+				}
+			}
+
+			.resume-box-content-footer {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+
+				.resume-box-content-footer-text {
+					margin: 0 10rpx;
+					font-size: 28rpx;
+				}
+
+				.resume-box-content-footer-btn {
+					width: 120rpx;
+					height: 40rpx;
+					font-size: 28rpx;
+				}
+			}
+		}
+	}
+</style>

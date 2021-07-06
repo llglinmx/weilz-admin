@@ -1,0 +1,449 @@
+<template>
+	<view class="box">
+		<view class="box-header" :style="{paddingTop:barHeight+'px'}">
+			<uni-nav-bar left-icon="arrowleft" :right-text="lan.StoreScreening" :border='false' left-text="" :title="lan.EvaluationList"
+				@clickLeft="Gback" @clickRight="isShow = true" />
+		</view>
+		<view class="box-content">
+			<view class="box-content-item-type">
+				<view class="box-content-item-type-li flex-center" @click="typeClick(index)"
+					:class="typeIndex==index?'box-content-item-type-li-active':''" v-for="(item,index) in typeList"
+					:key="index">{{item.name}}</view>
+			</view>
+
+			<view class="box-content-item-comment-wrap" :style="{display:!isData?'block':'none'}">
+				<loading-merchant v-if="isLoad" />
+				<no-data v-if="!isLoad" :msg='lans.NoDatar'/>
+			</view>
+			<view class="box-content-item-comment-wrap" :style="{display:isData?'block':'none'}">
+				<z-paging ref="paging" @query="queryList" :list.sync="dataList" 
+					:refresher-angle-enable-change-continued="false" :touchmove-propagation-enabled="true"
+					:use-custom-refresher="true" style="height: 100%;"
+					:key='val' :refresherDefaultText='lans.pullDownRefresh' :loading-more-no-more-text="lans.theEnd"
+					:refresherPullingText='lans.ReleaseRefresh' :refresherRefreshingText='lans.Refreshings'
+					:loadingMoreDefaultText='lans.ClickMore' :loadingMoreLoadingText='lans.loadings'
+					:loadingMoreNoMoreText='lans.NoMores' :loadingMoreFailText='lans.LoadFaileds'
+					>
+					<view class="box-content-item-comment">
+						<view class="box-content-item-comment-list">
+							<view class="box-content-item-comment-list-li" v-for="(item,index) in dataList"
+								:key="item.id">
+								<view class="comment-list-li-top">
+									<view class="comment-list-li-top-image">
+										<image :src="item.member_avatar" mode="aspectFill"></image>
+									</view>
+									<view class="comment-list-li-top-info">
+										<view class="comment-list-li-top-info-title">{{item.member_nickname}}</view>
+										<view class="comment-list-li-top-info-score"
+											style="display: flex;align-items: center;">
+											{{lan.orderNumberrs}}<!-- 订单号 -->：{{item.out_trade_no}}
+										</view>
+									</view>
+								</view>
+
+								<view class="comment-list-li-msg-title">
+									{{lan.Storetz}}<!-- 门店 -->：{{item.store_name}}
+								</view>
+								<view style="display: flex;align-items: center;margin-top: 10rpx;">
+									<text style="font-size: 24rpx;color: #999;">{{lan.StoreRatinga}}<!-- 门店评分 -->：</text>
+									<uni-rate :readonly="true" allow-half margin='6' size='14' v-model="item.star" />
+									<text style="font-size: 24rpx;color: #999;">{{item.star}} {{lan.point}}<!-- 分 --></text>
+								</view>
+								<view class="comment-list-li-msg-content">
+									{{item.content}}
+								</view>
+
+								<view class="comment-list-li-msg-image-arr">
+									<image :src="i" mode="aspectFill" v-for="(i,j) in item.bimg" :key="j"
+										@click="previewImg(item.bimg,j)">
+									</image>
+								</view>
+								<view class="comment-list-li-msg-time">
+									{{lan.commentTimes}}<!-- 评论时间 -->：{{item.createtime}}
+								</view>
+								<view class="comment-list-li-msg-title" v-if="item.engineer_comment">
+									{{lan.technicianad}}<!-- 技师 -->：{{item.engineer_comment.member_name}}
+								</view>
+								<view style="display: flex;align-items: center;margin-top: 10rpx;" v-if="item.engineer_comment">
+									<text style="font-size: 24rpx;color: #999;">{{lan.TechnicianRatings}}<!-- 技师评分 -->：</text>
+									<uni-rate :readonly="true" allow-half margin='6' size='14'
+										v-model="item.engineer_comment.star" />
+									<text style="font-size: 24rpx;color: #999;">{{item.engineer_comment.star}} {{lan.point}}<!-- 分 --></text>
+								</view>
+								<view class="comment-list-li-msg-content" v-if="item.engineer_comment">
+									{{item.engineer_comment.content}}
+								</view>
+
+								<view class="comment-list-li-msg-image-arr" v-if="item.engineer_comment">
+									<image :src="i" mode="aspectFill" v-for="(i,j) in item.engineer_comment.bimg"
+										:key="j" @click="previewImg(item.engineer_comment.bimg,j)">
+									</image>
+								</view>
+								<view class="comment-list-li-msg-time" v-if="item.engineer_comment">
+									{{lan.commentTimes}}<!-- 评论时间 -->：{{item.engineer_comment.createtime}}
+								</view>
+							</view>
+						</view>
+					</view>
+				</z-paging>
+			</view>
+		</view>
+		<popup-list-select :cancelx='lan.canceli' :confirmx='lan.determinei' @cancel="storeCancel" @confirm="storeConfirm" :visible='isShow' :dataList="storeList" />
+	</view>
+</template>
+
+<script>
+	import mixins from '../../static/js/mixins.js'
+	export default {
+		mixins: [mixins],
+		data() {
+			return {
+				barHeight: 0, //顶部电量导航栏高度
+				typeIndex: 0, //当前选择的评论类型
+				starId: 0,
+				typeList: [{
+						name: '全部',
+						id: 0
+					},
+					{
+						name: '好评',
+						id: 1
+					},
+					{
+						name: '中评',
+						id: 2
+					},
+					{
+						name: '差评',
+						id: 3
+					},
+				],
+				dataList: [],
+				storeList: [],
+				totalNumber: 0,
+				store: '',
+				isLoad: true,
+				isShow: false,
+				isData:false,
+				lans:{},
+				    val:0,
+					lan:{},
+			}
+		},
+		onLoad() {
+			// 获取顶部电量状态栏高度
+			uni.getSystemInfo({
+				success: (res) => {
+					this.barHeight = res.statusBarHeight
+				}
+			});
+			this.getStore()
+			 this.getLan()
+			 this.getLans()
+		},
+		methods: {
+			// 返回
+			Gback() {
+				uni.navigateBack({
+					delta: 1
+				})
+			},
+
+			// 门店取消
+			storeCancel(e) {
+				this.isShow = e
+			},
+			//门店确认
+			storeConfirm(e) {
+				this.isLoad = true
+				this.store = e.id
+				this.getDataList(1, 20)
+			},
+
+			// 评论类型点击
+			typeClick(index) {
+				this.typeIndex = index
+				this.starId = this.typeList[index].id
+				this.getDataList(1, 20)
+			},
+
+			queryList(pageNo, pageSize) {
+				this.getDataList(pageNo, pageSize)
+			},
+
+			// 获取数据
+			getDataList(num, size) {
+				var vuedata = {
+					page_index: num, // 请求页数，
+					each_page: size, // 请求条数
+					com_type: '',
+					star: this.starId,
+					type: 4,
+					id: this.store
+				}
+				this.apiget('pc/comment', vuedata).then(res => {
+					if (res.status == 200) {
+						let list = res.data.comment
+						this.totalNumber = res.data.total_rows
+						if(res.data.total_rows!=0){
+							this.isData = true
+						}else{
+							this.isData = false
+						}
+						this.$refs.paging.addData(list);
+						this.isLoad = false
+					}
+				});
+			},
+			// 获取门店
+			getStore() {
+				this.apiget('api/v1/store/store_information', {
+					each_page: 100
+				}).then(res => {
+					if (res.status == 200) {
+						if (res.data.length != 0) {
+							this.storeList = res.data.member
+							this.storeList.unshift({
+								id: '',
+								name: '全部'
+							})
+							this.storeList[0].name=this.lan.Allu
+						}
+					}
+				});
+			},
+			// 请求语言包
+			getLan() {
+			   this.apiget('language/info', {
+			         name: 'pullUp'
+				}).then(res => {
+				    if (res.status == 200) {
+					this.lans = res.data.language
+					this.val++
+				     }
+				  });
+				},
+				// 请求语言包
+				getLans() {
+				   this.apiget('language/info', {
+				         name: 'evaluationList'
+					}).then(res => {
+					    if (res.status == 200) {
+						this.lan = res.data.language
+						let language=res.data.language
+						
+						
+						this.typeList.map(v=>{
+							switch(v.id){
+								case 0:
+								v.name=language.Allu
+								break
+								case 1:
+								v.name=language.Praiseq
+								break
+								case 2:
+								v.name=language.Averageq
+								break
+								case 3:
+								v.name=language.BadReviewq
+								break
+							}
+						})
+					     }
+					  });
+					},
+		}
+	}
+</script>
+
+<style lang="scss" scoped>
+	.box {
+		height: 100%;
+		display: flex;
+		flex-direction: column;
+		background: #fff;
+
+		.box-header {}
+
+		.box-content {
+			display: flex;
+			flex-direction: column;
+			flex: 1;
+			overflow-y: scroll;
+
+			.box-content-item-type {
+				display: flex;
+				align-items: center;
+				padding: 30rpx 40rpx;
+				box-sizing: border-box;
+				background: #fff;
+				height: 114rpx;
+
+				.box-content-item-type-li {
+					min-width: 150rpx;
+					height: 60rpx;
+					margin-right: 20rpx;
+					border: 1rpx solid #CCCCCC;
+					border-radius: 30rpx;
+					color: #ccc;
+					font-size: 28rpx;
+					transition: 0.3s;
+				}
+
+				.box-content-item-type-li:last-child {
+					margin-right: 0;
+				}
+
+				.box-content-item-type-li-active {
+					border: 1rpx solid #5DBDFE;
+					color: #fff;
+					background: #5DBDFE;
+				}
+			}
+
+			.box-content-item-comment-wrap {
+				flex: 1;
+				overflow-y: scroll;
+				background: #fff;
+
+
+				.box-content-item-comment {
+					height: 100%;
+					box-sizing: border-box;
+
+					.box-content-item-comment-list {
+						height: 100%;
+						padding-left: 40rpx;
+						box-sizing: border-box;
+						// margin-bottom: 40rpx;
+
+						.box-content-item-comment-list-li:last-child {
+							margin-bottom: 0;
+						}
+
+						.box-content-item-comment-list-li {
+							padding-right: 40rpx;
+							box-sizing: border-box;
+							border-bottom: 1rpx solid #ededed;
+							padding-bottom: 20rpx;
+							margin-bottom: 40rpx;
+
+							.comment-list-li-top {
+								display: flex;
+								align-items: center;
+
+								.comment-list-li-top-image {
+									display: flex;
+									align-items: center;
+
+									image {
+										width: 88rpx;
+										height: 88rpx;
+										border-radius: 50%;
+									}
+								}
+
+								.comment-list-li-top-info {
+									margin-left: 20rpx;
+									flex: 1;
+									height: 100%;
+
+									.comment-list-li-top-info-title {
+										font-size: 32rpx;
+										color: #000;
+									}
+
+									.comment-list-li-top-info-score {
+										margin-top: 10rpx;
+										display: flex;
+										align-items: center;
+										font-size: 28rpx;
+										color: #999;
+
+									}
+								}
+							}
+
+							.comment-list-li-msg-title {
+								margin-top: 20rpx;
+								font-size: 28rpx;
+								font-weight: 500;
+							}
+
+							.comment-list-li-msg-content {
+								margin: 20rpx 0;
+								font-size: 28rpx;
+								color: #666;
+							}
+
+							.comment-list-li-msg-time {
+								margin-top: 6rpx;
+								font-size: 24rpx;
+								color: #999;
+							}
+
+							.comment-list-li-msg-image-arr {
+								display: flex;
+								align-items: center;
+								margin-top: 20rpx;
+								flex-wrap: wrap;
+
+								image {
+									width: 160rpx;
+									height: 160rpx;
+									margin-right: 10rpx;
+									margin-bottom: 10rpx;
+									border-radius: 10rpx;
+								}
+
+								image:nth-child(4n) {
+									margin-right: 0;
+								}
+							}
+
+							.comment-list-li-msg-reply {
+								margin-top: 20rpx;
+								padding: 20rpx;
+								box-sizing: border-box;
+								min-height: 152rpx;
+								background: #F7F7F7;
+								border-radius: 10rpx;
+								font-size: 28rpx;
+
+								.comment-list-li-msg-reply-text {
+									color: #999;
+								}
+
+								.comment-list-li-msg-reply-content {
+									color: #333;
+								}
+							}
+
+							.comment-list-li-msg-wrap {
+								padding: 20rpx 0;
+								display: flex;
+								align-items: center;
+								justify-content: space-between;
+								font-size: 28rpx;
+
+								.comment-list-li-msg-wrap-text {
+									color: #999;
+								}
+
+								.comment-list-li-msg-wrap-btn {
+									width: 176rpx;
+									height: 60rpx;
+									background: #26BF82;
+									border-radius: 32rpx;
+									color: #fff;
+								}
+							}
+						}
+					}
+
+				}
+			}
+
+		}
+	}
+</style>

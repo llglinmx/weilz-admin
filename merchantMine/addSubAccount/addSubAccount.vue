@@ -1,33 +1,33 @@
 <template>
 	<view class="box">
 		<view class="box-head" :style="{paddingTop:barHeight+'px'}">
-			<nav-title-balck :navTitle="type=='add'?'添加子账号':'编辑子账号'"></nav-title-balck>
+			<nav-title-balck :navTitle="type=='add'?lan.AddAccountv:lan.EditAccount"></nav-title-balck>
 		</view>
 		<view class="box-content">
 
 			<view class="box-content-list">
 				<view class="box-content-list-li">
-					<view class="box-content-list-li-title">用户名</view>
+					<view class="box-content-list-li-title">{{lan.usernameq}}<!-- 用户名 --></view>
 					<view class="box-content-list-li-info">
 						<view class="box-content-list-li-info-input">
-							<input type="text" v-model.trim="from.username" placeholder="请输入用户名" />
+							<input type="text" v-model.trim="from.username" :placeholder="lan.userNameo" />
 						</view>
 					</view>
 				</view>
 				<view class="box-content-list-li">
-					<view class="box-content-list-li-title">密码</view>
+					<view class="box-content-list-li-title">{{lan.passwordt}}<!-- 密码 --></view>
 					<view class="box-content-list-li-info">
 						<view class="box-content-list-li-info-input">
-							<input type="number" v-model.trim="from.password" password="true" placeholder="请输入密码" />
+							<input type="number" v-model.trim="from.password" password="true" :placeholder="lan.passwordf" />
 						</view>
 					</view>
 				</view>
 				<view class="box-content-list-li">
-					<view class="box-content-list-li-title">重复密码</view>
+					<view class="box-content-list-li-title">{{lan.RepeatPasswordz}}<!-- 重复密码 --></view>
 					<view class="box-content-list-li-info">
 						<view class="box-content-list-li-info-input">
 							<input type="number" v-model.trim="from.repeatpassword" password="true"
-								placeholder="请再次输入密码" />
+								:placeholder="lan.passwordAgainz" />
 						</view>
 					</view>
 				</view>
@@ -35,7 +35,7 @@
 
 			<view class="box-content-main">
 				<view class="box-content-main-top">
-					<view class="box-content-main-top-title">管理门店</view>
+					<view class="box-content-main-top-title">{{lan.ManageStoresq}}<!-- 管理门店 --></view>
 					<view class="box-content-main-top-add flex-center" @click="storeOpen">
 						<text class="iconfont iconcuowu icon-font" style="color: #ccc;font-size: 36rpx"></text>
 					</view>
@@ -66,13 +66,13 @@
 
 			<view class="box-content-main-jurisdiction">
 				<view class="box-content-main-jurisdiction-top">
-					<view class="box-content-main-jurisdiction-top-title">权限</view>
+					<view class="box-content-main-jurisdiction-top-title">{{lan.Authorityz}}<!-- 权限 --></view>
 					<view class="box-content-main-jurisdiction-top-check" @click="selectAll">
 						<text class="iconfont iconweixuanzhong icon-font"
 							style="color:#B2B2B2;font-size: 40rpx;margin-top: 4rpx;" v-if="!isAll"></text>
 						<text class="iconfont iconxuanzhong2 icon-font"
 							style="color:#07C160;font-size: 40rpx;margin-top: 4rpx;" v-if="isAll"></text>
-						<text>全选</text>
+						<text>{{lan.selectAllz}}<!-- 全选 --></text>
 					</view>
 				</view>
 				<view class="box-content-main-jurisdiction-list">
@@ -108,9 +108,9 @@
 
 			<view class="box-content-list">
 				<view class="box-content-list-li" @click="dateStartOpen">
-					<view class="box-content-list-li-title">有效开始时间</view>
+					<view class="box-content-list-li-title">{{lan.EffectiveTimez}}<!-- 有效开始时间 --></view>
 					<view class="box-content-list-li-info">
-						<view class="box-content-list-li-info-text">{{from.start_time==''?'请设置时间':from.start_time}}
+						<view class="box-content-list-li-info-text">{{from.start_time==''?lan.setTimez:from.start_time}}
 						</view>
 						<view class="box-content-list-li-info-more">
 							<text class="iconfont icongengduo icon-font"
@@ -119,9 +119,9 @@
 					</view>
 				</view>
 				<view class="box-content-list-li" @click="dateEndOpen">
-					<view class="box-content-list-li-title">有效结束时间</view>
+					<view class="box-content-list-li-title">{{lan.EffectiveEndTime}}<!-- 有效结束时间 --></view>
 					<view class="box-content-list-li-info">
-						<view class="box-content-list-li-info-text">{{from.end_time==''?'请设置时间':from.end_time}}</view>
+						<view class="box-content-list-li-info-text">{{from.end_time==''?lan.setTimez:from.end_time}}</view>
 						<view class="box-content-list-li-info-more">
 							<text class="iconfont icongengduo icon-font"
 								style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
@@ -129,34 +129,34 @@
 					</view>
 				</view>
 				<view class="box-content-list-li">
-					<view class="box-content-list-li-title">姓名</view>
+					<view class="box-content-list-li-title">{{lan.Namex}}<!-- 姓名 --></view>
 					<view class="box-content-list-li-info">
 						<view class="box-content-list-li-info-input">
-							<input type="text" v-model.trim="from.name" placeholder="请输入姓名" />
+							<input type="text" v-model.trim="from.name" :placeholder="lan.yourName" />
 						</view>
 					</view>
 				</view>
 				<view class="box-content-list-li">
-					<view class="box-content-list-li-title">身份证</view>
+					<view class="box-content-list-li-title">{{lan.IDCard}}<!-- 身份证 --></view>
 					<view class="box-content-list-li-info">
 						<view class="box-content-list-li-info-input">
-							<input type="number" v-model.trim="from.identityCard" placeholder="请输入身份证号" />
+							<input type="number" v-model.trim="from.identityCard" :placeholder="lan.IDNumberz" />
 						</view>
 					</view>
 				</view>
 				<view class="box-content-list-li">
-					<view class="box-content-list-li-title">手机号</view>
+					<view class="box-content-list-li-title">{{lan.phoneq}}<!-- 手机号 --></view>
 					<view class="box-content-list-li-info">
 						<view class="box-content-list-li-info-input">
-							<input type="number" v-model.trim="from.mobile" placeholder="请输入手机号" />
+							<input type="number" v-model.trim="from.mobile" :placeholder="lan.enterPhoneq" />
 						</view>
 					</view>
 				</view>
 				<view class="box-content-list-li">
-					<view class="box-content-list-li-title">公司名</view>
+					<view class="box-content-list-li-title">{{lan.companyNameq}}<!-- 公司名 --></view>
 					<view class="box-content-list-li-info">
 						<view class="box-content-list-li-info-input">
-							<input type="text" v-model.trim="from.company" placeholder="请输入公司名称" />
+							<input type="text" v-model.trim="from.company" :placeholder="lan.companyNamew" />
 						</view>
 					</view>
 				</view>
@@ -170,7 +170,7 @@
 					</view>
 				</view> -->
 				<view class="box-content-list-li">
-					<view class="box-content-list-li-title">状态</view>
+					<view class="box-content-list-li-title">{{lan.statusq}}<!-- 状态 --></view>
 					<view class="box-content-list-li-info">
 						<switch :checked="isState" @change="switch1Change" style="transform: scale(0.7);"
 							color="#07C160" />
@@ -179,13 +179,15 @@
 			</view>
 		</view>
 		<view class="box-footer">
-			<btn-sky-blue btnName="确认添加" v-if="type=='add'" @btnClick="confirmAdd" />
-			<btn-sky-blue btnName="确认修改" v-if="type=='edit'" @btnClick="confirmEdit" />
+			<btn-sky-blue :btnName="lan.ConfirmAddq" v-if="type=='add'" @btnClick="confirmAdd" />
+			<btn-sky-blue :btnName="lan.ConfirmChangesq" v-if="type=='edit'" @btnClick="confirmEdit" />
 		</view>
 
-		<store-list-select @cancel='storeCancel' @confirm='storeConfirm' :visible="visible" :dataList="storeList" />
-		<select-date @cancel="dateStartCancel" @confirm="dateStartConfirm" :visible='isStartDate' />
-		<select-date @cancel="dateEndCancel" @confirm="dateEndConfirm" :visible='isEndDate' />
+		<store-list-select :cancelw='lan.cancelq' :confirmw='lan.determineq' @cancel='storeCancel' @confirm='storeConfirm' :visible="visible" :dataList="storeList" />
+		<select-date :cancelb='lan.cancelq' :determineb='lan.determineq' :yearw='lan.yearw' :monthw='lan.monthw' :dayw='lan.dayw' :hourw='lan.hourw' :minutew='lan.Minutew' :secondw='lan.secondw'
+		 @cancel="dateStartCancel" @confirm="dateStartConfirm" :visible='isStartDate' />
+		<select-date :cancelb='lan.cancelq' :determineb='lan.determineq' :yearw='lan.yearw' :monthw='lan.monthw' :dayw='lan.dayw' :hourw='lan.hourw' :minutew='lan.Minutew' :secondw='lan.secondw'
+		:arr='lan' @cancel="dateEndCancel" @confirm="dateEndConfirm" :visible='isEndDate' />
 	</view>
 </template>
 
@@ -222,21 +224,23 @@
 					identityCard: '', //身份证号
 					company: '', //公司名称
 					status: 0, //状态
-				}
+				},
+				lan:{}
 			};
 		},
 
-		onReady() {
+
+		onLoad(options) {
 			// 获取顶部电量状态栏高度
 			uni.getSystemInfo({
 				success: (res) => {
 					this.barHeight = res.statusBarHeight
 				}
 			});
-		},
-		onLoad(options) {
+			
 			this.getPermission()
 			this.getStoreList()
+			this.getLanguage()
 			var data = JSON.parse(options.data)
 
 			if (data.type == 'add') {
@@ -293,7 +297,7 @@
 					return false;
 				}
 				uni.showToast({
-					title: "请先有效期开始时间",
+					title: this.lan.periodFirst,
 					icon: "none"
 				})
 
@@ -318,7 +322,7 @@
 			// 添加选择门店
 			addStoreMenu() {
 				let str = {
-					name: "请输入门店",
+					name: this.lan.storeq,
 					id: -1
 				}
 				// Object.assign(title:"请输入门店")
@@ -337,7 +341,7 @@
 					this.dataList.splice(index, 1)
 				} else {
 					this.dataList = [{
-						name: '请选择门店',
+						name: this.lan.storeq,
 						id: -1
 					}]
 				}
@@ -369,7 +373,7 @@
 			},
 			// 权限选择
 			permissionSelection(index, idx) {
-				if (this.arrList[index].data[idx].text == "全选") {
+				if (this.arrList[index].data[idx].value == -1) {
 					this.arrList[index].isAllCheck = !this.arrList[index].isAllCheck
 					this.arrList[index].data.forEach(item => {
 						item.isCheck = this.arrList[index].isAllCheck ? true : false
@@ -422,7 +426,7 @@
 
 				if (this.from.username == '') {
 					uni.showToast({
-						title: "请输入用户名",
+						title: this.lan.userNameo,
 						icon: 'none'
 					})
 					return false;
@@ -431,13 +435,13 @@
 				if (this.from.password == '' && this.from.repeatpassword == '') {
 					if (this.from.password != this.from.repeatpassword) {
 						uni.showToast({
-							title: "两次密码不一致，请重新输入",
+							title: this.lan.reenter,
 							icon: 'none'
 						})
 						return false;
 					}
 					uni.showToast({
-						title: "请检查是否有输入密码",
+						title: this.lan.enteredPassworda,
 						icon: 'none'
 					})
 					return false;
@@ -445,7 +449,7 @@
 
 				if (this.dataList[0].id == -1) {
 					uni.showToast({
-						title: "请选择门店,最少一个",
+						title: this.lan.storeq,
 						icon: 'none'
 					})
 					return false;
@@ -483,7 +487,7 @@
 					if (res.status == 200) {
 						this.$store.commit('upAddAccount', true)
 						uni.showToast({
-							title: "账号信息修改成功",
+							title: this.lan.AccountSucc,
 							icon: 'none'
 						})
 						setTimeout(function() {
@@ -505,7 +509,7 @@
 					if (res.status == 200) {
 						this.$store.commit('upAddAccount', true)
 						uni.showToast({
-							title: "账号添加成功",
+							title: this.lan.AccountAddeds,
 							icon: 'none'
 						})
 						setTimeout(function() {
@@ -546,7 +550,7 @@
 								value: -1,
 								isCheck: false,
 								field: 'all',
-								text: '全选'
+								text: '全选'  //selectAllz
 							}
 							obj.data.splice(0, 0, str)
 							// console.log("obj",obj);
@@ -589,7 +593,7 @@
 						this.from.manage = data.manage
 
 						var manage = JSON.parse(data.manage)
-						console.log(manage)
+						// console.log(manage)
 						this.arrList.forEach(item => {
 							item.data.forEach(ele => {
 								for (let key in manage) {
@@ -623,7 +627,25 @@
 						this.isState = data.status == 1 ? true : false //状态
 					}
 				})
-			}
+			},
+			// 请求语言包
+			getLanguage() {
+				this.apiget('language/info', {
+					name: 'Accounts'
+				}).then(res => {
+					if (res.status == 200) {
+						let language = res.data.language
+						this.lan = res.data.language
+			             
+						 this.dataList[0].name=language.storeq
+						  console.log("arrList",this.arrList);
+						  this.arrList.map(v=>{
+							  v.data[0].text=language.selectAllz
+						  })
+			
+					}
+				});
+			},
 		}
 	}
 </script>

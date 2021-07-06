@@ -1,0 +1,622 @@
+<template>
+	<view class="box">
+		<view class="box-head" :style="{paddingTop:barHeight+'px'}">
+			<nav-title-balck navTitle="排班表"></nav-title-balck>
+			<view class="box-head-tabs">
+				<merchant-tabs ref="boxTabs" :tabData="tabsList" :activeIndex="defaultIndex" @tabClick='tabClick' />
+			</view>
+		</view>
+		<view class="box-content">
+			<view class="box-content-wrap">
+				<view class="box-content-wrap-item">
+					<swiper class="swiper-box" :current="defaultIndex" @change="tabChange">
+						<swiper-item class="swiper-box-item-list">
+							<view class="box-content-main">
+								<view class="box-content-main-calendar">
+									<scheduling-calendar @initChange='getSchedule' @calendarTap='teamDateClick' />
+								</view>
+								<view class="box-content-main-wrap-text">
+									<view class="box-content-main-wrap-text-left">
+										<text>{{infoData.year}}年{{infoData.month}}月{{infoData.day}}</text>
+										<text style="margin-left: 10rpx;">{{infoData.week}}</text>
+									</view>
+									<view class="box-content-main-wrap-text-right" @click="teamAppointment">
+										<text>查看当日预约</text>
+										<text class="iconfont icongengduo icon-font"
+											style="color: #45B3FE;font-size: 28rpx;margin-top: 4rpx;"></text>
+									</view>
+								</view>
+								<view class="box-content-main-wrap-msg">上班人员有：</view>
+								<view class="box-content-main-wrap-list">
+									<view class="box-content-main-wrap-list-li flex-center"
+										v-for="(item,index) in personnelList" :key="item.id">{{item.name}}</view>
+								</view>
+							</view>
+						</swiper-item>
+						<swiper-item class="swiper-box-item-list">
+							<view class="box-content-check-wrap" @click="selectOpen">
+								<view class="box-content-check-wrap-title">技师</view>
+								<view class="box-content-check-wrap-text">
+									<text>{{engineerName==''?'请选择技师':engineerName}}</text>
+									<text class="iconfont icongengduo icon-font"
+										style="color: #ccc;font-size: 32rpx;margin-top: 8rpx;"></text>
+								</view>
+							</view>
+							<view class="box-content-main">
+								<view class="box-content-main-calendar">
+									<scheduling-calendar :isChange="true" @schedulingChange='getTabChange'
+										@calendarTap="personalSchedulingInfo" />
+								</view>
+								<view class="box-content-main-appointment-info" v-if="isShow">
+									<view class="box-content-main-appointment-info-top">
+										<view class="appointment-info-top-title">
+											<text>{{staffData.year}}年{{staffData.month}}月{{staffData.day}}</text>
+											<text style="margin-left: 10rpx;">{{staffData.week}}</text>
+										</view>
+										<view class="appointment-info-top-text" @click="technicianAppointment">
+											<text>查看当日预约</text>
+											<text class="iconfont icongengduo icon-font"
+												style="color: #45B3FE;font-size: 28rpx;margin-top: 4rpx;"></text>
+										</view>
+									</view>
+									<view class="box-content-main-appointment-info-text" style="margin-top: 30rpx;">
+										门店名称：{{storeData.name}}
+									</view>
+									<view class="box-content-main-appointment-info-text"
+										style="display: flex;flex-wrap: wrap;" v-if="dataTimeList.length!=0">
+										<text>上班时间：</text>
+										<text v-for="(item,index) in dataTimeList" :key='index'
+											style="margin-right: 10rpx;">{{item.start}}-{{item.end}}</text>
+									</view>
+									<view class="box-content-main-appointment-info-text"
+										style="display: flex;flex-wrap: wrap;" v-if="dataTimeList.length==0">
+										<text>上班时间：</text>
+										<text>未排班</text>
+									</view>
+								</view>
+
+								<view class="box-content-main-appointment-wrap" v-if="isShow">
+									<view class="box-content-main-appointment-wrap-title">当月累计</view>
+									<view class="box-content-main-appointment-wrap-list">
+										<view class="appointment-wrap-list-item">
+											<text class="dot" style="background: #45B3FE"></text>
+											<text>正常排班 {{arrData.working_days}} 天</text>
+										</view>
+										<view class="appointment-wrap-list-item">
+											<text class="dot" style="background: #FF8366;"></text>
+											<text>休息班次 {{arrData.rest_days}} 天</text>
+										</view>
+									</view>
+								</view>
+							</view>
+						</swiper-item>
+					</swiper>
+				</view>
+			</view>
+		</view>
+		<view class="box-footer">
+			<btn-sky-blue v-if="defaultIndex==0" btnName="添加排班表" key='0' @btnClick="addSchedule" />
+			<btn-sky-blue v-if="!isShow&&defaultIndex==1" btnName="添加排班表" key='1' @btnClick="addSchedule" />
+			<btn-sky-blue v-if="isShow&&defaultIndex==1" btnName="编辑排班表" @btnClick="editSchedule" />
+		</view>
+		<popup-list-select :skid='engineer_id' @cancel="engineerCancel" @confirm="engineerConfirm" :visible='visible'
+			:dataList="engineerList" />
+	</view>
+</template>
+
+<script>
+	export default {
+		data() {
+			return {
+				barHeight: 0, //顶部电量导航栏高度
+				tabsList: ["团队排班表", "员工排班表"],
+				defaultIndex: 0, //当前滑动的页面
+				id: '',
+				visible: false,
+				engineerList: [],
+				personnelList: [],
+				dataTimeList: [],
+				engineerName: '',
+				engineer_id: '', //技师id
+				infoData: {},
+				staffData: {},
+				dataObj: {},
+				staffObj: {},
+				storeData: {},
+				arrData: {
+					working_days: 0,
+					rest_days: 0
+				},
+				isShow: false,
+				scheduleId: ''
+			};
+		},
+
+		onShow() {
+			if (this.$store.state.isAddSchedule) {
+				this.apiget('api/v1/store/engineer/schedule_list', {
+					store: this.id,
+					start_time: this.infoData.startTime,
+					end_time: this.infoData.endTime,
+					engineer: this.engineer_id,
+				}).then(res => {
+					if (res.status == 200) {
+						if (res.data.length != 0) {
+							this.isShow = true
+							this.scheduleId = res.data.schedule
+							var list = res.data.schedule_time
+							this.staffObj = res.data.schedule_time
+							for (let key in list) {
+								if (key == this.staffData.currentDate) {
+									this.dataTimeList = list[key]
+								}
+							}
+						} else {
+							this.isShow = false
+						}
+
+					}
+				});
+			}
+		},
+		onLoad(options) {
+			// 获取顶部电量状态栏高度
+			uni.getSystemInfo({
+				success: (res) => {
+					this.barHeight = res.statusBarHeight
+				}
+			});
+			
+			this.id = options.id
+			this.getTechniciany()
+			this.getStoreInfo(this.id)
+		},
+		methods: {
+
+			// 选择技师
+			selectOpen() {
+				if (this.engineerList.length != 0) {
+					this.visible = true
+					return false
+				}
+				uni.showToast({
+					title: '暂无可用技师，请先去添加技师',
+					icon: 'none'
+				})
+
+			},
+			// 选择技师取消按钮
+			engineerCancel(e) {
+				this.visible = e
+			},
+			// 选择技师确定按钮
+			engineerConfirm(e) {
+				this.engineer_id = e.id
+				this.engineerName = e.name
+
+				this.apiget('api/v1/store/engineer/schedule_list', {
+					store: this.id,
+					start_time: this.infoData.startTime,
+					end_time: this.infoData.endTime,
+					engineer: e.id,
+				}).then(res => {
+					if (res.status == 200) {
+						if (res.data.length != 0) {
+							this.isShow = true
+							this.scheduleId = res.data.schedule
+							var list = res.data.schedule_time
+							this.staffObj = res.data.schedule_time
+							for (let key in list) {
+								if (key == this.staffData.currentDate) {
+									this.dataTimeList = list[key]
+								}
+							}
+						} else {
+							this.isShow = false
+						}
+
+					}
+				});
+				this.apiget('api/v1/store/engineer/schedule_list', {
+					store: this.id,
+					engineer: e.id,
+					current_time: this.staffData.year + '-' + this.staffData.month + '-' + this.staffData.day
+				}).then(res => {
+					if (res.status == 200) {
+						if (res.data.length != 0) {
+							this.arrData = res.data
+						}
+					}
+				});
+
+			},
+
+
+			// 添加排班表
+			addSchedule() {
+				// 判断是否有技师
+				if (this.engineerList.length != 0) {
+					var str = {
+						type: 'add',
+						id: this.id,
+					}
+					this.$store.commit('upAddSchedule', false)
+					uni.navigateTo({
+						url: "../addSchedule/addSchedule?data=" + JSON.stringify(str)
+					})
+					return false
+				}
+				
+				uni.showToast({
+					title: '暂无可用技师，请先去添加技师',
+					icon: 'none'
+				})
+
+
+			},
+			// 编辑排班表
+			editSchedule() {
+				var str = {
+					type: 'edit',
+					engineer_id: this.engineer_id,
+					scheduleId: this.scheduleId
+				}
+				this.$store.commit('upAddSchedule', false)
+				uni.navigateTo({
+					url: "../addSchedule/addSchedule?data=" + JSON.stringify(str)
+				})
+			},
+
+
+			// 团队排班表日期点击
+			teamDateClick(e) {
+				this.infoData = e
+				console.log(this.infoData)
+				let dataTime = e.year + '-' + (e.month < 10 ? '0' + e.month : e.month) + '-' + (e.day < 10 ? '0' + e.day :
+					e.day)
+				for (let key in this.dataObj) {
+					if (key == dataTime) {
+						this.personnelList = this.dataObj[key]
+					}
+				}
+			},
+
+
+			// 员工 排班表  点击日期
+			personalSchedulingInfo(e) {
+				this.staffData = e
+				let dataTime = e.year + '-' + (e.month < 10 ? '0' + e.month : e.month) + '-' + (e.day < 10 ? '0' + e.day :
+					e.day)
+				for (let key in this.staffObj) {
+					if (key == dataTime) {
+						this.dataTimeList = this.staffObj[key]
+					}
+				}
+
+				this.apiget('api/v1/store/engineer/schedule_list', {
+					store: this.id,
+					engineer: this.engineer_id,
+					current_time: dataTime
+				}).then(res => {
+					if (res.status == 200) {
+						this.arrData = res.data
+					}
+				});
+			},
+			// 查看团队排班当日预约
+			teamAppointment() {
+				var str = {
+					year: this.infoData.year,
+					month: this.infoData.month,
+					day: this.infoData.day,
+					store: this.id,
+				}
+				uni.navigateTo({
+					url: "../teamSchedulingInfo/teamSchedulingInfo?data=" + JSON.stringify(str)
+				})
+			},
+
+			// 查看技师当日预约
+			technicianAppointment() {
+				var str = {
+					year: this.staffData.year,
+					month: this.staffData.month,
+					day: this.staffData.day,
+					engineer_id: this.engineer_id,
+					store: this.id,
+				}
+				uni.navigateTo({
+					url: "../personalSchedulingInfo/personalSchedulingInfo?data=" + JSON.stringify(str)
+				})
+			},
+
+
+			// tabs 点击
+			tabClick(e) {
+				this.defaultIndex = e
+			},
+			// 滑动切换列表
+			tabChange(e) {
+				this.$refs.boxTabs.tabToIndex(e.detail.current)
+				this.defaultIndex = e.detail.current
+			},
+
+
+			// 获取排班表
+			getSchedule(e) {
+				this.infoData = e
+				this.staffData = e
+
+				this.apiget('api/v1/store/engineer/schedule_list', {
+					store: this.id,
+					start_time: e.startTime,
+					end_time: e.endTime,
+				}).then(res => {
+					if (res.status == 200) {
+						this.dataObj = res.data
+
+						var list = res.data
+						for (let key in list) {
+							if (key == e.currentDate) {
+								this.personnelList = list[key]
+							}
+						}
+					}
+				});
+			},
+
+			// 上个月 下个月切换监听
+			getTabChange(e) {
+				this.apiget('api/v1/store/engineer/schedule_list', {
+					store: this.id,
+					start_time: this.infoData.startTime,
+					end_time: this.infoData.endTime,
+					engineer: this.engineer_id,
+				}).then(res => {
+					if (res.status == 200) {
+						if (res.data.length != 0) {
+							this.scheduleId = res.data.schedule
+							var list = res.data.schedule_time
+							this.staffObj = res.data.schedule_time
+
+							for (let key in list) {
+								if (key == this.staffData.currentDate) {
+									this.dataTimeList = list[key]
+								}
+							}
+						}
+
+					}
+				});
+			},
+
+
+			//获取技师
+			getTechniciany() {
+				this.apiget('api/v1/store/engineer', {
+					store: this.id,
+				}).then(res => {
+					if (res.status == 200) {
+						if (res.data.length != 0) {
+							this.engineerList = res.data.member
+						}
+					}
+				});
+			},
+			getStoreInfo(id) {
+				this.apiget('api/v1/store/store_information/' + id, {}).then(res => {
+					if (res.status == 200) {
+						this.storeData = res.data.member
+					}
+				});
+			},
+		}
+	}
+</script>
+
+<style lang="scss">
+	.box {
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+		background: #F7F7F7;
+
+		.box-head {
+			background-color: #fff;
+
+			.box-head-tabs {}
+		}
+
+		.box-content {
+			flex: 1;
+			overflow-y: scroll;
+
+			.box-content-wrap {
+				height: 100%;
+				overflow-y: scroll;
+
+				.box-content-wrap-item {
+					height: 100%;
+
+					.swiper-box {
+						height: 100%;
+						overflow-y: scroll;
+
+						.swiper-box-item-list {
+							height: 100%;
+							overflow-y: scroll;
+
+							.box-content-check-wrap {
+								margin-top: 20rpx;
+								height: 100rpx;
+								padding: 0 40rpx;
+								box-sizing: border-box;
+								display: flex;
+								align-items: center;
+								justify-content: space-between;
+								font-size: 32rpx;
+								color: #000;
+								background: #fff;
+
+								.box-content-check-wrap-title {}
+
+								.box-content-check-wrap-text {
+									display: flex;
+									align-items: center;
+
+									.icon-font {
+										margin-left: 10rpx;
+									}
+								}
+							}
+
+							.box-content-main {
+								margin-top: 20rpx;
+								padding: 0 20rpx 30rpx;
+								box-sizing: border-box;
+								background: #fff;
+
+								.box-content-main-calendar {
+									height: 700rpx;
+								}
+
+								.box-content-main-wrap-text {
+									padding: 30rpx 20rpx;
+									box-sizing: border-box;
+									display: flex;
+									align-items: center;
+									justify-content: space-between;
+									border-top: 1rpx solid #ededed;
+
+									.box-content-main-wrap-text-left {
+										font-size: 32rpx;
+										font-weight: 500;
+										color: #000;
+									}
+
+									.box-content-main-wrap-text-right {
+										display: flex;
+										align-items: center;
+										font-size: 28rpx;
+										color: #45B3FE;
+
+										.icon-font {
+											margin-left: 10rpx;
+										}
+									}
+								}
+
+								.box-content-main-wrap-msg {
+									padding: 0 20rpx;
+									box-sizing: border-box;
+									font-size: 28rpx;
+									color: #333;
+								}
+
+								.box-content-main-wrap-list {
+									padding: 0 20rpx;
+									box-sizing: border-box;
+									margin-top: 30rpx;
+									display: flex;
+									flex-wrap: wrap;
+
+									.box-content-main-wrap-list-li {
+										width: 152rpx;
+										height: 52rpx;
+										margin: 0 20rpx 20rpx 0;
+										background: #F7F7F7;
+										border-radius: 26rpx;
+										font-size: 28rpx;
+										color: #666;
+									}
+
+									.box-content-main-wrap-list-li:nth-child(4n) {
+										margin-right: 0;
+									}
+								}
+
+								.box-content-main-appointment-info {
+									padding: 30rpx;
+									box-sizing: border-box;
+									background: #F2FAFF;
+									border: 1rpx solid #5DBDFE;
+									border-radius: 10rpx;
+
+									.box-content-main-appointment-info-top {
+										display: flex;
+										align-items: center;
+										justify-content: space-between;
+										color: #45B3FE;
+
+										.appointment-info-top-title {
+											font-size: 32rpx;
+											font-weight: 500;
+										}
+
+										.appointment-info-top-text {
+											display: flex;
+											align-items: center;
+											font-size: 28rpx;
+
+											.icon-font {
+												margin-left: 10rpx;
+											}
+										}
+									}
+
+									.box-content-main-appointment-info-text {
+										margin-bottom: 10rpx;
+										font-size: 28rpx;
+										color: #000;
+									}
+								}
+
+								.box-content-main-appointment-wrap {
+									padding: 0 20rpx;
+									box-sizing: border-box;
+
+									.box-content-main-appointment-wrap-title {
+										padding: 30rpx 0;
+										font-size: 32rpx;
+										font-weight: 500;
+										color: #333;
+									}
+
+									.box-content-main-appointment-wrap-list {
+										display: flex;
+
+										.appointment-wrap-list-item {
+											display: flex;
+											align-items: center;
+											flex: 1;
+											font-size: 28rpx;
+											color: #333;
+
+											text {
+												display: block;
+											}
+
+											.dot {
+												width: 16rpx;
+												height: 16rpx;
+												border-radius: 50%;
+												margin-right: 10rpx;
+											}
+										}
+									}
+								}
+
+							}
+
+						}
+					}
+				}
+			}
+		}
+
+		.box-footer {
+			padding: 30rpx 40rpx;
+			box-sizing: border-box;
+		}
+	}
+</style>

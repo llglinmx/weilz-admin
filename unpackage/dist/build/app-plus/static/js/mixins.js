@@ -9,8 +9,7 @@ const mixins = {
 	},
 	methods: {
 		// 预览图片多张
-		previewImg(imageList, index) {
-			console.log(imageList,index)
+		previewImg(imageList, index) {			
 			let imgsArray = [];
 
 			if(Array.isArray(imageList)) {

@@ -1,0 +1,306 @@
+<template>
+	<view class="box">
+		<view class="box-head" :style="{paddingTop:barHeight+'px'}">
+			<nav-title-balck navTitle="日程安排"></nav-title-balck>
+		</view>
+		<view class="box-content">
+			<view class="box-content-main">
+				<view class="box-content-calendar">
+					<calendar :arrs="objList" @initChange='getSchedule' @calendarTap="personalSchedulingInfo" />
+				</view>
+				<view class="box-content-arrange">
+					<view class="box-content-arrange-top">
+						<view class="box-content-arrange-top-left">
+							<text class="date">{{dataObj.year}}年{{dataObj.month}}月{{dataObj.day}}日</text>
+							<text class="week">{{dataObj.week}}</text>
+						</view>
+						<view class="box-content-arrange-top-right" @click="technicianOwned">
+							<text>查看所有预约</text>
+							<text class="iconfont icongengduo icon-font"
+								style="color: #26BF82;font-size: 28rpx;margin-top: 4rpx;"></text>
+						</view>
+					</view>
+					<view class="box-content-arrange-text" style="margin-bottom: 10rpx;">门店名称：{{storeData.name}}</view>
+					<view class="box-content-arrange-text" style="display: flex;flex-wrap: wrap;"
+						v-if="dataTimeList.length!=0">
+						<text>上班时间：</text>
+						<text v-for="(item,index) in dataTimeList" :key='index'
+							style="margin-right: 10rpx;">{{item.start}}-{{item.end}}</text>
+					</view>
+					<view class="box-content-arrange-text" style="display: flex;flex-wrap: wrap;"
+						v-if="dataTimeList.length==0">
+						<text>上班时间：</text>
+						<text>未排班</text>
+					</view>
+				</view>
+				<view class="box-content-cumulative">
+					<view class="box-content-cumulative-tilte">当月累计</view>
+					<view class="box-content-cumulative-bottom">
+						<view class="box-content-cumulative-bottom-text">
+							<text class="dot" style="background: #26BF82;"></text>
+							<text class="msg">正常排班 {{arrData.working_days}} 天</text>
+						</view>
+						<view class="box-content-cumulative-bottom-text">
+							<text class="dot" style="background: #FF8366;"></text>
+							<text class="msg">休息班次 {{arrData.rest_days}} 天</text>
+						</view>
+					</view>
+				</view>
+			</view>
+
+		</view>
+	</view>
+</template>
+
+<script>
+	export default {
+		data() {
+			return {
+				barHeight: 0, //顶部电量导航栏高度
+				store: '', //门店id
+				id: '', //技师id
+				dataObj: {},
+				arrData: {},
+				timeList: {},
+				storeData: {},
+				dataTimeList: [],
+				objList: []
+			};
+		},
+
+		onReady() {
+			// 获取顶部电量状态栏高度
+			uni.getSystemInfo({
+				success: (res) => {
+					this.barHeight = res.statusBarHeight
+				}
+			});
+		},
+		onLoad(options) {
+			var data = JSON.parse(options.data)
+			this.id = data.id
+			this.store = data.store
+			this.getStoreInfo(this.id)
+		},
+		methods: {
+
+			// 查看技师当日预约
+			technicianAppointment() {
+				var str = {
+					year: this.dataObj.year,
+					month: this.dataObj.month,
+					day: this.dataObj.day,
+					engineer_id: this.id,
+					store: this.store,
+				}
+				uni.navigateTo({
+					url: "../technicianSchedulingInfo/technicianSchedulingInfo?data=" + JSON.stringify(str)
+				})
+			},
+
+			// 查看技师所有预约
+			technicianOwned() {
+				var str = {
+					id: this.id,
+					year: this.dataObj.year,
+					month: this.dataObj.month,
+					day: this.dataObj.day,
+				}
+				uni.navigateTo({
+					url: '../allSchedules/allSchedules?data=' + JSON.stringify(str)
+				})
+			},
+
+			// 日期点击
+			personalSchedulingInfo(e) {
+				this.dataObj = e
+
+				let dataTime = e.year + '-' + (e.month < 10 ? '0' + e.month : e.month) + '-' + (e.day < 10 ? '0' + e.day :
+					e.day)
+
+				for (let key in this.timeList) {
+					if (key == dataTime) {
+						this.dataTimeList = this.timeList[key]
+					}
+				}
+				this.getGoToWork(dataTime)
+				setTimeout(() => {
+					this.technicianAppointment()
+				}, 13)
+			},
+
+
+			// 获取排班表
+			getSchedule(e) {
+				this.getGoToWork(e.currentDate)
+
+				this.dataObj = e
+				this.apiget('api/v1/store/engineer/schedule_list', {
+					store: this.store,
+					engineer: this.id,
+					start_time: e.startTime,
+					end_time: e.endTime,
+				}).then(res => {
+					if (res.status == 200) {
+						var list = res.data.schedule_time
+						this.timeList = res.data.schedule_time
+						let arrs = []
+						for (let key in list) {
+							if (key == e.currentDate) {
+								this.dataTimeList = list[key]
+							}
+							arrs.push({
+								// time: key.substring(key.length - 2),
+								time: key,
+								bool: list[key].length != 0 ? true : false
+							})
+						}
+						
+						this.objList = arrs
+					}
+				});
+			},
+
+			// 获取上班天数
+			getGoToWork(dataTime) {
+				this.apiget('api/v1/store/engineer/schedule_list', {
+					store: this.store,
+					engineer: this.id,
+					current_time: dataTime
+				}).then(res => {
+					if (res.status == 200) {
+						this.arrData = res.data
+					}
+				});
+			},
+			// 获取门店
+			getStoreInfo(id) {
+				this.apiget('api/v1/store/store_information/' + id, {}).then(res => {
+					if (res.status == 200) {
+						if (res.data) {
+							this.storeData = res.data.member
+						}
+					}
+				});
+			},
+		}
+	}
+</script>
+
+<style lang="scss">
+	.box {
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+		background: #f7f7f7;
+
+		.box-head {
+			background-color: #fff;
+
+		}
+
+		.box-content {
+			flex: 1;
+			overflow-y: scroll;
+
+
+			.box-content-main {
+				background: #fff;
+				padding: 0 20rpx;
+				box-sizing: border-box;
+				margin-top: 20rpx;
+
+				.box-content-calendar {}
+
+				.box-content-arrange {
+					display: flex;
+					flex-direction: column;
+					justify-content: space-between;
+					min-height: 208rpx;
+					padding: 30rpx;
+					box-sizing: border-box;
+					border: 1rpx solid #26BF82;
+					border-radius: 10px;
+					background: #E8F8F1;
+
+					.box-content-arrange-top {
+						display: flex;
+						justify-content: space-between;
+						align-items: center;
+						margin-bottom: 30rpx;
+
+						.box-content-arrange-top-left {
+							font-size: 32rpx;
+							font-weight: 500;
+							color: #26BF82;
+
+							.date {
+								margin-right: 20rpx;
+							}
+
+							.week {}
+						}
+
+						.box-content-arrange-top-right {
+							display: flex;
+							align-items: center;
+							font-size: 28rpx;
+							color: #26BF82;
+
+							.icon-font {
+								margin-left: 10rpx;
+							}
+						}
+					}
+
+					.box-content-arrange-text {
+						font-size: 28rpx;
+						color: #000;
+					}
+				}
+
+				.box-content-cumulative {
+					padding: 40rpx 20rpx;
+					box-sizing: border-box;
+
+					.box-content-cumulative-tilte {
+						margin-bottom: 30rpx;
+						line-height: 32rpx;
+						font-size: 32rpx;
+						font-weight: 500;
+						color: #333;
+					}
+
+					.box-content-cumulative-bottom {
+						display: flex;
+						align-items: center;
+
+						.box-content-cumulative-bottom-text {
+							flex: 1;
+							display: flex;
+							align-items: center;
+
+							text {
+								display: block;
+							}
+
+							.dot {
+								width: 16rpx;
+								height: 16rpx;
+								margin-right: 10rpx;
+								border-radius: 50%;
+							}
+
+							.msg {
+								font-size: 28rpx;
+								color: #333;
+							}
+						}
+					}
+				}
+			}
+
+		}
+
+	}
+</style>

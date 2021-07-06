@@ -1,0 +1,143 @@
+<template>
+	<view class="resume-box">
+		<view class="resume-box-close flex-center" @click="close">
+			<text class="iconfont iconcuowu" style="font-size: 60rpx;"></text>
+		</view>
+		<view class="resume-box-content">
+			<view class="resume-box-content-title">
+				面试邀请列表
+			</view>
+			<view class="resume-box-content-list">
+				<view class="resume-box-content-list-li" v-for="(item,index) in 3">
+					<view class="resume-box-content-list-li-left">
+						<view class="content-list-li-left-text">
+							<text class="title">门店：</text>
+							<text class="text">古茗奶茶店</text>
+						</view>
+						<view class="content-list-li-left-text">
+							<text class="title">职位：</text>
+							<text class="text">足疗技师</text>
+						</view>
+						<view class="content-list-li-left-text">
+							<text class="title">地点：</text>
+							<text class="text">福建厦门</text>
+						</view>
+					</view>
+					<view class="resume-box-content-list-li-right">
+						<view class="content-list-li-right-btn flex-center" style="background: #26BF82;">接受面试</view>
+						<view class="content-list-li-right-btn flex-center"
+							style="background: #ef3b38;margin-left: 20rpx;">拒绝面试</view>
+					</view>
+				</view>
+			</view>
+		</view>
+	</view>
+</template>
+
+<script>
+	export default {
+		name: "application-info",
+		data() {
+			return {
+				dataInfo: {},
+			}
+		},
+		props: {
+			data: {
+
+			},
+		},
+		watch: {
+			data(val) {
+				this.dataInfo = this.data
+			},
+		},
+		mounted() {
+			this.dataInfo = this.data
+		},
+		methods: {
+			close() {
+				this.$emit('close')
+			},
+		}
+	}
+</script>
+
+<style lang="scss" scoped>
+	.resume-box {
+		position: relative;
+		padding: 60rpx 30rpx;
+		box-sizing: border-box;
+		min-height: 300rpx;
+		max-height: 1200rpx;
+		width: 600rpx;
+		background: #fff;
+		border-radius: 20rpx;
+
+		.resume-box-close {
+			position: absolute;
+			bottom: -100rpx;
+			left: 0;
+			right: 0;
+			margin: auto;
+			width: 80rpx;
+			height: 80rpx;
+			border: 1rpx solid #fff;
+			border-radius: 50%;
+			color: #fff;
+		}
+
+		.resume-box-content {
+			height: 100%;
+			display: flex;
+			flex-direction: column;
+
+			.resume-box-content-title {
+				font-size: 42rpx;
+				text-align: center;
+				color: #333;
+			}
+
+			.resume-box-content-list {
+				.resume-box-content-list-li:last-child {
+					border-bottom: none;
+				}
+
+				.resume-box-content-list-li {
+					display: flex;
+					align-items: center;
+					min-height: 200rpx;
+					border-bottom: 1rpx solid #ededed;
+
+					.resume-box-content-list-li-left {
+						flex: 1;
+
+						.content-list-li-left-text {
+							font-size: 28rpx;
+
+							.title {}
+
+							.text {
+								color: #999;
+							}
+						}
+					}
+
+					.resume-box-content-list-li-right {
+						margin-left: 20rpx;
+						display: flex;
+						align-items: center;
+
+						.content-list-li-right-btn {
+							width: 120rpx;
+							height: 60rpx;
+							border-radius: 6rpx;
+							font-size: 24rpx;
+							color: #fff;
+						}
+					}
+				}
+			}
+		}
+	}
+</style>

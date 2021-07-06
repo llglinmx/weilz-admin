@@ -1,0 +1,335 @@
+<template>
+	<view class="box">
+		<view class="box-head" :style="{paddingTop:barHeight+'px'}">
+			<nav-title-balck :navTitle="lan.ModifyMobilezc"></nav-title-balck>
+		</view>
+		<view class="box-content">
+			<view class="box-content-text">{{lan.CurrentAccount}}<!-- 当前账号 -->：{{phone|mobileStr}}</view>
+			<view class="box-content-main-input">
+				<view class="box-content-main-code" @click="selectOpen">
+					<text>+{{mobile_code}}</text>
+					<text class="iconfont iconxiangxiajiantou"
+						style="font-size:28rpx;transition: 0.3s;margin-left: 10rpx;"
+						:style="{transform: isAreaCode?'rotate(180deg)':'rotate(0deg)'}"></text>
+				</view>
+				<view class="box-content-main-input-box">
+					<input type="number" @input="phoneChange" maxlength="11" :placeholder="lan.enterMobileh" :focus="isFocus"
+						v-model.trim="phoneVal" />
+				</view>
+				<view class="box-content-main-input-box-ico flex-center" @click="empty" v-if="phoneVal.length!=0">
+					<text class="iconfont iconcuowu" style="font-size: 28rpx;color: #999;"></text>
+				</view>
+			</view>
+			<view class="box-content-main-input" style="border-top: 1rpx solid #ededed;margin-top: 0;">
+				<view class="box-content-main-input-box">
+					<input type="number" @input="codeChange" v-model.trim="codeVal" maxlength="6"
+						:placeholder="lan.SMSVerification" />
+				</view>
+				<view class="box-content-main-input-box-btn flex-center" v-if="!codeShow" @click="sendCodeVal">
+					{{lan.SendCodef}}<!-- 发送验证码 -->
+				</view>
+				<view class="box-content-main-input-box-btn flex-center" v-if="codeShow">
+					{{lan.HasSentf}}<!-- 已发送 --> {{count}}s
+				</view>
+			</view>
+			<view class="box-content-btn flex-center" @click="preservation" :class="isAll?'btn-active':''">{{lan.determinezx}}<!-- 确定 --></view>
+		</view>
+		<popup-list-select :confirmx='lan.determinezx' :cancelx='lan.cancelxc' :skid='mobile_code_id' @cancel="areaCancel" @confirm="areaConfirm" :visible='isAreaCode'
+			:dataList="areaCodeList" />
+		<uni-popup ref="popup" type="dialog">
+
+		</uni-popup>
+	</view>
+</template>
+
+<script>
+	import {
+		areaCodeList
+	} from '../../static/js/publicFile.js'
+	export default {
+		data() {
+			return {
+				barHeight: 0, //顶部电量导航栏高度
+				phone: '',
+				phoneVal: '',
+				codeVal: '',
+				isFocus: true,
+				isAll: false,
+				lan: {},
+				isAreaCode: false,
+				mobile_code_id: '',
+				mobile_code: '86',
+				editAreaCode:'',
+				areaCodeList: [],
+				ardaCode: '',
+				ardaCodeId: '',
+				sms_code_id: '',
+				codeShow: false,
+				count: 0,
+				timer: null,
+				lan:{},
+			};
+		},
+		filters: {
+			mobileStr(str) {
+				if (str.length > 7) {
+					return str.substring(0, 3) + '****' + str.substring(7, str.length);
+				} else {
+					return str.substring(0, str.length - 1) + '****';
+				}
+			},
+		},
+
+		onLoad(options) {
+			// 获取顶部电量状态栏高度
+			uni.getSystemInfo({
+				success: (res) => {
+					this.barHeight = res.statusBarHeight
+				}
+			});
+			var data = JSON.parse(options.data)
+			this.phone = data.phone
+			this.id = data.id
+			this.editAreaCode = data.mobileCode
+			this.areaCodeList = areaCodeList
+			this.getCode()
+			this.getLanguage()
+
+		},
+		methods: {
+			// 清空
+			empty() {
+				this.phoneVal = ''
+				this.isAll = false
+			},
+			selectOpen() {
+				this.isAreaCode = true
+			},
+			// 区号取消按钮
+			areaCancel(e) {
+				this.isAreaCode = e
+			},
+			// 区号确定
+			areaConfirm(e) {
+				this.mobile_code = e.name
+			},
+
+			//监听输入手机号
+			phoneChange() {
+				if (this.phoneVal.length > 5 && this.codeVal != '') {
+					this.isAll = true
+					return false
+				}
+				this.isAll = false
+			},
+			// 监听输入验证码
+			codeChange() {
+				if (this.phoneVal.length > 5 && this.codeVal != '') {
+					this.isAll = true
+					return false
+				}
+				this.isAll = false
+			},
+
+
+			// 确定按钮
+			preservation() {
+				if (this.isAll) {
+					this.apiput('api/v1/engineer/info/edit_mobile/' + this.id, {
+						sms_code: this.codeVal,
+						sms_code_id: this.sms_code_id,
+						mobile: this.phoneVal,
+						mobile_code: this.mobile_code
+					}).then(res => {
+						if (res.status == 200) {
+							uni.showToast({
+								title: this.lan.SuccessfullyModifieddf,//"手机号修改成功",
+								icon: "none"
+							})
+							setTimeout(() => {
+								uni.navigateBack({
+									delta: 1
+								})
+							}, 500)
+						}else{
+							uni.showToast({
+								title: res.message,
+								icon: "none"
+							})
+						}
+					});
+					return false;
+				}
+				uni.showToast({
+					title: this.lan.inputComplete,//"请检查输入是否输入完整",
+					icon: "none"
+				})
+			},
+
+			// 发送验证码
+			sendCodeVal() {
+				var vuedata = {
+					areaCode: this.editAreaCode, //区号
+					mobile: this.phone, //账号
+					type: 1,
+					code: this.ardaCode,
+					code_id: this.ardaCodeId,
+				}
+				if (this.phoneVal != '') {
+					//获取短信验证码
+					this.apipost('send_sms', vuedata).then(res => {
+						if (res.status == 200) {
+							uni.showToast({
+								title: this.lan.codeSentCuccessfully,//'验证码发送成功',
+								icon: "none"
+							})
+							this.sms_code_id = res.data.sms_code_id
+							const TIME_COUNT = 60;
+							if (!this.timer) {
+								this.count = TIME_COUNT;
+								this.codeShow = true;
+								this.timer = setInterval(() => {
+									if (this.count > 0 && this.count <= TIME_COUNT) {
+										this.count--;
+									} else {
+										this.codeShow = false;
+										clearInterval(this.timer);
+										this.timer = null;
+									}
+								}, 1000);
+							}
+						}
+					});
+					return false
+				}
+				uni.showToast({
+					title: this.lan.enterMobileh,//'请输入你需要修改的手机号',
+					icon: "none"
+				})
+			},
+			// 获取验证码
+			getCode() {
+				this.apiget('code/index', {}).then(res => {
+					if (res.status == 200) {
+						this.ardaCode = res.data.code
+						this.ardaCodeId = res.data.code_id
+
+						setTimeout(() => {
+							this.areaCodeList.forEach((item, index) => {
+								if (item.name == this.mobile_code) {
+									this.mobile_code_id = item.id
+								}
+							})
+						}, 500)
+					}
+				});
+			},
+			// 请求语言包
+			getLanguage() {
+				this.apiget('language/info', {
+					name: 'modifyMobile'
+				}).then(res => {
+					if (res.status == 200) {
+						let language = res.data.language
+						this.lan = res.data.language
+						
+						
+					}
+				});
+			},
+		}
+	}
+</script>
+
+<style lang="scss">
+	.box {
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+		background: #f7f7f7;
+
+		.box-head {
+			background-color: #fff;
+		}
+
+		.box-content {
+			flex: 1;
+
+			.box-content-text {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				height: 120rpx;
+				background: #fff;
+				font-size: 36rpx;
+				color: #666;
+			}
+
+			.box-content-main-input {
+				display: flex;
+				align-items: center;
+				margin-top: 20rpx;
+				height: 100rpx;
+				padding: 0 40rpx;
+				box-sizing: border-box;
+				background: #fff;
+
+				.box-content-main-code {
+					display: flex;
+					align-items: center;
+					font-size: 28rpx;
+				}
+
+				.box-content-main-input-box {
+					margin-left: 20rpx;
+					flex: 1;
+					height: 100%;
+
+					input {
+						box-sizing: border-box;
+						height: 100%;
+						font-size: 28rpx;
+					}
+				}
+
+				.box-content-main-input-box-ico {
+					width: 32rpx;
+					height: 32rpx;
+					border-radius: 50%;
+					margin-left: 10rpx;
+					border: 1rpx solid #ededed;
+				}
+
+				.box-content-main-input-box-btn {
+					margin-left: 20rpx;
+					width: 200rpx;
+					height: 70rpx;
+					border: 1rpx solid #eee;
+					border-radius: 10rpx;
+					color: #666;
+					font-size: 28rpx;
+				}
+			}
+
+			.box-content-btn {
+				width: 660rpx;
+				height: 88rpx;
+				margin: auto;
+				margin-top: 118rpx;
+				background: #4deab8;
+				box-shadow: 0rpx 10rpx 20rpx rgba(255, 49, 0, 0.15);
+				border-radius: 15rpx;
+				color: #fff;
+				font-size: 32rpx;
+				transition: 0.3s;
+			}
+
+			.btn-active {
+				background: #26BF82;
+			}
+
+		}
+
+		.box-footer {}
+	}
+</style>
