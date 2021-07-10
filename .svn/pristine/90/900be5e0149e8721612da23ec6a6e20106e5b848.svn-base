@@ -1,0 +1,337 @@
+<template>
+	<view class="box">
+		<view class="box-head" :style="{paddingTop:barHeight+'px'}">
+			<nav-title-balck :navTitle="lan.ApplicationRecordvz"></nav-title-balck>
+		</view>
+		<view class="box-content" :style="{display:isData?'block':'none'}">
+			<z-paging ref="paging1" @query="queryList" :list.sync="recordList"
+				:refresher-angle-enable-change-continued="false" :touchmove-propagation-enabled="true"
+				:use-custom-refresher="true" :key='val' :refresherDefaultText='lans.pullDownRefresh'
+				:loading-more-no-more-text="lan.theEnd" :refresherPullingText='lans.ReleaseRefresh'
+				:refresherRefreshingText='lans.Refreshings' :loadingMoreDefaultText='lans.ClickMore'
+				:loadingMoreLoadingText='lans.loadings' :loadingMoreNoMoreText='lans.NoMores'
+				:loadingMoreFailText='lans.LoadFaileds' style="height: 100%;">
+
+				<view class="box-content-list">
+					<view class="box-content-list-li" v-for="(item,index) in recordList" :key="item.id"
+						@click="recordDetails(item)">
+
+						<view class="box-content-list-li-image">
+							<image :src="item.store_info.simg" mode="aspectFill"></image>
+						</view>
+						<view class="box-content-list-li-info">
+							<view class="box-content-list-li-info-left">
+								<view class="box-content-list-li-info-top">
+									<view class="box-content-list-li-info-top-title">{{item.store_info.name}}</view>
+									<view class="box-content-list-li-info-top-text">
+										{{showtime(item.createtime)}}{{lan.PostedResumea}}
+									</view>
+								</view>
+								<view class="box-content-list-li-info-text">{{lan.applyPosition}}
+									<!-- 应聘岗位 -->：{{item.occupation}}</view>
+							</view>
+							<view class="box-content-list-li-info-right-text flex-center" v-if="item.status==null"
+								style="color: #c75050;">
+								{{lan.resumea}}<!-- 技师投递简历 -->
+							</view>
+							<view class="box-content-list-li-info-right-text flex-center" v-if="item.status==1"
+								style="color: #c75050;">
+								{{lan.interviewsb}}<!-- 商家邀请面试 -->
+							</view>
+							<view class="box-content-list-li-info-right-text flex-center" v-if="item.status==2"
+								style="color: #9d26b1;">
+								{{lan.employmentc}}<!-- 商家发送入职通知 -->
+							</view>
+							<view class="box-content-list-li-info-right-text flex-center" v-if="item.status==3">
+								{{lan.interviewd}}<!-- 技师接受面试 -->
+							</view>
+							<view class="box-content-list-li-info-right-text flex-center" v-if="item.status==4">
+								{{lan.entrybg}}<!-- 技师确定入职 -->
+							</view>
+							<view class="box-content-list-li-info-right-text flex-center" v-if="item.status==-1"
+								style="color: #02980f;">
+								{{lan.refusedg}}<!-- 技师拒绝面试 -->
+							</view>
+							<view class="box-content-list-li-info-right-text flex-center" v-if="item.status==-2"
+								style="color: #0064ff;">
+								{{lan.MerchantRefusedx}}<!-- 商家拒绝面试 -->
+							</view>
+
+							<view class="box-content-list-li-info-right-text flex-center" v-if="item.status==-3"
+								style="color: #006b96;">
+								{{lan.TechnicianRefusedx}}<!-- 技师拒绝入职 -->
+							</view>
+							<view class="box-content-list-li-info-right-text flex-center" v-if="item.status==-4"
+								style="color: #006b96;">
+								{{lan.failedb}}<!-- 技师面试不通过 -->
+							</view>
+						</view>
+					</view>
+				</view>
+			</z-paging>
+		</view>
+		<view class="box-content" :style="{display:!isData?'block':'none'}">
+			<loading v-if="isLoad" />
+			<no-data v-if="!isLoad" :msg='lans.NoDatar' />
+		</view>
+		<uni-popup ref="popupView" type="dialog" :maskClick="false">
+			<resume-preview :store='store' :recordId='recordId' type='application' :arr='lange' :data='previewInfo'
+				@close='closeView' />
+		</uni-popup>
+	</view>
+</template>
+
+<script>
+	export default {
+		data() {
+			return {
+				barHeight: 0, //顶部电量导航栏高度
+				isData: false,
+				isLoad: true,
+				recordList: [],
+				id: '',
+				store: '',
+				previewInfo: {},
+				lan: {},
+				lange: {},
+				lans: {},
+				val: 0,
+				recordId: ''
+			};
+		},
+
+		onReady() {
+			// 获取顶部电量状态栏高度
+			uni.getSystemInfo({
+				success: (res) => {
+					this.barHeight = res.statusBarHeight
+				}
+			});
+		},
+		onLoad(options) {
+			this.getLanguage()
+			this.getLan()
+		},
+		methods: {
+			// 上拉 下拉
+			queryList(pageNo, pageSize) {
+				this.getApplicationRecord(pageNo, pageSize)
+			},
+
+			getApplicationRecord(num, size) {
+				var vuedata = {
+					page_index: num, // 请求页数，
+					each_page: size, // 请求条数
+				}
+				this.apiget('api/v1/engineer/recruitment/technician_record', vuedata).then(res => {
+					if (res.status == 200) {
+						if (res.data.total_rows != 0) {
+							this.isData = true
+							let list = res.data.data
+							this.$refs.paging1.complete(list);
+						} else {
+							this.isData = false
+							this.isLoad = false
+							this.$refs.paging1.complete([]);
+						}
+					}
+				});
+			},
+			// 查看详情
+			recordDetails(item) {
+				this.apiget('api/v1/engineer/recruitment/technician_record/' + item.id, {}).then(res => {
+					if (res.status == 200) {
+
+					}
+				});
+			},
+
+			// 查看简历
+			viewResume(item) {
+				this.recordId = item.id
+				this.$refs.popupView.open()
+				this.apiget('api/v1/store/recruitment/accept/' + item.eid, {
+					type: 1
+				}).then(res => {
+					this.lange = this.lan
+					if (res.status == 200) {
+						this.previewInfo = res.data.data
+					}
+				});
+			},
+			// 关闭简历弹出层
+			closeView() {
+				this.$refs.popupView.close()
+				this.getApplicationRecord(1, 20)
+			},
+
+			showtime(time) {
+				let date =
+					typeof time === "number" ?
+					new Date(time) :
+					new Date((time || "").replace(/-/g, "/"));
+				let diff = (new Date().getTime() - date.getTime()) / 1000;
+				let dayDiff = Math.floor(diff / 86400);
+
+				let isValidDate =
+					Object.prototype.toString.call(date) === "[object Date]" &&
+					!isNaN(date.getTime());
+
+				if (!isValidDate) {
+					uni.showToast({
+						title: this.lan.dateFormatz,
+						icon: 'none'
+					})
+				}
+				const formatDate = function(date) {
+					let today = new Date(date);
+					let year = today.getFullYear();
+					let month = ("0" + (today.getMonth() + 1)).slice(-2);
+					let day = ("0" + today.getDate()).slice(-2);
+					let hour = today.getHours();
+					let minute = today.getMinutes();
+					let second = today.getSeconds();
+					return `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+				};
+				//小于0或者大于等于31显示原时间
+				if (isNaN(dayDiff) || dayDiff < 0 || dayDiff >= 31) {
+					return formatDate(date);
+				}
+				return (
+					(dayDiff === 0 &&
+						((diff < 60 && this.lan.just) ||
+							(diff < 120 && this.lan.minuteAgoz) ||
+							(diff < 3600 && Math.floor(diff / 60) + this.lan.minutesAgoz) ||
+							(diff < 7200 && this.lan.hourAgoz) ||
+							(diff < 86400 && Math.floor(diff / 3600) + this.lan.AnHour))) ||
+					(dayDiff === 1 && this.lan.yesterdayz) ||
+					(dayDiff < 7 && dayDiff + this.lan.DaysAgo) ||
+					(dayDiff < 31 && Math.ceil(dayDiff / 7) + this.lan.WeekAgo)
+				);
+			},
+			// 请求语言包
+			getLanguage() {
+				this.apiget('language/info', {
+					name: 'TechnicianRecruitments'
+				}).then(res => {
+					if (res.status == 200) {
+						let language = res.data.language
+						this.lan = res.data.language
+					}
+				});
+			},
+			// 请求语言包
+			getLan() {
+				this.apiget('language/info', {
+					name: 'pullUp'
+				}).then(res => {
+					if (res.status == 200) {
+						this.lans = res.data.language
+						this.val++
+					}
+				});
+			},
+
+		}
+	}
+</script>
+
+<style lang="scss">
+	.box {
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+		background: #fff;
+
+		.box-head {
+			background-color: #fff;
+		}
+
+		.box-content {
+			flex: 1;
+			overflow-y: scroll;
+
+			.box-content-list {
+
+				.box-content-list-li {
+					display: flex;
+					align-items: center;
+					padding-left: 40rpx;
+					box-sizing: border-box;
+
+					.box-content-list-li-image {
+						padding: 30rpx 0;
+						display: flex;
+						align-items: center;
+
+						image {
+							width: 88rpx;
+							height: 88rpx;
+							border-radius: 50%;
+						}
+					}
+
+					.box-content-list-li-info {
+						flex: 1;
+						display: flex;
+						align-items: center;
+						padding: 30rpx 30rpx 30rpx 0;
+						margin-left: 20rpx;
+						box-sizing: border-box;
+						border-bottom: 1rpx solid #ededed;
+
+						.box-content-list-li-info-left {
+							display: flex;
+							flex-direction: column;
+							flex: 1;
+
+							.box-content-list-li-info-top {
+								display: flex;
+								align-items: center;
+								justify-content: space-between;
+
+								.box-content-list-li-info-top-title {
+									font-size: 30rpx;
+									color: #1B1B1B;
+								}
+
+								.box-content-list-li-info-top-text {
+									font-size: 24rpx;
+									color: #B3B3B3;
+								}
+							}
+
+							.box-content-list-li-info-text {
+								margin-top: 10rpx;
+								font-size: 26rpx;
+								color: #B3B3B3;
+							}
+						}
+
+						.box-content-list-li-info-right {
+							display: flex;
+							justify-content: center;
+							margin-left: 40rpx;
+							padding: 0 20rpx;
+							box-sizing: border-box;
+							min-width: 140rpx;
+							max-width: 200rpx;
+							height: 50rpx;
+							background: #5DBDFE;
+							font-size: 28rpx;
+							color: #fff;
+							border-radius: 30rpx;
+						}
+
+						.box-content-list-li-info-right-text {
+							margin-left: 40rpx;
+							font-size: 24rpx;
+						}
+
+					}
+				}
+			}
+		}
+
+	}
+</style>

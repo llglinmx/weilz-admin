@@ -1,0 +1,585 @@
+<template>
+	<view class="box">
+		<view class="box-head" :style="{paddingTop:barHeight+'px'}">
+			<view class="box-head-top">
+				<view class="box-head-top-ico" @click="message">
+					<text class="iconfont iconxiaoxi icon-font" style="color: #fff;font-size: 52rpx"></text>
+					<uni-badge class="uni-badge-left-margin" :text="msgNumber" type="error" />
+				</view>
+				<view class="box-head-top-ico">
+					<text class="iconfont iconshezhi icon-font" style="color: #fff;font-size: 52rpx"
+						@click="setClick"></text>
+				</view>
+			</view>
+		</view>
+		<view class="box-content">
+			<view class="box-content-main">
+				<view class="shop-logo flex-center">
+					<image :src="userImg" mode="aspectFill" @click="userImg!='' && previewImg(userImg)"></image>
+				</view>
+				<view class="shop-title">{{infoData.name}}</view>
+				<!-- <view class="shop-score">
+					<text class="iconfont iconwujiaoxing icon-font" style="color: #FFCD4D;font-size: 28rpx;"
+						v-for="item in 5"></text>
+					<text>5分</text>
+				</view> -->
+				<view class="shop-list">
+					<block v-for="(item,index) in menuList" :key="index">
+						<view class="shop-list-li flex-center" @click="menuListClick(item.id)" v-if="item.isShow==-1">
+							<image :src="item.image" mode="aspectFill"></image>
+							<text>{{item.title}}</text>
+						</view>
+					</block>
+
+				</view>
+			</view>
+		</view>
+		<view class="box-footer">
+			<merchant-tabbar ref="tabBarRef" @tabbarClick="tabbarClick" :activeIndex="activeIndex"></merchant-tabbar>
+		</view>
+		<!-- 选择语言弹出层 -->
+		<uni-popup ref="languagePopup" type="center" :maskClick="false">
+			<view class="popup-box-main">
+				<view class="popup-list-box">
+					<view class="popup-title">
+						{{lan.Languageh}}
+					</view>
+					<view class="popup-list">
+						<view class="popup-list-li" v-for="(item,index) in textList"
+							@click="selectLanguage(item.id,index)" :key="index"
+							:class="item.default==1?'popup-list-li-active':''">
+							<text>{{item.name}}</text>
+							<text class="iconfont icondagou icon-font" style="color:#5DBDFE;font-size: 40rpx;"
+								v-if="item.default==1"></text>
+						</view>
+					</view>
+					<view class="popup-btn" @click="confirmBtn">{{lan.determinelz}}</view>
+				</view>
+				<view class="popup-close flex-center" @click="closeLanguage">
+					<text class="iconfont iconcuowu icon-font" style="color:#fff;font-size: 48rpx;"></text>
+				</view>
+			</view>
+		</uni-popup>
+	</view>
+</template>
+
+<script>
+	import merchantTabbar from "../../components/merchant-tabbar/merchant-tabbar.vue"
+	import mixins from '../../static/js/mixins.js'
+	export default {
+		mixins: [mixins],
+		data() {
+			return {
+				lan: {},
+				barHeight: 0, //顶部电量导航栏高度
+				activeIndex: 3, //当前tabbar所在页面
+				menuList: [],
+				userImg: '../../static/images/user-icon.png',
+				infoData: {
+					company: '',
+				},
+				textList: [],
+				LanguageID: '',
+				LanguageCode: '',
+				selectIndex: 0, //当前选择的语言
+				msgNumber: 0,
+			};
+		},
+		components: {
+			merchantTabbar
+		},
+
+		onLoad() {
+			// 获取顶部电量状态栏高度
+			uni.getSystemInfo({
+				success: (res) => {
+					this.barHeight = res.statusBarHeight
+				}
+			});
+			this.getLanguage()
+			this.languageList()
+		},
+		onShow() {
+			this.getInfo()
+		},
+		methods: {
+			getInfo() {
+				this.apiget('api/v1/store/admin_info', {}).then(res => {
+					if (res.status == 200) {
+						this.infoData = res.data
+						
+						if (res.data.simg != '') {
+							this.userImg = res.data.simg
+						}
+						
+						this.msgNumber = res.data.msg_num
+						this.menuListChange(res.data.sub_member, JSON.parse(res.data.manage))
+						uni.setStorageSync('jurisdiction', res.data.manage);
+					}
+				});
+			},
+
+			// 系统消息
+			message() {
+				uni.navigateTo({
+					url: "../../merchantMine/systemMessage/systemMessage"
+				})
+			},
+
+			// 设置
+			setClick() {
+				uni.navigateTo({
+					url: "../../merchantMine/set/set"
+				})
+			},
+			// 列表点击
+			menuListClick(id) {
+				switch (id) {
+					case 0: //进货订单
+						uni.navigateTo({
+							url: "../../merchantMine/purchaseOrder/purchaseOrder"
+						})
+						break;
+					case 1: // 客户管理
+						uni.navigateTo({
+							url: "../../merchantMine/customerManagement/customerManagement"
+						})
+						break;
+					case 2: //视频教学
+						uni.navigateTo({
+							url: "../../merchantMine/videoTeaching/videoTeaching"
+						})
+						break;
+					case 3: // 营销管理
+						uni.navigateTo({
+							url: "../../merchantMine/marketingManagement/marketingManagement"
+						})
+						break;
+					case 4: // 统计信息
+						uni.navigateTo({
+							url: "../../merchantMine/statisticsInfo/statisticsInfo"
+						})
+						break;
+					case 5: //推荐
+						uni.navigateTo({
+							url: "../../merchantMine/recommend/recommend"
+						})
+						break;
+					case 6: //账号管理
+						uni.navigateTo({
+							url: "../../merchantMine/accountManagement/accountManagement"
+						})
+						break;
+					case 7: //语言切换
+						this.$refs.languagePopup.open()
+						break;
+					case 8: //评论列表
+						uni.navigateTo({
+							url: '../../merchantMine/evaluationList/evaluationList'
+						})
+						break;
+				}
+			},
+			// 获取菜单
+			menuListChange(type, manage) {
+				// -1 显示  1隐藏
+				let arrs = [
+					// {
+					// 	title: "进货订单",
+					// 	image: "../../static/images/mine-icon1.png",
+					// 	id: 0
+					// },
+					{
+						title: "客户管理",
+						image: "../../static/images/mine-icon2.png",
+						id: 1,
+						isShow: manage.user_list == 1 ? -1 : 1,
+					},
+					{
+						title: "视频教学",
+						image: "../../static/images/mine-icon3.png",
+						id: 2,
+						isShow: -1,
+					},
+					{
+						title: "营销管理",
+						image: "../../static/images/mine-icon4.png",
+						id: 3,
+						isShow: -1,
+					},
+					{
+						title: "统计信息",
+						image: "../../static/images/mine-icon5.png",
+						id: 4,
+						isShow: -1,
+					},
+					{
+						title: "推荐",
+						image: "../../static/images/mine-icon6.png",
+						id: 5,
+						isShow: -1,
+					},
+					{
+						title: "账号管理",
+						image: "../../static/images/zh-ico.png",
+						id: 6,
+						isShow: type == 1 ? 1 : -1,
+					},
+					{
+						title: "语言切换",
+						image: "../../static/images/lang-ico.png",
+						id: 7,
+						isShow: -1,
+					},
+					{
+						title: "评价列表",
+						image: "../../static/images/mine-icon4.png",
+						id: 8,
+						isShow: -1,
+					},
+				]
+				this.menuList = arrs
+			},
+
+			// 选择语言
+			selectLanguage(id, index) {
+				this.textList.forEach(item => {
+					item.default = '-1'
+				})
+				this.textList[index].default = 1
+				this.selectIndex = index
+				this.LanguageID = this.textList[index].id
+				this.LanguageCode = this.textList[index].code
+			},
+
+			// 选择语言 关闭
+			closeLanguage() {
+				this.$refs.languagePopup.close()
+			},
+
+			// 语言选择确定按钮 
+			confirmBtn() {
+				this.languageName = this.textList[this.selectIndex].name
+				uni.setStorageSync('isStoreSelectLanguage', true);
+				uni.setStorageSync('storeLanguageId', this.LanguageID);
+				uni.setStorageSync('storeLanguageCode', this.LanguageCode);
+				this.$refs.tabBarRef.languageChange()
+				this.getLanguage()
+				this.$refs.languagePopup.close()
+			},
+
+
+
+			// tabbar点击
+			tabbarClick(obj) {
+				this.activeIndex = obj.index
+				switch (obj.id) {
+					case 0: //首页
+						uni.redirectTo({
+							url: "../merchantHome/merchantHome"
+						})
+						break;
+					case 1: //订单
+						uni.redirectTo({
+							url: "../merchantOrder/merchantOrder"
+						})
+						break;
+					case 2: //门店
+						uni.redirectTo({
+							url: "../merchantStore/merchantStore"
+						})
+						break;
+					case 3: //商城
+						uni.redirectTo({
+							url: "../merchantMall/merchantMall"
+						})
+						break;
+					case 4: //我的
+
+						break;
+				}
+
+			},
+			// 请求语言列表
+			languageList() {
+				this.apiget('language', {}).then(res => {
+					if (res.status == 200) {
+						this.textList = res.data.lng.reverse()
+						var langId = uni.getStorageSync('storeLanguageId');
+
+						if (langId) {
+							this.textList.forEach((item, index) => {
+								if (item.id == langId) { //判断默认选中语言包
+									this.textList.forEach(item => {
+										item.default = '-1'
+									})
+									this.textList[index].default = 1
+								}
+							})
+						} else {
+							this.textList.forEach((item, index) => {
+								if (item.default == 1) { //判断默认选中语言包
+									this.selectIndex = index
+								}
+							})
+						}
+					}
+				});
+			},
+			// 请求语言包
+			getLanguage() {
+				this.apiget('language/info', {
+					name: 'MerchantMypage'
+				}).then(res => {
+					if (res.status == 200) {
+						let language = res.data.language
+						this.lan = res.data.language
+
+						this.menuList.map(item => {
+							switch (item.id) {
+								case 0: //进货订单
+									item.title = language.PurchaseOrderr
+									break
+								case 1: //客户管理
+									item.title = language.CustomerManagemente
+									break
+								case 2: //视频教学
+									item.title = language.VideoTeachings
+									break
+								case 3: //营销管理
+									item.title = language.MarketingManagements
+									break
+								case 4: //统计信息
+									item.title = language.Statisticss
+									break
+								case 5: //推荐
+									item.title = language.recommends
+									break
+								case 6: //账号管理
+									item.title = language.AccountManagementa
+									break
+								case 7: //语言切换
+									item.title = language.Languageh
+									break
+								case 8:
+									item.title = language.Evaluationi
+									break
+							}
+						})
+					}
+				});
+			},
+		}
+	}
+</script>
+
+<style lang="scss">
+	.box {
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+
+		.box-head {
+			background-color: #5DBDFE;
+
+			.box-head-top {
+				height: 88rpx;
+				padding: 0 40rpx;
+				box-sizing: border-box;
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+
+				.box-head-top-ico {
+					position: relative;
+
+					.uni-badge-left-margin {
+						position: absolute;
+						top: -20rpx;
+						right: -20rpx;
+					}
+				}
+			}
+		}
+
+		.box-content {
+			flex: 1;
+			overflow-y: scroll;
+			background: #5DBDFE;
+
+			.box-content-main {
+				display: flex;
+				flex-direction: column;
+				position: relative;
+				height: calc(100% - 134rpx);
+				margin-top: 134rpx;
+				background: #F7F7F7;
+				border-radius: 40rpx 40rpx 0rpx 0rpx;
+
+				.shop-logo {
+					position: absolute;
+					left: 0;
+					right: 0;
+					top: -125rpx;
+					margin: auto;
+					width: 250rpx;
+					height: 250rpx;
+					background: rgba(255, 255, 255, .2);
+					border-radius: 20rpx;
+
+					image {
+						width: 210rpx;
+						height: 210rpx;
+						border-radius: 20rpx;
+					}
+				}
+
+				.shop-title {
+					padding-top: 136rpx;
+					font-size: 36rpx;
+					font-weight: 500;
+					color: #000;
+					text-align: center;
+				}
+
+				.shop-score {
+					margin-top: 20rpx;
+					display: flex;
+					align-items: center;
+					justify-content: center;
+
+					text {
+						margin-right: 8rpx;
+						font-size: 24rpx;
+						color: #000;
+					}
+				}
+
+				.shop-list {
+					// flex: 1;
+					overflow-y: scroll;
+					display: flex;
+
+					padding: 0 40rpx;
+					box-sizing: border-box;
+					flex-wrap: wrap;
+					margin-top: 60rpx;
+
+					.shop-list-li {
+						width: 320rpx;
+						height: 200rpx;
+						margin-right: 30rpx;
+						margin-bottom: 30rpx;
+						flex-direction: column;
+						background: #FFFFFF;
+						border-radius: 20rpx;
+
+						image {
+							width: 72rpx;
+							height: 72rpx;
+						}
+
+						text {
+							text-align: center;
+							margin-top: 20rpx;
+							line-height: 32rpx;
+							font-size: 28rpx;
+							color: #000;
+						}
+					}
+
+					.shop-list-li:nth-child(2n) {
+						margin-right: 0;
+					}
+				}
+
+			}
+		}
+
+		.box-footer {}
+
+		.popup-box-main {
+			position: relative;
+			width: 570rpx;
+			// height: 704rpx;
+			padding: 0 60rpx;
+			box-sizing: border-box;
+			background: #fff;
+			border-radius: 20rpx;
+
+			.popup-list-box {
+				height: 100%;
+				display: flex;
+				flex-direction: column;
+
+				.popup-title {
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					height: 128rpx;
+					font-size: 36rpx;
+					font-family: Source Han Sans CN;
+					font-weight: 400;
+					color: #000000;
+					text-align: center;
+				}
+
+				.popup-list {
+					flex: 1;
+					overflow: auto;
+
+					.popup-list-li {
+						position: relative;
+						display: flex;
+						align-items: center;
+						justify-content: center;
+						height: 80rpx;
+						margin-bottom: 20rpx;
+						background: #F7F7F7;
+						transition: 0.2s;
+
+						text {}
+
+						.icon-font {
+							position: absolute;
+							right: 30rpx;
+							top: 0;
+							bottom: 0;
+							margin: auto;
+						}
+					}
+
+					.popup-list-li-active {
+						color: #5DBDFE !important;
+						background: #d8ecfd !important;
+					}
+
+					.popup-list-li:last-child {
+						margin-bottom: 0;
+					}
+				}
+
+				.popup-btn {
+					margin: 20rpx 0 50rpx;
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					height: 88rpx;
+					background: #5DBDFE;
+					border-radius: 15rpx;
+					color: #fff;
+				}
+			}
+
+			.popup-close {
+				position: absolute;
+				top: -28rpx;
+				right: -28rpx;
+				width: 56rpx;
+				height: 56rpx;
+				border-radius: 50%;
+				background: #5DBDFE;
+			}
+		}
+	}
+</style>

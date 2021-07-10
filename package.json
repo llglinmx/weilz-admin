@@ -11,5 +11,8 @@
     ],
     "dependencies": {
         "vue-jsonp": "^2.0.0"
+    },
+    "devDependencies": {
+        "moment": "^2.29.1"
     }
 }

@@ -5,19 +5,20 @@
 			content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
 		<title>Google Map</title>
 		<script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+		<script src="js/require.min.js"></script>
 		<script
 			src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAwjMreTOci1VWPK8GY5Qo3i4Nny4va6hY&libraries=places&v=weekly"
 			async defer></script>
 
-		<script type="text/javascript" src="https://js.cdn.aliyun.dcloud.net.cn/dev/uni-app/uni.webview.1.5.2.js">
-		</script>
+		<!-- <script type="text/javascript" src="https://js.cdn.aliyun.dcloud.net.cn/dev/uni-app/uni.webview.1.5.2.js"></script> -->
 
-		<!-- <script type="text/javascript" src='../../static/js/vue.min-v2.6.14.js'></script>
-		<script type="text/javascript" src='../../static/js/uni.webview.1.5.2.js'></script> -->
+		<!-- <script type="text/javascript" src='../../static/js/vue.min-v2.6.14.js'></script> -->
+
+		<script type="text/javascript" src='/static/js/uni.webview.1.5.2.js'></script>
 
 		<style type="text/css">
 			#map {
-				height: calc(100% - 120px);
+				height: calc(100% - 165px);
 			}
 
 			html,
@@ -165,6 +166,18 @@
 			#target {
 				width: 345px;
 			}
+
+			#msg-text {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				margin-top: 0.75rem;
+				font-size: 0.8rem;
+			}
+
+			#msg-text span {
+				display: block
+			}
 		</style>
 	</head>
 	<body>
@@ -185,13 +198,21 @@
 				<input id="pac-input" class="input-box" type="text" placeholder="Search Box" />
 			</div>
 			<div id="map"></div>
+			<div id="msg-text">
+				<span id='address'>正在获取地址</span>
+				<span></span>
+			</div>
 			<div id="btn">确定</div>
 		</div>
 
 	</body>
 </html>
 <script>
-	let addressObj
+	let addressObj = {
+		address: '',
+		lat: '',
+		lng: ''
+	}
 
 	function getQuery(name) {
 		// 正则：[找寻'&' + 'url参数名字' = '值' + '&']（'&'可以不存在）
@@ -205,37 +226,98 @@
 	}
 
 
+	var marker
+	var map
+	let markers = [];
+	var mapBox
+	var infoWindow
 
 	function initAutocomplete() {
 		var lats = Number(getQuery('lat'))
 		var lngs = Number(getQuery('log'))
-
-		console.log(lats, lngs)
+		addressObj.lat = lats
+		addressObj.lng = lngs
 
 		var uluru = {
 			lat: lats,
 			lng: lngs,
 		};
-		const map = new google.maps.Map(document.getElementById("map"), {
+		mapBox = document.getElementById("map")
+		map = new google.maps.Map(document.getElementById("map"), {
 			center: {
 				lat: lats,
 				lng: lngs
 			},
 			zoom: 13,
 			mapTypeId: "roadmap",
+			gestureHandling: "greedy",
 			center: uluru,
+			disableDefaultUI: true, //禁用默认用户界面
 		});
-		const marker = new google.maps.Marker({
+
+		let url =
+			'https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyAwjMreTOci1VWPK8GY5Qo3i4Nny4va6hY&latlng=' +
+			lats + ',' + lngs + '&sensor=true/false';
+		let info = httpGet(url)
+		let dataInfo = JSON.parse(info)
+		document.getElementById('address').innerHTML = dataInfo.results[0].formatted_address
+
+		addressObj.address = dataInfo.results[0].formatted_address
+
+		marker = new google.maps.Marker({
 			position: uluru,
 			map: map,
+			draggable: true,
+			animation: google.maps.Animation.DROP,
 		});
+		infoWindow = new google.maps.InfoWindow({
+			content: "经度：" + lats + "<br/>纬度：" + lngs //提示窗体内的提示信息
+		});
+
+		//打开提示窗口
+		infoWindow.open(map, marker);
+
+		marker.addListener("click", toggleBounce);
+
 
 		map.addListener('click', function(e) {
 			var latLngData = e.latLng.lat().toFixed(6) + ',' + e.latLng.lng().toFixed(6);
-			console.log(latLngData)
+
+			marker.setMap(null);
+			marker = new google.maps.Marker({
+				position: {
+					lat: e.latLng.lat(),
+					lng: e.latLng.lng(),
+				},
+				map: map,
+				draggable: true,
+				animation: google.maps.Animation.DROP,
+			});
+
+			infoWindow = new google.maps.InfoWindow({
+				content: "经度：" + e.latLng.lat().toFixed(6) + "<br/>纬度：" + e.latLng.lng().toFixed(
+					6) //提示窗体内的提示信息
+			});
+			//打开提示窗口
+			infoWindow.open(map, marker);
+
+			map.setCenter({
+				lat: e.latLng.lat(),
+				lng: e.latLng.lng(),
+			})
+
+			var url =
+				'https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyAwjMreTOci1VWPK8GY5Qo3i4Nny4va6hY&latlng=' +
+				latLngData + '&sensor=true/false';
+			let info = httpGet(url)
+			let dataInfo = JSON.parse(info)
+			document.getElementById('address').innerHTML = dataInfo.results[0].formatted_address
+
+			addressObj.lat = e.latLng.lat().toFixed(6)
+			addressObj.lng = e.latLng.lng().toFixed(6)
+			addressObj.address = dataInfo.results[0].formatted_address
+
 		});
-
-
 
 
 
@@ -247,23 +329,27 @@
 		map.addListener("bounds_changed", () => {
 			searchBox.setBounds(map.getBounds());
 		});
-		let markers = [];
+
 		// Listen for the event fired when the user selects a prediction and retrieve
 		// more details for that place.
 		searchBox.addListener("places_changed", () => {
 			const places = searchBox.getPlaces();
-			addressObj = searchBox.getPlaces();
+
+			addressObj.lat = places[0].geometry.location.lat()
+			addressObj.lng = places[0].geometry.location.lng()
+			addressObj.address = places[0].formatted_address
+			document.getElementById('address').innerHTML = places[0].formatted_address
 
 			if (places.length == 0) {
 				return;
 			}
 			// Clear out the old markers.
-			markers.forEach((marker) => {
-				marker.setMap(null);
-			});
-			markers = [];
+
+			marker.setMap(null);
+
 			// For each place, get the icon, name and location.
 			const bounds = new google.maps.LatLngBounds();
+
 			places.forEach((place) => {
 				if (!place.geometry || !place.geometry.location) {
 					console.log("Returned place contains no geometry");
@@ -277,14 +363,24 @@
 					scaledSize: new google.maps.Size(25, 25),
 				};
 				// Create a marker for each place.
-				markers.push(
-					new google.maps.Marker({
-						map,
-						icon,
-						title: place.name,
-						position: place.geometry.location,
-					})
-				);
+				marker = new google.maps.Marker({
+					position: {
+						lat: places[0].geometry.location.lat(),
+						lng: places[0].geometry.location.lng(),
+					},
+					map: map,
+					draggable: true,
+					animation: google.maps.Animation.DROP,
+				});
+
+				infoWindow = new google.maps.InfoWindow({
+					content: "经度：" + places[0].geometry.location.lat() + "<br/>纬度：" + places[0]
+						.geometry.location.lng()
+						.toFixed(
+							6) //提示窗体内的提示信息
+				});
+				//打开提示窗口
+				infoWindow.open(map, marker);
 
 				if (place.geometry.viewport) {
 					// Only geocodes have viewport.
@@ -293,18 +389,45 @@
 					bounds.extend(place.geometry.location);
 				}
 			});
-			console.log(markers)
 			map.fitBounds(bounds);
 		});
 	}
+
+
+
+	function toggleBounce() {
+
+		map.setZoom(18);
+		map.setCenter(marker.getPosition());
+
+		if (marker.getAnimation() !== null) {
+			marker.setAnimation(null);
+		} else {
+			marker.setAnimation(google.maps.Animation.BOUNCE);
+		}
+	}
+
+	function httpGet(theUrl) {
+		var xmlHttp = new XMLHttpRequest();
+		xmlHttp.open("GET", theUrl, false);
+		xmlHttp.send(null);
+		return xmlHttp.responseText;
+	}
+
 
 	window.onload = function() {
 		console.log('加载完成')
 		initAutocomplete()
 	}
 
-	// 待触发 `UniAppJSBridgeReady` 事件后，即可调用 uni 的 API。
-	document.addEventListener('UniAppJSBridgeReady', function() {
+
+	require.config({
+		paths: {
+			'uni': 'js/uni.webview.1.5.2',
+		}
+	})
+
+	require(['uni'], function(uni) {
 		// 返回
 		var backNav = document.getElementById('Gback')
 		backNav.onclick = function() {
@@ -314,24 +437,20 @@
 		}
 		var aBtn = document.getElementById('btn')
 		aBtn.onclick = function() {
-
 			uni.getEnv(function(res) {
-				console.log(JSON.stringify(res))
 				if (res.h5) {
-
+					window.parent.postMessage(addressObj)
 				} else {
 					uni.postMessage({
 						data: {
-							// dataObj: places,
 							dataObj: addressObj,
 						}
 					});
 				}
-
 			});
 			uni.navigateBack({
 				delta: 1
 			})
 		}
-	});
+	})
 </script>

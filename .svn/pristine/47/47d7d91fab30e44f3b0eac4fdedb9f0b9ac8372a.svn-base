@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta name="viewport"
+			content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title>Google Map</title>
+		<script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+		<script src="js/require.min.js"></script>
+		<script
+			src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAwjMreTOci1VWPK8GY5Qo3i4Nny4va6hY&libraries=places&v=weekly"
+			async defer></script>
+
+		<!-- <script type="text/javascript" src="https://js.cdn.aliyun.dcloud.net.cn/dev/uni-app/uni.webview.1.5.2.js"></script> -->
+
+		<!-- <script type="text/javascript" src='../../static/js/vue.min-v2.6.14.js'></script> -->
+
+		<script type="text/javascript" src='/static/js/uni.webview.1.5.2.js'></script>
+
+		<style type="text/css">
+			#map {
+				height: calc(100% - 165px);
+			}
+
+			html,
+			body {
+				position: relative;
+				height: calc(100% - 10px);
+				margin: 0;
+				padding: 0;
+			}
+
+			#appBox {
+				height: 100%;
+			}
+
+			#Gback {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				width: 33px;
+				height: 33px;
+			}
+
+			.arrow:before {
+				content: " ";
+				display: inline-block;
+				-webkit-transform: rotate(45deg);
+				-ms-transform: rotate(45deg);
+				transform: rotate(45deg);
+				height: 10px;
+				width: 10px;
+				border-width: 0 0 1px 1px;
+				border-color: #666;
+				border-style: solid;
+				position: relative;
+				top: 0
+			}
+
+			#search {
+				width: 100%;
+				position: absolute;
+				top: 80px;
+				z-index: 99999999999999999999999999999999999999;
+				text-align: center;
+			}
+
+			#search .input-box {
+				padding: 0 5px;
+				height: 30px;
+				width: 280px;
+				box-sizing: border-box;
+			}
+
+			.btn-list {
+				margin-top: 20px;
+				padding: 0 15px;
+				box-sizing: border-box;
+			}
+
+			#btn {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				width: 90%;
+				height: 44px;
+				margin: 10px auto 0;
+				border-radius: 5px;
+				background: #5DBDFE;
+				color: #fff;
+				font-size: 16px;
+			}
+
+			#description {
+				font-family: Roboto;
+				font-size: 15px;
+				font-weight: 300;
+			}
+
+			#infowindow-content .title {
+				font-weight: bold;
+			}
+
+			#infowindow-content {
+				display: none;
+			}
+
+			#map #infowindow-content {
+				display: inline;
+			}
+
+			.pac-card {
+				margin: 10px 10px 0 0;
+				border-radius: 2px 0 0 2px;
+				box-sizing: border-box;
+				-moz-box-sizing: border-box;
+				outline: none;
+				box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+				background-color: #fff;
+				font-family: Roboto;
+			}
+
+			#pac-container {
+				padding-bottom: 12px;
+				margin-right: 12px;
+			}
+
+			.pac-controls {
+				display: inline-block;
+				padding: 5px 11px;
+			}
+
+			.pac-controls label {
+				font-family: Roboto;
+				font-size: 13px;
+				font-weight: 300;
+			}
+
+			#pac-input {
+				background-color: #fff;
+				font-family: Roboto;
+				font-size: 15px;
+				font-weight: 300;
+				padding: 0 11px 0 13px;
+				text-overflow: ellipsis;
+				height: 30px;
+				width: 280px;
+				top: 60px !important;
+				left: 0 !important;
+				right: 0;
+				margin: auto;
+				outline: none;
+			}
+
+			#pac-input:focus {
+				border-color: #4d90fe;
+			}
+
+			#title {
+				color: #fff;
+				background-color: #4d90fe;
+				font-size: 25px;
+				font-weight: 500;
+				padding: 6px 12px;
+			}
+
+			#target {
+				width: 345px;
+			}
+
+			#msg-text {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				margin-top: 0.75rem;
+				font-size: 0.8rem;
+			}
+
+			#msg-text span {
+				display: block
+			}
+		</style>
+	</head>
+	<body>
+		<div id="appBox">
+			<div class="btn-list" style="display: flex;align-items: center;">
+				<!-- <image @click="" data-action="navigateBack"
+				style="width: 20px;padding: 5px 0 5px 10px;position: absolute;left: 0;" src="./img/back.png"></image> -->
+				<div id='Gback'>
+					<span class='arrow' data-action="navigateBack"></span>
+				</div>
+
+				<div style="width: 100%;text-align: center;height: 50px;line-height: 50px;padding-right: 30px;
+					box-sizing: border-box;">
+					<h4 style="margin: 0 0;">Map</h4>
+				</div>
+			</div>
+			<div id="search">
+				<input id="pac-input" class="input-box" type="text" placeholder="Search Box" />
+			</div>
+			<div id="map"></div>
+			<div id="msg-text">
+				<span id='address'>暂无选择地址</span>
+				<span></span>
+			</div>
+			<div id="btn">确定</div>
+		</div>
+
+	</body>
+</html>
+<script>
+	let addressObj = {
+		address: '',
+		lat: '',
+		lng: ''
+	}
+
+	function getQuery(name) {
+		// 正则：[找寻'&' + 'url参数名字' = '值' + '&']（'&'可以不存在）
+		let reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+		let r = window.location.search.substr(1).match(reg);
+		if (r != null) {
+			// 对参数值进行解码
+			return decodeURIComponent(r[2]);
+		}
+		return null;
+	}
+
+
+	var marker
+	var map
+	let markers = [];
+	var mapBox
+	var infoWindow
+
+	function initAutocomplete() {
+		var lats = Number(getQuery('lat'))
+		var lngs = Number(getQuery('log'))
+		addressObj.lat = lats
+		addressObj.lng = lngs
+
+		var uluru = {
+			lat: lats,
+			lng: lngs,
+		};
+		mapBox = document.getElementById("map")
+		map = new google.maps.Map(document.getElementById("map"), {
+			center: {
+				lat: lats,
+				lng: lngs
+			},
+			zoom: 13,
+			mapTypeId: "roadmap",
+			gestureHandling: "greedy",
+			center: uluru,
+			disableDefaultUI: true, //禁用默认用户界面
+		});
+
+		let url =
+			'https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyAwjMreTOci1VWPK8GY5Qo3i4Nny4va6hY&latlng=' +
+			lats + ',' + lngs + '&sensor=true/false';
+		let info = httpGet(url)
+		let dataInfo = JSON.parse(info)
+		document.getElementById('address').innerHTML = dataInfo.results[0].formatted_address
+
+		addressObj.address = dataInfo.results[0].formatted_address
+
+		marker = new google.maps.Marker({
+			position: uluru,
+			map: map,
+			draggable: true,
+			animation: google.maps.Animation.DROP,
+		});
+		infoWindow = new google.maps.InfoWindow({
+			content: "经度：" + lats + "<br/>纬度：" + lngs //提示窗体内的提示信息
+		});
+
+		//打开提示窗口
+		infoWindow.open(map, marker);
+
+		marker.addListener("click", toggleBounce);
+
+
+		map.addListener('click', function(e) {
+			var latLngData = e.latLng.lat().toFixed(6) + ',' + e.latLng.lng().toFixed(6);
+
+			marker.setMap(null);
+			marker = new google.maps.Marker({
+				position: {
+					lat: e.latLng.lat(),
+					lng: e.latLng.lng(),
+				},
+				map: map,
+				draggable: true,
+				animation: google.maps.Animation.DROP,
+			});
+
+			infoWindow = new google.maps.InfoWindow({
+				content: "经度：" + e.latLng.lat().toFixed(6) + "<br/>纬度：" + e.latLng.lng().toFixed(
+					6) //提示窗体内的提示信息
+			});
+			//打开提示窗口
+			infoWindow.open(map, marker);
+
+			map.setCenter({
+				lat: e.latLng.lat(),
+				lng: e.latLng.lng(),
+			})
+
+			var url =
+				'https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyAwjMreTOci1VWPK8GY5Qo3i4Nny4va6hY&latlng=' +
+				latLngData + '&sensor=true/false';
+			let info = httpGet(url)
+			let dataInfo = JSON.parse(info)
+			document.getElementById('address').innerHTML = dataInfo.results[0].formatted_address
+
+			addressObj.lat = e.latLng.lat().toFixed(6)
+			addressObj.lng = e.latLng.lng().toFixed(6)
+			addressObj.address = dataInfo.results[0].formatted_address
+
+		});
+
+
+
+		// Create the search box and link it to the UI element.
+		const input = document.getElementById("pac-input");
+		const searchBox = new google.maps.places.SearchBox(input);
+		map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+		// Bias the SearchBox results towards current map's viewport.
+		map.addListener("bounds_changed", () => {
+			searchBox.setBounds(map.getBounds());
+		});
+
+		// Listen for the event fired when the user selects a prediction and retrieve
+		// more details for that place.
+		searchBox.addListener("places_changed", () => {
+			const places = searchBox.getPlaces();
+
+			addressObj.lat = places[0].geometry.location.lat()
+			addressObj.lng = places[0].geometry.location.lng()
+			addressObj.address = places[0].formatted_address
+			document.getElementById('address').innerHTML = places[0].formatted_address
+
+			if (places.length == 0) {
+				return;
+			}
+			// Clear out the old markers.
+
+			marker.setMap(null);
+
+			// For each place, get the icon, name and location.
+			const bounds = new google.maps.LatLngBounds();
+
+			places.forEach((place) => {
+				if (!place.geometry || !place.geometry.location) {
+					console.log("Returned place contains no geometry");
+					return;
+				}
+				const icon = {
+					url: place.icon,
+					size: new google.maps.Size(71, 71),
+					origin: new google.maps.Point(0, 0),
+					anchor: new google.maps.Point(17, 34),
+					scaledSize: new google.maps.Size(25, 25),
+				};
+				// Create a marker for each place.
+				marker = new google.maps.Marker({
+					position: {
+						lat: places[0].geometry.location.lat(),
+						lng: places[0].geometry.location.lng(),
+					},
+					map: map,
+					draggable: true,
+					animation: google.maps.Animation.DROP,
+				});
+
+				infoWindow = new google.maps.InfoWindow({
+					content: "经度：" + places[0].geometry.location.lat() + "<br/>纬度：" + places[0]
+						.geometry.location.lng()
+						.toFixed(
+							6) //提示窗体内的提示信息
+				});
+				//打开提示窗口
+				infoWindow.open(map, marker);
+
+				if (place.geometry.viewport) {
+					// Only geocodes have viewport.
+					bounds.union(place.geometry.viewport);
+				} else {
+					bounds.extend(place.geometry.location);
+				}
+			});
+			map.fitBounds(bounds);
+		});
+	}
+
+
+
+	function toggleBounce() {
+
+		map.setZoom(18);
+		map.setCenter(marker.getPosition());
+
+		if (marker.getAnimation() !== null) {
+			marker.setAnimation(null);
+		} else {
+			marker.setAnimation(google.maps.Animation.BOUNCE);
+		}
+	}
+
+	function httpGet(theUrl) {
+		var xmlHttp = new XMLHttpRequest();
+		xmlHttp.open("GET", theUrl, false);
+		xmlHttp.send(null);
+		return xmlHttp.responseText;
+	}
+
+
+	window.onload = function() {
+		console.log('加载完成')
+		initAutocomplete()
+	}
+
+
+	require.config({
+		paths: {
+			'uni': 'js/uni.webview.1.5.2',
+		}
+	})
+
+	require(['uni'], function(uni) {
+		// 返回
+		var backNav = document.getElementById('Gback')
+		backNav.onclick = function() {
+			uni.navigateBack({
+				delta: 1
+			})
+		}
+		var aBtn = document.getElementById('btn')
+		aBtn.onclick = function() {
+			uni.getEnv(function(res) {
+				if (res.h5) {
+					window.parent.postMessage(addressObj)
+				} else {
+					uni.postMessage({
+						data: {
+							// dataObj: places,
+							dataObj: addressObj,
+						}
+					});
+				}
+			});
+			uni.navigateBack({
+				delta: 1
+			})
+
+			// uni.redirectTo({
+			// 	url: '../../merchantStore/addStore/addStore'
+			// });
+
+		}
+	})
+
+</script>

@@ -1,0 +1,68 @@
+<template>
+	<view class="box">
+		<web-view :webview-styles="webviewStyles" :src="url" @message='msg'></web-view>
+	</view>
+</template>
+
+<script>
+	export default {
+		data() {
+			return {
+				url: '/static/googleMap.html?',
+				webviewStyles: {
+					progress: {
+						color: '#FF3333',
+					}
+				}
+			}
+		},
+		onLoad(options) {
+			var data = JSON.parse(options.data)
+			this.url += "log=" + data.longitude + "&lat=" + data.latitude
+
+
+			// window.onmessage = (e) => {
+			// 	console.log(e)
+			// 	this.$store.commit('upMapObj', {
+			// 		longitude: e.data.lng,
+			// 		latitude: e.data.lat,
+			// 		address: e.data.address
+			// 	})
+			// 	window.parent.removeEventListener("onmessage", (res) => {
+			// 		console.log(res)
+			// 	})
+			// }
+			
+			// 			window.addEventListener('message', (e) => {
+			// 				console.log(e.data.lat)
+			// 				console.log(e.data.lng)
+			// 				console.log(e.data.address)
+			// 				this.$store.commit('upMapObj', {
+			// 					longitude: e.data.lng,
+			// 					latitude: e.data.lat,
+			// 					address: e.data.address
+			// 				})
+			// 				console.log(this.$store.state.mapObj)
+			// 			}, false);
+
+
+
+		},
+
+		methods: {
+			msg(e) {
+				this.$store.commit('upMapObj', {
+					longitude: e.detail.data[0].dataObj.lng,
+					latitude: e.detail.data[0].dataObj.lat,
+					address: e.detail.data[0].dataObj.address
+				})
+			},
+
+
+		}
+	}
+</script>
+
+<style>
+
+</style>

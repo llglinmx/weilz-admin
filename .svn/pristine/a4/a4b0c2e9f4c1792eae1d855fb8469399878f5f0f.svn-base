@@ -1,0 +1,640 @@
+<template>
+	<view class="box">
+		<view class="box-head" :style="{paddingTop:barHeight+'px'}">
+			<view class="box-head-nav">
+				<view class="box-head-nav-back flex-center" @click="Gback">
+					<text class="iconfont iconfanhui" style="color: #000;font-size: 36rpx;margin-top: 4rpx;"></text>
+				</view>
+				<view class="box-head-nav-title">
+					技师注册
+				</view>
+			</view>
+		</view>
+		<view class="box-content">
+			<view class="box-content-step">
+				<steps :options="options" :active="activeIndex"></steps>
+			</view>
+			<view class="box-content-main">
+				<view class="box-content-wrap" v-if="activeIndex==0">
+					<view class="box-content-wrap-li">
+						<input type="number" @input="emailChange" v-model.trim="email" placeholder="请输入邮箱"
+							confirm-type="done" />
+					</view>
+					<view class="box-content-wrap-li box-content-item">
+						<view class="box-content-wrap-li-text">
+							<text class="tel-text">+86</text>
+							<text class="iconfont icongengduo icon-font" style="color: #333;"></text>
+						</view>
+						<view class="box-content-wrap-li-input">
+							<input type="number" @input="phoneChange" v-model.trim="phone" placeholder="请输入手机号"
+								confirm-type="done" />
+						</view>
+					</view>
+					<view class="box-content-wrap-li">
+						<input type="number" v-model.trim="code" @input="codeChange" placeholder="请输入验证码"
+							confirm-type="done" />
+						<text @click="getSmCode" v-if="isSemsText">发送验证码</text>
+						<text v-if="!isSemsText">{{countdown}}s 后可重新发送</text>
+					</view>
+					<view class="box-content-wrap-li">
+						<input type="text" v-model.trim="password" :password="!isShowPassword" @input="passwordChange"
+							placeholder="密码长度8-20位" confirm-type="done" />
+						<text class="iconfont iconxianshimima icon-font" style="color: #ccc;" @click="showPass"
+							v-if="isShowPassword"></text>
+						<text class="iconfont iconyincangmima icon-font" style="color: #ccc;" @click="showPass"
+							v-if="!isShowPassword"></text>
+					</view>
+					<view class="box-content-wrap-li">
+						<input type="text" v-model.trim="confirmPasswordVal" @input="confirmPass" password="true"
+							placeholder="再次输入密码" confirm-type="done" />
+						<text class="iconfont iconyincangmima" style="color: #ccc;margin-left: 10rpx;"></text>
+					</view>
+				</view>
+				<view class="box-content-list" v-if="activeIndex==1">
+					<view class="box-content-list-li">
+						<view class="box-content-list-li-title">技师名字</view>
+						<view class="box-content-list-li-info">
+							<view class="box-content-list-li-info-input">
+								<input type="text" placeholder="请输入技师名字" />
+							</view>
+						</view>
+					</view>
+
+					<view class="box-content-list-li">
+						<view class="box-content-list-li-title">平台分类</view>
+						<view class="box-content-list-li-info">
+							<view class="box-content-list-li-info-text">请选择平台分类</view>
+							<view class="box-content-list-li-info-more">
+								<text class="iconfont icongengduo icon-font"
+									style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
+							</view>
+						</view>
+					</view>
+					<view class="box-content-list-li">
+						<view class="box-content-list-li-title">执照ID</view>
+						<view class="box-content-list-li-info">
+							<view class="box-content-list-li-info-input">
+								<input type="number" placeholder="请填写执照ID" />
+							</view>
+						</view>
+					</view>
+					<view class="box-content-list-li">
+						<view class="box-content-list-li-title">工龄</view>
+						<view class="box-content-list-li-info">
+							<view class="box-content-list-li-info-input">
+								<input type="number" placeholder="请填写工龄ID" />
+								<text>年</text>
+							</view>
+						</view>
+					</view>
+					<view class="box-content-list-item">
+						<view class="box-content-list-item-title">
+							<text>执照</text>
+						</view>
+						<view class="box-content-list-item-info">
+							<view class="box-content-list-item-info-icon flex-center">
+								<text class="iconfont icontupian icon-font" style="color: #fff;font-size: 48rpx"></text>
+							</view>
+						</view>
+					</view>
+					<view class="box-content-list-item">
+						<view class="box-content-list-item-title">
+							<text>工作照片</text>
+						</view>
+						<view class="box-content-list-item-info">
+							<view class="box-content-list-item-info-icon flex-center">
+								<text class="iconfont icontupian icon-font" style="color: #fff;font-size: 48rpx"></text>
+							</view>
+						</view>
+					</view>
+				</view>
+				<view class="box-content-list" v-if="activeIndex==2">
+					<view class="box-content-list-li">
+						<view class="box-content-list-li-title">选择银行</view>
+						<view class="box-content-list-li-info">
+							<view class="box-content-list-li-info-text">请选择</view>
+							<view class="box-content-list-li-info-more">
+								<text class="iconfont icongengduo icon-font"
+									style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
+							</view>
+						</view>
+					</view>
+					<view class="box-content-list-li">
+						<view class="box-content-list-li-title">银行卡号</view>
+						<view class="box-content-list-li-info">
+							<view class="box-content-list-li-info-input">
+								<input type="number" placeholder="请输入银行卡号" />
+							</view>
+						</view>
+					</view>
+					<view class="box-content-list-li">
+						<view class="box-content-list-li-title">预留手机</view>
+						<view class="box-content-list-li-info">
+							<view class="box-content-list-li-info-input">
+								<input type="number" placeholder="请输入银行预留手机号" />
+							</view>
+						</view>
+					</view>
+					<view class="box-content-list-li">
+						<view class="box-content-list-li-title">开户行</view>
+						<view class="box-content-list-li-info">
+							<view class="box-content-list-li-info-input">
+								<input type="text" placeholder="请输入银行卡开户行" />
+							</view>
+						</view>
+					</view>
+				</view>
+				<view class="box-content-main-btn">
+					<view class="btn-all flex-center" @click="nextStep">{{activeIndex==2?'提交':'下一步'}}</view>
+				</view>
+			</view>
+		</view>
+
+		<uni-popup ref="popup" type="dialog">
+			<uni-popup-dialog type="warn" mode='base' title="警告" :content="content" :duration="2000"  @confirm="confirm"></uni-popup-dialog>
+		</uni-popup>
+	</view>
+</template>
+
+<script>
+
+	export default {
+		data() {
+			return {
+				barHeight: 0, //顶部电量导航栏高度
+				isAll: false, //是否输入完整
+				activeIndex: 0, //当前进度下标
+				content: '确定要退出吗？退出将导致之前填写的信息全部重置',
+				options: [{
+					title: '注册账号'
+				}, {
+					title: '技师信息'
+				}, {
+					title: '银行卡信息'
+				}],
+
+				phone: "", //手机号
+				password: "", //密码
+				email: "", //邮箱
+				getCodeVal: '', //获取到的验证码
+				confirmPasswordVal: "", //确认密码
+				code: '',
+				codeVal: '',
+				codeId: '',
+				areaCode: '86',
+				smsCodeId: '',
+				isAll: false, //用于判断是否都有输入
+				countdown: '',
+				isSemsText: true, //验证码倒计时
+				isShowPassword: false, //是否显示密码
+				setCountdown: null,
+			};
+		},
+
+		onReady() {
+			// 获取顶部电量状态栏高度
+			uni.getSystemInfo({
+				success: (res) => {
+					this.barHeight = res.statusBarHeight
+				}
+			});
+		},
+		onLoad() {
+			// this.getCode()
+		},
+		methods: {
+			//返回
+			Gback() {
+				if (this.activeIndex == 0) {
+					uni.navigateBack({
+						delta: 1
+					})
+				} else {
+					this.$refs.popup.open()
+				}
+			},
+
+
+			// 确认注册
+			confirmRegister() {
+				if (!this.isAll) {
+					uni.showToast({
+						title: "请检查输入是否完整",
+						icon: "none"
+					})
+				} else {
+					var reg = /^1[3|4|5|7|8][0-9]{9}$/; //验证规则
+					if (reg.test(this.phone)) {
+						if (this.password.length >= 8 && this.password.length < 14) {
+							console.log(this.getCodeVal)
+							console.log(this.getCodeVal.length == 5 && this.getCodeVal != '')
+							if (this.getCodeVal.length == 5 && this.getCodeVal != '') {
+
+								console.log("技师注册")
+								return false
+							}
+							uni.showToast({
+								title: "验证码不正确，请重新输入",
+								icon: "none"
+							})
+							return false
+						}
+						uni.showToast({
+							title: "密码长度为8-12位",
+							icon: "none"
+						})
+
+						return false
+					}
+					uni.showToast({
+						title: "请输入正确的手机号",
+						icon: "none"
+					})
+				}
+			},
+
+
+			// 获取验证码
+			getCode() {
+				var data = {}
+				this.apiget('code/index', data).then(res => {
+					if (res.status == 200) {
+						this.codeVal = res.data.code
+						this.codeId = res.data.code_id
+					}
+				});
+			},
+
+			// var data = {
+			// 	email: this.email,
+			// 	mobile: this.phone,
+			// 	password: this.password,
+			// 	confirm_password: this.confirmPasswordVal,
+			// 	code: this.codeVal,
+			// 	code_id: this.codeId,
+			// 	sms_code: this.getCodeVal,
+			// 	sms_code_id: this.smsCodeId,
+			// 	areaCode: this.areaCode
+			// }
+
+			// 获取短信验证码
+			getSmCode() {
+				var reg = /^1[3|4|5|7|8][0-9]{9}$/; //验证规则
+				var vuedata = {
+					mobile: this.phone,
+					code: this.codeVal,
+					code_id: this.codeId,
+					type: 'register'
+				}
+				if (this.phone != '') {
+					if (reg.test(this.phone)) {
+						this.countDown();
+						return false
+						this.apipost('send_sms', vuedata).then(res => {
+							if (res.status == 200) {
+								this.smsCodeId = res.data.sms_code_id
+								uni.showToast({
+									title: "验证码发送成功",
+									icon: "none"
+								})
+								this.countDown();
+							} else {
+								uni.showToast({
+									title: res.massage,
+									icon: "none"
+								})
+							}
+						});
+						return false
+					}
+					uni.showToast({
+						title: "请输入正确的手机号",
+						icon: "none"
+					})
+					return false
+				}
+				uni.showToast({
+					title: "请输入手机号",
+					icon: "none"
+				})
+
+			},
+
+			// 倒计时
+			countDown() {
+				this.isSemsText = false
+				clearInterval(this.setCountdown);
+				var num = 60
+				this.countdown = num
+				this.setCountdown = setInterval(() => {
+					num--;
+					this.countdown = num < 10 ? '0' + num : num; //小于 10 则前面拼接一个0
+					if (num <= 0) {
+						clearInterval(this.setCountdown);
+						this.isSemsText = true;
+					}
+				}, 1000);
+			},
+			// 点击显示 隐藏密码
+			showPass() {
+				this.isShowPassword = !this.isShowPassword
+			},
+
+
+	
+			// 弹窗点击确认
+			confirm() {
+				uni.navigateBack({
+					delta: 1
+				})
+			},
+
+
+			// 下一步按钮
+			nextStep() {
+				switch (this.activeIndex) {
+					case 0:
+						if (!this.isAll) {
+							uni.showToast({
+								title: "请检查输入是否完整",
+								icon: "none"
+							})
+						} else {
+							this.activeIndex = 1
+						}
+						break;
+					case 1:
+						this.activeIndex = 2
+						break;
+					case 2:
+						uni.showToast({
+							title: "提交",
+							icon: "none"
+						})
+						break;
+				}
+			},
+
+
+			// 监听输入邮箱
+			emailChange() {
+				this.isAll = this.phone != '' && this.password != '' && this.email != '' && this.code != '' && this
+					.confirmPasswordVal != '' ? true : false
+			},
+			// 监听输入手机号
+			phoneChange() {
+				this.isAll = this.phone != '' && this.password != '' && this.email != '' && this.code != '' && this
+					.confirmPasswordVal != '' ? true : false
+			},
+			// 监听输入验证码
+			codeChange() {
+				this.isAll = this.phone != '' && this.password != '' && this.email != '' && this.code != '' && this
+					.confirmPasswordVal != '' ? true : false
+			},
+
+			//监听输入密码
+			passwordChange() {
+				this.isAll = this.phone != '' && this.password != '' && this.email != '' && this.code != '' && this
+					.confirmPasswordVal != '' ? true : false
+			},
+			// 确认密码
+			confirmPass() {
+				this.isAll = this.phone != '' && this.password != '' && this.email != '' && this.code != '' && this
+					.confirmPasswordVal != '' ? true : false
+			},
+
+		}
+	}
+</script>
+
+<style lang="scss">
+	.box {
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+		background: #fff;
+
+		.box-head {
+			background-color: #fff;
+
+			.box-head-nav {
+				display: flex;
+				align-items: center;
+				padding: 0 20rpx;
+				height: 88rpx;
+
+				.box-head-nav-back {
+					display: flex;
+					align-items: center;
+					width: 50rpx;
+				}
+
+				.box-head-nav-title {
+					margin-right: 50rpx;
+					flex: 1;
+					font-size: 34rpx;
+					color: #000;
+					text-align: center;
+				}
+			}
+
+		}
+
+		.box-content {
+			flex: 1;
+			overflow-y: scroll;
+
+			.box-content-step {
+				display: flex;
+				align-items: center;
+				height: 120rpx;
+			}
+
+			.box-content-main {
+				margin-top: 30rpx;
+				padding: 0 40rpx;
+				box-sizing: border-box;
+
+				.box-content-wrap {
+
+					.box-content-item {
+						display: flex;
+
+						.box-content-wrap-li-text {
+							width: 120rpx;
+							height: 100%;
+							display: flex;
+							align-items: center;
+
+							.tel-text {
+								position: static;
+								color: #333;
+								font-size: 32rpx;
+							}
+
+							.icon-font {
+								position: static;
+								width: 32rpx;
+								height: 32rpx;
+								transform: rotate(90deg);
+							}
+
+
+							.icon {
+								transform: rotate(90deg);
+							}
+						}
+
+						.box-content-wrap-li-input {
+							margin-left: 20rpx;
+							font-size: 32rpx;
+						}
+					}
+
+					.box-content-wrap-li {
+						position: relative;
+						padding: 28rpx 0;
+						position: relative;
+						margin-bottom: 30rpx;
+						border-bottom: 1rpx solid #ededed;
+
+						input {
+							font-size: 32rpx;
+						}
+
+
+
+						text {
+							position: absolute;
+							right: 10rpx;
+							top: 0rpx;
+							bottom: 0;
+							margin: auto;
+							height: 48rpx;
+							color: #333;
+							font-size: 32rpx;
+						}
+					}
+				}
+
+				.box-content-list {
+					box-sizing: border-box;
+					background: #fff;
+
+					// .box-content-list-li:last-child {
+					// 	border-bottom: 0;
+					// }
+
+					.box-content-list-li {
+						display: flex;
+						align-items: center;
+						height: 100rpx;
+						padding-right: 40rpx;
+						box-sizing: border-box;
+						border-bottom: 1rpx solid #ededed;
+
+						.box-content-list-li-title {
+							width: 180rpx;
+							font-size: 28rpx;
+							color: #333;
+						}
+
+						.box-content-list-li-info {
+							margin-left: 60rpx;
+							flex: 1;
+							display: flex;
+							align-items: center;
+							justify-content: space-between;
+
+							.box-content-list-li-info-text {
+								font-size: 28rpx;
+								color: #000;
+							}
+
+							.box-content-list-li-info-more {}
+
+							.box-content-list-li-info-input {
+								width: 100%;
+								display: flex;
+								align-items: center;
+								justify-content: space-between;
+
+								input {
+									flex: 1;
+									height: 100%;
+									font-size: 28rpx;
+								}
+
+								text {
+									margin-left: 10rpx;
+									font-size: 28rpx;
+									color: #333;
+								}
+							}
+
+						}
+					}
+
+					.box-content-list-item {
+						display: flex;
+						align-items: center;
+						padding: 30rpx 0;
+						border-bottom: 1rpx solid #ededed;
+
+						.box-content-list-item-title {
+							display: flex;
+							flex-direction: column;
+							width: 180rpx;
+
+							text:nth-child(1) {
+								font-size: 28rpx;
+								color: #333;
+							}
+
+							text:nth-child(2) {
+								font-size: 24rpx;
+								color: #999;
+							}
+						}
+
+						.box-content-list-item-info {
+							margin-left: 60rpx;
+
+							.box-content-list-item-info-icon {
+								width: 120rpx;
+								height: 120rpx;
+								background: #EDEDED;
+								border-radius: 10rpx;
+							}
+
+							.box-content-list-item-info-image {
+								width: 120rpx;
+								height: 120rpx;
+							}
+						}
+					}
+
+					// .box-content-list-item:last-child {
+					// 	border-bottom: 0;
+					// }
+				}
+
+				.box-content-main-btn {
+					padding: 60rpx 20rpx;
+					box-sizing: border-box;
+
+					.btn-all {
+						height: 88rpx;
+						background: #26BF82;
+						box-shadow: 0rpx 10rpx 20rpx rgba(38, 191, 130, 0.2);
+						border-radius: 15rpx;
+						color: #fff;
+						font-size: 32rpx;
+					}
+				}
+
+			}
+		}
+
+	}
+</style>

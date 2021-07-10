@@ -1,0 +1,950 @@
+<template>
+	<view class="box">
+		<view class="box-head" :style="{paddingTop:barHeight+'px'}">
+			<nav-title-balck :navTitle="type=='add'?lan.AddAccountv:lan.EditAccount"></nav-title-balck>
+		</view>
+		<view class="box-content">
+
+			<view class="box-content-list">
+				<view class="box-content-list-li">
+					<view class="box-content-list-li-title">{{lan.usernameq}}<!-- 用户名 -->
+					</view>
+					<view class="box-content-list-li-info">
+						<view class="box-content-list-li-info-code flex-center" style="margin-right: 20rpx;"
+							@click="isAreaCode=true">
+							<text>+{{from.mobile_code}}</text>
+							<text class="iconfont iconxiangxiajiantou"
+								:style="{transform: isAreaCode?'rotate(180deg)':'rotate(0deg)'}"
+								style="transition: 0.3s;font-size: 24rpx;"></text>
+						</view>
+						<view class="box-content-list-li-info-input">
+							<input type="number" v-model.trim="from.mobile" :placeholder="lan.userNameo" />
+						</view>
+					</view>
+				</view>
+				<view class="box-content-list-li">
+					<view class="box-content-list-li-title">{{lan.passwordt}}<!-- 密码 -->
+					</view>
+					<view class="box-content-list-li-info">
+						<view class="box-content-list-li-info-input">
+							<input type="number" v-model.trim="from.password" password="true"
+								:placeholder="lan.passwordf" />
+						</view>
+					</view>
+				</view>
+				<view class="box-content-list-li">
+					<view class="box-content-list-li-title">{{lan.RepeatPasswordz}}<!-- 重复密码 -->
+					</view>
+					<view class="box-content-list-li-info">
+						<view class="box-content-list-li-info-input">
+							<input type="number" v-model.trim="from.repeatpassword" password="true"
+								:placeholder="lan.passwordAgainz" />
+						</view>
+					</view>
+				</view>
+			</view>
+
+			<view class="box-content-main">
+				<view class="box-content-main-top">
+					<view class="box-content-main-top-title">{{lan.ManageStoresq}}<!-- 管理门店 -->
+					</view>
+					<view class="box-content-main-top-add flex-center" @click="storeOpen">
+						<text class="iconfont iconcuowu icon-font" style="color: #ccc;font-size: 36rpx"></text>
+					</view>
+				</view>
+				<view class="box-content-store-list">
+					<view class="box-content-store-list-li" v-for="(item,index) in dataList" :key="index"
+						@click="storeOpen">
+						<view class="box-content-store-list-li-info">
+							<view class="store-list-li-info-text">{{item.name}}</view>
+							<!-- <view class="store-list-li-info-more">
+								<text class="iconfont icongengduo icon-font"
+									style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
+							</view> -->
+						</view>
+						<view class="box-content-store-list-li-delete" v-if="item.id==-1">
+							<text class="iconfont icongengduo icon-font"
+								style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
+
+						</view>
+						<view class="box-content-store-list-li-delete" v-if="item.id!=-1"
+							@click.stop="storeDeleteClick(index)">
+							<text class="iconfont iconshanchu-shangjia icon-font"
+								style="color: #ccc;font-size: 48rpx"></text>
+						</view>
+					</view>
+				</view>
+			</view>
+
+			<view class="box-content-main-jurisdiction">
+				<view class="box-content-main-jurisdiction-top">
+					<view class="box-content-main-jurisdiction-top-title">{{lan.Authorityz}}<!-- 权限 -->
+					</view>
+					<view class="box-content-main-jurisdiction-top-check" @click="selectAll">
+						<text class="iconfont iconweixuanzhong icon-font"
+							style="color:#B2B2B2;font-size: 40rpx;margin-top: 4rpx;" v-if="!isAll"></text>
+						<text class="iconfont iconxuanzhong2 icon-font"
+							style="color:#07C160;font-size: 40rpx;margin-top: 4rpx;" v-if="isAll"></text>
+						<text>{{lan.selectAllz}}<!-- 全选 --></text>
+					</view>
+				</view>
+				<view class="box-content-main-jurisdiction-list">
+					<view class="box-content-main-jurisdiction-list-li" v-for="(item,index) in arrList" :key="index">
+						<view class="jurisdiction-list-li-box">
+							<view class="jurisdiction-list-li-box-title">{{item.title}}</view>
+							<view class="jurisdiction-list-li-box-wrap">
+								<!-- <view class="jurisdiction-list-li-box-wrap-item">
+									<text class="iconfont iconweixuanzhong icon-font"
+										style="color:#B2B2B2;font-size: 40rpx;margin-top: 4rpx;"
+										v-if="!item.isAllCheck"></text>
+									<text class="iconfont iconxuanzhong2 icon-font"
+										style="color:#07C160;font-size: 40rpx;margin-top: 4rpx;"
+										v-if="item.isAllCheck"></text>
+									<text>全选</text>
+								</view> -->
+								<view class="jurisdiction-list-li-box-wrap-item" v-for="(i,j) in item.data" :key="j"
+									@click="permissionSelection(index,j)">
+									<text class="iconfont iconweixuanzhong icon-font"
+										style="color:#B2B2B2;font-size: 40rpx;margin-top: 4rpx;"
+										v-if="!i.isCheck"></text>
+									<text class="iconfont iconxuanzhong2 icon-font"
+										style="color:#07C160;font-size: 40rpx;margin-top: 4rpx;"
+										v-if="i.isCheck"></text>
+									<text>{{i.text}}</text>
+								</view>
+							</view>
+						</view>
+					</view>
+				</view>
+			</view>
+
+
+			<view class="box-content-list">
+				<view class="box-content-list-li" @click="dateStartOpen">
+					<view class="box-content-list-li-title">{{lan.EffectiveTimez}}<!-- 有效开始时间 -->
+					</view>
+					<view class="box-content-list-li-info">
+						<view class="box-content-list-li-info-text">{{from.start_time==''?lan.setTimez:from.start_time}}
+						</view>
+						<view class="box-content-list-li-info-more">
+							<text class="iconfont icongengduo icon-font"
+								style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
+						</view>
+					</view>
+				</view>
+				<view class="box-content-list-li" @click="dateEndOpen">
+					<view class="box-content-list-li-title">{{lan.EffectiveEndTime}}<!-- 有效结束时间 -->
+					</view>
+					<view class="box-content-list-li-info">
+						<view class="box-content-list-li-info-text">{{from.end_time==''?lan.setTimez:from.end_time}}
+						</view>
+						<view class="box-content-list-li-info-more">
+							<text class="iconfont icongengduo icon-font"
+								style="color: #999;font-size: 28rpx;margin-top: 4rpx;"></text>
+						</view>
+					</view>
+				</view>
+				<view class="box-content-list-li">
+					<view class="box-content-list-li-title">{{lan.Namex}}<!-- 姓名 -->
+					</view>
+					<view class="box-content-list-li-info">
+						<view class="box-content-list-li-info-input">
+							<input type="text" v-model.trim="from.name" :placeholder="lan.yourName" />
+						</view>
+					</view>
+				</view>
+				<view class="box-content-list-li">
+					<view class="box-content-list-li-title">{{lan.statusq}}<!-- 状态 -->
+					</view>
+					<view class="box-content-list-li-info">
+						<switch :checked="isState" @change="switch1Change" style="transform: scale(0.7);"
+							color="#07C160" />
+					</view>
+				</view>
+			</view>
+		</view>
+		<view class="box-footer">
+			<btn-sky-blue :btnName="lan.ConfirmAddq" v-if="type=='add'" @btnClick="confirmAdd" />
+			<btn-sky-blue :btnName="lan.ConfirmChangesq" v-if="type=='edit'" @btnClick="confirmEdit" />
+		</view>
+
+		<store-list-select :cancelw='lan.cancelq' :confirmw='lan.determineq' @cancel='storeCancel'
+			@confirm='storeConfirm' :visible="visible" :dataList="storeList" />
+
+		<select-date :cancelb='lan.cancelq' :determineb='lan.determineq' :yearw='lan.yearw' :monthw='lan.monthw'
+			:dayw='lan.dayw' :hourw='lan.hourw' :minutew='lan.Minutew' :secondw='lan.secondw' @cancel="dateStartCancel"
+			@confirm="dateStartConfirm" :visible='isStartDate' />
+
+		<select-date :cancelb='lan.cancelq' :determineb='lan.determineq' :yearw='lan.yearw' :monthw='lan.monthw'
+			:dayw='lan.dayw' :hourw='lan.hourw' :minutew='lan.Minutew' :secondw='lan.secondw' :arr='lan'
+			@cancel="dateEndCancel" @confirm="dateEndConfirm" :visible='isEndDate' />
+
+		<popup-list-select :skid='from.mobile_code_id' @cancel="areaCancel" @confirm="areaConfirm" :visible='isAreaCode'
+			:dataList="areaCodeList" />
+
+	</view>
+</template>
+
+<script>
+	import {
+		areaCodeList
+	} from '../../static/js/publicFile.js'
+	export default {
+		data() {
+			return {
+				type: 'add',
+				id: '',
+				barHeight: 0, //顶部电量导航栏高度
+				isState: false, //状态		
+				isAll: false, //是否全选
+				storeList: [],
+				dataList: [{
+					name: "请选择门店",
+					id: -1
+				}],
+				checkList: [],
+				arrList: [],
+				visible: false,
+				isStartDate: false,
+				isEndDate: false,
+				from: {
+					mobile: '', //手机号
+					mobile_code: '86', //区号
+					mobile_code_id: '',
+					password: '', //密码
+					repeatpassword: '', //重复密码
+					store: [], //门店（使用JSON格式传递），例：[{"id":"19","name":"聚互时代软二店"},{"id":"15","name":"聚互时代软三店"}]
+					manage: '', //权限
+					start_time: '', //有效开始时间
+					end_time: '', //有效结束时间
+					name: '', //姓名
+					status: 0, //状态
+				},
+				isAreaCode: false,
+				areaCodeList: [],
+				lan: {}
+			};
+		},
+
+
+		onLoad(options) {
+			// 获取顶部电量状态栏高度
+			uni.getSystemInfo({
+				success: (res) => {
+					this.barHeight = res.statusBarHeight
+				}
+			});
+
+			this.getPermission()
+			this.getStoreList()
+			this.getLanguage()
+			var data = JSON.parse(options.data)
+
+			if (data.type == 'add') {
+				this.type = 'add'
+			} else {
+				this.type = 'edit'
+				this.id = data.id
+			}
+
+			this.areaCodeList = areaCodeList
+
+		},
+		methods: {
+
+			// 区号取消按钮
+			areaCancel(e) {
+				this.isAreaCode = e
+			},
+
+			areaConfirm(e) {
+				this.from.mobile_code = e.name
+			},
+
+			// 选择门店
+			storeOpen() {
+				this.storeList.map(item => {
+					item.isCheck = false
+					this.dataList.map(res => {
+						if (item.id == res.id) {
+							item.isCheck = true
+						}
+					})
+				})
+				this.visible = true
+			},
+
+			// 门店弹出取消
+			storeCancel(e) {
+				this.visible = e
+			},
+			// 门店弹出确认
+			storeConfirm(e) {
+				this.dataList = e
+			},
+
+			// 选择开始日期
+			dateStartOpen() {
+				this.isStartDate = true
+			},
+			// 开始日期关闭弹窗
+			dateStartCancel(e) {
+				this.isStartDate = e
+			},
+			// 选择开始日期弹窗选择确认
+			dateStartConfirm(e) {
+				console.log(e)
+				this.from.start_time = e.year + '-' + e.month + '-' + e.day + ' ' + e.hour + ':' + e.minute + ':' + e
+					.second
+			},
+
+			// 选择结束日期
+			dateEndOpen() {
+				if (this.from.startTime != '') {
+					this.isEndDate = true
+					return false;
+				}
+				uni.showToast({
+					title: this.lan.periodFirst,
+					icon: "none"
+				})
+
+			},
+			// 结束日期关闭弹窗
+			dateEndCancel(e) {
+				this.isEndDate = e
+			},
+			// 选择结束日期弹窗选择确认
+			dateEndConfirm(e) {
+				this.from.end_time = e.year + '-' + e.month + '-' + e.day + ' ' + e.hour + ':' + e.minute + ':' + e.second
+			},
+
+
+
+			// switch 开关
+			switch1Change: function(e) {
+				this.isState = e.target.value
+				this.from.status = this.isState ? 1 : 0
+			},
+
+			// 添加选择门店
+			addStoreMenu() {
+				let str = {
+					name: this.lan.storeq,
+					id: -1
+				}
+				// Object.assign(title:"请输入门店")
+				// if (this.dataList.length >= 5) {
+				// 	uni.showToast({
+				// 		title: "最大只能添加5个门店",
+				// 		icon: "none"
+				// 	})
+				// 	return;
+				// }
+				// this.dataList.splice(this.dataList.length, 1, str)
+			},
+			// 选择门店删除
+			storeDeleteClick(index) {
+				if (this.dataList.length != 1) {
+					this.dataList.splice(index, 1)
+				} else {
+					this.dataList = [{
+						name: this.lan.storeq,
+						id: -1
+					}]
+				}
+			},
+
+			// 全选
+			selectAll() {
+				this.isAll = !this.isAll
+				if (this.isAll) {
+					this.arrList.forEach(item => {
+						item.isAllCheck = true
+						item.data.forEach(res => {
+							res.isCheck = true
+							res.value = 1
+						})
+					})
+				} else {
+					this.arrList.forEach(item => {
+						item.isAllCheck = false
+						item.data.forEach(res => {
+							res.isCheck = false
+							res.value = -1
+						})
+					})
+				}
+			},
+
+			// 权限选择
+			permissionSelection(index, idx) {
+				this.arrList[index].data[idx].isCheck = !this.arrList[index].data[idx].isCheck;
+				this.arrList[index].data[idx].value = this.arrList[index].data[idx].isCheck ? 1 : -1
+				
+				if (idx == 0) {
+					this.checkAll(index, idx)
+				} else {
+					this.checkListChange(index, idx)
+				}
+			},
+
+			checkAll(index, idx) {
+				let arrs = this.arrList[index].data.filter((item, index) => index != 0)
+				this.arrList[index].data.map(item => {
+					arrs.map(ele => {
+						if (item.field == ele.field) {
+							if (this.arrList[index].data[0].isCheck) {
+								item.isCheck = true
+								item.value = 1
+								this.arrList[index].isAllCheck = true
+							} else {
+								item.isCheck = false
+								item.value = -1
+								this.arrList[index].isAllCheck = false
+							}
+						}
+					})
+				})
+				this.isAll = true //判断全部是否全选
+				this.arrList.forEach(item => {
+					item.data.forEach(res => {
+						this.isAll = res.isCheck && this.isAll
+					})
+				})
+			},
+
+			checkListChange(index, idx) {
+				let num = 0
+				if (!this.arrList[index].data[idx].isCheck) {
+					this.arrList[index].data[0].isCheck = false
+				} else {
+					let arrs = this.arrList[index].data.filter((item, index) => index != 0)
+					arrs.forEach(item => {
+						if (item.isCheck) {
+							num++
+						}
+					})
+					this.arrList[index].data[0].isCheck = num == arrs.length ? true : false
+					
+					this.arrList[index].isAllCheck = num == arrs.length ? true : false
+				}
+				
+				this.isAll = true //判断全部是否全选
+				this.arrList.forEach(item => {
+					item.data.forEach(res => {
+						this.isAll = res.isCheck && this.isAll
+					})
+				})
+			},
+
+
+
+			// 确认添加按钮
+			confirmAdd() {
+				var data = {}
+				this.arrList.forEach(item => {
+					item.data.forEach(res => {
+						var key = res.field;
+						var val = res.value;
+						data[key] = val;
+					})
+				})
+
+				var vuedata = {
+					mobile: this.from.mobile, //手机号
+					mobile_code: this.from.mobile_code, //区号
+					password: this.from.password, //密码
+					repeatpassword: this.from.repeatpassword, //重复密码
+					store: JSON.stringify(this
+						.dataList), //门店（使用JSON格式传递），例：[{"id":"19","name":"聚互时代软二店"},{"id":"15","name":"聚互时代软三店"}]
+					manage: JSON.stringify(data), //权限
+					start_time: this.from.start_time, //有效开始时间
+					end_time: this.from.end_time, //有效结束时间
+					name: this.from.name, //姓名
+					status: this.isState ? 1 : 0, //状态
+				}
+
+				if (this.from.username == '') {
+					uni.showToast({
+						title: this.lan.userNameo,
+						icon: 'none'
+					})
+					return false;
+				}
+
+				if (this.from.password == '' && this.from.repeatpassword == '') {
+					if (this.from.password != this.from.repeatpassword) {
+						uni.showToast({
+							title: this.lan.reenter,
+							icon: 'none'
+						})
+						return false;
+					}
+					uni.showToast({
+						title: this.lan.enteredPassworda,
+						icon: 'none'
+					})
+					return false;
+				}
+
+				if (this.dataList[0].id == -1) {
+					uni.showToast({
+						title: this.lan.storeq,
+						icon: 'none'
+					})
+					return false;
+				}
+				this.postAddSubAccount(vuedata)
+			},
+
+			// 确认修改按钮
+			confirmEdit() {
+				var data = {}
+				this.arrList.forEach(item => {
+					item.data.forEach(res => {
+						var key = res.field;
+						var val = res.value;
+						data[key] = val;
+					})
+				})
+
+				var vuedata = {
+					mobile: this.from.mobile, //手机号
+					mobile_code: this.from.mobile_code, //区号
+					password: this.from.password, //密码
+					repeatpassword: this.from.repeatpassword, //重复密码
+					store: JSON.stringify(this
+						.dataList), //门店（使用JSON格式传递），例：[{"id":"19","name":"聚互时代软二店"},{"id":"15","name":"聚互时代软三店"}]
+					manage: JSON.stringify(data), //权限
+					start_time: this.from.start_time, //有效开始时间
+					end_time: this.from.end_time, //有效结束时间
+					name: this.from.name, //姓名
+					status: this.isState ? 1 : 0, //状态
+				}
+				this.apiput('api/v1/store/admin/edit/' + this.id, vuedata).then(res => {
+					if (res.status == 200) {
+
+						this.$store.commit('upAddAccount', true)
+						uni.showToast({
+							title: this.lan.AccountSucc,
+							icon: 'none'
+						})
+						setTimeout(function() {
+							uni.navigateBack({
+								delta: 2
+							})
+						}, 500)
+
+
+					} else if (res.status == 400) {
+						uni.showToast({
+							title: res.massage,
+							icon: 'none'
+						})
+					}
+				})
+			},
+
+			postAddSubAccount(vuedata) {
+				this.apipost('api/v1/store/admin/add', vuedata).then(res => {
+					if (res.status == 200) {
+						if (res.data) {
+							this.$store.commit('upAddAccount', true)
+							uni.showToast({
+								title: this.lan.AccountAddeds,
+								icon: 'none'
+							})
+							setTimeout(function() {
+								uni.navigateBack({
+									delta: 1
+								})
+							}, 500)
+						} else {
+							uni.showToast({
+								title: res.massage,
+								icon: 'none'
+							})
+						}
+					} else if (res.status == 400) {
+						uni.showToast({
+							title: res.massage,
+							icon: 'none'
+						})
+					}
+				})
+			},
+
+			// 获取权限列表
+			getPermission(num, size) {
+				this.apiget('api/v1/store/admin/limit', {}).then(res => {
+					if (res.status == 200) {
+						let permissionsList = res.data.limit;
+						this.checkList = permissionsList.map((item) => {
+							let obj = {
+								value: -1,
+								isAllCheck: false,
+								title: item.name
+							};
+							let arr = Object.entries(item.list);
+							obj.data = arr.map((val) => {
+								return {
+									value: -1,
+									isCheck: false,
+									field: val[0],
+									text: val[1]
+								};
+							});
+							var str = {
+								value: -1,
+								isCheck: false,
+								field: 'all',
+								text: '全选' //selectAllz
+							}
+							obj.data.splice(0, 0, str)
+							// console.log("obj",obj);
+							return obj;
+						});
+						this.arrList = this.checkList
+						if (this.type == 'edit') {
+							this.getDetails(this.id)
+						}
+					}
+				})
+			},
+
+			// 获取门店列表
+			getStoreList() {
+				this.apiget('api/v1/store/store_information', {}).then(res => {
+					if (res.status == 200) {
+						this.storeList = res.data.member
+						this.storeList.map(item => {
+							item.isCheck = false
+						})
+					}
+				})
+			},
+			// 获取账号详情
+			getDetails(id) {
+				this.apiget('api/v1/store/admin/' + id, {}).then(res => {
+					if (res.status == 200) {
+						var data = res.data.member
+						var arr = []
+						// password: this.from.password, //密码
+						// repeatpassword: this.from.repeatpassword, //重复密码
+						data.store_array.forEach(item => { //处理门店数据
+							var str = {
+								name: item.name,
+								id: item.id
+							}
+							arr.push(str)
+						})
+						this.dataList = arr
+						this.from.manage = data.manage
+
+						var manage = JSON.parse(data.manage)
+						this.arrList.forEach(item => {
+							item.data.forEach(ele => {
+								for (let key in manage) {
+									if (ele.field == key) {
+										ele.value = manage[key]
+										ele.isCheck = manage[key] == 1 ? true : false
+									}
+								}
+							})
+						})
+
+						this.isAll = true;
+						this.arrList.map((item, index) => {
+							item.data.map((ele, idx) => {
+								if (!ele.isCheck) { //此处判断是区分此行是否有全选
+									item.data[0].isCheck = false
+									item.data[0].value = -1
+								}
+								this.isAll = ele.isCheck && this.isAll
+							})
+						})
+
+						this.from.start_time = data.start_time
+						this.from.end_time = data.end_time
+						this.from.name = data.name
+						this.from.mobile = data.mobile
+						this.from.status = data.status
+						this.isState = data.status == 1 ? true : false //状态
+					}
+				})
+			},
+			// 请求语言包
+			getLanguage() {
+				this.apiget('language/info', {
+					name: 'Accounts'
+				}).then(res => {
+					if (res.status == 200) {
+						let language = res.data.language
+						this.lan = res.data.language
+
+						this.dataList[0].name = language.storeq
+						this.arrList.map(v => {
+							v.data[0].text = language.selectAllz
+						})
+
+					}
+				});
+			},
+		}
+	}
+</script>
+
+<style lang="scss">
+	.box {
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+		background: #F7F7F7;
+
+		.box-head {
+			background-color: #fff;
+		}
+
+		.box-content {
+			flex: 1;
+			overflow-y: scroll;
+
+			.box-content-list {
+				margin-top: 20rpx;
+				padding-left: 40rpx;
+				box-sizing: border-box;
+				background: #fff;
+
+				.box-content-list-li:last-child {
+					border-bottom: 0;
+				}
+
+				.box-content-list-li {
+					display: flex;
+					align-items: center;
+					height: 100rpx;
+					padding-right: 40rpx;
+					box-sizing: border-box;
+					border-bottom: 1rpx solid #ededed;
+
+					.box-content-list-li-title {
+						width: 200rpx;
+						font-size: 28rpx;
+						color: #333;
+					}
+
+					.box-content-list-li-info {
+						flex: 1;
+						display: flex;
+						align-items: center;
+						justify-content: space-between;
+
+						.box-content-list-li-info-text {
+							font-size: 28rpx;
+							color: #000;
+						}
+
+						.box-content-list-li-info-more {}
+
+						.box-content-list-li-info-input {
+							width: 100%;
+							display: flex;
+							align-items: center;
+							justify-content: space-between;
+
+							input {
+								flex: 1;
+								height: 100%;
+								font-size: 28rpx;
+							}
+
+							text {
+								margin-left: 10rpx;
+								font-size: 28rpx;
+								color: #333;
+							}
+						}
+
+						.box-content-list-li-info-check {
+							display: flex;
+							align-items: center;
+
+							.box-content-list-li-info-check-box:first-child {
+								margin-left: 0;
+							}
+
+							.box-content-list-li-info-check-box {
+								margin-left: 40rpx;
+								display: flex;
+								align-items: center;
+								color: #000;
+								font-size: 28rpx;
+
+								.icon-font {
+									margin-right: 20rpx;
+								}
+
+								text {}
+							}
+						}
+
+						.box-content-list-li-info-code {
+							display: flex;
+							align-items: center;
+							width: 120rpx;
+							height: 45rpx;
+							border: 1rpx solid #ededed;
+							border-radius: 30rpx;
+							font-size: 28rpx;
+						}
+					}
+				}
+			}
+
+			.box-content-main-jurisdiction {
+				margin-top: 20rpx;
+				background: #fff;
+
+				.box-content-main-jurisdiction-top {
+					height: 100rpx;
+					display: flex;
+					justify-content: space-between;
+					align-items: center;
+					padding: 0 40rpx;
+					box-sizing: border-box;
+					font-size: 28rpx;
+
+					.box-content-main-jurisdiction-top-title {
+						color: #333;
+					}
+
+					.box-content-main-jurisdiction-top-check {
+						display: flex;
+						align-items: center;
+						color: #000;
+
+						.icon-font {
+							margin-right: 10rpx;
+						}
+					}
+				}
+
+				.box-content-main-jurisdiction-list {
+					padding-left: 40rpx;
+					box-sizing: border-box;
+
+					.box-content-main-jurisdiction-list-li:first-child {
+						border-top: 1rpx solid #ededed;
+					}
+
+					.box-content-main-jurisdiction-list-li:last-child {
+						border-bottom: 0;
+					}
+
+					.box-content-main-jurisdiction-list-li {
+						padding: 30rpx 0;
+						padding-right: 30rpx;
+						box-sizing: border-box;
+						border-bottom: 1rpx solid #ededed;
+
+						.jurisdiction-list-li-box {
+							.jurisdiction-list-li-box-title {
+								margin-bottom: 30rpx;
+								font-size: 28rpx;
+								color: #333;
+							}
+
+							.jurisdiction-list-li-box-wrap {
+								display: flex;
+								flex-wrap: wrap;
+
+								.jurisdiction-list-li-box-wrap-item {
+									display: flex;
+									align-items: center;
+									margin-bottom: 20rpx;
+									margin-right: 20rpx;
+									font-size: 28rpx;
+									color: #000;
+
+									.icon-font {
+										margin-right: 10rpx;
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+
+			.box-content-main {
+				margin-top: 20rpx;
+				padding-left: 40rpx;
+				box-sizing: border-box;
+				background: #fff;
+
+				.box-content-main-top {
+					display: flex;
+					align-items: center;
+					justify-content: space-between;
+					padding-right: 40rpx;
+					box-sizing: border-box;
+					height: 80rpx;
+					border-bottom: 1rpx solid #ededed;
+					color: #333;
+					font-size: 28rpx;
+
+					.box-content-main-top-title {}
+
+					.box-content-main-top-add {
+						width: 40rpx;
+						height: 40rpx;
+						border: 2rpx solid #CCCCCC;
+						border-radius: 10rpx;
+
+						.icon-font {
+							transform: rotate(135deg);
+						}
+					}
+				}
+
+				.box-content-store-list {
+					padding-bottom: 40rpx;
+
+					.box-content-store-list-li {
+						display: flex;
+						align-items: center;
+						justify-content: space-between;
+						margin-top: 40rpx;
+						padding-right: 40rpx;
+						box-sizing: border-box;
+
+						.box-content-store-list-li-info {
+							display: flex;
+							align-items: center;
+
+							.store-list-li-info-text {
+								font-size: 28rpx;
+								color: #000;
+							}
+
+							.store-list-li-info-more {
+								margin-left: 20rpx;
+							}
+						}
+
+						.box-content-store-list-li-delete {}
+					}
+				}
+
+
+			}
+
+		}
+
+		.box-footer {
+			padding: 30rpx 40rpx;
+			box-sizing: border-box;
+		}
+	}
+</style>
